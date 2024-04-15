@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  web:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  db_users:
+    image: postgres:16
+    environment:
+    #   POSTGRES_DB: users_db
+    #   POSTGRES_USER: user
+    #   POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/users
+
+volumes:
+  postgres_data:
+
+networks:
+  transcendance:
+	  name: mynetwork
