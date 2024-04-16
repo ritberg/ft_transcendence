@@ -8,6 +8,8 @@ services:
       - "8000:8000"
     depends_on:
       - db
+    networks:
+      - transcendance
   db_users:
     image: postgres:16
     environment:
@@ -16,6 +18,8 @@ services:
     #   POSTGRES_PASSWORD: password
     volumes:
       - postgres_data:/var/lib/postgresql/data/users
+    networks:
+      - transcendance
 
 volumes:
   postgres_data:
