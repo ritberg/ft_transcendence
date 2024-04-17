@@ -1,3 +1,7 @@
-Play the game [here](https://joerober-03.github.io/js_pong/)
+Simple template to launch a django webserv
 
-Written in javascript
+django, daphne, django channels and djangorestframework are already installed but not configured (changes to settings.py needed !)
+
+just docker-compose up -d to launch project and check localhost:8000
+
+you can work on you host by modifying files in the volume directory
