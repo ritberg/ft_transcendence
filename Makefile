@@ -6,16 +6,19 @@ build:
 	docker-compose build
 
 up:
-	docker-compose up
+	docker-compose up --build
 
 down:
 	docker-compose down
 
+logs:
+	docker-compose logs
+
+shell:
+	docker-compose exec $(service) /bin/bash
+
 clean:
 	docker-compose down --rmi all --volumes
-
-flclean: clean
-#	sudo -k && sudo rm -rf ~/path of volumes
 
 re: clean all
 
