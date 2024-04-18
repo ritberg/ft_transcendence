@@ -7,11 +7,13 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        BACKEND_NAME: ${BACKEND_NAME}
+        SERVICE_NAME: ${SERVICE_NAME}
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     volumes:
-      - django:/home/transcendance
+      - django:/home/transcendance/${SERVICE_NAME}
     tty: true
     # networks:
     #   - pong
