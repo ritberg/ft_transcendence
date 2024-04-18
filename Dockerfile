@@ -24,6 +24,7 @@ WORKDIR /home/transcendance
 #install depedencies (django/daphne/channels/djangorestframework)
 COPY ./requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
+RUN mkdir depedencies && mv requirements.txt depedencies
 
 RUN cd /home/transcendance && django-admin startproject projectName 
 WORKDIR /home/transcendance/projectName
