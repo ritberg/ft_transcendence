@@ -1,7 +1,5 @@
-Simple template to launch a django webserv
+# ft_transcendance
 
-django, daphne, django channels and djangorestframework are already installed but not configured (changes to settings.py needed !)
+django template made by apalumbi
 
-just docker-compose up -d to launch project and check localhost:8000
-
-you can work on you host by modifying files in the volume directory
+!! don't forget to change the mount path in the docker-compose.yml and to add a .env in the docker folder !!

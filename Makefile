@@ -1,22 +1,32 @@
+compose_file = docker/docker-compose.yml
+
+volume_dir = backend
+
+service = db_users
+
+all: build up
+
+build:
+	mkdir -p $(volume_dir)
+	docker-compose -f $(compose_file) build
+
 up:
-	mkdir volume
-	docker-compose up -d
+	mkdir -p $(volume_dir)
+	docker-compose -f $(compose_file) up -d --build
 
 down:
-	docker-compose down -v
+	docker-compose -f $(compose_file) down -v
 
-redo:
-	docker-compose down -v
-	docker system prune -af
-	docker-compose up -d
+logs:
+	docker-compose -f $(compose_file) logs
 
-quick:
-	docker-compose down -v
-	docker-compose up -d
+shell:
+	docker-compose -f $(compose_file) exec $(service) /bin/bash
 
-shutdown:
-	docker-compose down -v
+clean:
+	docker-compose -f $(compose_file) down --rmi all --volumes
 	docker system prune -af
 
-rm_dir:
-	rm -Rf volume
+re: clean all
+
+.PHONY: all build up down clean flclean re
