@@ -1,8 +1,9 @@
 compose_file = docker/docker-compose.yml
 
 volume_dir = backend
+data_dir = data_db_user
 
-service = db_users
+service = django
 
 all: build up
 
@@ -28,5 +29,11 @@ clean:
 	docker system prune -af
 
 re: clean all
+
+# utils
+
+migration:
+	docker-compose -f $(compose_file) exec $(service) python manage.py makemigrations
+	docker-compose -f $(compose_file) exec $(service) python manage.py migrate
 
 .PHONY: all build up down clean flclean re
