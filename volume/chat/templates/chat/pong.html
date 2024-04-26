@@ -1,23 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>js_pong</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="utils/favicon.ico">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'utils/favicon.ico' %}">
 </head>
 <body>
     <h1>Pong</h1>
-    <div class="button-container">
+    <!-- <div class="button-container">
     <button id="button_one" onclick="button1Init()" class="button button">one player</button>
     <button id="button_two" onclick="button2Init()" class="button button">two players</button>
     <button id="button_zero" onclick="button3Init()" class="button button">zero players</button>
     <button id="button_zero" onclick="stop_playing()" class="button button">stop playing</button>
     <button id="button_multi" onclick="button4Init()" class="button button">online</button>
-  </div>
+  </div> -->
     <canvas id="board"></canvas>
-    <script src="index.js"></script>
+    <script src="{% static 'index.js' %}"></script>
     <h1></h1>
     <div class="checkbox-wrapper-65">
         <label for="cbk1-65">
