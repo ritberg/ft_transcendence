@@ -1,2 +1,4 @@
 .DS_Store
 docker/.env
+backend/.env.django
+venv/
