@@ -16,8 +16,8 @@ fi
 cd /home/transcendance/$SERVICE_NAME
 
 # Creation of the superuser
-# echo "creation of superuser $DJANGO_SUPERUSER_USERNAME" >> /home/transcendance/logs/setup.log
-# python3 manage.py createsuperuser --noinput --username="$DJANGO_SUPERUSER_USERNAME" --email="$DJANGO_SUPERUSER_EMAIL" --password="$DJANGO_SUPERUSER_PASSWORD"
+echo "creation of superuser $DJANGO_SUPERUSER_USERNAME" >> /home/transcendance/logs/setup.log
+python3 manage.py createsuperuser --noinput --username="$DJANGO_SUPERUSER_USERNAME" --email="$DJANGO_SUPERUSER_EMAIL" --password="$DJANGO_SUPERUSER_PASSWORD"
 
 # apply the migrations
 python3 manage.py makemigrations
