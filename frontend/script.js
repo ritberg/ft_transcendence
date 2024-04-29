@@ -1,11 +1,19 @@
 document.addEventListener("DOMContentLoaded", function () {
+  // button
   let btnProfile = document.getElementById("btnLogin");
   let btnLogin = document.getElementById("login");
   let btnSignup = document.getElementById("signup");
   let btnFormClose = document.getElementById("btnFormClose");
+  // div
   let formContainer = document.querySelector(".form-container");
   let loginForm = document.querySelector(".login-form");
   let signupForm = document.querySelector(".signup-form");
+
+  // api ulrs
+  let loginUrl = "http://localhost:8000/auth/login";
+  let signupUrl = "http://localhost:8000/auth/register";
+
+  // add click event listener for button
 
   btnFormClose.addEventListener("click", function () {
     formContainer.classList.remove("show");
@@ -43,5 +51,62 @@ document.addEventListener("DOMContentLoaded", function () {
         icon.classList.add("uil-eye-slash");
       }
     });
+  });
+
+  // form validation
+
+  loginForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    let email = loginForm.querySelector("input[name=email]").value;
+    let password = loginForm.querySelector("input[name=password]").value;
+
+    fetch(loginUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Fetch error: ", error);
+      });
+  });
+
+  signupForm.addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    let name = signupForm.querySelector("input[name=username]").value;
+    let email = signupForm.querySelector("input[name=email]").value;
+    let password = signupForm.querySelector("input[name=password]").value;
+
+    fetch(signupUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name, email, password }),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error("Fetch error: ", error);
+      });
   });
 });
