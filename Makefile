@@ -31,7 +31,7 @@ clean:
 re: clean all
 
 # utils
-migration:
+migrations:
 	docker-compose -f $(compose_file) exec $(service) python manage.py makemigrations
 	docker-compose -f $(compose_file) exec $(service) python manage.py migrate
 
