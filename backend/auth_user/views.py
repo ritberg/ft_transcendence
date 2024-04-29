@@ -9,45 +9,59 @@ from .serializers import UserSerializer
 # Create your views here.
 class LoginUserView(APIView):
 	def post(self, request , *args, **kwargs):
-		user = authenticate(
-			username=request.data['username'],
-			password=request.data['password'],
-			)
-		if user is not None:
-			login(request, user)
-			return Response(
-				{
-					'data': UserSerializer(user).data,
-					'message': 'User logged in successfully'
-				},
-				status=status.HTTP_200_OK
+		try:
+			user = authenticate(
+				username=request.data['username'],
+				password=request.data['password'],
 				)
-		return Response(
-			{'message': 'Invalid credentials'},
-			status=status.HTTP_400_BAD_REQUEST
-			)
+			if user is not None:
+				login(request, user)
+				return Response(
+					{
+						'data': UserSerializer(user).data,
+						'message': 'User logged in successfully'
+					},
+					status=status.HTTP_200_OK
+					)
+			raise ValueError('Invalid credentials')
+		except Exception as e:
+			return Response(
+				{'message': f"{type(e).__name__}: {str(e)}"},
+				status=status.HTTP_400_BAD_REQUEST
+				)
+
 	
 class LogoutUserView(APIView):
 	def post(self, request, *args, **kwargs):
-		logout(request)
-		return Response(
-			{'message': 'User logged out successfully'},
-			status=status.HTTP_200_OK
-			)
+		try:
+			logout(request)
+			return Response(
+				{'message': 'User logged out successfully'},
+				status=status.HTTP_200_OK
+				)
+		except Exception as e:
+			return Response(
+				{'message': f"{type(e).__name__}: {str(e)}"},
+				status=status.HTTP_400_BAD_REQUEST
+				)
+
 	
 class RegisterUserView(APIView):
 	def post(self, request, *args, **kwargs):
-		serializer = UserSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
+		try:
+			serializer = UserSerializer(data=request.data)
+			if serializer.is_valid():
+				serializer.save()
+				return Response(
+					{
+						'data': serializer.data,
+						'message': 'User registered successfully'
+					},
+					status=status.HTTP_201_CREATED
+					)
+			raise ValueError(serializer.errors)
+		except Exception as e:
 			return Response(
-				{
-					'data': serializer.data,
-					'message': 'User registered successfully'
-				},
-				status=status.HTTP_201_CREATED
+				{'message': f"{type(e).__name__}: {str(e)}"},
+				status=status.HTTP_400_BAD_REQUEST
 				)
-		return Response(
-			serializer.errors,
-			status=status.HTTP_400_BAD_REQUEST
-			)
