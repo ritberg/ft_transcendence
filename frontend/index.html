@@ -40,7 +40,9 @@
               </label>
               <a href="#" class="forgot-pw">Forgot password?</a>
             </div>
-            <button type="submit" class="button">Login Now</button>
+            <button type="submit" class="button" id="loginSubmit">
+              Login Now
+            </button>
             <div class="signup-link">
               Don't have any account? <a href="#" id="signup">Signup</a>
             </div>
@@ -52,11 +54,25 @@
           <form action="#">
             <h2>Signup</h2>
             <div class="input-box">
-              <input type="email" placeholder="Enter your email" required />
+              <input
+                type="text"
+                name="username"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
+            <div class="input-box">
+              <input
+                type="email"
+                name="email"
+                placeholder="Enter your email"
+                required
+              />
             </div>
             <div class="input-box">
               <input
                 type="password"
+                name="password"
                 placeholder="Create your password"
                 required
               />
@@ -70,7 +86,9 @@
               />
               <i class="uil uil-eye-slash toggle-password"></i>
             </div>
-            <button type="submit" class="button">Signup Now</button>
+            <button type="submit" class="button" id="signupSubmit">
+              Signup Now
+            </button>
             <div class="signup-link">
               Already have an account? <a href="#" id="login">Login</a>
             </div>
