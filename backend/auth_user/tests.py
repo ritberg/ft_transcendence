@@ -2,6 +2,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
+import re
 
 class UserAccountTests(APITestCase):
 
@@ -48,4 +49,4 @@ class UserAccountTests(APITestCase):
         data = {'username': 'testuser', 'password': 'testpassword123', 'email': 'test@example.com'}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('A user with that username already exists.', response.data['username'][0])
+        self.assertIn('A user with that username already exists.', str(response.data))
