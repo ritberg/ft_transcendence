@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		{% load static %}
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>(Ping) Pong</title>
+		<link rel="icon" type="image/x-icon" href="./favicon.ico">
+	</head>
+	<style>
+body {
+	margin: 0;
+	padding: 0;
+}
+	#canvas {
+		position: relative;
+		top: 50px;
+		left: 50px;
+		background-color: black;
+	}
+	#title {
+		font-family: Arial;
+		color: grey;
+		font-size: 100px;
+		position: absolute;
+		text-align: center;
+		top: 30%;
+		left: 50%;
+		transform: translate(-50%, -35%);
+	}
+	.gamemode-button {
+		color: grey;
+		background-color: transparent;
+		border: 4px solid grey;
+		border-radius: 50px;
+		padding: 15px 32px;
+		width: 300px;
+		font-size: 50px;
+		cursor: pointer;
+		position: absolute;
+	}
+	.gamemode-button:hover {
+		color: lightgrey;
+		border: 4px solid lightgrey;
+	}
+	#cpu-mode {
+		top: 40%;
+		left: 50%;
+		transform: translate(-50%, -30%);
+	}
+	#pvp-mode {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -45%);
+	}
+	#tournoi-mode {
+		top: 60%;
+		left: 50%;
+		transform: translate(-50%, -60%);
+	}
+	</style>
+	<body>
+		<canvas id="canvas" width="1180" height="1160"></canvas>
+		<div id="title">PONG</div>
+		<button class="gamemode-button" id="cpu-mode">CPU</button>
+		<button class="gamemode-button" id="pvp-mode">PvP</button>
+		<button class="gamemode-button" id="tournoi-mode">TOURNOI</button>
+		<script src="{% static 'home_page/pong.js' %}"></script>
+	</body>
+</html>

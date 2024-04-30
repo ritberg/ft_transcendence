@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  django:
+    container_name: django
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${SERVICE_NAME}
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - django:/home/transcendance/${SERVICE_NAME}
+    tty: true
+    # networks:
+    #   - pong
+    init: true
+
+volumes:
+  django:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      # device: '/Users/apalumbi/Documents/apalumbi_git/6_transcendance/backend' # school
+      device: "/Users/dferreir/42/Cursus/Transcendence/app" # home
+
+# networks:
+#   pong:
+#     driver: bridge
