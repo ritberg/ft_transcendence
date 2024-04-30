@@ -22,6 +22,8 @@ services:
     networks:
       - transcendance
     init: true
+    depends_on:
+      - db_user
 
   db_user:
     container_name: db_user

@@ -28,9 +28,8 @@ RUN apt-get update && apt-get install -y postgresql-client
 RUN mkdir -p logs
 
 # copy and execute the initialization script
-COPY /tools/service_setup.sh /home/transcendance/service_setup.sh
-RUN chmod +x /home/transcendance/service_setup.sh \
-    && /home/transcendance/service_setup.sh
+COPY /tools/init.sh /home/transcendance/init.sh
+RUN chmod +x /home/transcendance/init.sh
 
 # set the final working directory
 WORKDIR /home/transcendance/${SERVICE_NAME}
@@ -40,4 +39,4 @@ WORKDIR /home/transcendance/${SERVICE_NAME}
 # RUN python3 manage.py migrate
 
 # Command for running the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["/bin/bash", "/home/transcendance/init.sh"]
