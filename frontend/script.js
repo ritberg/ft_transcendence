@@ -1,17 +1,17 @@
 document.addEventListener("DOMContentLoaded", function () {
   // button
-  let btnProfile = document.getElementById("btnLogin");
+  let btnProfile = document.getElementById("btn-login");
   let btnLogin = document.getElementById("login");
   let btnSignup = document.getElementById("signup");
-  let btnFormClose = document.getElementById("btnFormClose");
+  let btnFormClose = document.getElementById("btn-form-close");
   // div
   let formContainer = document.querySelector(".form-container");
   let loginForm = document.querySelector(".login-form");
   let signupForm = document.querySelector(".signup-form");
 
   // api ulrs
-  let loginUrl = "http://localhost:8000/auth/login";
-  let signupUrl = "http://localhost:8000/auth/register";
+  let loginUrl = "http://localhost:8000/auth/login/";
+  let signupUrl = "http://localhost:8000/auth/register/";
 
   // add click event listener for button
 
@@ -58,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
   loginForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    let email = loginForm.querySelector("input[name=email]").value;
+    let username = loginForm.querySelector("input[name=username]").value;
     let password = loginForm.querySelector("input[name=password]").value;
 
     fetch(loginUrl, {
@@ -66,10 +66,11 @@ document.addEventListener("DOMContentLoaded", function () {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     })
       .then((response) => {
         if (!response.ok) {
+          console.log(response);
           throw new Error("Network response was not ok");
         }
         return response.json();
@@ -85,19 +86,22 @@ document.addEventListener("DOMContentLoaded", function () {
   signupForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    let name = signupForm.querySelector("input[name=username]").value;
+    let username = signupForm.querySelector("input[name=username]").value;
     let email = signupForm.querySelector("input[name=email]").value;
     let password = signupForm.querySelector("input[name=password]").value;
+
+    console.log({ username, email, password });
 
     fetch(signupUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ name, email, password }),
+      body: JSON.stringify({ username, email, password }),
     })
       .then((response) => {
         if (!response.ok) {
+          console.log(response);
           throw new Error("Network response was not ok");
         }
         return response.json();

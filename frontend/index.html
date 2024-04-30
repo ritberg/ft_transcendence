@@ -12,22 +12,29 @@
   </head>
   <body>
     <section class="profile">
-      <button class="nav" id="btnLogin">Login</button>
+      <button class="nav" id="btn-login">Login</button>
     </section>
 
     <section class="login-section">
       <div class="form-container">
         <!-- Login Form -->
-        <i class="uil uil-times form-close" id="btnFormClose"></i>
+        <i class="uil uil-times form-close" id="btn-form-close"></i>
         <div class="login-form">
           <form action="#">
             <h2>Login</h2>
             <div class="input-box">
-              <input type="email" placeholder="Enter your email" required />
+              <input
+                type="text"
+                name="username"
+                placeholder="Enter your name"
+                required
+                autocomplete="off"
+              />
             </div>
             <div class="input-box">
               <input
                 type="password"
+                name="password"
                 placeholder="Enter your password"
                 required
               />
@@ -40,7 +47,7 @@
               </label>
               <a href="#" class="forgot-pw">Forgot password?</a>
             </div>
-            <button type="submit" class="button" id="loginSubmit">
+            <button type="submit" class="button" id="login-submit">
               Login Now
             </button>
             <div class="signup-link">
@@ -59,6 +66,7 @@
                 name="username"
                 placeholder="Enter your name"
                 required
+                autocomplete="off"
               />
             </div>
             <div class="input-box">
@@ -67,6 +75,7 @@
                 name="email"
                 placeholder="Enter your email"
                 required
+                autocomplete="off"
               />
             </div>
             <div class="input-box">
@@ -81,12 +90,13 @@
             <div class="input-box">
               <input
                 type="password"
+                name="password-cofirmation"
                 placeholder="Confirm your password"
                 required
               />
               <i class="uil uil-eye-slash toggle-password"></i>
             </div>
-            <button type="submit" class="button" id="signupSubmit">
+            <button type="submit" class="button" id="signup-submiy">
               Signup Now
             </button>
             <div class="signup-link">
