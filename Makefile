@@ -16,7 +16,7 @@ up:
 	docker-compose -f $(compose_file) up -d --build
 
 down:
-	docker-compose -f $(compose_file) down -v
+	docker-compose -f $(compose_file) down
 
 logs:
 	docker-compose -f $(compose_file) logs
@@ -25,7 +25,7 @@ shell:
 	docker-compose -f $(compose_file) exec $(service) /bin/bash
 
 clean:
-	docker-compose -f $(compose_file) down --rmi all --volumes
+	sudo -k && sudo docker-compose -f $(compose_file) down --rmi all --volumes
 	docker system prune -af
 
 re: clean all
