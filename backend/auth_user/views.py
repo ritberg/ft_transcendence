@@ -48,20 +48,14 @@ class LogoutUserView(APIView):
 	
 class RegisterUserView(APIView):
 	def post(self, request, *args, **kwargs):
-		try:
-			serializer = UserSerializer(data=request.data)
-			if serializer.is_valid():
-				serializer.save()
-				return Response(
-					{
-						'data': serializer.data,
-						'message': 'User registered successfully'
-					},
-					status=status.HTTP_201_CREATED
-					)
-			raise ValueError(serializer.errors)
-		except Exception as e:
+		serializer = UserSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
 			return Response(
-				{'message': f"{type(e).__name__}: {str(e)}"},
-				status=status.HTTP_400_BAD_REQUEST
+				{
+					'data': serializer.data,
+					'message': 'User registered successfully'
+				},
+				status=status.HTTP_201_CREATED
 				)
+		return Response( serializer.errors, status=status.HTTP_400_BAD_REQUEST)
