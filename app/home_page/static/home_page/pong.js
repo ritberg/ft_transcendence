@@ -68,9 +68,9 @@ function updatePos(time_diff) {
 
   paddle_y1 += paddle_speed_y1 * time_diff;
   paddle_y2 += paddle_speed_y2 * time_diff;
-	if (paddle_y1 < 10 || paddle_y1 > 955)
+	if (paddle_y1 < 10 || paddle_y1 > game.height - 200 - 10)
 		paddle_y1 -= paddle_speed_y1 * time_diff;
-	if (paddle_y2 < 10 || paddle_y2 > 955)
+	if (paddle_y2 < 10 || paddle_y2 > game.height - 200 - 10)
 		paddle_y2 -= paddle_speed_y2 * time_diff;
 
 	ball_x += ball_speed * Math.cos(ball_angle) * time_diff;
@@ -78,7 +78,7 @@ function updatePos(time_diff) {
 	// if ((ball_y < 0 && ball_angle > Math.PI || ball_angle < 0) || (ball_y + ball_length > game.height && ball_angle < Math.PI && ball_angle > 0))
 	if (ball_y < 0 || ball_y > game.height - ball_length)
 		ball_angle = 2 * Math.PI - ball_angle;
-	if ((ball_y >= paddle_y1 - ball_length && ball_y <= paddle_y1 + 200 && ball_x <= 50 && ball_x >= 20 && ball_angle > Math.PI / 2 && ball_angle < Math.PI * 1.5) || (ball_y >= paddle_y2 - 25 && ball_y <= paddle_y2 + 200 && ball_x + ball_length >= 1130 && ball_x <= 1160 && (ball_angle < Math.PI / 2 || ball_angle > Math.PI * 1.5))) {
+	if ((ball_y >= paddle_y1 - ball_length && ball_y <= paddle_y1 + 200 && ball_x <= 50 && ball_x >= 20 && ball_angle > Math.PI / 2 && ball_angle < Math.PI * 1.5) || (ball_y >= paddle_y2 - 25 && ball_y <= paddle_y2 + 200 && ball_x + ball_length >= 950 && ball_x <= 980 && (ball_angle < Math.PI / 2 || ball_angle > Math.PI * 1.5))) {
 		ball_angle = bounceAngle(ball_angle, ball_x, ball_y, ball_length, paddle_y1, paddle_y2);
 		if (Math.floor(Math.random() * speed_acc) == 1)
 			ball_speed *= 1.1;
@@ -147,7 +147,7 @@ function draw() {
 	// ctx.fillText("Paddle Bounces: " + paddle_bounces, 20, 50);
   ctx.fillStyle = "rgb(255, 255, 255)";
   ctx.fillRect(20, paddle_y1, 30, 200);
-  ctx.fillRect(1130, paddle_y2, 30, 200);
+  ctx.fillRect(950, paddle_y2, 30, 200);
 	ctx.beginPath();
 	ctx.fillRect(ball_x, ball_y, ball_length, ball_length);
 	ctx.fill();
@@ -206,8 +206,8 @@ const ctx_stars = game.getContext("2d");
 
 let delta = 1.5;
 const InitCanvas = () => {
-	game_.style.position = "fixed";
-	game_.setAttribute("width", `1180px`);
+	// game_.style.position = "fixed";
+	game_.setAttribute("width", `1000px`);
 	ctx_stars.clearRect(0, 0, _game_.width, _game_.height);
 };
 
