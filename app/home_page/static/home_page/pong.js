@@ -19,19 +19,28 @@ let loop_exec = 0;
 
 function GameMode(n) {
 	//
-	if (n > 1)
+	if (n == 2)
 		return;
 	//
-	document.getElementById("game").style.display = "block";
+	// document.getElementById("game").style.display = "block";
 	document.getElementById("title").style.display = "none";
 	document.getElementById("cpu-mode").style.display = "none";
 	document.getElementById("pvp-mode").style.display = "none";
 	document.getElementById("tournoi-mode").style.display = "none";
 	document.getElementById("online-mode").style.display = "none";
 
+	if (n == 3)
+		loginBox();
 	if (n == 1)
 		ai_activated = true;
-	requestAnimationFrame(loop);
+	if (n <= 1)
+		requestAnimationFrame(loop);
+}
+
+function loginBox() {
+	const login_elements = document.getElementsByClassName("login-box");
+	for (let i = 0; i < login_elements.length; i++)
+		login_elements[i].style.display = "block";
 }
 
 function bounceAngle(ball_angle, ball_x, ball_y, ball_length, paddle_y1, paddle_y2) {
@@ -133,7 +142,7 @@ function draw() {
   const ctx = game.getContext("2d");
   ctx.clearRect(0, 0, game.width, game.height);
   ctx.fillStyle = "rgb(70, 70, 70)";
-	for (let i = 15; i < game.height - 30; i += 50) {
+	for (let i = 10; i < game.height - 30; i += 50) {
 		ctx.fillRect(game.width / 2, i, 10, 30);
 	}
 	ctx.font = "100px Arial";
