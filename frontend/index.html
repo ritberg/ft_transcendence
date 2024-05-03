@@ -12,7 +12,27 @@
   </head>
   <body>
     <section class="profile">
-      <button class="nav" id="btn-login">Login</button>
+      <div class="profile-nav">
+        <img id="user-avatar" src="utils/default.jpg" alt="User Avatar" />
+        <h3 id="user-name">Guest</h3>
+        <p id="user-email"></p>
+        <h3 id="info">Please login to access your profile</h3>
+        <h3 id="user-logout"></h3>
+        <div class="profile-modify">
+          <input
+            type="text"
+            id="new-username"
+            placeholder="Enter new username"
+          />
+          <input type="text" id="new-email" placeholder="Enter new email" />
+          <input
+            type="password"
+            id="new-password"
+            placeholder="Enter new password"
+          />
+          <button id="update-profile">Update Profile</button>
+        </div>
+      </div>
     </section>
 
     <section class="login-section">

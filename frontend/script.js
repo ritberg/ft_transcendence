@@ -1,30 +1,48 @@
 document.addEventListener("DOMContentLoaded", function () {
   // button
-  let btnProfile = document.getElementById("btn-login");
+  let btnProfile = document.getElementById("user-avatar");
   let btnLogin = document.getElementById("login");
   let btnSignup = document.getElementById("signup");
   let btnFormClose = document.getElementById("btn-form-close");
-  // div
+
+  // form
   let formContainer = document.querySelector(".form-container");
   let loginForm = document.querySelector(".login-form");
   let signupForm = document.querySelector(".signup-form");
 
+  // user nav
+  let usernameLabel = document.getElementById("user-name");
+  let emailLabel = document.getElementById("user-email");
+  let logout = document.getElementById("user-logout");
+  let logInfo = document.getElementById("info");
+  let btnUpdateProfile = document.getElementById("update-profile");
+
   // api ulrs
   let loginUrl = "http://localhost:8000/auth/login/";
   let signupUrl = "http://localhost:8000/auth/register/";
+  let updateUrl = "http://localhost:8000/auth/update/";
+  let logoutURL = "http://localhost:8000/auth/logout/";
 
   // add click event listener for button
 
-  btnFormClose.addEventListener("click", function () {
+  closeLogin = () => {
     formContainer.classList.remove("show");
     loginForm.classList.remove("show");
     signupForm.classList.remove("show");
-  });
+  };
 
-  btnProfile.addEventListener("click", function () {
+  openLogin = () => {
     formContainer.classList.add("show");
     loginForm.classList.add("show");
     signupForm.classList.remove("show");
+  };
+
+  btnFormClose.addEventListener("click", function () {
+    closeLogin();
+  });
+
+  btnProfile.addEventListener("click", function () {
+    openLogin();
   });
 
   btnSignup.addEventListener("click", function () {
@@ -77,6 +95,14 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         console.log(data);
+
+        // document.getElementById("user-avatar").src = data.avatar;
+        usernameLabel.textContent = data.data.username;
+        emailLabel.textContent = data.data.email;
+        logout.textContent = "logout";
+        logInfo.textContent = data.data.id;
+        closeLogin();
+        document.querySelector(".profile-modify").classList.add("show");
       })
       .catch((error) => {
         console.error("Fetch error: ", error);
@@ -108,6 +134,80 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         console.log(data);
+      })
+      .catch((error) => {
+        console.error("Fetch error: ", error);
+      });
+  });
+
+  logout.addEventListener("click", function () {
+    fetch(logoutURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.log(response);
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+
+        usernameLabel.textContent = "Guest";
+        emailLabel.textContent = "";
+        logout.textContent = "";
+        logInfo.textContent = "Please login to access your profile";
+        document.querySelector(".profile-modify").classList.remove("show");
+      })
+      .catch((error) => {
+        console.error("Fetch error: ", error);
+      });
+  });
+
+  btnUpdateProfile.addEventListener("click", function () {
+    let username = document.getElementById("new-username").value;
+    if (username === "") {
+      console.log(
+        "current username: ",
+        document.getElementById("user-name").textContent
+      );
+      username = usernameLabel.textContent;
+    }
+    let email = emailLabel.value;
+    if (email === "") {
+      email = document.getElementById("user-email").textContent;
+    }
+    let password = document.getElementById("new-password").value;
+    let id = logInfo.textContent;
+
+    console.log({ id, username, email, password });
+
+    fetch(updateUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ id, username, email, password }),
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.log(response);
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+
+        usernameLabel.textContent = data.data.username;
+        emailLabel.textContent = data.data.email;
       })
       .catch((error) => {
         console.error("Fetch error: ", error);
