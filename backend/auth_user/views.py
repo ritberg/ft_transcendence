@@ -59,3 +59,28 @@ class RegisterUserView(APIView):
 				status=status.HTTP_201_CREATED
 				)
 		return Response( serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+	
+class UpdateUserView(APIView):
+	def put(self, request, *args, **kwargs):
+		try:
+			print (f"request.data: {request.data}")
+			user = User.objects.get(id=request.data['id'])
+			serializer = UserSerializer(user, data=request.data)
+			print (f"serializer: {serializer}")
+			if serializer.is_valid():
+				serializer.save()
+				print (f"serializer.data: {serializer.data}")
+				return Response(
+					{
+						'data': serializer.data,
+						'message': 'User updated successfully'
+					},
+					status=status.HTTP_200_OK
+					)
+			raise Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		except Exception as e:
+			print(f"error: {e}")
+			return Response(
+				{'message': f"{type(e).__name__}: {str(e)}"},
+				status=status.HTTP_400_BAD_REQUEST
+				)

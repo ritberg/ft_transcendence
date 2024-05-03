@@ -50,3 +50,16 @@ class UserAccountTests(APITestCase):
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn('A user with that username already exists.', str(response.data))
+
+    def test_update_user(self):
+        """
+        Test de la mise à jour des informations d'un utilisateur.
+        """
+        self.client.login(username='testuser', password='testpassword123')
+
+        user = User.objects.get(username='testuser')
+
+        url = reverse('update')
+        data = {'id': user.id, 'username': 'newtestuser', 'password': 'newpassword123', 'email': 'test2@example.com'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
