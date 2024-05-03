@@ -1,13 +1,231 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<link rel="icon" type="image/x-icon" href="{% static 'home_page/favicon.ico' %}">
+		{% load static %}
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>Example Page</title>
+		<title>(Ping) Pong</title>
+		<link rel="icon" type="image/x-icon" href="./favicon.ico">
 	</head>
+	<style>
+body {
+	/* background: radial-gradient(black, white); */
+	background: grey;
+}
+	.horizontal-tab {
+		background: rgba(0, 0, 0, .8);
+		position: absolute;
+		border: 2px solid rgba(255, 255, 255, .8);
+		border-radius: 10px;
+		top: 10px;
+		left: 10px;
+		right: 10px;
+		height: 80px;
+		z-index: 1;
+	}
+	.horizontal-tab button {
+		position: relative;
+		margin: 10px 8%;
+		width: 10%;
+		height: 80%;
+		font-size: 30px;
+		font-family: "Arial";
+		color: white;
+		background-color: transparent;
+		border: none;
+		padding: 5px 5px;
+		transition: .1s;
+	}
+	#icon {
+		transform: translate(-50%, -50%);
+		right: 10px;
+		width: 20px;
+		height: 20px;
+		font-size: 100px;
+		background-color: white;
+		border: 10px solid white;
+		border-radius: 100%;
+	}
+	.horizontal-tab button:hover {
+		text-shadow: white 0 0 10px;
+	}
+	.canvas-container {
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		box-shadow: white 0px 0px 15px 5px;
+		width: 1000px;
+		height: 800px;
+	}
+	#game {
+		background-color: black;
+	}
+	#title {
+		font-family: "Arial";
+		color: rgba(255, 255, 255, 0.5);
+		font-size: 100px;
+		position: absolute;
+		text-align: center;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -240%);
+		animation: text-shadow 3s infinite;
+	}
+	.gamemode-button {
+		color: rgba(255, 255, 255, 0.5);
+		background-color: rgb(0, 0, 0, 0.85);
+		border: 4px solid rgba(255, 255, 255, 0.5);
+		border-radius: 50px;
+		padding: 15px 32px;
+		width: 300px;
+		font-size: 50px;
+		font-family: "Arial";
+		cursor: pointer;
+		position: absolute;
+	}
+	.gamemode-button:hover {
+		color: lightgrey;
+		border: 4px solid lightgrey;
+		animation: hover-shadows 1.5s ease-out infinite;
+	}
+	#pvp-mode {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -160%);
+	}
+	#cpu-mode {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+	}
+	#tournoi-mode {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, 60%);
+	}
+	#online-mode {
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, 170%);
+	}
+	.login-box {
+		background-color: rgb(0, 0, 0, 0.85);
+		border: 4px solid rgba(255, 255, 255, 0.8);
+		border-radius: 10px;
+		display: none;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		width: 400px;
+		padding: 30px;
+		padding-bottom: 10px;
+		transform: translate(-50%, -50%);
+		box-sizing: border-box;
+	}
+	.login-box h1 {
+		font-family: "Arial";
+		margin: 0 0 20px;
+		padding: 0;
+		color: rgba(255, 255, 255, 0.8);
+		text-align: center;
+	}
+	.login-box .user-box {
+		font-family: "Arial";
+		position: relative;
+	}
+	.login-box .user-box input {
+		width: 100%;
+		padding: 10px 0;
+		font-size: 16px;
+		color: rgba(255, 255, 255, 0.8);
+		margin-bottom: 30px;
+		border: none;
+		border-bottom: 1px solid #fff;
+		outline: none;
+		background: transparent;
+	}
+	.login-box .user-box label {
+		position: absolute;
+		top:0;
+		left: 0;
+		padding: 10px 0;
+		font-size: 16px;
+		color: rgba(255, 255, 255, 0.8);
+		pointer-events: none;
+		transition: .5s;
+	}
+	.login-box button {
+		position: relative;
+		left: 50%;
+		transform: translate(-50%, -40%);
+		color: rgba(255, 255, 255, 0.8);
+		background: transparent;
+		border: 2px solid rgba(255, 255, 255, 0.8);
+		border-radius: 50px;
+		font-size: 40px;
+		padding: 5px 120px;
+		margin-top: 20px;
+		transition: .1s;
+	}
+	.login-box button:hover {
+		color: white;
+		box-shadow: white 0 0 10px;
+	}
+	.login-box .user-box input:focus ~ label,
+	.login-box .user-box input:valid ~ label {
+		top: -20px;
+		left: 0;
+		text-shadow: white 0 0 8px;
+		font-size: 12px;
+	}
+	@keyframes text-shadow {
+		0% {
+			color: rgba(255, 255, 255, 0.5);
+		}
+		50% {
+			color: lightgrey;
+			text-shadow: lightgrey 0 0 10px;
+		}
+	}
+	@keyframes hover-shadows {
+		0% {
+		}
+		50% {
+			text-shadow: lightgrey 0 0 10px;
+			box-shadow: lightgrey 0 0 10px;
+		}
+	}
+	</style>
 	<body>
-		<h1>Hello, Django!</h1>
-		<p>This is an example HTML page in Django.</p>
+		<div class="horizontal-tab">
+			<button>TABS</button>
+			<button>CHAT</button>
+			<button>LOGIN</button>
+			<button id="icon"></button>
+		</div>
+		<div class="canvas-container">
+			<canvas id="game" width="1000" height="800"></canvas>
+			<div id="title">PONG</div>
+			<button class="gamemode-button" id="pvp-mode">PvP</button>
+			<button class="gamemode-button" id="cpu-mode">CPU</button>
+			<button class="gamemode-button" id="tournoi-mode">TOURNOI</button>
+			<button class="gamemode-button" id="online-mode">ONLINE</button>
+			<div class="login-box">
+				<h1>JOIN GAME</h1>
+				<form>
+					<div class="user-box">
+						<input type="text" name="" required="">
+						<label>USER NAME</label>
+					</div>
+					<div class="user-box">
+						<input type="text" name="" required="">
+						<label>ROOM NAME</label>
+					</div>
+					<button>GO</button>
+				</form>
+			</div>
+			<script src="{% static 'home_page/pong.js' %}"></script>
+		</div>
 	</body>
 </html>

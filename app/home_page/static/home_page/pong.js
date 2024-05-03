@@ -17,20 +17,55 @@ let mouse_posX;
 let mouse_posY;
 let loop_exec = 0;
 
-function GameMode(n) {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function GameMode(n) {
 	//
 	if (n == 2)
 		return;
+	if (n == 3)
+	{
+		loginBox();
+		document.getElementById("title").style.display = "none";
+		document.getElementById("cpu-mode").style.display = "none";
+		document.getElementById("pvp-mode").style.display = "none";
+		document.getElementById("tournoi-mode").style.display = "none";
+		document.getElementById("online-mode").style.display = "none";
+		return;
+	}
 	//
-	// document.getElementById("game").style.display = "block";
+	document.getElementById("title").style.animationName = "none";
+	const button_elements = document.getElementsByClassName("gamemode-button");
+	for (i = 0; i < 40; i++)
+	{
+		delta /= 1.05;
+		const opacity = 0.5 - i / 40;
+		document.getElementById("title").style.color = "rgba(255, 255, 255, " + opacity * 1.5 + ")";
+		for (let j = 0; j < button_elements.length; j++)
+		{
+			button_elements[j].style.animationName = "none";
+			button_elements[j].style.color = "rgba(255, 255, 255, " + opacity + ")";
+			button_elements[j].style.background = "rgba(0, 0, 0, " + opacity + ")";
+			button_elements[j].style.border = "4px solid rgba(255, 255, 255, " + opacity + ")";
+		}
+		await sleep(20);
+	}
+	for (i = 0; i < 30; i++)
+	{
+		delta /= 1.05;
+		const opacity = i * 18;
+		document.getElementById("game").style.background = "rgba(" + opacity + ", " + opacity + ", " + opacity + ", 1)";
+		await sleep(20);
+	}
+	document.getElementById("game").style.background = "black";
 	document.getElementById("title").style.display = "none";
 	document.getElementById("cpu-mode").style.display = "none";
 	document.getElementById("pvp-mode").style.display = "none";
 	document.getElementById("tournoi-mode").style.display = "none";
 	document.getElementById("online-mode").style.display = "none";
 
-	if (n == 3)
-		loginBox();
 	if (n == 1)
 		ai_activated = true;
 	if (n <= 1)
