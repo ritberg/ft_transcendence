@@ -1,0 +1,17 @@
+{% load static %}
+
+<style>
+    body{
+        text-align:center;
+        background-color: rgb(255, 255, 255);
+    }
+    canvas {
+        padding: 10px;
+    }
+</style>
+
+
+<div id='mainContent'></div>
+<h1>PING PONG AI</h1>
+<script src="{% static 'pong.js' %}"></script>
+<p id="playing"></p>
