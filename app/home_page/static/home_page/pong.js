@@ -55,7 +55,7 @@ async function GameMode(n) {
 	for (i = 0; i < 30; i++)
 	{
 		delta /= 1.05;
-		const opacity = i * 18;
+		const opacity = i * 4; //18
 		document.getElementById("game").style.background = "rgba(" + opacity + ", " + opacity + ", " + opacity + ", 1)";
 		await sleep(20);
 	}
