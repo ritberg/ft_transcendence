@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 from pathlib import Path
 import environ
+import os
 
 # initialisation of environnement variables
 env = environ.Env()
@@ -142,6 +143,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Definition of default user
+
+AUTH_USER_MODEL = 'auth_user.CustomUser'
+
 # CORS settings
 
 CORS_ALLOW_CREDENTIALS = True
@@ -150,3 +155,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5500",
     "http://127.0.0.1:5500",
 ]
+
+# define the path to the media folder
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'

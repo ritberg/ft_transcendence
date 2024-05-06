@@ -1,12 +1,28 @@
-from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from .serializers import UserSerializer
 
 # Create your views here.
+
+User = get_user_model()
+
+class RegisterUserView(APIView):
+	def post(self, request, *args, **kwargs):
+		serializer = UserSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(
+				{
+					'data': serializer.data,
+					'message': 'User registered successfully'
+				},
+				status=status.HTTP_201_CREATED
+				)
+		return Response( serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class LoginUserView(APIView):
 	def post(self, request , *args, **kwargs):
 		try:
@@ -44,32 +60,14 @@ class LogoutUserView(APIView):
 				{'message': f"{type(e).__name__}: {str(e)}"},
 				status=status.HTTP_400_BAD_REQUEST
 				)
-
-	
-class RegisterUserView(APIView):
-	def post(self, request, *args, **kwargs):
-		serializer = UserSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(
-				{
-					'data': serializer.data,
-					'message': 'User registered successfully'
-				},
-				status=status.HTTP_201_CREATED
-				)
-		return Response( serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 	
 class UpdateUserView(APIView):
 	def put(self, request, *args, **kwargs):
 		try:
-			print (f"request.data: {request.data}")
-			user = User.objects.get(id=request.data['id'])
+			user = User.objects.get(id=request.user.id)
 			serializer = UserSerializer(user, data=request.data)
-			print (f"serializer: {serializer}")
 			if serializer.is_valid():
 				serializer.save()
-				print (f"serializer.data: {serializer.data}")
 				return Response(
 					{
 						'data': serializer.data,
