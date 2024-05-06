@@ -2,13 +2,13 @@ const aSocket = new WebSocket(
     "ws://localhost:8000/ws/"
 );
 
-var move;
+var move = 0;
+var connected = false;
   
+aSocket.onopen = function(event) {
+    connected = true;
+};
 
-aSocket.addEventListener('message', function (event) {
-    if (event.predict)
-        move = event.predict;
-});
 
 /********** PONG INIT *************/
 
@@ -51,6 +51,12 @@ function drawRect(x, y, width, height, color) {
     ctx.fillStyle = color;
     ctx.fillRect(x, y, width, height);
 }
+
+aSocket.addEventListener('message', function (event) {
+    let messageData = JSON.parse(event.data);
+    move = messageData.predict;
+    aSocket.send(JSON.stringify({"player" : player1Y, "computer" : computerY, "ballX" : ballX, "ballY" : ballY}));
+});
 
 /*
 A path is a series of connected lines or curves that can be used to draw shapes
@@ -142,8 +148,11 @@ function update() {
     ele if (NN_output == [0,0,0])
         does nothing;
     */
-   
-    aSocket.send(JSON.stringify({"player" : player1Y, "computer" : computerY, "ballX" : ballX, "ballY" : ballY}));
+    if (connected == true)
+    {
+        aSocket.send(JSON.stringify({"player" : player1Y, "computer" : computerY, "ballX" : ballX, "ballY" : ballY}));
+        connected = false;
+    }
     ai_update(move);
 
 
