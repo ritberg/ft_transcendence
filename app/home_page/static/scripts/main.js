@@ -1,4 +1,8 @@
-let paddle_y1 = paddle_y2 = game.height / 2 - 100;
+import sleep from './utils.js';
+import { loginBox } from './animations.js';
+
+let paddle_y1 = game.height / 2 - 100;
+let paddle_y2 = paddle_y1;
 let paddle_speed_y1 = 0;
 let paddle_speed_y2 = 0;
 const ball_length = 30;
@@ -17,10 +21,6 @@ let mouse_posX;
 let mouse_posY;
 let loop_exec = 0;
 
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 async function GameMode(n) {
 	//
 	if (n == 2)
@@ -38,7 +38,7 @@ async function GameMode(n) {
 	//
 	document.getElementById("title").style.animationName = "none";
 	const button_elements = document.getElementsByClassName("gamemode-button");
-	for (i = 0; i < 40; i++)
+	for (let i = 0; i < 40; i++)
 	{
 		delta /= 1.05;
 		const opacity = 0.5 - i / 40;
@@ -52,7 +52,7 @@ async function GameMode(n) {
 		}
 		await sleep(20);
 	}
-	for (i = 0; i < 30; i++)
+	for (let i = 0; i < 30; i++)
 	{
 		delta /= 1.05;
 		const opacity = i * 4; //18
@@ -70,12 +70,6 @@ async function GameMode(n) {
 		ai_activated = true;
 	if (n <= 1)
 		requestAnimationFrame(loop);
-}
-
-function loginBox() {
-	const login_elements = document.getElementsByClassName("login-box");
-	for (let i = 0; i < login_elements.length; i++)
-		login_elements[i].style.display = "block";
 }
 
 function bounceAngle(ball_angle, ball_x, ball_y, ball_length, paddle_y1, paddle_y2) {
@@ -315,3 +309,28 @@ function Update() {
 	requestAnimationFrame(Update);
 }
 Update();
+
+const draggableDiv = document.getElementById("chat-box");
+
+let offsetX = 0;
+let offsetY = 0;
+
+draggableDiv.addEventListener("mousedown", function(event) {
+  event.preventDefault(); // Prevent default selection behavior
+
+  offsetX = event.clientX - draggableDiv.offsetLeft;
+  offsetY = event.clientY - draggableDiv.offsetTop;
+
+  document.addEventListener("mousemove", onMouseMove);
+  document.addEventListener("mouseup", onMouseUp);
+});
+
+function onMouseMove(event) {
+  draggableDiv.style.left = event.clientX - offsetX + "px";
+  draggableDiv.style.bottom = event.clientY - offsetY + "px";
+}
+
+function onMouseUp() {
+  document.removeEventListener("mousemove", onMouseMove);
+  document.removeEventListener("mouseup", onMouseUp);
+}
