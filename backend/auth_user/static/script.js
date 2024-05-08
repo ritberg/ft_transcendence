@@ -139,7 +139,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Logs de départ avant l'envoi de la requête
     console.log("Sending login request...");
-    console.log("Current cookies (before request):", document.cookie);
+
+    console.log("username : ", username);
 
     fetch(loginUrl, {
       method: "POST",
@@ -217,6 +218,11 @@ document.addEventListener("DOMContentLoaded", function () {
     let formData = new FormData();
     let hasChanges = false;
 
+    console.log("update clicked");
+    console.log("all cookies : ", document.cookie);
+    csrfCookie = getCookie("csrftoken");
+    console.log("crsf cookie" ,csrfCookie);
+
     let usernameInput = document.getElementById("new-username");
     if (usernameInput.value) {
       formData.append("username", usernameInput.value);
@@ -244,6 +250,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (hasChanges) {
       fetch(updateUrl, {
         method: "PUT",
+        headers: {
+          "X-CSRFToken": csrfCookie,
+        },
         body: formData,
         credentials: "include",
       })
@@ -274,8 +283,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     formData.append("avatar", file);
 
+    console.log("update clicked");
+    console.log("all cookies : ", document.cookie);
+    csrfCookie = getCookie("csrftoken");
+    console.log("crsf cookie" ,csrfCookie);
+
     fetch(updateUrl, {
       method: "PUT",
+      headers: {
+        "X-CSRFToken": csrfCookie,
+      },
       body: formData,
       credentials: "include",
     })

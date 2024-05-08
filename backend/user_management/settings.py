@@ -44,9 +44,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'rest_framework',
-	'auth_user',
+	# 'auth_user',
 	'corsheaders',
-	'rest_framework_simplejwt.token_blacklist',
+    'auth_user.apps.AuthUserConfig',
 ]
 
 MIDDLEWARE = [
@@ -138,6 +138,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / "auth_user/static",
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -161,21 +164,21 @@ REST_FRAMEWORK = {
 
 # CORS settings
 
-from corsheaders.defaults import default_headers
+# from corsheaders.defaults import default_headers
 
-CSRF_COOKIE_HTTPONLY = False
+# CSRF_COOKIE_HTTPONLY = False
 
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5500",
-    "http://127.0.0.1:5500",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:5500",
+#     "http://127.0.0.1:5500",
+# ]
 
 CORS_ALLOW_ALL_ORIGINS = False
 
 # Configuration des en-têtes CORS permis, y compris les cookies
-CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
+# CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
 
 # define the path to the media folder
 
@@ -185,12 +188,12 @@ MEDIA_URL = '/media/'
 # Cookie settings
 
 # Désactivation de l'attribut Secure pour les cookies en HTTP
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
+# SESSION_COOKIE_SECURE = False
+# CSRF_COOKIE_SECURE = False
 
 # Configuration de l'attribut SameSite à None pour permettre les requêtes intersites
-SESSION_COOKIE_SAMESITE = 'None'  # Nécessite Secure=False en HTTP
-CSRF_COOKIE_SAMESITE = 'None'
+# SESSION_COOKIE_SAMESITE = 'None'  # Nécessite Secure=False en HTTP
+# CSRF_COOKIE_SAMESITE = 'None'
 
 # SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
 

@@ -25,7 +25,7 @@ shell:
 	docker-compose -f $(compose_file) exec $(service) /bin/bash
 
 clean:
-	sudo -k && sudo docker-compose -f $(compose_file) down --rmi all --volumes
+	docker-compose -f $(compose_file) down --rmi all --volumes
 	docker system prune -af
 
 re: clean all
