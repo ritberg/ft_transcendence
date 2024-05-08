@@ -137,35 +137,27 @@ document.addEventListener("DOMContentLoaded", function () {
     let username = loginForm.querySelector("input[name=username]").value;
     let password = loginForm.querySelector("input[name=password]").value;
 
-    // Logs de départ avant l'envoi de la requête
-    console.log("Sending login request...");
-    console.log("Current cookies (before request):", document.cookie);
-
     fetch(loginUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ username, password }),
-      credentials: "include",
     })
       .then((response) => {
-        // Logs les headers de la réponse pour voir les cookies reçus
-        console.log("Response Headers:", [...response.headers.entries()]);
-
         // Vérifie si la réponse est correcte (status 200-299)
         if (!response.ok) {
           console.log("Full response:", response);
           throw new Error("Network response was not ok");
         }
-
         // Retourne la réponse en JSON
         return response.json();
       })
       .then((data) => {
-        // Logs pour voir le contenu des cookies après la requête
-        console.log("Cookies after login response:", document.cookie);
-        console.log("Login successful. Server response data:", data);
+        console.log(data);
+        // Stocke les tokens dans le localStorage
+        localStorage.setItem("accessToken", data.access);
+        localStorage.setItem("refreshToken", data.refresh);
 
         // Met à jour les éléments d'interface utilisateur
         usernameLabel.textContent = data.data.username;
@@ -181,16 +173,11 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   logout.addEventListener("click", function () {
-    console.log("logout clicked");
-    console.log("all cookies : ", document.cookie);
-    csrfCookie = getCookie("csrftoken");
-    console.log(csrfCookie);
     fetch(logoutURL, {
       method: "POST",
       headers: {
-        "X-CSRFToken": csrfCookie,
+        Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
       },
-      credentials: "include",
     })
       .then((response) => {
         if (!response.ok) {

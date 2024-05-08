@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 	'rest_framework',
 	'auth_user',
 	'corsheaders',
+	'rest_framework.authtoken',
 	'rest_framework_simplejwt.token_blacklist',
 ]
 
@@ -150,20 +151,35 @@ AUTH_USER_MODEL = 'auth_user.CustomUser'
 
 # REST framework settings
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.SessionAuthentication',
+#     ],
+#     'DEFAULT_PERMISSION_CLASSES': [
+#         'rest_framework.permissions.IsAuthenticated',
+#     ],
+# }
+
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
+
+# JWT settings
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 # CORS settings
 
 from corsheaders.defaults import default_headers
-
-CSRF_COOKIE_HTTPONLY = False
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -174,24 +190,7 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_ALL_ORIGINS = False
 
-# Configuration des en-têtes CORS permis, y compris les cookies
-CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
-
 # define the path to the media folder
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-
-# Cookie settings
-
-# Désactivation de l'attribut Secure pour les cookies en HTTP
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-
-# Configuration de l'attribut SameSite à None pour permettre les requêtes intersites
-SESSION_COOKIE_SAMESITE = 'None'  # Nécessite Secure=False en HTTP
-CSRF_COOKIE_SAMESITE = 'None'
-
-# SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
-
-# SESSION_ENGINE = 'django.contrib.sessions.backends.db'
