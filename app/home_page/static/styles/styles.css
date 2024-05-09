@@ -1,119 +1,79 @@
 body {
 	background: radial-gradient(lightgrey, black, grey);
 }
-.profile-box {
-	background: rgba(0, 0, 0, .8);
-	position: absolute;
-	border: 2px solid rgba(255, 255, 255, .8);
+#profile-box_main {
+	background-color: rgb(0, 0, 0, 1);
+	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
-	top: 20px;
-	right: 20px;
-	height: 50px;
-	width: 200px;
-	cursor: pointer;
-	z-index: 1;
-}
-.profile-box h6 {
+	display: none;
 	position: absolute;
-	font-size: 30px;
-	font-family: "Arial";
-	color: white;
-	margin: 10px 10px;
-	text-align: left;
-	font-weight: normal;
-}
-.profile-box img {
-	position: absolute;
-	height: 80%;
-	width: 40px;
-	overflow: hidden;
-	border-radius: 50%;
-	right: 10px;
 	top: 50%;
-	transform: translateY(-50%);
-}
-.chat-box {
-	background: rgba(0, 0, 0, 0);
-	position: absolute;
-	border: 2px solid rgba(255, 255, 255, 0);
-	border-radius: 10px;
-	bottom: 20px;
-	left: 20px;
-	height: 175px;
-	width: 400px;
-	z-index: 1;
-	cursor: pointer;
-	transition: all ease-out .1s;
-}
-.chat-box.active {
-	background: rgba(0, 0, 0, .8);
-	border: 2px solid rgba(255, 255, 255, .8);
-}
-.chat-box h6 {
-	position: absolute;
-	font-size: 20px;
-	font-family: "Arial";
-	color: transparent;
-	margin: 10px 10px;
-	font-weight: normal;
-	transition: all ease-out .1s;
-}
-.chat-box.active h6 {
-	color: white;
-}
-.vertical-tab {
-	background: rgba(0, 0, 0, 0);
-	position: absolute;
-	border: 2px solid rgba(255, 255, 255, 0);
-	border-radius: 10px;
-	top: 85px;
-	left: -150px;
-	height: 200px;
-	width: 200px;
-	z-index: 1;
-	transition: all ease-out .3s;
-}
-.vertical-tab.active {
-	background: rgba(0, 0, 0, .8);
-	border: 2px solid rgba(255, 255, 255, .8);
-	top: 85px;
-	left: 40px;
-}
-.vertical-tab button {
-	position: relative;
-	border: none;
-	border-bottom: 1px solid rgba(255, 255, 255, 0);
-	background: transparent;
-	color: transparent;
 	left: 50%;
-	transform: translateX(-50%);
-	font-size: 30px;
-	width: 90%;
-	padding: 5px 0px;
-	cursor: pointer;
-	text-align: left;
-	/* transition: all .3s; */
+	width: 400px;
+	height: 500px;
+	padding: 30px;
+	padding-bottom: 10px;
+	transform: translate(-50%, -50%);
+	box-sizing: border-box;
+	box-shadow: lightgrey 0 0 10px;
 }
-.vertical-tab.active button {
-	border-bottom: 1px solid rgba(255, 255, 255, .8);
-	color: white;
+#profile-box_main h1 {
+	font-family: "Arial";
+	margin: 0 0 20px;
+	padding: 0;
+	color: rgba(255, 255, 255, 0.8);
+	text-align: center;
 }
-.vertical-tab i {
+#profile-box_main .user-box {
+	font-family: "Arial";
+	position: relative;
+}
+#profile-box_main .user-box input {
+	width: 100%;
+	padding: 10px 0;
+	font-size: 16px;
+	color: rgba(255, 255, 255, 0.8);
+	margin-bottom: 30px;
+	border: none;
+	border-bottom: 1px solid #fff;
+	outline: none;
+	background: transparent;
+}
+#profile-box_main .user-box label {
 	position: absolute;
-	font-size: 25px;
-	right: 5px;
-	top: 10px;
+	top:0;
+	left: 0;
+	padding: 10px 0;
+	font-size: 16px;
+	color: rgba(255, 255, 255, 0.8);
+	pointer-events: none;
+	transition: .5s;
 }
-.vertical-tab button:first-child {
-	margin-top: 5px;
+#profile-box_main button {
+	position: relative;
+	left: 50%;
+	transform: translate(-50%, -40%);
+	color: rgba(255, 255, 255, 0.8);
+	background: transparent;
+	border: 2px solid rgba(255, 255, 255, 0.8);
+	border-radius: 50px;
+	font-size: 40px;
+	padding: 5px 120px;
+	margin-top: 20px;
+	transition: .1s;
 }
-.vertical-tab button:last-child {
-	border-bottom: none;
+#profile-box_main button:hover {
+	color: white;
+	box-shadow: white 0 0 10px;
 }
-.vertical-tab button:hover {
-	text-shadow: white 0 0 5px;
+#profile-box_main .user-box input:focus ~ label,
+#profile-box_main .user-box input:valid ~ label {
+	top: -20px;
+	left: 0;
+	text-shadow: white 0 0 8px;
+	font-size: 12px;
 }
-.hamburger-icon {
+#hamburger-icon {
 	background: rgba(0, 0, 0, .8);
 	position: absolute;
 	border: 2px solid rgba(255, 255, 255, .8);
@@ -126,7 +86,7 @@ body {
 	cursor: pointer;
 	transition: all ease-out .3s;
 }
-.hamburger-icon i {
+#hamburger-icon i {
 	position: absolute;
 	font-size: 50px;
 	font-family: "Arial";
@@ -136,31 +96,123 @@ body {
 	top: 0px;
 	left: 3px;
 }
-.hamburger-icon h6 {
-	display: none;
+#hamburger-icon h6 {
+	pointer-events: none;
 	position: relative;
 	font-family: "Arial";
 	font-weight: 300;
 	font-size: 25px;
-	color: transparent;
+	color: white;
+	opacity: 0;
 	top: -45px;
 	left: 20px;
+	transform: scale(.5, 1);
+	transition: all ease-out .2s;
 }
-.hamburger-icon.active {
+#hamburger-icon.active {
 	border-radius: 15px;
 	width: 160px;
 }
-.hamburger-icon:hover:not(.active) {
+#hamburger-icon:hover:not(.active) {
 	border-radius: 15px;
 }
-.hamburger-icon:hover:not(.active) i {
+#hamburger-icon:hover:not(.active) i {
 	text-shadow: white 0 0 5px;
 }
-.hamburger-icon.active h6 {
-	color: white;
-	display: block;
+#hamburger-icon.active h6 {
+	transform: scale(1, 1);
+	pointer-events: auto;
+	opacity: 1;
 }
-.canvas-container {
+#vertical-tab {
+	pointer-events: none;
+	background: rgba(0, 0, 0, .8);
+	border: 2px solid rgba(255, 255, 255, .8);
+	opacity: 0;
+	position: absolute;
+	border-radius: 10px;
+	top: 85px;
+	left: -150px;
+	height: 200px;
+	width: 200px;
+	z-index: 1;
+	transition: all ease-out .3s;
+}
+#vertical-tab.active {
+	pointer-events: auto;
+	opacity: 1;
+	top: 85px;
+	left: 40px;
+}
+#vertical-tab button {
+	position: relative;
+	border: none;
+	border-bottom: 1px solid rgba(255, 255, 255, .8);
+	background: transparent;
+	color: white;
+	opacity: 0;
+	left: 50%;
+	transform: translateX(-50%);
+	font-size: 30px;
+	width: 90%;
+	padding: 5px 0px;
+	cursor: pointer;
+	text-align: left;
+}
+#vertical-tab:not(.active) button {
+	transition: all .3s;
+}
+#vertical-tab.active button {
+	opacity: 1;
+}
+#vertical-tab i {
+	position: absolute;
+	font-size: 25px;
+	right: 5px;
+	top: 10px;
+}
+#vertical-tab button:first-child {
+	margin-top: 5px;
+}
+#vertical-tab button:last-child {
+	border-bottom: none;
+}
+#vertical-tab button:hover {
+	text-shadow: white 0 0 5px;
+}
+#profile-box {
+	background: rgba(0, 0, 0, .8);
+	position: absolute;
+	border: 2px solid rgba(255, 255, 255, .8);
+	border-radius: 10px;
+	top: 20px;
+	right: 20px;
+	height: 50px;
+	width: 200px;
+	cursor: pointer;
+	z-index: 1;
+}
+#profile-box h6 {
+	position: absolute;
+	font-size: 30px;
+	font-family: "Arial";
+	color: white;
+	margin: 10px 10px;
+	text-align: left;
+	font-weight: normal;
+}
+#profile-box img {
+	position: absolute;
+	height: 80%;
+	width: 40px;
+	overflow: hidden;
+	border-radius: 50%;
+	right: 10px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+#game {
+	background-color: black;
 	position: fixed;
 	top: 50%;
 	left: 50%;
@@ -168,9 +220,6 @@ body {
 	box-shadow: white 0px 0px 15px 5px;
 	width: 1000px;
 	height: 800px;
-}
-#game {
-	background-color: black;
 }
 #title {
 	font-family: "Arial";
@@ -220,7 +269,7 @@ body {
 	left: 50%;
 	transform: translate(-50%, 170%);
 }
-.login-box {
+#login-box {
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
@@ -234,18 +283,18 @@ body {
 	transform: translate(-50%, -50%);
 	box-sizing: border-box;
 }
-.login-box h1 {
+#login-box h1 {
 	font-family: "Arial";
 	margin: 0 0 20px;
 	padding: 0;
 	color: rgba(255, 255, 255, 0.8);
 	text-align: center;
 }
-.login-box .user-box {
+#login-box .user-box {
 	font-family: "Arial";
 	position: relative;
 }
-.login-box .user-box input {
+#login-box .user-box input {
 	width: 100%;
 	padding: 10px 0;
 	font-size: 16px;
@@ -256,7 +305,7 @@ body {
 	outline: none;
 	background: transparent;
 }
-.login-box .user-box label {
+#login-box .user-box label {
 	position: absolute;
 	top:0;
 	left: 0;
@@ -266,7 +315,7 @@ body {
 	pointer-events: none;
 	transition: .5s;
 }
-.login-box button {
+#login-box button {
 	position: relative;
 	left: 50%;
 	transform: translate(-50%, -40%);
@@ -279,12 +328,12 @@ body {
 	margin-top: 20px;
 	transition: .1s;
 }
-.login-box button:hover {
+#login-box button:hover {
 	color: white;
 	box-shadow: white 0 0 10px;
 }
-.login-box .user-box input:focus ~ label,
-.login-box .user-box input:valid ~ label {
+#login-box .user-box input:focus ~ label,
+#login-box .user-box input:valid ~ label {
 	top: -20px;
 	left: 0;
 	text-shadow: white 0 0 8px;
@@ -306,4 +355,36 @@ body {
 		text-shadow: lightgrey 0 0 10px;
 		box-shadow: lightgrey 0 0 10px;
 	}
+}
+#chat-box {
+	position: absolute;
+	opacity: 0;
+	pointer-events: none;
+	background: rgba(0, 0, 0, .8);
+	border: 2px solid rgba(255, 255, 255, .8);
+	border-radius: 10px;
+	bottom: 20px;
+	left: 20px;
+	height: 175px;
+	width: 400px;
+	z-index: 1;
+	cursor: pointer;
+	transition: all ease-out .1s;
+}
+#chat-box.active {
+	pointer-events: auto;
+	opacity: 1;
+}
+#chat-box h6 {
+	position: absolute;
+	font-size: 20px;
+	font-family: "Arial";
+	color: white;
+	opacity: 0;
+	margin: 10px 10px;
+	font-weight: normal;
+	transition: all ease-out .1s;
+}
+#chat-box.active h6 {
+	opacity: 1;
 }

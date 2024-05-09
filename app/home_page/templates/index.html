@@ -12,47 +12,62 @@
 		<script type="module" src="{% static 'scripts/utils.js' %}"></script>
 		<script type="module" src="{% static 'scripts/animations.js' %}"></script>
 		<script type="module" src="{% static 'scripts/stars.js' %}"></script>
+		<script type="module" src="{% static 'scripts/pong.js' %}"></script>
 	</head>
 	<body>
-		<button class="hamburger-icon">
+		<button id="hamburger-icon">
 			<i class="bi bi-list"></i>
 			<h6>TABS</h6>
 		</button>
-		<div class="vertical-tab">
+		<div id="vertical-tab">
 			<button id="chat-button">CHAT<i class="bi bi-chat-left-text"></i></button>
-			<button>PROFILE<i class="bi bi-person"></i></button>
+			<button id="profile-button">PROFILE<i class="bi bi-person"></i></button>
 			<button>FRIENDS<i class="bi bi-people"></i></button>
 			<button>SETTINGS<i class="bi bi-gear"></i></button>
 		</div>
-		<div class="chat-box">
+		<div id="chat-box">
 			<h6>> dferreir: Hi!</h6>
 		</div>
-		<div class="profile-box">
+		<div id="profile-box">
 			<h6>dferreir</h6>
 			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog">
 		</div>
-		<div class="canvas-container">
-			<canvas id="game" width="1000" height="800"></canvas>
+		<canvas id="game" width="1000" height="800"></canvas>
+		<script type="module" src="{% static 'scripts/main.js' %}"></script>
+		<div id="main-buttons">
 			<div id="title">PONG</div>
 			<button class="gamemode-button" id="pvp-mode">PvP</button>
 			<button class="gamemode-button" id="cpu-mode">CPU</button>
 			<button class="gamemode-button" id="tournoi-mode">TOURNOI</button>
 			<button class="gamemode-button" id="online-mode">ONLINE</button>
-			<div class="login-box">
-				<h1>JOIN GAME</h1>
-				<form>
-					<div class="user-box">
-						<input type="text" name="" required="">
-						<label>USER NAME</label>
-					</div>
-					<div class="user-box">
-						<input type="text" name="" required="">
-						<label>ROOM NAME</label>
-					</div>
-					<button>GO</button>
-				</form>
-			</div>
-			<script type="module" src="{% static 'scripts/main.js' %}"></script>
+		</div>
+		<div id="login-box">
+			<h1>JOIN GAME</h1>
+			<form>
+				<div class="user-box">
+					<input type="text" name="" required="">
+					<label>USER NAME</label>
+				</div>
+				<div class="user-box">
+					<input type="text" name="" required="">
+					<label>ROOM NAME</label>
+				</div>
+				<button>GO</button>
+			</form>
+		</div>
+		<div id="profile-box_main">
+			<h1>JOIN GAME</h1>
+			<form>
+				<div class="user-box">
+					<input type="text" name="" required="">
+					<label>USER NAME</label>
+				</div>
+				<div class="user-box">
+					<input type="text" name="" required="">
+					<label>ROOM NAME</label>
+				</div>
+				<button>GO</button>
+			</form>
 		</div>
 	</body>
 </html>
