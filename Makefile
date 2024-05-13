@@ -1,6 +1,6 @@
 compose_file = docker/docker-compose.yml
 
-volume_dir = data
+volume_dir = data db
 
 service = chats
 

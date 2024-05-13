@@ -18,6 +18,14 @@ services:
     # networks:
     #   - pong
     init: true
+    depends_on:
+      - db
+  db:
+    image: postgres:14
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
 
 volumes:
   chats:
@@ -25,8 +33,14 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      # device: '/Users/apalumbi/Documents/apalumbi_git/6_transcendance/backend' # school
-      device: "/Users/mmakarov/Desktop/chats/data" # home
+      device: "/Users/mmakarov/Desktop/chats/data"
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/Users/mmakarov/Desktop/chats/db"
+
 
 # networks:
 #   pong:
