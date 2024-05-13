@@ -22,8 +22,6 @@ class UserSerializer(serializers.ModelSerializer):
 		return user
 
 	def update(self, instance, validated_data):
-		print("instance : ", instance)
-		print("validated_data : ", validated_data)
 		username = validated_data.get('username', None)
 		if username:
 			if User.objects.filter(username=username).exclude(id=instance.id).exists():

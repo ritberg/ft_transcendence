@@ -14,9 +14,7 @@ from django.shortcuts import render
 User = get_user_model()
 
 class RegisterUserView(APIView):
-	print("-----entry in RegisterUserView-----")
 	permission_classes = [AllowAny]
-	print("-----user is authentified-----")
 
 	def post(self, request, *args, **kwargs):
 		serializer = UserSerializer(data=request.data)
@@ -32,13 +30,10 @@ class RegisterUserView(APIView):
 		return Response( serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginUserView(APIView):
-	print("-----entry in LoginUserView-----")
 	permission_classes = [AllowAny]
-	print("-----user is authentified-----")
 
 	def post(self, request , *args, **kwargs):
 		try:
-			print("request.data : ", request.data)
 			user = authenticate(
 				request,
 				username=request.data['username'],
@@ -46,9 +41,7 @@ class LoginUserView(APIView):
 				)
 			if user is not None:
 				login(request, user)
-				print("session_key : " ,request.session.session_key)
 				csrf_token = get_token(request)
-				print("csrf_token : ", csrf_token)
 				return Response(
 					{
 						'data': UserSerializer(user).data,
@@ -65,18 +58,10 @@ class LoginUserView(APIView):
 				)
 
 class LogoutUserView(APIView):
-	print("-----entry in LogoutUserView-----")
 	permission_classes = [IsAuthenticated]
-	print("-----user is authentified-----")
 
 	def post(self, request, *args, **kwargs):
 		try:
-			print(request.user.id)
-			print(request.session.session_key)
-			if request.user.is_authenticated:
-				print('User is authenticated')
-			else:
-				print('User is not authenticated')
 			logout(request)
 			return Response(
 				{'message': 'User logged out successfully'},
@@ -89,15 +74,11 @@ class LogoutUserView(APIView):
 				)
 
 class UpdateUserView(APIView):
-	print("-----entry in UpdateUserView-----")
 	permission_classes = [IsAuthenticated]
-	print("-----user is authentified-----")
 
 	def put(self, request, *args, **kwargs):
 			try:
-				print(f"resquest.data : {request.data}")
 				serializer = UserSerializer(request.user, data=request.data, partial=True)
-				print(f"serializer : {serializer}")
 				if serializer.is_valid():
 					serializer.save()
 					return Response(
@@ -109,7 +90,6 @@ class UpdateUserView(APIView):
 						)
 				raise ValueError(serializer.errors)
 			except Exception as e:
-				print(e)
 				return Response(
 					{'message': f"{type(e).__name__}: {str(e)}"},
 					status=status.HTTP_400_BAD_REQUEST

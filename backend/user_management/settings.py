@@ -184,8 +184,6 @@ CORS_ALLOW_ALL_ORIGINS = False
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
-print("MEDIA_ROOT : ", MEDIA_ROOT)
-print("MEDIA_URL : ", MEDIA_URL)
 
 # Cookie settings
 
