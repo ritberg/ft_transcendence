@@ -265,9 +265,10 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((response) => {
           if (!response.ok) {
             console.log(response);
-            throw new Error("Network response was not ok");
+            return response.json().then((error) => {
+              throw new Error(JSON.stringify(error));
+            });
           }
-
           return response.json();
         })
         .then((data) => {
@@ -276,7 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
           emailLabel.textContent = data.data.email;
         })
         .catch((error) => {
-          console.error("Fetch error: ", error);
+          console.error("Fetch error: ", error.message);
         });
     } else {
       console.log("No changes detected, no update performed.");
@@ -309,7 +310,9 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => {
         if (!response.ok) {
           console.log(response);
-          throw new Error("Network response was not ok");
+          return response.json().then((error) => {
+            throw new Error(JSON.stringify(error));
+          });
         }
         return response.json();
       })
@@ -319,7 +322,7 @@ document.addEventListener("DOMContentLoaded", function () {
         profile_picture.src = data.data.profile_picture;
       })
       .catch((error) => {
-        console.error("Fetch error: ", error);
+        console.error("Fetch error: ", error.detail);
       });
   });
 });
