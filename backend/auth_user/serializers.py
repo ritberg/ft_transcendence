@@ -1,5 +1,7 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
+from .models import DEFAULT_PROFILE_PICTURE
 
 User = get_user_model()
 
@@ -38,12 +40,13 @@ class UserSerializer(serializers.ModelSerializer):
 			instance.email = email
 		password = validated_data.get('password', None)
 		if password:
-			if password == instance.password:
+			if check_password(password, instance.password):
 				raise serializers.ValidationError({'password': 'This is already your password.'})
 			instance.set_password(password)
 		profile_picture = validated_data.get('profile_picture', None)
-		if profile_picture:
-			instance.profile_picture.delete(save=False)
+		if profile_picture and profile_picture != instance.profile_picture:
+			if instance.profile_picture != DEFAULT_PROFILE_PICTURE:
+				instance.profile_picture.delete(save=False)
 			instance.profile_picture = profile_picture
 		instance.save()
 		return instance
