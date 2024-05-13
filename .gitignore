@@ -5,3 +5,4 @@ venv/
 backend/user_management/__pycache__/
 backend/auth_user/migrations/
 backend/auth_user/__pycache__/
+backend/media/
