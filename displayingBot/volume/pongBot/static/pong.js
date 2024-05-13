@@ -170,6 +170,7 @@ function update() {
         (ballX - ballSize <= paddleWidth && ballY >= player1Y && ballY <= player1Y + paddleHeight) ||
         (ballX + ballSize >= canvas.width - paddleWidth && ballY >= computerY && ballY <= computerY + paddleHeight)
     ) {
+        ballSpeedY += Math.random() - 0.5
         ballSpeedX = -ballSpeedX;
     }
 
@@ -188,9 +189,9 @@ function update() {
 // Reset position and speed. Place the ball in the middle again
 function resetBall() {
     ballX = canvas.width / 2;
-    ballY = canvas.height / 2;
+    ballY = Math.random() * canvas.height;
     ballSpeedX = -ballSpeedX;
-    ballSpeedY = 5;
+    ballSpeedY = Math.random() * 6 - 3;
 }
 
 function gameLoop() {

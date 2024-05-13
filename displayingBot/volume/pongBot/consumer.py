@@ -107,19 +107,22 @@ class AI:
                 # computer_score += 1
                 self.ball_x = self.canvas_width / 2
                 self.ball_y = self.canvas_height / 2
+                self.ball_speed_y = random.uniform(0, 1) * 6 - 3
                 self.ball_speed_x = -self.ball_speed_x
 
             if self.ball_x >= self.canvas_width:
                 # player1_score += 1
                 self.ball_x = self.canvas_width / 2
                 self.ball_y = self.canvas_height / 2
+                self.ball_speed_y = random.uniform(0, 1) * 6 - 3
                 self.ball_speed_x = -self.ball_speed_x
 
             # Paddle collisions
             if (self.ball_x <= self.paddle_width and self.player1_y <= self.ball_y <= self.player1_y + self.paddle_height) or \
                     (self.ball_x >= self.canvas_width - self.paddle_width - self.ball_size and
                     self.computer_y <= self.ball_y <= self.computer_y + self.paddle_height):
-                self.ball_speed_x = -self.ball_speed_x + random.uniform(-3, 0) #???
+                self.ball_speed_y += random.uniform(0, 1) - 0.5
+                self.ball_speed_x = -self.ball_speed_x 
 
 # / canvas_height or canvas_width - because without this the prediction values are too big
     def save_data(self, player_y, computer_y, ball_x, ball_y):
@@ -175,13 +178,14 @@ class AI:
             data_ys += [[1 if i == j else 0 for j in range(3)]] * len(self.training_data[i])
 
         xs = tf.convert_to_tensor(data_xs, dtype=tf.float32)
-        xs += tf.random.normal(xs.shape) / 4   # add gaussian noise because the data is perfect otherwise - risk of overfitting
+        xs += tf.random.normal(xs.shape) / 5   # add gaussian noise because the data is perfect otherwise - risk of overfitting
         ys = tf.convert_to_tensor(data_ys, dtype=tf.float32)
-        ys += tf.random.normal(ys.shape) / 4
-
-        # print(xs)
-        # print(ys)
-        self.model.fit(xs, ys, epochs=1000, verbose=1) # the model is trained in epochs, no matter how many frames
+        ys += tf.random.normal(ys.shape) / 5
+        print("------------------ xs -----------------------------")
+        print(xs)
+        print("------------------ ys -----------------------------")
+        print(ys)
+        self.model.fit(xs, ys, epochs=100, verbose=0) # the model is trained in epochs, no matter how many frames
 
     def predict_move(self):
         if self.last_data_object is not None:

@@ -26,7 +26,8 @@ volumes:
       type: "none"
       o: "bind"
       # device: '/Users/apalumbi/Documents/apalumbi_git/6_transcendance/backend' # school
-      device: "/Users/mmakarov/Desktop/django/displayingBot/volume"
+      # device: "/Users/mmakarov/Desktop/django/displayingBot/volume"
+      device: "/Users/margaritamakarova/Desktop/transcendence/displayingBot/volume"
 
 # networks:
 #   pong:
