@@ -1,0 +1,7 @@
+.DS_Store
+docker/.env
+backend/.env.django
+venv/
+backend/user_management/__pycache__/
+backend/auth_user/migrations/
+backend/auth_user/__pycache__/
