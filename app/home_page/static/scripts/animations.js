@@ -13,18 +13,19 @@ document.getElementById("chat-button").addEventListener("click", function() {
 });
 
 document.getElementById("profile-button").addEventListener("click", function() {
-	if (document.getElementById("profile-box_main").style.display == "none") {
+	if (window.getComputedStyle(document.getElementById("profile-box_main")).display === "none") {
 		document.getElementById("profile-box_main").style.display = "block";
 		document.getElementById("main-buttons").style.display = "none";
-	} else if (document.getElementById("profile-box_main").style.display == "block") {
+	} else {
 		document.getElementById("profile-box_main").style.display = "none";
 		document.getElementById("main-buttons").style.display = "block";
 	}
 });
 
-export function loginBox() {
+document.getElementById("online-mode").addEventListener("click", function() {
 	// const login_elements = document.getElementsByClassName("login-box");
 	// for (let i = 0; i < login_elements.length; i++)
 	// 	login_elements[i].style.display = "block";
+	document.getElementById("main-buttons").style.display = "none";
 	document.getElementById("login-box").style.display = "block";
-}
+});

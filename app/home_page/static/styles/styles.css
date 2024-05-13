@@ -1,8 +1,13 @@
 body {
 	background: radial-gradient(lightgrey, black, grey);
 }
+.avatar_pic {
+	position: absolute;
+	overflow: hidden;
+	border-radius: 50%;
+}
 #profile-box_main {
-	background-color: rgb(0, 0, 0, 1);
+	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
 	display: none;
@@ -15,7 +20,6 @@ body {
 	padding-bottom: 10px;
 	transform: translate(-50%, -50%);
 	box-sizing: border-box;
-	box-shadow: lightgrey 0 0 10px;
 }
 #profile-box_main h1 {
 	font-family: "Arial";
@@ -65,6 +69,13 @@ body {
 #profile-box_main button:hover {
 	color: white;
 	box-shadow: white 0 0 10px;
+}
+#profile-box_main .avatar_pic {
+	position: relative;
+	height: 100px;
+	width: 100px;
+	left: 50%;
+	transform: translateX(-50%);
 }
 #profile-box_main .user-box input:focus ~ label,
 #profile-box_main .user-box input:valid ~ label {
@@ -201,12 +212,9 @@ body {
 	text-align: left;
 	font-weight: normal;
 }
-#profile-box img {
-	position: absolute;
+#profile-box .avatar_pic {
 	height: 80%;
 	width: 40px;
-	overflow: hidden;
-	border-radius: 50%;
 	right: 10px;
 	top: 50%;
 	transform: translateY(-50%);
@@ -214,6 +222,7 @@ body {
 #game {
 	background-color: black;
 	position: fixed;
+	border-radius: 10px;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -357,9 +366,9 @@ body {
 	}
 }
 #chat-box {
+	visibility: hidden;
 	position: absolute;
 	opacity: 0;
-	pointer-events: none;
 	background: rgba(0, 0, 0, .8);
 	border: 2px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
@@ -372,7 +381,7 @@ body {
 	transition: all ease-out .1s;
 }
 #chat-box.active {
-	pointer-events: auto;
+	visibility: visible;
 	opacity: 1;
 }
 #chat-box h6 {

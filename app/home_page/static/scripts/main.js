@@ -1,5 +1,4 @@
 import { sleep } from './utils.js';
-import { loginBox } from './animations.js';
 import { stars } from './stars.js';
 import { loop } from './pong.js';
 
@@ -9,14 +8,8 @@ export let ai_activated = false;
 
 async function GameMode(n) {
 	//
-	if (n == 2)
+	if (n >= 2)
 		return;
-	if (n == 3)
-	{
-		loginBox();
-		document.getElementById("main-buttons").style.display = "none";
-		return;
-	}
 	//
 	document.getElementById("title").style.animationName = "none";
 	const button_elements = document.getElementsByClassName("gamemode-button");
