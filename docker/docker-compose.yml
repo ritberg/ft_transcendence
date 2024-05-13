@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  django:
+    container_name: django
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${SERVICE_NAME}
+        DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+        DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+        DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - django:/home/transcendance/${SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - db_user
+
+  db_user:
+    container_name: db_user
+    image: postgres:15
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    tty: true
+    networks:
+      - transcendance
+    init: true
+
+volumes:
+  django:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      # device: '/Users/apalumbi/Documents/apalumbi_github/6_transcendance/backend' # school
+      device: "/Users/alesspal/Documents/42/6_ft_transcendance_git/backend" # home
+
+  postgres_data:
+    driver: local
+
+networks:
+  transcendance:
+    # name: transcendance
+    driver: bridge
