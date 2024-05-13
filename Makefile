@@ -27,6 +27,7 @@ shell:
 clean:
 	docker-compose -f $(compose_file) down --rmi all --volumes
 	docker system prune -af
+	rm -rf backend/media
 
 re: clean all
 
