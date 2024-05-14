@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
 from .models import DEFAULT_PROFILE_PICTURE
+from .models import FriendRequest
 
 User = get_user_model()
 
@@ -48,3 +49,23 @@ class UserSerializer(serializers.ModelSerializer):
 			instance.profile_picture = profile_picture
 		instance.save()
 		return instance
+	
+class FriendRequestSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = FriendRequest
+		fields = ['id', 'from_user', 'to_user']
+		extra_kwargs = {'from_user': {'read_only': True}}
+	
+	def create(self, validated_data):
+		from_user = self.context['request'].user
+		to_user = validated_data.get('to_user')
+		if from_user == to_user:
+			raise serializers.ValidationError('You cannot send friend request to yourself.')
+		if from_user.friends.filter(id=to_user.id).exists():
+			raise serializers.ValidationError('You are already friends with this user.')
+		if from_user.from_user.filter(to_user=to_user).exists():
+			raise serializers.ValidationError('You have already sent friend request to this user.')
+		if from_user.to_user.filter(from_user=from_user).exists():
+			raise serializers.ValidationError('You have already received friend request from this user.')
+		friend_request = FriendRequest.objects.create(from_user=from_user, **validated_data)
+		return friend_request
