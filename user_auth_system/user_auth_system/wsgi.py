@@ -1,5 +1,5 @@
 """
-WSGI config for user_management project.
+WSGI config for user_auth_system project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,9 +8,9 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 """
 
 import os
-
 from django.core.wsgi import get_wsgi_application
+from user_auth_system.settings import SERVICE_NAME
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'user_management.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', '{SERVICE_NAME}.settings')
 
 application = get_wsgi_application()

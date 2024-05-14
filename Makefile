@@ -1,6 +1,8 @@
-compose_file = docker/docker-compose.yml
+docker_dir = docker
 
-volume_dir = backend
+compose_file = $(docker_dir)/docker-compose.yml
+
+volume_dir = $(shell grep SERVICE_NAME  $(docker_dir)/.env | cut -d '=' -f2)
 data_dir = data_db_user
 
 service = django

@@ -2,7 +2,7 @@
 docker/.env
 backend/.env.django
 venv/
-backend/user_management/__pycache__/
-backend/auth_user/migrations/
-backend/auth_user/__pycache__/
+backend/user_auth_system/__pycache__/
+backend/user_auth_system/migrations/
+backend/user_auth_system/__pycache__/
 backend/media/

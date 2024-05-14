@@ -50,7 +50,7 @@ volumes:
       type: "none"
       o: "bind"
       # device: '/Users/apalumbi/Documents/apalumbi_github/6_transcendance/backend' # school
-      device: "/Users/alesspal/Documents/42/6_ft_transcendance_git/backend" # home
+      device: "/Users/alesspal/Documents/42/6_ft_transcendance_git/${SERVICE_NAME}" # home
 
   postgres_data:
     driver: local
