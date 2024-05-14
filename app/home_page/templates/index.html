@@ -35,11 +35,11 @@
 		<canvas id="game" width="1000" height="800"></canvas>
 		<script type="module" src="{% static 'scripts/main.js' %}"></script>
 		<div id="main-buttons">
-			<div id="title">PONG</div>
-			<button class="gamemode-button" id="pvp-mode">PvP</button>
-			<button class="gamemode-button" id="cpu-mode">CPU</button>
-			<button class="gamemode-button" id="tournoi-mode">TOURNOI</button>
-			<button class="gamemode-button" id="online-mode">ONLINE</button>
+			<h1>PONG</h1>
+			<button id="pvp-mode">PvP</button>
+			<button id="cpu-mode">CPU</button>
+			<button id="tournoi-mode">TOURNOI</button>
+			<button id="online-mode">ONLINE</button>
 		</div>
 		<div id="login-box">
 			<h1>JOIN GAME</h1>
@@ -73,6 +73,16 @@
 				</div>
 				<button>GO</button>
 			</form>
+		</div>
+		<div class="choice-box" id="tournoi">
+			<h1>TOURNOI</h1>
+			<h2>NUMBER OF PLAYERS</h2>
+			<input class="choice-slider" type="range" min="0" max="100" value="50" step="50"/>
+			<h2>NUMBER OF POINTS</h2>
+			<input class="choice-slider" type="range" min="0" max="100" value="50" step="50"/>
+			<h2>GAME TYPE</h2>
+			<input class="choice-slider" type="range" min="0" max="100" value="50" step="50"/>
+			<button>OK</button>
 		</div>
 	</body>
 </html>
