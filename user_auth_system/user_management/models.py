@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from rest_framework import serializers
+
 
 DEFAULT_PROFILE_PICTURE = 'profile_pics/default.jpg'
 
@@ -14,11 +16,12 @@ class CustomUser(AbstractUser):
 		return self.username
 	
 class FriendRequest(models.Model):
-	from_user = models.ForeignKey(CustomUser, related_name='from_user', on_delete=models.CASCADE)
-	to_user = models.ForeignKey(CustomUser, related_name='to_user', on_delete=models.CASCADE)
+	from_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_requests')
+	to_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='received_requests')
 
 	class Meta:
 		db_table = 'friend_requests'
 
 	def __str__(self):
 		return f'{self.from_user} sent friend request to {self.to_user}'
+	
