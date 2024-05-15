@@ -210,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function () {
         usernameLabel.textContent = "Guest";
         emailLabel.textContent = "";
         logout.textContent = "";
-        profile_picture.src = "utils/default.jpg";
+        profile_picture.src = "";
         logInfo.textContent = "Please login to access your profile";
         document.querySelector(".profile-modify").classList.remove("show");
       })
