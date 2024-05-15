@@ -7,7 +7,7 @@ DEFAULT_PROFILE_PICTURE = 'profile_pics/default.jpg'
 
 class CustomUser(AbstractUser):
 	profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, default=DEFAULT_PROFILE_PICTURE)
-	friends = models.ManyToManyField('self', blank=True)
+	friends = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='user_friends')
 
 	class Meta:
 		db_table = 'users'

@@ -486,6 +486,7 @@ document.addEventListener("DOMContentLoaded", function () {
       messageContainer.textContent = data.message;
       if (response.ok) {
         document.getElementById("friend-username-to-del").value = "";
+        fetchFriends();
       }
     } catch (error) {
       console.error("Error sending friend request:", error);
