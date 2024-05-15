@@ -1,6 +1,6 @@
 from django.urls import path, include
 from chat import views as chat_views
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView, LoginView
 
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     # login-section
     # path("auth/login/",  chat_views.getUser, name="login-user"),
     path('signup/', chat_views.signup, name ="signup"),
-    path("auth/logout/", LogoutView.as_view(), name="logout-user"),
+    path("login/", chat_views.loginUser, name="login"),
+    path("logout/", LogoutView.as_view(), name="logout-user"),
     
 ]

@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.forms import AuthenticationForm
 from .models import *
 from .forms import *
 
 def chatRoom(request, room_name):
     if not request.user.is_authenticated:
-        return redirect("signup")
+        return redirect("login")
     context = {"room_name" : room_name}
     return render(request, "chat/chatRoom.html", context)
 
@@ -16,6 +17,23 @@ def chatPage(request, *args, **kwargs):
     context = {}
     return render(request, "chat/chatPage.html", context)
 
+def loginUser(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                print(user)
+                login(request, user)
+                return redirect('chat-page')
+        # else:
+        #     print(form.errors)
+    else:
+        print("llllll")
+        form = AuthenticationForm()
+    return render(request, "chat/LoginPage.html", {'form': form})
 
 def signup(request):
     if request.method == 'POST':
@@ -25,12 +43,12 @@ def signup(request):
             user = form.save()
             login(request, user)
             return redirect('chat-page')
-        else:
-            print(form.errors)
+        # else:
+            # print(form.errors)
     else:
         print("haha")
         form = SignUpForm()
-    return render(request, "chat/LoginPage.html")
+    return render(request, "chat/SignupPage.html", {'form': form})
 
 
 

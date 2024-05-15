@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <body>
+    <body>
         <div class="p-10 lg:p-20 text-center">
-            <h1 class="text-3xl lg:text-6xl text-black">Sign up</h1>
+            <h1 class="text-3xl lg:text-6xl text-black">Log in</h1>
         </div>
 
         <form method="post" action="" class="lg:w-1/4 px-4 mx-auto">
@@ -15,88 +15,25 @@
 
             <div class="mb-5">
                 <label class="text-black">Password</label>
-                <input type="password" name="password1" class="w-full mt-2 px-4 py-2 rounded-xl">
-            </div>
-
-            <div class="mb-5">
-                <label class="text-black">Repeat password</label>
-                <input type="password" name="password2" class="w-full mt-2 px-4 py-2 rounded-xl">
+                <input type="password" name="password" class="w-full mt-2 px-4 py-2 rounded-xl">
             </div>
 
             {% if form.errors %}
-                {% for field in form %}
-                    {% for error in field.errors %}
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
                         <div class="mb-5 p-4 rounded-xl bg-red-300 text-black">
-                            <p>{{ error|escape }}</p>
+                            <p>{{ error }}</p>
                         </div>
                     {% endfor %}
                 {% endfor %}
             {% endif %}
 
-            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Sign up
-            </button>
 
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Log in
+            </button>
 
         </form>
     </body>
 </html>
 
-
-<!-- <!DOCTYPE html>
-<head>
-    {%load static%}
-  <link rel="stylesheet" href="{%static 'style.css'%}" />
-  <title>Form</title>
-</head>
-<body>
-  <div class="login-wrap">
-    <div class="login-html">
-      <input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
-      <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
-      <div class="login-form">
-        <form method="post" action="">
-            {% csrf_token %}
-            <div class="sign-in-htm">
-            <div class="group">
-                <label for="user" class="label">Username</label>
-                <input id="user" type="text" class="input" name="username">
-            </div>
-            <div class="group">
-                <label for="pass" class="label">Password</label>
-                <input id="pass" type="password" class="input" data-type="password" name="password">
-            </div>
-            <div class="group">
-                <input type="submit" class="button" value="Sign In">
-            </div>
-            </div>
-        </form>
-        <form method="post" action="">
-            {% csrf_token %}
-            <div class="sign-up-htm">
-            <div class="group">
-                <label for="user" class="label">Username</label>
-                <input id="user1" type="text" class="input" name="username">
-            </div>
-            <div class="group">
-                <label for="pass" class="label">Password</label>
-                <input id="pass1" type="password" class="input" data-type="password" name="password">
-            </div>
-            <div class="group">
-                <label for="pass" class="label">Email Address</label>
-                <input id="pass3" type="text" class="input" name="email">
-            </div>
-            <div class="group">
-                <input type="submit" class="button" value="Sign Up">
-            </div>
-            <div class="empty">
-                <h1 id="error">{{ error_message }}</h1>
-            </div>
-            </div>
-        </form>
-
-      </div>
-    </div>
-  </div>
-</body>
-</html> -->

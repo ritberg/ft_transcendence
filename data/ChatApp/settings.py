@@ -137,9 +137,9 @@ CHANNEL_LAYERS = {
     }
 }
 
-LOGIN_REDIRECT_URL = "chat-page"
+LOGIN_REDIRECT_URL = "room"
 
-LOGOUT_REDIRECT_URL = "login-user"
+LOGOUT_REDIRECT_URL = "chat-page"
 
 # AUTHENTICATION_BACKENDS = [
 #     'django.contrib.auth.backends.ModelBackend',
