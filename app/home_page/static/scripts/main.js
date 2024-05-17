@@ -1,6 +1,7 @@
 import { sleep } from './utils.js';
 import { stars } from './stars.js';
 import { loop } from './pong.js';
+// import { loop_t } from './pong_tournoi.js';
 
 export let delta = 1.5;
 export let loop_exec = 0;
@@ -24,10 +25,9 @@ export async function GameMode(n) {
 
 	if (n == 1)
 		ai_activated = true;
-	if (n <= 1) {
-		loop_exec = true;
-		requestAnimationFrame(loop);
-	}
+	console.log("hey");
+	loop_exec = true;
+	requestAnimationFrame(loop);
 }
 
 stars(document.getElementById("game"));

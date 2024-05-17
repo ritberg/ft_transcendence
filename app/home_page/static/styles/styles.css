@@ -1,6 +1,39 @@
 body {
 	background: radial-gradient(lightgrey, black, grey);
 }
+.rectangle-div {
+	position: absolute;
+	font-family: "Arial";
+	font-size: 30px;
+	width: 200px;
+	height: 8%;
+	color: rgb(255, 255, 255, .85);
+	background-color: rgb(0, 0, 0, 0.85);
+	border: 2px solid white;
+	border-radius: 10px;
+	text-align: center;
+	line-height: 200%; /* Center content vertically */
+}
+#brackets {
+	position: absolute;
+	display: none;
+	text-align: center;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 950px;
+	height: 750px;
+}
+#brackets i {
+	position: absolute;
+	font-size: 100px;
+	font-family: "Arial";
+	color: rgb(255, 255, 255, .85);
+	top: 50%;
+	right: 0%;
+	transform: translate(-20%, -50%);
+	animation: trophy-pulse 3s infinite;
+}
 #main-buttons {
 	position: absolute;
 	left: 50%;
@@ -9,13 +42,20 @@ body {
 	opacity: 1;
 }
 #main-buttons.hidden {
-	animation: fade-down 1s;
+	animation: fade-down-main 1s;
 	animation-fill-mode: forwards;
 }
-@keyframes fade-down {
+@keyframes fade-down-main {
 	to {
 		opacity: 0;
 		transform: translateY(4rem);
+	}
+}
+@keyframes fade-down-tournoi {
+	to {
+		opacity: 0;
+		width: 600px;
+		/* transform: translate(-50%, -40%); */
 	}
 }
 .avatar_pic {
@@ -33,18 +73,22 @@ body {
 	padding: 30px;
 	padding-bottom: 10px;
 	transform: translate(-50%, -50%);
+	box-sizing: border-box;
+	transition: 1s;
 }
 #tournoi {
 	opacity: 0;
 	display: none;
 	text-align: center;
 	width: 400px;
-	height: 500px;
-	transform: translate(0%, -50%);
+	height: 550px;
+	transform: translate(-50%, -50%);
 }
 #tournoi.shown {
-	animation: fade-in 1.5s;
-	animation-fill-mode: forwards;
+	animation: fade-in 1.5s forwards;
+}
+#tournoi.hidden {
+	animation: fade-down-tournoi 1s forwards;
 }
 #tournoi h1 {
 	font-family: "Arial";
@@ -56,10 +100,12 @@ body {
 }
 #tournoi h2 {
 	font-family: "Arial";
-	padding: 3%;
+	font-size: 30px;
+	padding: 0;
 	font-weight: normal;
 	color: rgba(255, 255, 255, 0.8);
 	text-align: center;
+	margin: 40px 0 10px 0;
 }
 .choice-slider {
 	appearance: none;
@@ -82,6 +128,17 @@ body {
 	box-shadow: white 0 0 10px;
 	transform: rotate(45deg);
 }
+.choice-slider::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	background: white;
+	color: white;
+	border: none;
+	border-radius: 0px;
+	width: 13px;
+	height: 13px;
+	box-shadow: white 0 0 10px;
+	transform: rotate(45deg);
+}
 #tournoi button {
 	color: rgba(255, 255, 255, 0.8);
 	background: transparent;
@@ -89,7 +146,7 @@ body {
 	border-radius: 50px;
 	font-size: 40px;
 	padding: 5px 120px;
-	margin-top: 20px;
+	margin: 40px 0 0 0;
 	transition: .1s;
 }
 #tournoi button:hover {
@@ -185,7 +242,7 @@ body {
 	width: 60px;
 	z-index: 1;
 	cursor: pointer;
-	transition: all ease-out .3s;
+	transition: all ease-out .1s;
 }
 #hamburger-icon i {
 	position: absolute;
@@ -337,7 +394,7 @@ body {
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.5);
 	border-radius: 50px;
-	padding: 15px 32px;
+	padding: 15px 0px;
 	width: 300px;
 	font-size: 50px;
 	font-family: "Arial";
@@ -454,6 +511,11 @@ body {
 	left: 0;
 	text-shadow: white 0 0 8px;
 	font-size: 12px;
+}
+@keyframes trophy-pulse {
+	50% {
+		text-shadow: white 0 0 10px;
+	}
 }
 @keyframes text-shadow {
 	0% {
