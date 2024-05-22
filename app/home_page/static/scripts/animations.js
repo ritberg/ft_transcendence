@@ -1,5 +1,5 @@
 import { GameMode } from './main.js';
-import { drawBrackets } from './brackets.js';
+import { drawBrackets, enterNicknames } from './brackets.js';
 
 document.getElementById("hamburger-icon").addEventListener("click", function() {
 	document.getElementById("hamburger-icon").classList.toggle("active");
@@ -36,8 +36,10 @@ document.getElementById("main-buttons").addEventListener("click", function() {
 				document.getElementById("tournoi").classList.remove("shown");
 				document.getElementById("tournoi").classList.add("hidden");
 				setTimeout(function() {
-					document.getElementById("brackets").style.display = "block";
-					drawBrackets(document.getElementById("slider1").value);
+					document.getElementById("nickname_setup_box").style.display = "block";
+					enterNicknames(document.getElementById("slider1").value);
+					// document.getElementById("brackets").style.display = "block";
+					// drawBrackets(document.getElementById("slider1").value);
 				}, 500);
 				// GameMode(2);
 			});

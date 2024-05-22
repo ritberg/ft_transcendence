@@ -18,10 +18,7 @@ export function drawBrackets(n) {
 		const newDiv = document.createElement("div");
 		const winHeight = parseInt(window.getComputedStyle(document.getElementById("brackets")).height);
 		const blockHeight = winHeight / parseInt(document.getElementById("slider1").value);
-		const offset = winHeight / 2 - ((blockHeight * Math.round(parseInt(document.getElementById("slider1").value) / 2)) + (blockHeight * Math.round(parseInt(document.getElementById("slider1").value) / 2 + 1) - (blockHeight * Math.round(parseInt(document.getElementById("slider1").value) / 2)) / 2));
-		// const offset = blockHeight / 2;
-		// const offset = 0;
-		console.log(offset);
+		const offset = winHeight / 2 - (blockHeight * (parseInt(document.getElementById("slider1").value) / 2 - 1) + 8 * winHeight / 100);
 		newDiv.classList.add("rectangle-div");
 		if (i < 2)
 			newDiv.style.boxShadow = `white 0 0 20px`;
@@ -32,4 +29,28 @@ export function drawBrackets(n) {
 		newDiv.textContent = `PLAYER ${i + 1}`; // Add numbering to each div (optional)
 		document.querySelector("#brackets").appendChild(newDiv);
 	}
+}
+
+export function enterNicknames(n) {
+	// n = 1;
+	const form = document.createElement("form");
+	for (let i = 0; i < n; i++) {
+		const userBox = document.createElement("div");
+		userBox.classList.add("user-box");
+		const userNameInput = document.createElement("input");
+		userNameInput.type = "text";
+		userNameInput.name = "";
+		userNameInput.required = true;
+		userNameInput.maxLength = "3";
+
+		const userNameLabel = document.createElement("label");
+		userNameLabel.textContent = `PLAYER ${i + 1}`;
+		userBox.appendChild(userNameInput);
+		userBox.appendChild(userNameLabel);
+		form.appendChild(userBox);
+	}
+	const button = document.createElement("button");
+	button.textContent = "GO";
+	form.appendChild(button);
+	document.querySelector("#nickname_setup_box").appendChild(form);
 }
