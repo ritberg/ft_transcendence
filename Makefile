@@ -1,14 +1,7 @@
 docker_dir = docker
-<<<<<<< HEAD
-
-compose_file = $(docker_dir)/docker-compose.yml
-
-volume_dir = $(shell grep SERVICE_NAME  $(docker_dir)/.env | cut -d '=' -f2)
-=======
 user_service_dir = user_service
 
 user_volume_dir = $(shell grep SERVICE_NAME  $(user_service_dir)/$(docker_dir)/.env | cut -d '=' -f2)
->>>>>>> stats
 data_dir = data_db_user
 
 service = django
