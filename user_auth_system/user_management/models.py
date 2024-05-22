@@ -6,8 +6,15 @@ from rest_framework import serializers
 DEFAULT_PROFILE_PICTURE = 'profile_pics/default.jpg'
 
 class CustomUser(AbstractUser):
+	STATUS_CHOICES = [
+		('online', 'Online'),
+		('offline', 'Offline'),
+		('in_game', 'In Game'),
+	]
+	
 	profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, default=DEFAULT_PROFILE_PICTURE)
 	friends = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='user_friends')
+	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='offline')
 
 	class Meta:
 		db_table = 'users'

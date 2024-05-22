@@ -203,14 +203,14 @@ class DeleteFriendView(APIView):
 		)
 	
 class GetUserID(APIView):
-    permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        username = request.query_params.get('username')
-        if not username:
-            raise NotFound('A username query parameter is required.')
-        try:
-            user = get_user_model().objects.get(username=username)
-        except get_user_model().DoesNotExist:
-            raise NotFound('User not found.')
-        return Response({'id': user.id}, status=status.HTTP_200_OK)
+	def get(self, request):
+		username = request.query_params.get('username')
+		try:
+			if not username:
+				raise NotFound('A username query parameter is required.')
+			user = User().objects.get(username=username)
+			return Response({'id': user.id}, status=status.HTTP_200_OK)
+		except Exception as e:
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
