@@ -8,13 +8,11 @@ export let loop_exec = 0;
 export let ai_activated = false;
 
 export async function GameMode(n) {
-	for (let i = 0; i < 40; i++)
-	{
+	for (let i = 0; i < 40; i++) {
 		delta /= 1.05;
 		await sleep(20);
 	}
-	for (let i = 0; i < 20; i++)
-	{
+	for (let i = 0; i < 20; i++) {
 		delta /= 1.05;
 		const brightness = i * 4; //18
 		document.getElementById("game").style.background = "rgba(" + brightness + ", " + brightness + ", " + brightness + ", 1)";
@@ -25,7 +23,6 @@ export async function GameMode(n) {
 
 	if (n == 1)
 		ai_activated = true;
-	console.log("hey");
 	loop_exec = true;
 	requestAnimationFrame(loop);
 }

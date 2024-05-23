@@ -16,7 +16,7 @@ document.getElementById("profile-button").addEventListener("click", function() {
 		document.getElementById("main-buttons").style.display = "none";
 	} else {
 		document.getElementById("profile-box_main").style.display = "none";
-		document.getElementById("main-buttons").style.display = "block";
+		document.getElementById("main-buttons").style.display = "flex";
 	}
 });
 
@@ -36,12 +36,12 @@ document.getElementById("main-buttons").addEventListener("click", function() {
 				document.getElementById("tournoi").classList.remove("shown");
 				document.getElementById("tournoi").classList.add("hidden");
 				setTimeout(function() {
-					document.getElementById("nickname_setup_box").style.display = "block";
+					document.getElementById("tournoi").style.display = "none";
+					document.getElementById("nickname_setup_box").style.display = "flex";
 					enterNicknames(document.getElementById("slider1").value);
 					// document.getElementById("brackets").style.display = "block";
 					// drawBrackets(document.getElementById("slider1").value);
-				}, 500);
-				// GameMode(2);
+				}, 700);
 			});
 		}
 		else if (button_id === "pvp-mode")

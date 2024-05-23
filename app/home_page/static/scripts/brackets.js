@@ -32,7 +32,6 @@ export function drawBrackets(n) {
 }
 
 export function enterNicknames(n) {
-	// n = 1;
 	const form = document.createElement("form");
 	for (let i = 0; i < n; i++) {
 		const userBox = document.createElement("div");
