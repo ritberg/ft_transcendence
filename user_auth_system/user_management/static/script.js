@@ -44,6 +44,23 @@ document.addEventListener("DOMContentLoaded", function () {
     return cookieValue;
   }
 
+  function escapeHTML(str) {
+    return str.replace(/[&<>"'`=/]/g, function (s) {
+      return (
+        {
+          "&": "&amp;",
+          "<": "&lt;",
+          ">": "&gt;",
+          '"': "&quot;",
+          "'": "&#39;",
+          "/": "&#x2F;",
+          "`": "&#x60;",
+          "=": "&#x3D;",
+        }[s] || s
+      );
+    });
+  }
+
   // add click event listener for button
 
   closeLogin = () => {
@@ -59,12 +76,12 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   displayProfile = (user) => {
-    usernameLabel.textContent = user.username;
-    emailLabel.textContent = user.email;
+    usernameLabel.textContent = escapeHTML(user.username);
+    emailLabel.textContent = escapeHTML(user.email);
     logout.textContent = "logout";
-    logInfo.textContent = user.id;
+    logInfo.textContent = escapeHTML(user.id.toString());
     if (user.profile_picture) {
-      profile_picture.src = user.profile_picture;
+      profile_picture.src = escapeHTML(user.profile_picture);
     }
     closeLogin();
     document.querySelector(".profile-modify").classList.add("show");
@@ -109,9 +126,9 @@ document.addEventListener("DOMContentLoaded", function () {
   signupForm.addEventListener("submit", function (event) {
     event.preventDefault();
 
-    let username = signupForm.querySelector("input[name=username]").value;
-    let email = signupForm.querySelector("input[name=email]").value;
-    let password = signupForm.querySelector("input[name=password]").value;
+    let username = escapeHTML(signupForm.querySelector("input[name=username]").value);
+    let email = escapeHTML(signupForm.querySelector("input[name=email]").value);
+    let password = escapeHTML(signupForm.querySelector("input[name=password]").value);
 
     console.log({ username, email, password });
 
@@ -143,8 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
     event.preventDefault();
 
     // Récupère les valeurs des champs du formulaire
-    let username = loginForm.querySelector("input[name=username]").value;
-    let password = loginForm.querySelector("input[name=password]").value;
+    let username = escapeHTML(loginForm.querySelector("input[name=username]").value);
+    let password = escapeHTML(loginForm.querySelector("input[name=password]").value);
 
     // Logs de départ avant l'envoi de la requête
     console.log("Sending login request...");
@@ -231,19 +248,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let usernameInput = document.getElementById("new-username");
     if (usernameInput.value) {
-      formData.append("username", usernameInput.value);
+      formData.append("username", escapeHTML(usernameInput.value));
       hasChanges = true;
     }
 
     let emailInput = document.getElementById("new-email");
     if (emailInput.value) {
-      formData.append("email", emailInput.value);
+      formData.append("email", escapeHTML(emailInput.value));
       hasChanges = true;
     }
 
     let passwordInput = document.getElementById("new-password");
     if (passwordInput.value) {
-      formData.append("password", passwordInput.value);
+      formData.append("password", escapeHTML(passwordInput.value));
       hasChanges = true;
     }
 
@@ -264,7 +281,6 @@ document.addEventListener("DOMContentLoaded", function () {
       })
         .then((response) => {
           if (!response.ok) {
-            console.log(response);
             return response.json().then((error) => {
               throw new Error(JSON.stringify(error));
             });
@@ -272,9 +288,8 @@ document.addEventListener("DOMContentLoaded", function () {
           return response.json();
         })
         .then((data) => {
-          console.log("Update success: ", data);
-          usernameLabel.textContent = data.data.username;
-          emailLabel.textContent = data.data.email;
+          usernameLabel.textContent = escapeHTML(data.data.username);
+          emailLabel.textContent = escapeHTML(data.data.email);
         })
         .catch((error) => {
           console.error("Fetch error: ", error.message);
