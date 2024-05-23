@@ -7,7 +7,8 @@ from .forms import *
 def chatRoom(request, room_name):
     if not request.user.is_authenticated:
         return redirect("login")
-    context = {"room_name" : room_name}
+    messages = ChatMessage.objects.filter(room_name=room_name).order_by('timestamp')
+    context = {"room_name" : room_name, "username": request.user.username, "messages": messages}
     return render(request, "chat/chatRoom.html", context)
 
 

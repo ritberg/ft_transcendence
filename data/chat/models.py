@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 class ChatMessage(models.Model):
-    room_name = models.CharField(max_length=100)
+    room_name = models.CharField(max_length=100, default='room1')
     message = models.TextField()
     username = models.CharField(max_length=100)
     timestamp = models.DateTimeField(auto_now_add=True)
