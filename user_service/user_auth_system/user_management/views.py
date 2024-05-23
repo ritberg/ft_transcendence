@@ -103,7 +103,7 @@ class UpdateUserView(APIView):
 					{'message': f"{type(e).__name__}: {str(e)}"},
 					status=status.HTTP_400_BAD_REQUEST
 				)
-			
+
 # friend request views
 
 class SendFriendRequestView(APIView):
@@ -147,7 +147,7 @@ class AcceptFriendRequestView(APIView):
 			{'message': 'Friend request cannot be accepted by this user'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-	
+
 class RejectFriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -163,7 +163,7 @@ class RejectFriendRequestView(APIView):
 			{'message': 'Friend request cannot be rejected by this user'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-	
+
 class ListFriendsRequestsView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -174,7 +174,7 @@ class ListFriendsRequestsView(APIView):
 			{'data': serializer.data},
 			status=status.HTTP_200_OK
 		)
-	
+
 class ListFriendsView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -185,10 +185,10 @@ class ListFriendsView(APIView):
 			{'data': serializer.data},
 			status=status.HTTP_200_OK
 		)
-	
+
 class DeleteFriendView(APIView):
 	permission_classes = [IsAuthenticated]
-	
+
 	def delete(self, request, *args, **kwargs):
 		friend = get_object_or_404(User, id=request.data.get('to_user'))
 		if request.user.friends.filter(id=friend.id).exists():
@@ -202,7 +202,7 @@ class DeleteFriendView(APIView):
 			{'message': 'User is not in your friends list'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-	
+
 class GetUserID(APIView):
 	permission_classes = [IsAuthenticated]
 

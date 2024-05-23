@@ -1,7 +1,7 @@
 docker_dir = docker
 user_service_dir = user_service
 
-user_volume_dir = $(shell grep SERVICE_NAME  $(user_service_dir)/$(docker_dir)/.env | cut -d '=' -f2)
+user_volume_dir = $(shell grep SERVICE_NAME .env | cut -d '=' -f2)
 data_dir = data_db_user
 
 service = django
