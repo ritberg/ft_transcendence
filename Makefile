@@ -1,19 +1,23 @@
 docker_dir = docker
 user_service_dir = user_service
+stat_service_dir = stat_service
 
 user_volume_dir = $(shell grep USER_SERVICE_NAME .env | cut -d '=' -f2)
+stat_volume_dir = $(shell grep STAT_SERVICE_NAME .env | cut -d '=' -f2)
 data_dir = data_db_user
 
-service = django
+service = stat_service
 
 all: build up
 
 build:
 	mkdir -p $(user_service_dir)/$(user_volume_dir)
+	mkdir -p $(stat_service_dir)/$(stat_volume_dir)
 	docker-compose build
 
 up:
 	mkdir -p $(user_service_dir)/$(user_volume_dir)
+	mkdir -p $(stat_service_dir)/$(stat_volume_dir)
 	docker-compose up -d --build
 
 down:

@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  django:
-    container_name: django
+  user_management:
+    container_name: user_management
     build:
       context: ./user_service/docker
       dockerfile: Dockerfile
@@ -17,7 +17,31 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - django:/home/transcendance/${USER_SERVICE_NAME}
+      - user_management:/home/transcendance/${USER_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - db_user
+
+  stat_management:
+    container_name: stat_management
+    build:
+      context: ./stat_service/docker
+      dockerfile: Dockerfile
+      args:
+        STAT_SERVICE_NAME: ${STAT_SERVICE_NAME}
+        DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+        DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+        DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+
+    env_file:
+      - .env
+    ports:
+      - "8001:8000"
+    volumes:
+      - stat_management:/home/transcendance/${STAT_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
@@ -44,13 +68,19 @@ services:
     init: true
 
 volumes:
-  django:
+  user_management:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      # device: '/Users/apalumbi/Documents/apalumbi_github/6_transcendance/backend' # school
-      device: "/Users/alesspal/Documents/42/6_ft_transcendance_git/user_service/${USER_SERVICE_NAME}" # home
+      device: "${PWD}/user_service/${USER_SERVICE_NAME}" # home
+
+  stat_management:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/stat_service/${STAT_SERVICE_NAME}" # home
 
   postgres_data:
     driver: local
