@@ -26,19 +26,21 @@ export function drawBrackets(n) {
 			newDiv.style.top = `${i * blockHeight + offset}px`;
 		else
 			newDiv.style.top = `${(i - 1) * blockHeight + 70 + offset}px`;
-		newDiv.textContent = `PLAYER ${i + 1}`; // Add numbering to each div (optional)
+		newDiv.textContent = document.getElementById(`player_${i + 1}`).value; // Add numbering to each div (optional)
 		document.querySelector("#brackets").appendChild(newDiv);
 	}
 }
 
 export function enterNicknames(n) {
+	// n = 1;
 	const form = document.createElement("form");
+	form.id = "nicknames_form";
 	for (let i = 0; i < n; i++) {
 		const userBox = document.createElement("div");
 		userBox.classList.add("user-box");
 		const userNameInput = document.createElement("input");
 		userNameInput.type = "text";
-		userNameInput.name = "";
+		userNameInput.id = `player_${i + 1}`;
 		userNameInput.required = true;
 		userNameInput.maxLength = "3";
 
@@ -50,6 +52,7 @@ export function enterNicknames(n) {
 	}
 	const button = document.createElement("button");
 	button.textContent = "GO";
+	button.id = "GO_N";
 	form.appendChild(button);
 	document.querySelector("#nickname_setup_box").appendChild(form);
 }

@@ -1,3 +1,4 @@
+import { sleep } from './utils.js';
 import { GameMode } from './main.js';
 import { drawBrackets, enterNicknames } from './brackets.js';
 
@@ -31,17 +32,22 @@ document.getElementById("main-buttons").addEventListener("click", function() {
 		else if (button_id === "tournoi-mode") {
 			document.getElementById("tournoi").style.display = "block";
 			document.getElementById("tournoi").classList.add("shown");
-			document.getElementById("OK_T").addEventListener("click", function() {
+			document.getElementById("OK_T").addEventListener("click", async function() {
 				document.getElementById("tournoi").style.opacity = "1";
 				document.getElementById("tournoi").classList.remove("shown");
 				document.getElementById("tournoi").classList.add("hidden");
-				setTimeout(function() {
-					document.getElementById("tournoi").style.display = "none";
-					document.getElementById("nickname_setup_box").style.display = "flex";
-					enterNicknames(document.getElementById("slider1").value);
-					// document.getElementById("brackets").style.display = "block";
-					// drawBrackets(document.getElementById("slider1").value);
-				}, 700);
+				await sleep(700);
+				document.getElementById("tournoi").style.display = "none";
+				document.getElementById("nickname_setup_box").style.display = "flex";
+				enterNicknames(document.getElementById("slider1").value);
+				document.getElementById("nicknames_form").addEventListener("submit", function(event) {
+					event.preventDefault();
+					// if (document.forms["nicknames_form"]["player_1"].value != "" && document.forms["nicknames_form"]["player_1"].value != null) {
+					// }
+					document.getElementById("nickname_setup_box").style.display = "none";
+					document.getElementById("brackets").style.display = "block";
+					drawBrackets(document.getElementById("slider1").value);
+				});
 			});
 		}
 		else if (button_id === "pvp-mode")

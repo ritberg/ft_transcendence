@@ -17,18 +17,18 @@
 		<script type="module" src="{% static 'scripts/pong_tournoi.js' %}"></script>
 	</head>
 	<body>
-		<button id="hamburger-icon">
+		<button type="button" id="hamburger-icon">
 			<i class="bi bi-list"></i>
 			<h6>TABS</h6>
 		</button>
 		<div id="vertical-tab">
-			<button id="chat-button">CHAT<i class="bi bi-chat-left-text"></i></button>
-			<button id="profile-button">PROFILE<i class="bi bi-person"></i></button>
-			<button>FRIENDS<i class="bi bi-people"></i></button>
-			<button>SETTINGS<i class="bi bi-gear"></i></button>
+			<button type="button" id="chat-button">CHAT<i class="bi bi-chat-left-text"></i></button>
+			<button type="button" id="profile-button">PROFILE<i class="bi bi-person"></i></button>
+			<button type="button">FRIENDS<i class="bi bi-people"></i></button>
+			<button type="button">SETTINGS<i class="bi bi-gear"></i></button>
 		</div>
 		<div id="chat-box">
-			<h6>> dferreir: Hi!</h6>
+			<h6>> dferreir: Hi! I'm dogygo                            also I'm omega gay + george bush did 9/11</h6>
 		</div>
 		<div id="profile-box">
 			<h6>dferreir</h6>
@@ -38,10 +38,10 @@
 		<script type="module" src="{% static 'scripts/main.js' %}"></script>
 		<div id="main-buttons">
 			<h1>PONG</h1>
-			<button id="pvp-mode">PvP</button>
-			<button id="cpu-mode">CPU</button>
-			<button id="tournoi-mode">TOURNEY</button>
-			<button id="online-mode">ONLINE</button>
+			<button type="button" id="pvp-mode">PvP</button>
+			<button type="button" id="cpu-mode">CPU</button>
+			<button type="button" id="tournoi-mode">TOURNEY</button>
+			<button type="button" id="online-mode">ONLINE</button>
 		</div>
 		<div id="login-box">
 			<h1>JOIN GAME</h1>
@@ -54,7 +54,7 @@
 					<input type="text" name="" required="">
 					<label>ROOM NAME</label>
 				</div>
-				<button id="GO_O">GO</button>
+				<button type="button" id="GO_O">GO</button>
 			</form>
 		</div>
 		<div id="profile-box_main">
@@ -73,7 +73,7 @@
 					<input type="password" name="" required="">
 					<label>PASSWORD</label>
 				</div>
-				<button>GO</button>
+				<button type="button">GO</button>
 			</form>
 		</div>
 		<div class="choice-box" id="tournoi">
@@ -84,7 +84,7 @@
 			<input id="slider2" class="choice-slider" type="range" min="1" max="3" value="2" step="1"/>
 			<h2 id="MODE_T">MODE</h2>
 			<input id="slider3" class="choice-slider" type="range" min="0" max="1" value="0" step="1"/>
-			<button id="OK_T">OK</button>
+			<button type="button" id="OK_T">OK</button>
 		</div>
 		<div id="brackets">
 			<i class="bi bi-trophy"></i>
