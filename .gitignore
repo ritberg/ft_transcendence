@@ -1,5 +1,4 @@
 .DS_Store
-.env
 user_service/user_auth_system/.env.django
 venv/
 user_service/user_auth_system/__pycache__/

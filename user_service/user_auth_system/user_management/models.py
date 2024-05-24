@@ -17,7 +17,7 @@ class CustomUser(AbstractUser):
 	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='offline')
 
 	class Meta:
-		db_table = 'auth_user'
+		db_table = 'users'
 
 	def __str__(self):
 		return self.username
