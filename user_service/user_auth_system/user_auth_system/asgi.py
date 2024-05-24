@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/
 
 import os
 from django.core.asgi import get_asgi_application
-from .settings import SERVICE_NAME
+from .settings import USER_SERVICE_NAME
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'{SERVICE_NAME}.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'{USER_SERVICE_NAME}.settings')
 
 application = get_asgi_application()

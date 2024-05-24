@@ -7,7 +7,7 @@ services:
       context: ./user_service/docker
       dockerfile: Dockerfile
       args:
-        SERVICE_NAME: ${SERVICE_NAME}
+        USER_SERVICE_NAME: ${USER_SERVICE_NAME}
         DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
         DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
         DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
@@ -17,7 +17,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - django:/home/transcendance/${SERVICE_NAME}
+      - django:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
@@ -50,7 +50,7 @@ volumes:
       type: "none"
       o: "bind"
       # device: '/Users/apalumbi/Documents/apalumbi_github/6_transcendance/backend' # school
-      device: "/Users/alesspal/Documents/42/6_ft_transcendance_git/user_service/${SERVICE_NAME}" # home
+      device: "/Users/alesspal/Documents/42/6_ft_transcendance_git/user_service/${USER_SERVICE_NAME}" # home
 
   postgres_data:
     driver: local

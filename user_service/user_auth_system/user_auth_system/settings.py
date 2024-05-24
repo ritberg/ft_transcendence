@@ -19,7 +19,7 @@ import environ
 env = environ.Env()
 environ.Env.read_env(env_file='.env.django')
 
-SERVICE_NAME = env('SERVICE_NAME')
+USER_SERVICE_NAME = env('USER_SERVICE_NAME')
 AUTH_APP_NAME = env('AUTH_APP_NAME')
 DB_NAME = env('DB_NAME')
 DB_USER = env('DB_USER')
@@ -68,7 +68,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = f'{SERVICE_NAME}.urls'
+ROOT_URLCONF = f'{USER_SERVICE_NAME}.urls'
 
 TEMPLATES = [
     {
@@ -86,7 +86,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = f'{SERVICE_NAME}.wsgi.application'
+WSGI_APPLICATION = f'{USER_SERVICE_NAME}.wsgi.application'
 
 
 # Database
