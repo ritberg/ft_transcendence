@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room does not exist</title>
+</head>
+<body>
+    <div class="parent">
+        <div class="child">
+            <h1 id="errorField"></h1>
+            <h1><a href="/">here</a></h1>
+        </div>
+        <script>
+            if ("{{error}}" != "")
+            {
+                if ("{{error}}" == "full")
+                    document.getElementById("errorField").textContent="this Room is full, you can create or join another one ";
+                else if ("{{error}}" == "noRoom")
+                document.getElementById("errorField").textContent="this Room does not exist, you can create one ";            
+            }
+        </script>
+    </div>
+</body>
+<style>
+
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.parent {
+    background-color: #ccc;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.child {
+    display: flex;
+    background-color: #075e54;
+    height: 80vh;
+    width: 50%;
+    border-radius: 10px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 100px;
+}
+
+form {
+    width: 80%;
+}
+
+label {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: white;
+}
+
+h1 {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: white;
+}
+
+a {
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+    color: rgb(55, 152, 255);
+}
+
+a:hover {
+    color: rgb(28, 102, 180);
+}
+</style>
+</html>
