@@ -1,11 +1,11 @@
 FROM python:3.11-slim
 
 # declaration of service variables environment
-ENV SERVICE_NAME=${SERVICE_NAME}
+ENV USER_SERVICE_NAME=${USER_SERVICE_NAME}
 ENV DJANGO_SUPERUSER_USERNAME=${DJANGO_SUPERUSER_USERNAME}
 ENV DJANGO_SUPERUSER_EMAIL=${DJANGO_SUPERUSER_EMAIL}
 ENV DJANGO_SUPERUSER_PASSWORD=${DJANGO_SUPERUSER_PASSWORD}
-ARG SERVICE_NAME
+ARG USER_SERVICE_NAME
 ARG DJANGO_SUPERUSER_USERNAME
 ARG DJANGO_SUPERUSER_EMAIL
 ARG DJANGO_SUPERUSER_PASSWORD
@@ -32,7 +32,7 @@ COPY /tools/init.sh /home/transcendance/init.sh
 RUN chmod +x /home/transcendance/init.sh
 
 # set the final working directory
-WORKDIR /home/transcendance/${SERVICE_NAME}
+WORKDIR /home/transcendance/${USER_SERVICE_NAME}
 
 # update migrations
 # RUN python3 manage.py makemigrations

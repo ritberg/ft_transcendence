@@ -1,19 +1,23 @@
 docker_dir = docker
 user_service_dir = user_service
+chat_service_dir = chat_service
 
-user_volume_dir = $(shell grep SERVICE_NAME  $(user_service_dir)/$(docker_dir)/.env | cut -d '=' -f2)
+user_volume_dir = $(shell grep USER_SERVICE_NAME .env | cut -d '=' -f2)
+chat_volume_dir = $(shell grep CHAT_SERVICE_NAME .env | cut -d '=' -f2)
 data_dir = data_db_user
 
-service = django
+service = chat
 
 all: build up
 
 build:
 	mkdir -p $(user_service_dir)/$(user_volume_dir)
+	mkdir -p $(chat_service_dir)/$(chat_volume_dir)
 	docker-compose build
 
 up:
 	mkdir -p $(user_service_dir)/$(user_volume_dir)
+	mkdir -p $(chat_service_dir)/$(chat_volume_dir)
 	docker-compose up -d --build
 
 down:

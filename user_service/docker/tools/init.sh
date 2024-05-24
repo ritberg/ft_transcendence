@@ -1,19 +1,19 @@
 #!/bin/bash
 
 echo "initialisation of Django" >> /home/transcendance/logs/setup.log
-echo "backend name: $SERVICE_NAME" >> /home/transcendance/logs/setup.log
+echo "backend name: $USER_SERVICE_NAME" >> /home/transcendance/logs/setup.log
 
-echo "initialisation of the project "$SERVICE_NAME"" >> /home/transcendance/logs/setup.log
+echo "initialisation of the project "$USER_SERVICE_NAME"" >> /home/transcendance/logs/setup.log
 
-if [ ! -d "/home/transcendance/$SERVICE_NAME" ]; then
+if [ ! -d "/home/transcendance/$USER_SERVICE_NAME" ]; then
     # creation of the new project
-    django-admin startproject $SERVICE_NAME
+    django-admin startproject $USER_SERVICE_NAME
     
 else
     echo "project already initialised" >> /home/transcendance/logs/setup.log
 fi
 
-cd /home/transcendance/$SERVICE_NAME
+cd /home/transcendance/$USER_SERVICE_NAME
 
 python3 manage.py makemigrations
 python3 manage.py migrate

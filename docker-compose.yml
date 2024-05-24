@@ -1,13 +1,13 @@
 version: "3.8"
 
 services:
-  django:
-    container_name: django
+  auth:
+    container_name: auth
     build:
       context: ./user_service/docker
       dockerfile: Dockerfile
       args:
-        SERVICE_NAME: ${SERVICE_NAME}
+        USER_SERVICE_NAME: ${USER_SERVICE_NAME}
         DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
         DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
         DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
@@ -17,13 +17,35 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - django:/home/transcendance/${SERVICE_NAME}
+      - auth:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
     init: true
     depends_on:
       - db_user
+
+  chat:
+    container_name: chat
+    build:
+      context: ./chat_service/docker
+      dockerfile: Dockerfile
+      args:
+        CHAT_SERVICE_NAME: ${CHAT_SERVICE_NAME}
+
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
+    volumes:
+      - chat:/home/transcendance/${CHAT_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - db_user
+
 
   db_user:
     container_name: db_user
@@ -44,16 +66,28 @@ services:
     init: true
 
 volumes:
-  django:
+  auth:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
       # device: '/Users/apalumbi/Documents/apalumbi_github/6_transcendance/backend' # school
-      device: "/Users/alesspal/Documents/42/6_ft_transcendance_git/user_service/${SERVICE_NAME}" # home
+      device: "${PWD}/user_service/${USER_SERVICE_NAME}" # home
+
+  chat:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      # device: '/Users/apalumbi/Documents/apalumbi_github/6_transcendance/backend' # school
+      device: "${PWD}/chat_service/${CHAT_SERVICE_NAME}" # home
 
   postgres_data:
     driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "/Users/mmakarov/Desktop/chat_auth/db"
 
 networks:
   transcendance:

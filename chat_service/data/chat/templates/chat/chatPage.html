@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <center><h1>Hello, Welcome {{request.user}} to my chat site ! </h1></center>
+    <br>
+    {% if request.user.is_authenticated  %}
+    <center> Logout the chat Page <a href = "{% url 'logout-user' %}">Logout</a></center>
+    {% endif %}
+    <div
+      class="chat__item__container"
+      id="id_chat_item_container"
+      style="font-size: 20px"
+    >
+    <center> If you have no account, <a href = "{% url 'signup' %}">Sign up here</a></center>
+    <center> If you already have an account, <a href = "{% url 'login' %}">Log in</a></center>
+
+  </body>
+</html>
