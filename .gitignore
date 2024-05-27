@@ -1,8 +1,8 @@
 .DS_Store
-docker/.env
-backend/.env.django
+.env
+user_service/user_auth_system/.env.django
 venv/
-backend/user_auth_system/__pycache__/
-backend/user_auth_system/migrations/
-backend/user_auth_system/__pycache__/
-backend/media/
+user_service/user_auth_system/__pycache__/
+user_service/user_auth_system/migrations/
+user_service/user_auth_system/__pycache__/
+user_service/media/

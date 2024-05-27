@@ -165,3 +165,17 @@ class UserAccountTests(APITestCase):
         # print(response.data)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertIn('rejected friend request', str(response.data['message']))
+
+    def test_online_status(self):
+        """
+        Test de la mise à jour du statut en ligne.
+        """
+        self.client.login(username='testuser', password='testpassword123')
+
+        user = User.objects.get(username='testuser')
+
+        url = reverse('update')
+        data = {'id': user.id, 'status': 'online'}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        

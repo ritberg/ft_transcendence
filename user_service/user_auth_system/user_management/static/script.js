@@ -24,25 +24,21 @@ document.addEventListener("DOMContentLoaded", function () {
   let signupUrl = "http://localhost:8000/auth/register/";
   let updateUrl = "http://localhost:8000/auth/update/";
   let logoutURL = "http://localhost:8000/auth/logout/";
+  let friendRequestUrl = "http://localhost:8000/auth/send-friend-request/";
+  let acceptFriendRequestUrl =
+    "http://localhost:8000/auth/accept-friend-request/";
+  let rejectFriendRequestUrl =
+    "http://localhost:8000/auth/reject-friend-request/";
+  let friendRequestListUrl = "http://localhost:8000/auth/list-friend-requests/";
+  let friendListUrl = "http://localhost:8000/auth/list-friends/";
+  let delFriendUrl = "http://localhost:8000/auth/delete-friend/";
 
-  function getCookie(name) {
-    console.log("getCookie called");
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      console.log("cookie found");
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        // Does this cookie string begin with the name we want?
-        console.log("cookie : ", cookie);
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
+  // CSRF token
+  let token = window.CSRF_TOKEN;
+
+  const updateCSRFToken = (newToken) => {
+    token = newToken;
+  };
 
   function escapeHTML(str) {
     return str.replace(/[&<>"'`=/]/g, function (s) {
@@ -197,6 +193,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // Met à jour les éléments d'interface utilisateur
         console.log("data : ", data.data);
         displayProfile(data.data);
+        console.log("token received : ", data.crsfToken);
+        updateCSRFToken(data.crsfToken);
+        fetchFriendRequests();
+        fetchFriends();
       })
       .catch((error) => {
         console.error("Fetch error:", error);
@@ -206,12 +206,11 @@ document.addEventListener("DOMContentLoaded", function () {
   logout.addEventListener("click", function () {
     console.log("logout clicked");
     console.log("all cookies : ", document.cookie);
-    csrfCookie = getCookie("csrftoken");
-    console.log(csrfCookie);
+    console.log("token : ", token);
     fetch(logoutURL, {
       method: "POST",
       headers: {
-        "X-CSRFToken": csrfCookie,
+        "X-CSRFToken": token,
       },
       credentials: "include",
     })
@@ -228,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
         usernameLabel.textContent = "Guest";
         emailLabel.textContent = "";
         logout.textContent = "";
-        profile_picture.src = "utils/default.jpg";
+        profile_picture.src = "";
         logInfo.textContent = "Please login to access your profile";
         document.querySelector(".profile-modify").classList.remove("show");
       })
@@ -243,8 +242,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("update clicked");
     console.log("all cookies : ", document.cookie);
-    csrfCookie = getCookie("csrftoken");
-    console.log("crsf cookie", csrfCookie);
 
     let usernameInput = document.getElementById("new-username");
     if (usernameInput.value) {
@@ -274,7 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
       fetch(updateUrl, {
         method: "PUT",
         headers: {
-          "X-CSRFToken": csrfCookie,
+          "X-CSRFToken": token,
         },
         body: formData,
         credentials: "include",
@@ -307,8 +304,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("update clicked");
     // console.log("all cookies : ", document.cookie);
-    csrfCookie = getCookie("csrftoken");
-    console.log("crsf cookie", csrfCookie);
     console.log("file : ", file);
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
@@ -317,7 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
     fetch(updateUrl, {
       method: "PUT",
       headers: {
-        "X-CSRFToken": csrfCookie,
+        "X-CSRFToken": token,
       },
       body: formData,
       credentials: "include",
@@ -339,5 +334,189 @@ document.addEventListener("DOMContentLoaded", function () {
       .catch((error) => {
         console.error("Fetch error: ", error.detail);
       });
+  });
+
+  // Fetch and display friend requests
+
+  const fetchFriendRequests = async () => {
+    try {
+      const response = await fetch(friendRequestListUrl, {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log("Friend requests data:", data); // Debug: log data
+      if (data && Array.isArray(data.data)) {
+        displayFriendRequests(data.data);
+      } else {
+        console.error("Expected an array but got:", data);
+      }
+    } catch (error) {
+      console.error("Error fetching friend requests:", error);
+    }
+  };
+
+  const displayFriendRequests = (requests) => {
+    const friendRequestsContainer = document.getElementById("friend-requests");
+    friendRequestsContainer.innerHTML = "";
+    requests.forEach((request) => {
+      const requestElement = document.createElement("div");
+      requestElement.classList.add("friend-request");
+      requestElement.innerHTML = `
+        <span>${request.from_user.username}</span>
+        <div class="buttons">
+          <button onclick="handleFriendRequest(${request.id}, true)">Accept</button>
+          <button onclick="handleFriendRequest(${request.id}, false)">Reject</button>
+        </div>
+      `;
+      friendRequestsContainer.appendChild(requestElement);
+    });
+  };
+
+  window.handleFriendRequest = async (requestId, accept) => {
+    const url = accept ? acceptFriendRequestUrl : rejectFriendRequestUrl;
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ friend_request_id: requestId }),
+      });
+      const data = await response.json();
+      fetchFriendRequests(); // Reload the list of friend requests
+      fetchFriends(); // Reload the list of friends
+    } catch (error) {
+      console.error("Error handling friend request:", error);
+    }
+  };
+
+  // Function to fetch and display friends
+  const fetchFriends = async () => {
+    try {
+      const response = await fetch(friendListUrl, {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      });
+      const data = await response.json();
+      console.log("Friends data:", data); // Debug: log data
+      if (data && Array.isArray(data.data)) {
+        displayFriends(data.data);
+      } else {
+        console.error("Expected an array but got:", data);
+      }
+    } catch (error) {
+      console.error("Error fetching friends:", error);
+    }
+  };
+
+  const displayFriends = (friends) => {
+    const friendsContainer = document.getElementById("friends-list");
+    friendsContainer.innerHTML = "";
+    friends.forEach((friend) => {
+      const friendElement = document.createElement("div");
+      friendElement.classList.add("friend");
+      friendElement.innerHTML = `<span>${friend.username}</span>`;
+      friendsContainer.appendChild(friendElement);
+    });
+  };
+
+  // Function to add a friend
+  const getUserId = async (username) => {
+    const response = await fetch(
+      `http://localhost:8000/auth/get-user-id/?username=${username}`
+    );
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Error getting user ID");
+    }
+    console.log("data : ", data);
+    return data.id;
+  };
+
+  const addFriend = async () => {
+    const username = document.getElementById("friend-username-to-add").value;
+    console.log("friend username : ", username);
+    const messageContainer = document.getElementById("add-friend-message");
+    if (!username) {
+      messageContainer.textContent = "Please enter a username";
+      return;
+    }
+
+    try {
+      const userId = await getUserId(username);
+      console.log("user id : ", userId);
+      const response = await fetch(friendRequestUrl, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ to_user: userId }),
+      });
+      const data = await response.json();
+      messageContainer.textContent = data.message;
+      if (response.ok) {
+        document.getElementById("friend-username-to-add").value = "";
+      }
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      messageContainer.textContent = "Error sending friend request";
+    }
+  };
+
+  const delFriend = async () => {
+    const username = document.getElementById("friend-username-to-del").value;
+    console.log("friend username : ", username);
+    const messageContainer = document.getElementById("del-friend-message");
+    if (!username) {
+      messageContainer.textContent = "Please enter a username";
+      return;
+    }
+
+    try {
+      const userId = await getUserId(username);
+      console.log("user id : ", userId);
+      const response = await fetch(delFriendUrl, {
+        method: "DELETE",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ to_user: userId }),
+      });
+      const data = await response.json();
+      messageContainer.textContent = data.message;
+      if (response.ok) {
+        document.getElementById("friend-username-to-del").value = "";
+        fetchFriends();
+      }
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      messageContainer.textContent = "Error sending friend request";
+    }
+  };
+
+  document
+    .getElementById("add-friend-btn")
+    .addEventListener("click", addFriend);
+  document
+    .getElementById("del-friend-btn")
+    .addEventListener("click", delFriend);
+  document.getElementById("refresh-btn").addEventListener("click", () => {
+    fetchFriendRequests();
+    fetchFriends();
   });
 });

@@ -4,7 +4,7 @@ services:
   django:
     container_name: django
     build:
-      context: .
+      context: ./user_service/docker
       dockerfile: Dockerfile
       args:
         SERVICE_NAME: ${SERVICE_NAME}
@@ -49,7 +49,7 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${PWD}/${SERVICE_NAME}"
+      device: "${PWD}/user_service/${SERVICE_NAME}"
 
   postgres_data:
     driver: local

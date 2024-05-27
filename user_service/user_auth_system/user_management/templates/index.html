@@ -14,7 +14,7 @@
   <body>
     <section class="profile">
       <div class="profile-nav">
-        <img id="user-avatar" src="{% static 'utils/default.jpg' %}" alt="User Avatar" />
+        <img id="user-avatar" src="" />
         <h3 id="user-name">Guest</h3>
         <p id="user-email"></p>
         <h3 id="info">Please login to access your profile</h3>
@@ -38,6 +38,35 @@
         <input type="file" id="input-avatar" name="image" accept="image/*" />
         <button type="button" id="upload-avatar">Télécharger</button>
       </form>
+      <div class="add-friend">
+        <h3>Add Friend</h3>
+        <input
+          type="text"
+          id="friend-username-to-add"
+          placeholder="Enter friend's username"
+        />
+        <button id="add-friend-btn">Add Friend</button>
+        <div id="add-friend-message"></div>
+      </div>
+      <div class="del-friend">
+        <h3>Del Friend</h3>
+        <input
+          type="text"
+          id="friend-username-to-del"
+          placeholder="Enter friend's username"
+        />
+        <button id="del-friend-btn">del Friend</button>
+        <div id="del-friend-message"></div>
+      </div>
+      <div class="friend-list">
+        <h3>Friends List</h3>
+        <div id="friends-list"></div>
+      </div>
+      <div class="friend-requests">
+        <h3>Friend Requests</h3>
+        <div id="friend-requests"></div>
+      </div>
+      <button id="refresh-btn">Refresh Lists</button>
     </section>
 
     <section class="login-section">
