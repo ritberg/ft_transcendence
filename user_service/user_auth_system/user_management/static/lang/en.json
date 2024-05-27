@@ -1,0 +1,53 @@
+{
+	"info": {
+		"info": "Please login to access your profile",
+		"default_username": "Guest"
+	},
+	"profile": {
+		"username_placeholder": "Enter new username",
+		"email_placeholder": "Enter new email",
+		"password_placeholder": "Enter new password",
+		"update_profile_button": "Update Profile",
+		"user_name": "Guest",
+		"info": "Please login to access your profile",
+		"user_logout": "Logout",
+		"upload_avatar": "Upload Avatar"
+	},
+	"add_friend": {
+		"title": "Add Friend",
+		"username_placeholder": "Enter friend's username",
+		"add_button": "Add Friend"
+	},
+	"del_friend": {
+		"title": "Delete Friend",
+		"username_placeholder": "Enter friend's username",
+		"del_button": "Delete Friend"
+	},
+	"friend_list": {
+		"title": "Friends List"
+	},
+	"friend_requests": {
+		"title": "Friend Requests"
+	},
+	"refresh_button": "Refresh Lists",
+	"login": {
+		"login_title": "Login",
+		"username_placeholder": "Enter your name",
+		"password_placeholder": "Enter your password",
+		"login_button": "Login Now",
+		"remember_me": "Remember me",
+		"forgot_password": "Forgot password?",
+		"signup_prompt": "Don't have an account?",
+		"signup_link": "Signup"
+	},
+	"signup": {
+		"signup_title": "Signup",
+		"username_placeholder": "Enter your name",
+		"email_placeholder": "Enter your email",
+		"password_placeholder": "Create your password",
+		"password_confirmation_placeholder": "Confirm your password",
+		"signup_button": "Signup Now",
+		"login_prompt": "Already have an account?",
+		"login_link": "Login"
+	}
+}

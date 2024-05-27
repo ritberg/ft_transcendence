@@ -10,63 +10,74 @@
       rel="stylesheet"
       href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
     />
+    <script>
+      const STATIC_URL = "{% static '' %}";
+    </script>
   </head>
   <body>
     <section class="profile">
       <div class="profile-nav">
+        <div class="language-switch">
+          <label for="language-select">Choose your language:</label>
+          <select id="language-select">
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <!-- Ajoutez plus d'options de langue si nécessaire -->
+          </select>
+        </div>
         <img id="user-avatar" src="" />
-        <h3 id="user-name">Guest</h3>
+        <h3 id="user-name"></h3>
         <p id="user-email"></p>
-        <h3 id="info">Please login to access your profile</h3>
+        <h3 id="info"></h3>
         <h3 id="user-logout"></h3>
         <div class="profile-modify">
           <input
             type="text"
             id="new-username"
-            placeholder="Enter new username"
+            placeholder=""
           />
-          <input type="text" id="new-email" placeholder="Enter new email" />
+          <input type="text" id="new-email" placeholder="" />
           <input
             type="password"
             id="new-password"
-            placeholder="Enter new password"
+            placeholder=""
           />
-          <button id="update-profile">Update Profile</button>
+          <button id="update-profile"></button>
         </div>
       </div>
       <form id="uploadForm" enctype="multipart/form-data">
         <input type="file" id="input-avatar" name="image" accept="image/*" />
-        <button type="button" id="upload-avatar">Télécharger</button>
+        <button type="button" id="upload-avatar"></button>
       </form>
       <div class="add-friend">
-        <h3>Add Friend</h3>
+        <h3 id="add-friend-title"></h3>
         <input
           type="text"
           id="friend-username-to-add"
-          placeholder="Enter friend's username"
+          placeholder=""
         />
-        <button id="add-friend-btn">Add Friend</button>
+        <button id="add-friend-btn"></button>
         <div id="add-friend-message"></div>
       </div>
       <div class="del-friend">
-        <h3>Del Friend</h3>
+        <h3 id="del-friend-title"></h3>
         <input
           type="text"
           id="friend-username-to-del"
-          placeholder="Enter friend's username"
+          placeholder=""
         />
-        <button id="del-friend-btn">del Friend</button>
+        <button id="del-friend-btn"></button>
         <div id="del-friend-message"></div>
       </div>
       <div class="friend-list">
-        <h3>Friends List</h3>
+        <h3 id="friend-list-title"></h3>
         <div id="friends-list"></div>
       </div>
       <div class="friend-requests">
-        <h3>Friend Requests</h3>
+        <h3 id="friend-requests-title"></h3>
         <div id="friend-requests"></div>
       </div>
-      <button id="refresh-btn">Refresh Lists</button>
+      <button id="refresh-btn"></button>
     </section>
 
     <section class="login-section">
@@ -75,12 +86,12 @@
         <i class="uil uil-times form-close" id="btn-form-close"></i>
         <div class="login-form">
           <form action="#">
-            <h2>Login</h2>
+            <h2 id="login-title"></h2>
             <div class="input-box">
               <input
                 type="text"
                 name="username"
-                placeholder="Enter your name"
+                placeholder=""
                 required
                 autocomplete="off"
               />
@@ -89,7 +100,7 @@
               <input
                 type="password"
                 name="password"
-                placeholder="Enter your password"
+                placeholder=""
                 required
               />
               <i class="uil uil-eye-slash toggle-password"></i>
@@ -97,15 +108,13 @@
             <div class="option-field">
               <label class="checkbox">
                 <input type="checkbox" id="remember" />
-                Remember me
+                <span id="remember-me-text"></span>
               </label>
-              <a href="#" class="forgot-pw">Forgot password?</a>
+              <a href="#" class="forgot-pw" id="forgot-pw"></a>
             </div>
-            <button type="submit" class="button" id="login-submit">
-              Login Now
-            </button>
+            <button type="submit" class="button" id="login-submit"></button>
             <div class="signup-link">
-              Don't have any account? <a href="#" id="signup">Signup</a>
+              <span id="signup-prompt"></span> <a href="#" id="signup"></a>
             </div>
           </form>
         </div>
@@ -113,12 +122,12 @@
         <!-- Signup Form -->
         <div class="signup-form">
           <form action="#">
-            <h2>Signup</h2>
+            <h2 id="signup-title"></h2>
             <div class="input-box">
               <input
                 type="text"
                 name="username"
-                placeholder="Enter your name"
+                placeholder=""
                 required
                 autocomplete="off"
               />
@@ -127,7 +136,7 @@
               <input
                 type="email"
                 name="email"
-                placeholder="Enter your email"
+                placeholder=""
                 required
                 autocomplete="off"
               />
@@ -136,7 +145,7 @@
               <input
                 type="password"
                 name="password"
-                placeholder="Create your password"
+                placeholder=""
                 required
               />
               <i class="uil uil-eye-slash toggle-password"></i>
@@ -144,23 +153,22 @@
             <div class="input-box">
               <input
                 type="password"
-                name="password-cofirmation"
-                placeholder="Confirm your password"
+                name="password-confirmation"
+                placeholder=""
                 required
               />
               <i class="uil uil-eye-slash toggle-password"></i>
             </div>
-            <button type="submit" class="button" id="signup-submiy">
-              Signup Now
-            </button>
+            <button type="submit" class="button" id="signup-submit"></button>
             <div class="signup-link">
-              Already have an account? <a href="#" id="login">Login</a>
+              <span id="login-prompt"></span> <a href="#" id="login"></a>
             </div>
           </form>
         </div>
       </div>
     </section>
 
+    <script src="{% static 'js/lang.js' %}"></script>
     <script src="{% static 'script.js' %}"></script>
   </body>
 </html>
