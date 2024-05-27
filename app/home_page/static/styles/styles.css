@@ -119,8 +119,8 @@ body {
 	font-family: "Arial";
 	color: rgb(255, 255, 255, .85);
 	top: 50%;
-	right: 0%;
-	transform: translate(-20%, -50%);
+	left: 50%;
+	transform: translate(320%, -50%);
 	animation: trophy-pulse 3s infinite;
 }
 .avatar_pic {
@@ -175,7 +175,7 @@ body {
 	text-align: center;
 	margin: 30px 0 10px 0;
 }
-.choice-slider {
+#tournoi input[type="range"] {
 	appearance: none;
 	outline: none;
 	height: 8px;
@@ -184,8 +184,9 @@ body {
 	border: 2px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
 	opacity: 0.8;
+	transition: all .1s;
 }
-.choice-slider::-moz-range-thumb {
+#tournoi input[type="range"]::-moz-range-thumb {
 	appearance: none;
 	background: white;
 	color: white;
@@ -195,8 +196,9 @@ body {
 	height: 13px;
 	box-shadow: white 0 0 10px;
 	transform: rotate(45deg);
+	transition: all .3s ease-out;
 }
-.choice-slider::-webkit-slider-thumb {
+#tournoi input[type="range"]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	background: white;
 	color: white;
@@ -206,6 +208,7 @@ body {
 	height: 13px;
 	box-shadow: white 0 0 10px;
 	transform: rotate(45deg);
+	transition: all .3s ease-out;
 }
 #tournoi button {
 	color: rgba(255, 255, 255, 0.8);
@@ -220,6 +223,19 @@ body {
 #tournoi button:hover {
 	color: white;
 	box-shadow: white 0 0 10px;
+}
+#tournoi input[type="range"]::-webkit-slider-thumb:active {
+	width: 18px;
+	height: 18px;
+	transform: rotate(225deg);
+}
+#tournoi input[type="range"]::-moz-range-thumb:active {
+	width: 18px;
+	height: 18px;
+	transform: rotate(225deg);
+}
+#tournoi input[type="range"]:hover {
+	box-shadow: white 0 0 7px;
 }
 #profile-box_main {
 	background-color: rgb(0, 0, 0, 0.85);
@@ -572,6 +588,21 @@ body {
 	pointer-events: none;
 	transition: .5s;
 }
+#login-box .user-box h6 {
+	position: absolute;
+	top: 0;
+	left: 7.5%;
+	text-align: left;
+	padding: 0;
+	margin: 10px 0 0 0;
+	font-size: 16px;
+	color: rgba(255, 255, 255, 0.3);
+	opacity: 0;
+	font-weight: normal;
+	pointer-events: none;
+	transition: .5s;
+}
+
 #login-box button {
 	position: relative;
 	align-items: center;

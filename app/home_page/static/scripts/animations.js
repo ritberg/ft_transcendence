@@ -21,6 +21,36 @@ document.getElementById("profile-button").addEventListener("click", function() {
 	}
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+	const inputElement = document.getElementById('room_name_input');
+	const textElement = document.getElementById('empty_room_text');
+
+	textElement.style.opacity = '0';
+	inputElement.addEventListener('focus', () => {
+		if (inputElement.value.length === 0) {
+			textElement.style.opacity = '1';
+		}
+	});
+	inputElement.addEventListener('blur', () => {
+		textElement.style.opacity = '0';
+	});
+	inputElement.addEventListener('input', () => {
+		if (inputElement.value.length === 0) {
+			textElement.style.transition = 'none';
+			textElement.style.opacity = '1';
+			setTimeout(() => {
+				textElement.style.transition = '.5s';
+			}, 1000);
+		} else {
+			textElement.style.transition = 'none';
+			textElement.style.opacity = '0';
+			setTimeout(() => {
+				textElement.style.transition = '.5s';
+			}, 1000);
+		}
+	});
+});
+
 document.getElementById("main-buttons").addEventListener("click", function() {
 	var button_id = event.target.id;
 	if (event.target.tagName.toLowerCase() === "button") {
@@ -61,16 +91,19 @@ document.getElementById("main-buttons").addEventListener("click", function() {
 });
 
 document.getElementById("slider1").addEventListener("mousedown", function() {
+	document.getElementById("PLAYERS_T").style.textShadow = `white 0 0 5px`;
 	document.getElementById("PLAYERS_T").textContent = `${this.value}`;
 });
 document.getElementById("slider1").addEventListener("input", function() {
 	document.getElementById("PLAYERS_T").textContent = `${this.value}`;
 });
 document.getElementById("slider1").addEventListener("mouseup", function() {
+	document.getElementById("PLAYERS_T").style.textShadow = `none`;
 	document.getElementById("PLAYERS_T").textContent = `PLAYERS`;
 });
 
 document.getElementById("slider2").addEventListener("mousedown", function() {
+	document.getElementById("DIFFICULTY_T").style.textShadow = `white 0 0 5px`;
 	if (`${this.value}` === '1') {
 		document.getElementById("DIFFICULTY_T").textContent = `EASY`;
 	} else if (`${this.value}` === '2') {
@@ -89,10 +122,12 @@ document.getElementById("slider2").addEventListener("input", function() {
 	}
 });
 document.getElementById("slider2").addEventListener("mouseup", function() {
+	document.getElementById("DIFFICULTY_T").style.textShadow = `none`;
 	document.getElementById("DIFFICULTY_T").textContent = `DIFFICULTY`;
 });
 
 document.getElementById("slider3").addEventListener("mousedown", function() {
+	document.getElementById("MODE_T").style.textShadow = `white 0 0 5px`;
 	if (`${this.value}` === '0') {
 		document.getElementById("MODE_T").textContent = `DEFAULT`;
 	} else {
@@ -100,6 +135,7 @@ document.getElementById("slider3").addEventListener("mousedown", function() {
 	}
 });
 document.getElementById("slider3").addEventListener("input", function() {
+	// document.getElementById("MODE_T").style.textShadow = `none`;
 	if (`${this.value}` === '0') {
 		document.getElementById("MODE_T").textContent = `DEFAULT`;
 	} else {
@@ -107,5 +143,6 @@ document.getElementById("slider3").addEventListener("input", function() {
 	}
 });
 document.getElementById("slider3").addEventListener("mouseup", function() {
+	document.getElementById("MODE_T").style.textShadow = `none`;
 	document.getElementById("MODE_T").textContent = `MODE`;
 });

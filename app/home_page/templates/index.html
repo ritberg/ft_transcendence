@@ -28,7 +28,7 @@
 			<button type="button">SETTINGS<i class="bi bi-gear"></i></button>
 		</div>
 		<div id="chat-box">
-			<h6>> dferreir: Hi! I'm dogygo                            also I'm omega gay + george bush did 9/11</h6>
+			<h6>> dferreir: Hi! I'm dogygo also I'm omega gay + george bush did 9/11</h6>
 		</div>
 		<div id="profile-box">
 			<h6>dferreir</h6>
@@ -47,12 +47,9 @@
 			<h1>JOIN GAME</h1>
 			<form>
 				<div class="user-box">
-					<input type="text" name="" required="">
-					<label>USER NAME</label>
-				</div>
-				<div class="user-box">
-					<input type="text" name="" required="">
+					<input id="room_name_input" type="text" name="" required="">
 					<label>ROOM NAME</label>
+					<h6 id="empty_room_text">leave empty for random room</h6>
 				</div>
 				<button type="button" id="GO_O">GO</button>
 			</form>
@@ -77,14 +74,16 @@
 			</form>
 		</div>
 		<div class="choice-box" id="tournoi">
-			<h1>TOURNEY</h1>
-			<h2 id="PLAYERS_T">PLAYERS</h2>
-			<input id="slider1" class="choice-slider" type="range" min="4" max="8" value="8" step="2"/>
-			<h2 id="DIFFICULTY_T">DIFFICULTY</h2>
-			<input id="slider2" class="choice-slider" type="range" min="1" max="3" value="2" step="1"/>
-			<h2 id="MODE_T">MODE</h2>
-			<input id="slider3" class="choice-slider" type="range" min="0" max="1" value="0" step="1"/>
-			<button type="button" id="OK_T">OK</button>
+			<form>
+				<h1>TOURNEY</h1>
+				<h2 id="PLAYERS_T">PLAYERS</h2>
+				<input id="slider1" type="range" min="4" max="8" value="8" step="4"/>
+				<h2 id="DIFFICULTY_T">DIFFICULTY</h2>
+				<input id="slider2" type="range" min="1" max="3" value="2" step="1"/>
+				<h2 id="MODE_T">MODE</h2>
+				<input id="slider3" type="range" min="0" max="1" value="0" step="1"/>
+				<button type="button" id="OK_T">OK</button>
+			</form>
 		</div>
 		<div id="brackets">
 			<i class="bi bi-trophy"></i>
