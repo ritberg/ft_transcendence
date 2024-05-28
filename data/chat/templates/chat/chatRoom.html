@@ -1,106 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <style>
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      background-color: #f0f0f0;
-    }
-    .chat__container {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      width: 60%;
-      height: 80%;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-    }
-    .chat__item__container {
-      flex-grow: 1;
-      overflow-y: auto;
-      font-size: 20px;
-      margin-bottom: 10px;
-    }
-    .chat__message {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-    .chat__message img {
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      margin-right: 10px;
-    }
-    .chat__message__content {
-      background-color: #f1f1f1;
-      border-radius: 10px;
-      padding: 10px;
-      max-width: 60%;
-      word-wrap: break-word;
-    }
-    .chat__message__username {
-      font-weight: bold;
-    }
-    .chat__message__text {
-      margin-top: 5px;
-    }
-    .chat__message--self {
-      justify-content: flex-start;
-    }
-    .chat__message--other {
-      flex-direction: row-reverse;
-    }
-    .chat__message--other .chat__message__content {
-      background-color: #e1f5fe;
-    }
-    .chat__message--other img {
-      margin-left: 10px;
-      margin-right: 0;
-    }
-    .chat__input__container {
-      display: flex;
-      align-items: center;
-    }
-    .chat__input__container input {
-      flex-grow: 1;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      margin-right: 10px;
-    }
-    .chat__input__container button {
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 5px;
-      background-color: #007bff;
-      color: #fff;
-      cursor: pointer;
-    }
-    .chat__input__container button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'style.css' %}">
 </head>
 <body>
   <div class="chat__container">
-    <center><h1>Hello, Welcome to my chat site {{ request.user }}</h1></center>
-    <br>
-    {% if request.user.is_authenticated %}
-    <center> Logout the chat Page <a href = "{% url 'logout-user' %}">Logout</a></center>
-    {% endif %}
+    <center><h1>Chat with {{ other_user }}</h1></center>
     <div class="chat__item__container" id="id_chat_item_container">
       {% for message in messages %}
-      <div class="chat__message {% if message.username == request.user.username %}chat__message--self{% else %}chat__message--other{% endif %}">
+      <div class="chat__message {% if message.username == username %}chat__message--self{% else %}chat__message--other{% endif %}">
         <img src="https://via.placeholder.com/40" alt="User Photo">
         <div class="chat__message__content">
           <div class="chat__message__username">{{ message.username }}</div>
@@ -115,26 +24,32 @@
     </div>
   </div>
   <script>
-    const chatSocket = new WebSocket("ws://" + window.location.host + "/chat/" + "{{room_name}}" + "/");
+    const roomName = "{{ room_name }}";
+    const chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat/" + roomName + "/");
+
     chatSocket.onopen = function (e) {
-      console.log("The connection was setup successfully !");
+      console.log("The connection was set up successfully!");
     };
+
     chatSocket.onclose = function (e) {
-      console.log("Something unexpected happened !");
+      console.log("Something unexpected happened!");
     };
+
     document.querySelector("#id_message_send_input").focus();
     document.querySelector("#id_message_send_input").onkeyup = function (e) {
       if (e.keyCode == 13) {
         document.querySelector("#id_message_send_button").click();
       }
     };
+
     document.querySelector("#id_message_send_button").onclick = function (e) {
       var messageInput = document.querySelector("#id_message_send_input").value;
-      chatSocket.send(JSON.stringify({ message: messageInput, username: "{{ request.user.username }}" }));
+      chatSocket.send(JSON.stringify({ message: messageInput, username: "{{ username }}" }));
     };
+
     chatSocket.onmessage = function (e) {
       const data = JSON.parse(e.data);
-      const currentUser = "{{ request.user.username }}";
+      const currentUser = "{{ username }}";
       var div = document.createElement("div");
       div.classList.add("chat__message");
       if (data.username === currentUser) {
@@ -154,5 +69,7 @@
       document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
     };
   </script>
+
+
 </body>
 </html>
