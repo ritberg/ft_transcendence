@@ -73,7 +73,7 @@ class AI:
         prev_second = -1
         while running:
         
-        # it was necessary to distinguish between 1) save data, 2) train the model, 3) predict moves
+        # it was necessary to distinguish between 1) save data, 2) train the model, 3) predict movesЯ
             current_second = time.localtime().tm_sec
             if frame_counter < 2000:
                 # print(current_second)
