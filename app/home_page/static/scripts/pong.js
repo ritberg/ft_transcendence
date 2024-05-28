@@ -1,12 +1,12 @@
 import { ai_activated } from './main.js';
 
-let paddle_y1 = game.height / 2 - 100;
+let paddle_y1 = game_canvas.height / 2 - 100;
 let paddle_y2 = paddle_y1;
 let paddle_speed_y1 = 0;
 let paddle_speed_y2 = 0;
 const ball_length = 30;
-let ball_x = game.width / 2 - ball_length / 2;
-let ball_y = game.height / 2 - ball_length / 2;
+let ball_x = game_canvas.width / 2 - ball_length / 2;
+let ball_y = game_canvas.height / 2 - ball_length / 2;
 let ball_speed = 400;
 let ball_angle = ((Math.random() < 0.5 ? 1 : -1) == true) ? (Math.PI - ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180)) : ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180);
 let score = [0, 0];
@@ -40,8 +40,8 @@ function updatePos(time_diff) {
 	if (wait_frames == 1) {
 		paddle_speed_y1 = 0;
 		paddle_speed_y2 = 0;
-		ball_x = game.width / 2 - ball_length / 2;
-		ball_y = game.height / 2 - ball_length / 2;
+		ball_x = game_canvas.width / 2 - ball_length / 2;
+		ball_y = game_canvas.height / 2 - ball_length / 2;
 		ball_speed = 400;
 		ball_angle = ((Math.random() < 0.5 ? 1 : -1) == true) ? (Math.PI - ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180)) : ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180);
 		paddle_bounces = 0;
@@ -52,15 +52,15 @@ function updatePos(time_diff) {
 
   paddle_y1 += paddle_speed_y1 * time_diff;
   paddle_y2 += paddle_speed_y2 * time_diff;
-	if (paddle_y1 < 10 || paddle_y1 > game.height - 200 - 10)
+	if (paddle_y1 < 10 || paddle_y1 > game_canvas.height - 200 - 10)
 		paddle_y1 -= paddle_speed_y1 * time_diff;
-	if (paddle_y2 < 10 || paddle_y2 > game.height - 200 - 10)
+	if (paddle_y2 < 10 || paddle_y2 > game_canvas.height - 200 - 10)
 		paddle_y2 -= paddle_speed_y2 * time_diff;
 
 	ball_x += ball_speed * Math.cos(ball_angle) * time_diff;
 	ball_y += ball_speed * Math.sin(ball_angle) * time_diff;
-	// if ((ball_y < 0 && ball_angle > Math.PI || ball_angle < 0) || (ball_y + ball_length > game.height && ball_angle < Math.PI && ball_angle > 0))
-	if (ball_y < 0 || ball_y > game.height - ball_length)
+	// if ((ball_y < 0 && ball_angle > Math.PI || ball_angle < 0) || (ball_y + ball_length > game_canvas.height && ball_angle < Math.PI && ball_angle > 0))
+	if (ball_y < 0 || ball_y > game_canvas.height - ball_length)
 		ball_angle = 2 * Math.PI - ball_angle;
 	if ((ball_y >= paddle_y1 - ball_length && ball_y <= paddle_y1 + 200 && ball_x <= 50 && ball_x >= 20 && ball_angle > Math.PI / 2 && ball_angle < Math.PI * 1.5) || (ball_y >= paddle_y2 - 25 && ball_y <= paddle_y2 + 200 && ball_x + ball_length >= 950 && ball_x <= 980 && (ball_angle < Math.PI / 2 || ball_angle > Math.PI * 1.5))) {
 		ball_angle = bounceAngle(ball_angle, ball_x, ball_y, ball_length, paddle_y1, paddle_y2);
@@ -77,7 +77,7 @@ function updatePos(time_diff) {
 		score[1]++;
 		wait_frames = 25;
 	}
-	else if (ball_x > game.width && wait_frames < 0) {
+	else if (ball_x > game_canvas.width && wait_frames < 0) {
 		score[0]++;
 		wait_frames = 25;
 	}
@@ -90,8 +90,8 @@ function aiMove() {
 	let copy_ball_y = ball_y;
 	let copy_ball_angle = ball_angle;
 	for (let i = 1; ball_x > 50; i++) {
-		if (ball_y < 0 || ball_y > game.height - ball_length)
-		// if ((ball_y < 0 && ball_angle > Math.PI || ball_angle < 0) || (ball_y + ball_length > game.height && ball_angle < Math.PI && ball_angle > 0))
+		if (ball_y < 0 || ball_y > game_canvas.height - ball_length)
+		// if ((ball_y < 0 && ball_angle > Math.PI || ball_angle < 0) || (ball_y + ball_length > game_canvas.height && ball_angle < Math.PI && ball_angle > 0))
 			ball_angle = 2 * Math.PI - ball_angle;
 		ball_x += Math.cos(ball_angle) * i;
 		ball_y += Math.sin(ball_angle) * i;
@@ -113,17 +113,17 @@ function draw() {
 		paddle_y2--;
 	}
 	n++;
-  const game = document.getElementById("game");
-  const ctx = game.getContext("2d");
-  ctx.clearRect(0, 0, game.width, game.height);
+  const game_canvas = document.getElementById("game_canvas");
+  const ctx = game_canvas.getContext("2d");
+  ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
   ctx.fillStyle = "rgb(70, 70, 70)";
-	for (let i = 10; i < game.height - 30; i += 50) {
-		ctx.fillRect(game.width / 2, i, 10, 30);
+	for (let i = 10; i < game_canvas.height - 30; i += 50) {
+		ctx.fillRect(game_canvas.width / 2, i, 10, 30);
 	}
 	ctx.font = "100px Arial";
 	ctx.textAlign = "center";
-	ctx.fillText(score[0].toString(), game.width / 3, 100);
-	ctx.fillText(score[1].toString(), game.width - game.width / 3, 100);
+	ctx.fillText(score[0].toString(), game_canvas.width / 3, 100);
+	ctx.fillText(score[1].toString(), game_canvas.width - game_canvas.width / 3, 100);
   ctx.fillStyle = "rgb(100, 100, 100)";
 	ctx.font = "20px Courier New";
 	ctx.textAlign = "left";
@@ -138,8 +138,8 @@ function draw() {
 }
 
 export async function loop(current_frame) {
-	const game = document.getElementById("game");
-	const ctx = game.getContext("2d");
+	const game_canvas = document.getElementById("game_canvas");
+	const ctx = game_canvas.getContext("2d");
   const time_diff = (current_frame - last_frame) / 1000 || 0;
   last_frame = current_frame;
 

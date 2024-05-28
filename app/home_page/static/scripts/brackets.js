@@ -1,58 +1,33 @@
-export function drawBrackets(n) {
-	var left_pos = 0;
-	var j = 0;
-	var x = n / 2;
-	var acc = n;
-	while (j < n / 2) {
-		for (let i = 0; i < acc; i++) {
-			const newDiv = document.createElement("div");
-			const winHeight = parseInt(window.getComputedStyle(document.getElementById("brackets")).height);
-			const blockHeight = winHeight / acc;
-			const offset = winHeight / 2 - (blockHeight * (acc / 2 - 1) + 8 * winHeight / 100);
-			newDiv.classList.add("rectangle-div");
-			newDiv.style.left = `${left_pos}px`;
-			if (i < 2) {
-				newDiv.style.background = `rgba(255, 255, 255, .15)`;
-				newDiv.style.boxShadow = `white 0 0 20px`;
-			}
-			if (i % 2 == 0)
-				newDiv.style.top = `${i * blockHeight + offset}px`;
-			else
-				newDiv.style.top = `${(i - 1) * blockHeight + 70 + offset}px`;
-			newDiv.textContent = document.getElementById(`player_${i + 1}`).value;
-			document.querySelector("#brackets").appendChild(newDiv);
-		}
-		j++;
-		console.log(acc);
-		acc /= 2;
-		if (acc == 1)
-			break;
-		left_pos += 250;
+import { sleep } from './utils.js';
+
+export async function drawBrackets(n) {
+	const newDiv = document.createElement("div");
+	newDiv.classList.add("brackets");
+	document.querySelector("#brackets-container").appendChild(newDiv);
+
+	const boxes = [];
+
+	for (let i = 0; i < n; i++) {
+		const new_box = document.createElement("div");
+		new_box.classList.add("rectangle-div");
+		new_box.textContent = document.getElementById(`player_${i + 1}`).value;
+		newDiv.appendChild(new_box);
+		boxes.push(new_box);
 	}
-	// for (let i = 0; i < n - 2; i++) {
-	// 	const newDiv = document.createElement("div");
-	// 	const winHeight = parseInt(window.getComputedStyle(document.getElementById("brackets")).height);
-	// 	const blockHeight = winHeight / parseInt(document.getElementById("slider1").value);
-	// 	const offset = winHeight / 2 - (blockHeight * (parseInt(document.getElementById("slider1").value) / 2 - 1) + 8 * winHeight / 100);
-	// 	newDiv.classList.add("rectangle-div");
-	// 	newDiv.style.left = `300px`;
-	// 	newDiv.style.border = `dashed`;
-	// 	if (i % 2 == 0)
-	// 		newDiv.style.top = `${(i + 1) * blockHeight + offset}px`;
-	// 	else
-	// 		newDiv.style.top = `${i * blockHeight + 70 + offset}px`;
-	// 	newDiv.textContent = "?";
-	// 	document.querySelector("#brackets").appendChild(newDiv);
-	// }
+
+	await sleep(500);
+	for (let i = 0; i < 2; i++) {
+		boxes[i].style.background = `rgba(255, 255, 255, .15)`;
+		boxes[i].style.boxShadow = `white 0 0 10px`;
+	}
 }
 
 export function enterNicknames(n) {
-	// n = 1;
 	const form = document.createElement("form");
 	form.id = "nicknames_form";
 	for (let i = 0; i < n; i++) {
 		const userBox = document.createElement("div");
-		userBox.classList.add("user-box");
+		userBox.classList.add("input-div");
 		const userNameInput = document.createElement("input");
 		userNameInput.type = "text";
 		userNameInput.id = `player_${i + 1}`;
@@ -67,7 +42,7 @@ export function enterNicknames(n) {
 	}
 	const button = document.createElement("button");
 	button.textContent = "GO";
-	button.id = "GO_N";
+	// button.id = "GO_N";
 	form.appendChild(button);
-	document.querySelector("#nickname_setup_box").appendChild(form);
+	document.querySelector("#nickname_setup-box").appendChild(form);
 }

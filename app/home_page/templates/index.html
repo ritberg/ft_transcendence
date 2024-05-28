@@ -14,81 +14,81 @@
 		<script type="module" src="{% static 'scripts/brackets.js' %}"></script>
 		<script type="module" src="{% static 'scripts/stars.js' %}"></script>
 		<script type="module" src="{% static 'scripts/pong.js' %}"></script>
-		<script type="module" src="{% static 'scripts/pong_tournoi.js' %}"></script>
 	</head>
 	<body>
-		<button type="button" id="hamburger-icon">
+		<button type="button" id="tabs-icon">
 			<i class="bi bi-list"></i>
 			<h6>TABS</h6>
 		</button>
-		<div id="vertical-tab">
-			<button type="button" id="chat-button">CHAT<i class="bi bi-chat-left-text"></i></button>
-			<button type="button" id="profile-button">PROFILE<i class="bi bi-person"></i></button>
+		<div id="tabs-list">
+			<button type="button" id="tl-chat">CHAT<i class="bi bi-chat-left-text"></i></button>
+			<button type="button" id="tl-profile">PROFILE<i class="bi bi-person"></i></button>
 			<button type="button">FRIENDS<i class="bi bi-people"></i></button>
 			<button type="button">SETTINGS<i class="bi bi-gear"></i></button>
 		</div>
-		<div id="chat-box">
+		<div id="chat-window">
 			<h6>> dferreir: Hi! I'm dogygo also I'm omega gay + george bush did 9/11</h6>
 		</div>
-		<div id="profile-box">
+		<div id="profile_tab">
 			<h6>dferreir</h6>
-			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
+			<img src="https://tinyurl.com/dkxknyfv" alt="Poop" class="pfp">
 		</div>
-		<canvas id="game" width="1000" height="800"></canvas>
+		<canvas id="game_canvas" width="1000" height="800"></canvas>
 		<script type="module" src="{% static 'scripts/main.js' %}"></script>
-		<div id="main-buttons">
+		<div id="main-menu">
 			<h1>PONG</h1>
 			<button type="button" id="pvp-mode">PvP</button>
 			<button type="button" id="cpu-mode">CPU</button>
-			<button type="button" id="tournoi-mode">TOURNEY</button>
+			<button type="button" id="tourney-mode">TOURNEY</button>
 			<button type="button" id="online-mode">ONLINE</button>
 		</div>
-		<div id="login-box">
+		<div id="online-box">
 			<h1>JOIN GAME</h1>
 			<form>
-				<div class="user-box">
-					<input id="room_name_input" type="text" name="" required="">
+				<div class="input-div">
+					<input id="i-room_name" type="text" name="" required="">
 					<label>ROOM NAME</label>
-					<h6 id="empty_room_text">leave empty for random room</h6>
+					<h6 id="t-empty_room">leave empty for random room</h6>
 				</div>
-				<button type="button" id="GO_O">GO</button>
+				<button type="button" id="b-online-go">GO</button>
 			</form>
 		</div>
-		<div id="profile-box_main">
+		<div id="profile-box">
 			<h1>SIGN UP</h1>
-			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
+			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="pfp">
 			<form>
-				<div class="user-box">
+				<div class="input-div">
 					<input type="text" name="" required="">
 					<label>USER NAME</label>
 				</div>
-				<div class="user-box">
+				<div class="input-div">
 					<input type="text" name="" required="">
 					<label>EMAIL</label>
 				</div>
-				<div class="user-box">
+				<div class="input-div">
 					<input type="password" name="" required="">
 					<label>PASSWORD</label>
 				</div>
 				<button type="button">GO</button>
 			</form>
 		</div>
-		<div class="choice-box" id="tournoi">
+		<div id="tourney_settings-box">
 			<form>
-				<h1>TOURNEY</h1>
-				<h2 id="PLAYERS_T">PLAYERS</h2>
-				<input id="slider1" type="range" min="4" max="8" value="8" step="4"/>
-				<h2 id="DIFFICULTY_T">DIFFICULTY</h2>
-				<input id="slider2" type="range" min="1" max="3" value="2" step="1"/>
-				<h2 id="MODE_T">MODE</h2>
-				<input id="slider3" type="range" min="0" max="1" value="0" step="1"/>
-				<button type="button" id="OK_T">OK</button>
+				<h1>SETTINGS</h1>
+				<h2 id="t-players">PLAYERS</h2>
+				<input id="s-players" type="range" min="4" max="8" value="6" step="1"/>
+				<h2 id="t-points">POINTS</h2>
+				<input id="s-points" type="range" min="1" max="11" value="6" step="1"/>
+				<h2 id="t-difficulty">DIFFICULTY</h2>
+				<input id="s-difficulty" type="range" min="0" max="2" value="1" step="1"/>
+				<h2 id="t-mode">POWER-UPS</h2>
+				<input id="s-mode" type="range" min="0" max="2" value="1" step="1"/>
+				<button type="button" id="b-tourney_settings">OK</button>
 			</form>
 		</div>
-		<div id="brackets">
-			<i class="bi bi-trophy"></i>
-		</div>
-		<div id="nickname_setup_box">
+		<div id="brackets-container"></div>
+		<!-- <i class="bi bi-trophy"></i> -->
+		<div id="nickname_setup-box">
 			<h1>PLAYER NAMES</h1>
 		</div>
 	</body>

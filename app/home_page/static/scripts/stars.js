@@ -1,12 +1,12 @@
 import { loop_exec, delta } from './main.js';
 
-export function stars(game_) {
-	const ctx_stars = game_.getContext("2d");
+export function stars(stars_effect) {
+	const ctx_stars = stars_effect.getContext("2d");
 
 	const InitCanvas = () => {
-		// game_.style.position = "fixed";
-		game_.setAttribute("width", `1000px`);
-		ctx_stars.clearRect(0, 0, _game_.width, _game_.height);
+		// stars_effect.style.position = "fixed";
+		stars_effect.setAttribute("width", `1000px`);
+		ctx_stars.clearRect(0, 0, stars_array.width, stars_array.height);
 	};
 
 	class Stars {
@@ -20,20 +20,20 @@ export function stars(game_) {
 		beforeStart() {
 			if (
 				this.x < 0 ||
-				this.x > game_.width ||
+				this.x > stars_effect.width ||
 				this.y < 0 ||
-				this.y > game_.height
+				this.y > stars_effect.height
 			) {
 				this.radius = 0.2;
-				this.x = Math.random() * game_.width;
-				this.y = Math.random() * game_.height;
+				this.x = Math.random() * stars_effect.width;
+				this.y = Math.random() * stars_effect.height;
 			}
 		}
 		move() {
 			this.radius += 0.1 / delta;
 			const speed = 100 * delta;
-			this.x += (this.x - game_.width / 2) * (this.radius / speed);
-			this.y += (this.y - game_.height / 2) * (this.radius / speed);
+			this.x += (this.x - stars_effect.width / 2) * (this.radius / speed);
+			this.y += (this.y - stars_effect.height / 2) * (this.radius / speed);
 		}
 		draw() {
 			this.beforeStart();
@@ -59,13 +59,13 @@ export function stars(game_) {
 		return array;
 	}
 
-	const _game_ = StarArray();
+	const stars_array = StarArray();
 
 	function Update() {
 		if (loop_exec == 1)
 			return;
 		InitCanvas();
-		_game_.forEach((star) => star.draw());
+		stars_array.forEach((star) => star.draw());
 		requestAnimationFrame(Update);
 	}
 	Update();

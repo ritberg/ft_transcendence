@@ -1,11 +1,12 @@
 body {
 	background: radial-gradient(lightgrey, black, grey);
 }
-#nickname_setup_box {
+#nickname_setup-box {
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
 	display: none;
+	opacity: 0;
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -16,7 +17,17 @@ body {
 	display: none;
 	flex-direction: column;
 }
-#nickname_setup_box h1 {
+#nickname_setup-box.hidden {
+	animation: fade-wide-out 1s;
+	animation-fill-mode: forwards;
+}
+@keyframes fade-wide-out {
+	to {
+		opacity: 0;
+		width: 600px;
+	}
+}
+#nickname_setup-box h1 {
 	width: 100%;
 	font-family: "Arial";
 	margin: 10px 0 30px 0;
@@ -24,13 +35,13 @@ body {
 	color: rgba(255, 255, 255, 0.8);
 	text-align: center;
 }
-#nickname_setup_box form {
+#nickname_setup-box form {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
 }
-#nickname_setup_box .user-box {
+#nickname_setup-box .input-div {
 	position: relative;
 	margin: 0 0 20px 0;
 	box-sizing: border-box;
@@ -38,10 +49,10 @@ body {
 	width: 50%;
 	height: 50px;
 }
-#nickname_setup_box .user-box:nth-last-child(-n+3) {
+#nickname_setup-box .input-div:nth-last-child(-n+3) {
 	margin-bottom: 0;
 }
-#nickname_setup_box .user-box input {
+#nickname_setup-box .input-div input {
 	position: absolute;
 	top: 0;
 	left: 50%;
@@ -57,7 +68,7 @@ body {
 	outline: none;
 	background: transparent;
 }
-#nickname_setup_box .user-box label {
+#nickname_setup-box .input-div label {
 	position: absolute;
 	top: 0px;
 	left: 50%;
@@ -68,7 +79,7 @@ body {
 	pointer-events: none;
 	transition: .2s;
 }
-#nickname_setup_box button {
+#nickname_setup-box button {
 	color: rgba(255, 255, 255, 0.8);
 	background: transparent;
 	border: 2px solid rgba(255, 255, 255, 0.8);
@@ -80,18 +91,18 @@ body {
 	margin: 30px 0 10px 0;
 	transition: .1s;
 }
-#nickname_setup_box button:hover {
+#nickname_setup-box button:hover {
 	color: white;
 	box-shadow: white 0 0 10px;
 }
-#nickname_setup_box .user-box input:focus ~ label,
-#nickname_setup_box .user-box input:valid ~ label {
+#nickname_setup-box .input-div input:focus ~ label,
+#nickname_setup-box .input-div input:valid ~ label {
 	top: -15px;
 	text-shadow: white 0 0 8px;
 	font-size: 12px;
 }
 .rectangle-div {
-	position: absolute;
+	position: relative;
 	font-family: "Arial";
 	font-size: 30px;
 	width: 200px;
@@ -100,20 +111,41 @@ body {
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 2px solid white;
 	border-radius: 10px;
+	margin-bottom: 20px;
 	text-align: center;
 	line-height: 200%;
 }
-#brackets {
+.rectangle-div:last-child {
+	margin-bottom: 0px;
+}
+#brackets-container {
 	position: absolute;
 	display: none;
-	text-align: center;
+	opacity: 0;
+	width: 950px;
+	height: 750px;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
-	width: 950px;
-	height: 750px;
 }
-#brackets i {
+#brackets-container.shown {
+	animation: fade-normal-in 1.5s;
+	animation-fill-mode: forwards;
+}
+@keyframes fade-normal-in {
+	to {
+		opacity: 1;
+	}
+}
+.brackets {
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	top: 50%;
+	left: 0;
+	transform: translateY(-50%);
+}
+.brackets i {
 	position: absolute;
 	font-size: 100px;
 	font-family: "Arial";
@@ -123,11 +155,17 @@ body {
 	transform: translate(320%, -50%);
 	animation: trophy-pulse 3s infinite;
 }
-.avatar_pic {
+.pfp {
 	overflow: hidden;
 	border-radius: 50%;
 }
-.choice-box {
+#tourney_settings-box {
+	opacity: 0;
+	display: none;
+	text-align: center;
+	padding: 20px;
+	width: 350px;
+	box-sizing: border-box;
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
@@ -138,18 +176,10 @@ body {
 	transform: translate(-50%, -50%);
 	transition: 1s;
 }
-#tournoi {
-	opacity: 0;
-	display: none;
-	text-align: center;
-	padding: 20px;
-	width: 350px;
-	box-sizing: border-box;
-}
-#tournoi.shown {
-	animation: fade-in 1.5s forwards;
-}
-/* #tournoi.hidden { */
+/* #tourney_settings-box.shown { */
+/* 	animation: fade-in 1.5s forwards; */
+/* } */
+/* #tourney_settings-box.hidden { */
 /* 	animation: fade-down-tournoi 1s forwards; */
 /* } */
 /* @keyframes fade-down-tournoi { */
@@ -158,7 +188,7 @@ body {
 /* 		width: 500px; */
 /* 	} */
 /* } */
-#tournoi h1 {
+#tourney_settings-box h1 {
 	font-family: "Arial";
 	font-size: 40px;
 	margin: 10px 0 0;
@@ -166,7 +196,7 @@ body {
 	color: rgba(255, 255, 255, 0.8);
 	text-align: center;
 }
-#tournoi h2 {
+#tourney_settings-box h2 {
 	font-family: "Arial";
 	font-size: 30px;
 	padding: 0;
@@ -175,7 +205,7 @@ body {
 	text-align: center;
 	margin: 30px 0 10px 0;
 }
-#tournoi input[type="range"] {
+#tourney_settings-box input[type="range"] {
 	appearance: none;
 	outline: none;
 	height: 8px;
@@ -186,7 +216,7 @@ body {
 	opacity: 0.8;
 	transition: all .1s;
 }
-#tournoi input[type="range"]::-moz-range-thumb {
+#tourney_settings-box input[type="range"]::-moz-range-thumb {
 	appearance: none;
 	background: white;
 	color: white;
@@ -198,7 +228,7 @@ body {
 	transform: rotate(45deg);
 	transition: all .3s ease-out;
 }
-#tournoi input[type="range"]::-webkit-slider-thumb {
+#tourney_settings-box input[type="range"]::-webkit-slider-thumb {
 	-webkit-appearance: none;
 	background: white;
 	color: white;
@@ -210,7 +240,7 @@ body {
 	transform: rotate(45deg);
 	transition: all .3s ease-out;
 }
-#tournoi button {
+#tourney_settings-box button {
 	color: rgba(255, 255, 255, 0.8);
 	background: transparent;
 	border: 2px solid rgba(255, 255, 255, 0.8);
@@ -220,24 +250,24 @@ body {
 	margin: 30px 0 10px 0;
 	transition: .1s;
 }
-#tournoi button:hover {
+#tourney_settings-box button:hover {
 	color: white;
 	box-shadow: white 0 0 10px;
 }
-#tournoi input[type="range"]::-webkit-slider-thumb:active {
+#tourney_settings-box input[type="range"]::-webkit-slider-thumb:active {
 	width: 18px;
 	height: 18px;
 	transform: rotate(225deg);
 }
-#tournoi input[type="range"]::-moz-range-thumb:active {
+#tourney_settings-box input[type="range"]::-moz-range-thumb:active {
 	width: 18px;
 	height: 18px;
 	transform: rotate(225deg);
 }
-#tournoi input[type="range"]:hover {
+#tourney_settings-box input[type="range"]:hover {
 	box-shadow: white 0 0 7px;
 }
-#profile-box_main {
+#profile-box {
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
@@ -252,18 +282,18 @@ body {
 	transform: translate(-50%, -50%);
 	box-sizing: border-box;
 }
-#profile-box_main h1 {
+#profile-box h1 {
 	font-family: "Arial";
 	margin: 0 0 20px;
 	padding: 0;
 	color: rgba(255, 255, 255, 0.8);
 	text-align: center;
 }
-#profile-box_main .user-box {
+#profile-box .input-div {
 	font-family: "Arial";
 	position: relative;
 }
-#profile-box_main .user-box input {
+#profile-box .input-div input {
 	width: 100%;
 	padding: 10px 0;
 	font-size: 16px;
@@ -274,7 +304,7 @@ body {
 	outline: none;
 	background: transparent;
 }
-#profile-box_main .user-box label {
+#profile-box .input-div label {
 	position: absolute;
 	top:0;
 	left: 0;
@@ -284,7 +314,7 @@ body {
 	pointer-events: none;
 	transition: .5s;
 }
-#profile-box_main button {
+#profile-box button {
 	position: relative;
 	left: 50%;
 	transform: translate(-50%, -40%);
@@ -297,25 +327,25 @@ body {
 	margin-top: 20px;
 	transition: .1s;
 }
-#profile-box_main button:hover {
+#profile-box button:hover {
 	color: white;
 	box-shadow: white 0 0 10px;
 }
-#profile-box_main .avatar_pic {
+#profile-box .pfp {
 	position: relative;
 	height: 100px;
 	width: 100px;
 	left: 50%;
 	transform: translateX(-50%);
 }
-#profile-box_main .user-box input:focus ~ label,
-#profile-box_main .user-box input:valid ~ label {
+#profile-box .input-div input:focus ~ label,
+#profile-box .input-div input:valid ~ label {
 	top: -20px;
 	left: 0;
 	text-shadow: white 0 0 8px;
 	font-size: 12px;
 }
-#hamburger-icon {
+#tabs-icon {
 	display: flex;
 	justify-content: space-between;
 	flex-direction: row;
@@ -333,7 +363,7 @@ body {
 	cursor: pointer;
 	transition: all ease-out .1s;
 }
-#hamburger-icon i {
+#tabs-icon i {
 	position: relative;
 	margin: 0 0 0 2.5px;
 	height: 50px;
@@ -342,7 +372,7 @@ body {
 	color: white;
 	background-color: transparent;
 }
-#hamburger-icon h6 {
+#tabs-icon h6 {
 	pointer-events: none;
 	position: relative;
 	font-family: "Arial";
@@ -355,23 +385,23 @@ body {
 	transform: scale(.5, 1);
 	transition: all ease-out .2s;
 }
-#hamburger-icon.active {
+#tabs-icon.active {
 	border-radius: 15px;
 	width: 160px;
 }
-#hamburger-icon:hover:not(.active) {
+#tabs-icon:hover:not(.active) {
 	border-radius: 15px;
 }
-#hamburger-icon:hover:not(.active) i {
+#tabs-icon:hover:not(.active) i {
 	text-shadow: white 0 0 5px;
 }
-#hamburger-icon.active h6 {
+#tabs-icon.active h6 {
 	left: 0px;
 	transform: scale(1, 1);
 	pointer-events: auto;
 	opacity: 1;
 }
-#vertical-tab {
+#tabs-list {
 	pointer-events: none;
 	background: rgba(0, 0, 0, .8);
 	border: 2px solid rgba(255, 255, 255, .8);
@@ -385,13 +415,13 @@ body {
 	z-index: 1;
 	transition: all ease-out .3s;
 }
-#vertical-tab.active {
+#tabs-list.active {
 	pointer-events: auto;
 	opacity: 1;
 	top: 85px;
 	left: 40px;
 }
-#vertical-tab button {
+#tabs-list button {
 	position: relative;
 	border: none;
 	border-bottom: 1px solid rgba(255, 255, 255, .8);
@@ -406,25 +436,25 @@ body {
 	cursor: pointer;
 	text-align: left;
 }
-#vertical-tab:not(.active) button {
+#tabs-list:not(.active) button {
 	transition: all .3s;
 }
-#vertical-tab.active button {
+#tabs-list.active button {
 	opacity: 1;
 }
-#vertical-tab i {
+#tabs-list i {
 	position: absolute;
 	font-size: 25px;
 	right: 5px;
 	top: 10px;
 }
-#vertical-tab button:last-child {
+#tabs-list button:last-child {
 	border-bottom: none;
 }
-#vertical-tab button:hover {
+#tabs-list button:hover {
 	text-shadow: white 0 0 5px;
 }
-#profile-box {
+#profile_tab {
 	position: absolute;
 	display: flex;
 	flex-direction: row;
@@ -440,7 +470,7 @@ body {
 	cursor: pointer;
 	z-index: 1;
 }
-#profile-box h6 {
+#profile_tab h6 {
 	font-size: 30px;
 	font-family: "Arial";
 	color: white;
@@ -450,12 +480,12 @@ body {
 	line-height: 100%;
 	font-weight: normal;
 }
-#profile-box .avatar_pic {
+#profile_tab .pfp {
 	margin: 0 10px 0 0;
 	height: 80%;
 	width: 44.8px;
 }
-#game {
+#game_canvas {
 	background-color: black;
 	position: fixed;
 	border-radius: 10px;
@@ -466,7 +496,7 @@ body {
 	width: 1000px;
 	height: 800px;
 }
-#main-buttons {
+#main-menu {
 	position: absolute;
 	display: flex;
 	flex-direction: column;
@@ -477,17 +507,31 @@ body {
 	transform: translate(-50%, -50%);
 	opacity: 1;
 }
-.hidden {
-	animation: fade-down-main 1s;
+.shown {
+	animation: fade-in 1.5s;
 	animation-fill-mode: forwards;
 }
-@keyframes fade-down-main {
+.hidden {
+	animation: fade-down 1s;
+	animation-fill-mode: forwards;
+}
+@keyframes fade-in {
+	10% {
+		transform: translate(0%, -50%);
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+		transform: translate(-50%, -50%);
+	}
+}
+@keyframes fade-down {
 	to {
 		opacity: 0;
 		top: 55%;
 	}
 }
-#main-buttons h1 {
+#main-menu h1 {
 	font-family: "Arial";
 	color: rgba(255, 255, 255, 0.5);
 	font-size: 100px;
@@ -498,7 +542,7 @@ body {
 	line-height: 100%;
 	animation: text-shadow 3s infinite;
 }
-#main-buttons button {
+#main-menu button {
 	color: rgba(255, 255, 255, 0.5);
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.5);
@@ -510,12 +554,12 @@ body {
 	font-family: "Arial";
 	cursor: pointer;
 }
-#main-buttons button:hover {
+#main-menu button:hover {
 	color: lightgrey;
 	border: 4px solid lightgrey;
 	animation: hover-shadows 1.5s ease-out infinite;
 }
-#login-box {
+#online-box {
 	opacity: 0;
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
@@ -529,28 +573,14 @@ body {
 	transform: translate(0%, -50%);
 	box-sizing: border-box;
 }
-#login-box.shown {
-	animation: fade-in 1.5s;
-	animation-fill-mode: forwards;
-}
-@keyframes fade-in {
-	10% {
-		transform: translate(0%, -50%);
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-		transform: translate(-50%, -50%);
-	}
-}
-#login-box h1 {
+#online-box h1 {
 	font-family: "Arial";
 	margin: 10px 0 20px 0;
 	padding: 0;
 	color: rgba(255, 255, 255, 0.8);
 	text-align: center;
 }
-#login-box form {
+#online-box form {
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -558,7 +588,7 @@ body {
 	height: 80%;
 	align-items: center;
 }
-#login-box .user-box {
+#online-box .input-div {
 	width: 100%;
 	font-family: "Arial";
 	position: relative;
@@ -566,7 +596,7 @@ body {
 	justify-content: center;
 	align-items: center;
 }
-#login-box .user-box input {
+#online-box .input-div input {
 	width: 85%;
 	padding: 10px 0;
 	font-size: 16px;
@@ -577,7 +607,7 @@ body {
 	outline: none;
 	background: transparent;
 }
-#login-box .user-box label {
+#online-box .input-div label {
 	position: absolute;
 	top: 0;
 	left: 7.5%;
@@ -588,7 +618,7 @@ body {
 	pointer-events: none;
 	transition: .5s;
 }
-#login-box .user-box h6 {
+#online-box .input-div h6 {
 	position: absolute;
 	top: 0;
 	left: 7.5%;
@@ -603,7 +633,7 @@ body {
 	transition: .5s;
 }
 
-#login-box button {
+#online-box button {
 	position: relative;
 	align-items: center;
 	color: rgba(255, 255, 255, 0.8);
@@ -616,12 +646,12 @@ body {
 	cursor: pointer;
 	transition: .1s;
 }
-#login-box button:hover {
+#online-box button:hover {
 	color: white;
 	box-shadow: white 0 0 10px;
 }
-#login-box .user-box input:focus ~ label,
-#login-box .user-box input:valid ~ label {
+#online-box .input-div input:focus ~ label,
+#online-box .input-div input:valid ~ label {
 	top: -20px;
 	left: 7.5%;
 	text-shadow: white 0 0 8px;
@@ -649,7 +679,7 @@ body {
 		box-shadow: lightgrey 0 0 10px;
 	}
 }
-#chat-box {
+#chat-window {
 	visibility: hidden;
 	position: absolute;
 	opacity: 0;
@@ -664,11 +694,11 @@ body {
 	cursor: pointer;
 	transition: all ease-out .1s;
 }
-#chat-box.active {
+#chat-window.active {
 	visibility: visible;
 	opacity: 1;
 }
-#chat-box h6 {
+#chat-window h6 {
 	position: absolute;
 	font-size: 20px;
 	font-family: "Arial";
@@ -678,6 +708,6 @@ body {
 	font-weight: normal;
 	transition: all ease-out .1s;
 }
-#chat-box.active h6 {
+#chat-window.active h6 {
 	opacity: 1;
 }
