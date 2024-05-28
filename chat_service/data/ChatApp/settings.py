@@ -10,7 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import sys
 from pathlib import Path
+
+sys.path.append('/home/transcendance/user_auth_system')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-yj+%srbz+g4-3h(^*+*6c$tj=(+g6&+)afsbxa63egt8kz00eu'
+SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'corsheaders',
+	'user_management'
 ]
 
 MIDDLEWARE = [
@@ -143,19 +147,29 @@ CHANNEL_LAYERS = {
 
 LOGIN_REDIRECT_URL = "room"
 
-LOGOUT_REDIRECT_URL = "chat-page"
-
 # AUTHENTICATION_BACKENDS = [
 #     'django.contrib.auth.backends.ModelBackend',
 # ]
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Strict'
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
-CSRF_TRUSTED_ORIGINS = ["http://localhost:8000"]
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001']
 
 # CHANNELS_ALLOWED_ORIGINS = ["*"]
 
-LOGIN_URL = 'http://localhost:8000/login/'
+# LOGIN_URL = 'http://localhost:8000/auth/login/'
+
+# Connexion to CustomUser
+AUTH_USER_MODEL = 'user_management.CustomUser'

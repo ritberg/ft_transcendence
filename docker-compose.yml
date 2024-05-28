@@ -38,6 +38,7 @@ services:
       - "8001:8001"
     volumes:
       - chats:/home/transcendance/${CHAT_SERVICE_NAME}
+      - user_service:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
       - transcendance

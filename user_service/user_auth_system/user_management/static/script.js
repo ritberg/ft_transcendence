@@ -36,12 +36,21 @@ document.addEventListener("DOMContentLoaded", function () {
   let chatRoom1Url = "http://localhost:8001/chat/room1/";
 
   // CSRF token
-  let token = window.CSRF_TOKEN;
+  let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
+  let token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
+
+  if (!token) {
+    console.error("CSRF token not found!");
+    return; // Arrêtez l'exécution si le token CSRF n'est pas trouvé
+  }
 
   const updateCSRFToken = (newToken) => {
     console.log("old token : ", token);
     token = newToken;
     console.log("new token : ", token);
+    document
+      .querySelector('meta[name="csrf-token"]')
+      .setAttribute("content", newToken);
   };
 
   // add click event listener for button
@@ -550,36 +559,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // });
 
   btnChat.addEventListener("click", function (event) {
-    const tokenTmp = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
     console.log("Sending chat room request...");
-    console.log("tokenTmp : ", tokenTmp);
+    console.log("token : ", token);
 
     fetch(chatRoom1Url, {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": tokenTmp,
-            "Content-Type": "application/json",
-        },
-        credentials: "include",  // Important: Include credentials (cookies)
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token,
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // Important: Include credentials (cookies)
     })
-    .then((response) => {
+      .then((response) => {
         console.log("Response Headers:", [...response.headers.entries()]);
 
         if (!response.ok) {
-            console.log("Full response:", response);
-            throw new Error("Network response was not ok");
+          console.log("Full response:", response);
+          throw new Error("Network response was not ok");
         }
 
         return response.json();
-    })
-    .then((data) => {
+      })
+      .then((data) => {
         console.log("chat request data:", data);
         console.log("data : ", data.data);
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         console.error("Fetch error:", error);
-    });
+      });
   });
-
 });
