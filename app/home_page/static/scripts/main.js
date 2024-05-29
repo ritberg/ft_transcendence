@@ -1,7 +1,8 @@
 import { sleep } from './utils.js';
 import { stars } from './stars.js';
-import { loop } from './pong.js';
-import { drawBrackets, enterNicknames } from './brackets.js';
+import { loop as loopPvp } from './pvp_pong.js';
+import { loop as loopTourney} from './tourney_pong.js';
+import { drawBrackets, enterNicknames, createPlayers, players } from './brackets.js';
 
 export let delta = 1.5;
 export let loop_exec = 0;
@@ -21,10 +22,16 @@ export async function GameMode(n) {
 	document.getElementById("game_canvas").style.background = "black";
 	document.getElementById("main-menu").style.display = "none";
 
-	if (n == 1)
-		ai_activated = true;
-	loop_exec = true;
-	requestAnimationFrame(loop);
+	if (n <= 1) {
+		if (n == 1)
+			ai_activated = true;
+		loop_exec = true;
+		requestAnimationFrame(loopPvp);
+	}
+	else if (n == 2) {
+		loop_exec = true;
+		requestAnimationFrame(loopTourney);
+	}
 }
 
 stars(document.getElementById("game_canvas"));
@@ -61,6 +68,7 @@ document.getElementById("main-menu").addEventListener("click", function() {
 				document.getElementById("tourney_settings-box").style.display = "none";
 				document.getElementById("nicknames_form").addEventListener("submit", async function(event) {
 					event.preventDefault();
+					createPlayers();
 					document.getElementById("nickname_setup-box").style.opacity = "1";
 					document.getElementById("nickname_setup-box").classList.remove("shown");
 					document.getElementById("nickname_setup-box").classList.add("hidden");
@@ -68,9 +76,16 @@ document.getElementById("main-menu").addEventListener("click", function() {
 					await sleep(300);
 					document.getElementById("brackets-container").style.display = "flex";
 					document.getElementById("brackets-container").classList.add("shown");
-					drawBrackets(document.getElementById("s-players").value);
+					drawBrackets(players);
 					await sleep(500);
 					document.getElementById("nickname_setup-box").style.display = "none";
+					await sleep(1000);
+					document.getElementById("brackets-container").style.opacity = "1";
+					document.getElementById("brackets-container").classList.remove("shown");
+					document.getElementById("brackets-container").classList.add("hidden");
+					GameMode(2);
+					await sleep(1000);
+					document.getElementById("brackets-container").style.display = "none";
 				});
 			});
 		}
