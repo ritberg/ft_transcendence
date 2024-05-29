@@ -10,7 +10,26 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import sys
 from pathlib import Path
+import environ
+
+sys.path.append('/home/transcendance/user_auth_system')
+
+# Read environment variables from .env file
+# And define CONSTANTS
+env = environ.Env()
+environ.Env.read_env(env_file='.env.django')
+
+USER_SERVICE_NAME = env('USER_SERVICE_NAME')
+STAT_SERVICE_NAME = env('STAT_SERVICE_NAME')
+AUTH_APP_NAME = env('AUTH_APP_NAME')
+STAT_APP_NAME = env('STAT_APP_NAME')
+DB_NAME = env('DB_NAME')
+DB_USER = env('DB_USER')
+DB_PASSWORD = env('DB_PASSWORD')
+DB_HOST = env('DB_HOST')
+DB_PORT = env('DB_PORT')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,7 +39,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!e_5^0ijw5$b(5chssh9*o(yri_+smn!nbcb@$&3qdbm-@dxji'
+SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,11 +56,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+	'rest_framework',
+	'corsheaders',
+	f'{AUTH_APP_NAME}',
+	f'{STAT_APP_NAME}',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+	'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -49,7 +73,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'user_statistics.urls'
+ROOT_URLCONF = f'{STAT_SERVICE_NAME}.urls'
 
 TEMPLATES = [
     {
@@ -67,7 +91,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'user_statistics.wsgi.application'
+WSGI_APPLICATION = f'{STAT_SERVICE_NAME}.wsgi.application'
 
 
 # Database
@@ -75,11 +99,14 @@ WSGI_APPLICATION = 'user_statistics.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -116,8 +143,33 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+# STATICFILES_DIRS = [
+#     BASE_DIR / f"../{USER_SERVICE_NAME}/{AUTH_APP_NAME}/static",
+# ]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Definition of default user
+
+AUTH_USER_MODEL = f'{AUTH_APP_NAME}.CustomUser'
+
+# CORS settings
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001']

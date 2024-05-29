@@ -36,7 +36,7 @@ class RegisterUserView(APIView):
 				},
 				status=status.HTTP_201_CREATED
 			)
-		return Response( serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginUserView(APIView):
 	permission_classes = [AllowAny]
@@ -51,6 +51,7 @@ class LoginUserView(APIView):
 			if user is not None:
 				login(request, user)
 				csrf_token = get_token(request)
+				print("csrf_token : ", csrf_token)
 				return Response(
 					{
 						'data': UserSerializer(user).data,
@@ -103,7 +104,7 @@ class UpdateUserView(APIView):
 					{'message': f"{type(e).__name__}: {str(e)}"},
 					status=status.HTTP_400_BAD_REQUEST
 				)
-			
+
 # friend request views
 
 class SendFriendRequestView(APIView):
@@ -147,7 +148,7 @@ class AcceptFriendRequestView(APIView):
 			{'message': 'Friend request cannot be accepted by this user'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-	
+
 class RejectFriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -163,7 +164,7 @@ class RejectFriendRequestView(APIView):
 			{'message': 'Friend request cannot be rejected by this user'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-	
+
 class ListFriendsRequestsView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -174,7 +175,7 @@ class ListFriendsRequestsView(APIView):
 			{'data': serializer.data},
 			status=status.HTTP_200_OK
 		)
-	
+
 class ListFriendsView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -185,10 +186,10 @@ class ListFriendsView(APIView):
 			{'data': serializer.data},
 			status=status.HTTP_200_OK
 		)
-	
+
 class DeleteFriendView(APIView):
 	permission_classes = [IsAuthenticated]
-	
+
 	def delete(self, request, *args, **kwargs):
 		friend = get_object_or_404(User, id=request.data.get('to_user'))
 		if request.user.friends.filter(id=friend.id).exists():
@@ -202,7 +203,7 @@ class DeleteFriendView(APIView):
 			{'message': 'User is not in your friends list'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-	
+
 class GetUserID(APIView):
 	permission_classes = [IsAuthenticated]
 

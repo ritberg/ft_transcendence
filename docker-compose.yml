@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  user_management:
-    container_name: user_management
+  user_service:
+    container_name: user_service
     build:
       context: ./user_service/docker
       dockerfile: Dockerfile
@@ -17,7 +17,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - user_management:/home/transcendance/${USER_SERVICE_NAME}
+      - user_service:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
@@ -25,8 +25,8 @@ services:
     depends_on:
       - db_user
 
-  stat_management:
-    container_name: stat_management
+  stat_service:
+    container_name: stat_service
     build:
       context: ./stat_service/docker
       dockerfile: Dockerfile
@@ -39,15 +39,16 @@ services:
     env_file:
       - .env
     ports:
-      - "8001:8000"
+      - "8001:8001"
     volumes:
-      - stat_management:/home/transcendance/${STAT_SERVICE_NAME}
+      - stat_service:/home/transcendance/${STAT_SERVICE_NAME}
+      - user_service:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
     init: true
     depends_on:
-      - db_user
+      - user_service
 
   db_user:
     container_name: db_user
@@ -68,24 +69,23 @@ services:
     init: true
 
 volumes:
-  user_management:
+  user_service:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${PWD}/user_service/${USER_SERVICE_NAME}" # home
+      device: "${PWD}/user_service/${USER_SERVICE_NAME}"
 
-  stat_management:
+  stat_service:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${PWD}/stat_service/${STAT_SERVICE_NAME}" # home
+      device: "${PWD}/stat_service/${STAT_SERVICE_NAME}"
 
   postgres_data:
     driver: local
 
 networks:
   transcendance:
-    # name: transcendance
     driver: bridge

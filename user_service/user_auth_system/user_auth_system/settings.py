@@ -35,7 +35,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xxs1)i(qp**&7tbz8zmlfa&&@@ez-s-#dt6al5@hb3^&th404!'
+SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -58,9 +58,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-	'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -172,37 +172,27 @@ REST_FRAMEWORK = {
 
 # CORS settings
 
-# from corsheaders.defaults import default_headers
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False
 
-# CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:5500",
-#     "http://127.0.0.1:5500",
-# ]
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001']
 
-CORS_ALLOW_ALL_ORIGINS = False
-
-# Configuration des en-têtes CORS permis, y compris les cookies
-# CORS_ALLOW_HEADERS = list(default_headers) + ['Set-Cookie']
+# CHANNELS_ALLOWED_ORIGINS = ["*"]
 
 # define the path to the media folder
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# Cookie settings
-
-# Désactivation de l'attribut Secure pour les cookies en HTTP
-# SESSION_COOKIE_SECURE = False
-# CSRF_COOKIE_SECURE = False
-
-# Configuration de l'attribut SameSite à None pour permettre les requêtes intersites
-# SESSION_COOKIE_SAMESITE = 'None'  # Nécessite Secure=False en HTTP
-# CSRF_COOKIE_SAMESITE = 'None'
-
-# SESSION_COOKIE_AGE = 60 * 60 * 24 * 7
-
-# SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+# LOGIN_URL = '/auth/login/'

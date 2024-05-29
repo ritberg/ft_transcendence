@@ -4,7 +4,6 @@ stat_service_dir = stat_service
 
 user_volume_dir = $(shell grep USER_SERVICE_NAME .env | cut -d '=' -f2)
 stat_volume_dir = $(shell grep STAT_SERVICE_NAME .env | cut -d '=' -f2)
-data_dir = data_db_user
 
 service = stat_service
 
