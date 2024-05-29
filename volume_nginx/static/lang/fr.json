@@ -1,0 +1,54 @@
+{
+	"language_switch": {
+	  "label": "Choisissez votre langue :",
+	  "english": "Anglais",
+	  "french": "Français",
+	  "spanish": "Espagnol"
+	},
+	"vertical_tab": {
+	  "chat": "DISCUSSION",
+	  "profile": "PROFIL",
+	  "friends": "AMIS",
+	  "settings": "PARAMÈTRES"
+	},
+	"chat_box": {
+	  "sample_message": "> dferreir : Salut ! Je suis dogygo aussi je suis super gay + george bush a fait le 11/9"
+	},
+	"profile_box": {
+	  "username": "dferreir",
+	  "avatar_alt": "Un chien noir, marron et blanc"
+	},
+	"main_buttons": {
+	  "pvp": "Joueur contre Joueur",
+	  "cpu": "CPU",
+	  "tournament": "TOURNOI",
+	  "online": "EN LIGNE"
+	},
+	"login_box": {
+	  "title": "REJOINDRE LE JEU",
+	  "room_name_placeholder": "NOM DE LA SALLE",
+	  "empty_room_text": "laissez vide pour une salle aléatoire",
+	  "go_button": "ALLER"
+	},
+	"profile_box_main": {
+	  "title": "INSCRIPTION",
+	  "username_placeholder": "NOM D'UTILISATEUR",
+	  "email_placeholder": "EMAIL",
+	  "password_placeholder": "MOT DE PASSE",
+	  "go_button": "ALLER"
+	},
+	"tourney": {
+	  "title": "TOURNOI",
+	  "players": "JOUEURS",
+	  "difficulty": "DIFFICULTÉ",
+	  "mode": "MODE",
+	  "ok_button": "OK"
+	},
+	"brackets": {
+	  "title": "Tableau du tournoi"
+	},
+	"nickname_setup_box": {
+	  "title": "NOMS DES JOUEURS"
+	}
+  }
+  

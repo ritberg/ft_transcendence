@@ -1,0 +1,104 @@
+version: "3.8"
+
+services:
+  online:
+    container_name: online
+    depends_on:
+      - db
+    build:
+      context: ./online
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${SERVICE_NAME_ONLINE}
+    env_file:
+      - .env
+    expose:
+      - "8001"
+    volumes:
+      - online:/home/transcendance/${SERVICE_NAME_ONLINE}
+    tty: true
+    networks:
+      - pong
+    init: true
+    restart: on-failure
+
+  page:
+    container_name: page
+    depends_on:
+      - db
+    build:
+      context: ./page
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${SERVICE_NAME_PAGE}
+    env_file:
+      - .env
+    expose:
+      - "8000"
+    volumes:
+      - page:/home/transcendance/${SERVICE_NAME_PAGE}
+    tty: true
+    networks:
+      - pong
+    init: true
+    restart: on-failure
+
+
+  db:
+    image: postgres:16.2
+    volumes:
+      - postgres:/var/lib/postgresql/data/
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+    networks:
+      - pong
+    restart: on-failure
+
+  nginx:
+    container_name: nginx
+    depends_on:
+      - online
+      - page
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - nginx:/etc/nginx
+    networks:
+      - pong
+    env_file: .env
+    # tty: true
+    restart: on-failure
+
+volumes:
+  online:
+    driver: local
+    driver_opts:
+      type: 'none' 
+      o: 'bind'
+      device: '${PWD}/volume_online'
+  postgres:
+    driver: local
+    driver_opts:
+      type: 'none' 
+      o: 'bind'
+      device: '${PWD}/volume_db'
+  nginx:
+    driver: local
+    driver_opts:
+      type: 'none' 
+      o: 'bind'
+      device: '${PWD}/volume_nginx'
+  page:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: '${PWD}/volume_page'
+
+networks:
+  pong:
+    driver: bridge

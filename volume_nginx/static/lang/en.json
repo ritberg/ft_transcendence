@@ -1,0 +1,54 @@
+{
+	"language_switch": {
+	  "label": "Choose your language:",
+	  "english": "English",
+	  "french": "French",
+	  "spanish": "Spanish"
+	},
+	"vertical_tab": {
+	  "chat": "CHAT",
+	  "profile": "PROFILE",
+	  "friends": "FRIENDS",
+	  "settings": "SETTINGS"
+	},
+	"chat_box": {
+	  "sample_message": "> dferreir: Hi! I'm dogygo also I'm omega gay + george bush did 9/11"
+	},
+	"profile_box": {
+	  "username": "dferreir",
+	  "avatar_alt": "A black, brown, and white dog"
+	},
+	"main_buttons": {
+	  "pvp": "PvP",
+	  "cpu": "CPU",
+	  "tournament": "TOURNEY",
+	  "online": "ONLINE"
+	},
+	"login_box": {
+	  "title": "JOIN GAME",
+	  "room_name_placeholder": "ROOM NAME",
+	  "empty_room_text": "leave empty for random room",
+	  "go_button": "GO"
+	},
+	"profile_box_main": {
+	  "title": "SIGN UP",
+	  "username_placeholder": "USER NAME",
+	  "email_placeholder": "EMAIL",
+	  "password_placeholder": "PASSWORD",
+	  "go_button": "GO"
+	},
+	"tourney": {
+	  "title": "TOURNEY",
+	  "players": "PLAYERS",
+	  "difficulty": "DIFFICULTY",
+	  "mode": "MODE",
+	  "ok_button": "OK"
+	},
+	"brackets": {
+	  "title": "Tournament Bracket"
+	},
+	"nickname_setup_box": {
+	  "title": "PLAYER NAMES"
+	}
+  }
+  

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	{% load static %}
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>(Ping) Pong</title>
+	<link rel="stylesheet" href="{% static 'styles/styles.css' %}">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+	<link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+	<script>
+		const STATIC_URL = "{% static '' %}";
+	</script>
+	<script src="{% static 'scripts/lang.js' %}"></script>
+	<script type="module" src="{% static 'scripts/main.js' %}"></script>
+	<script type="module" src="{% static 'scripts/utils.js' %}"></script>
+	<script type="module" src="{% static 'scripts/animations.js' %}"></script>
+	<script type="module" src="{% static 'scripts/brackets.js' %}"></script>
+	<script type="module" src="{% static 'scripts/stars.js' %}"></script>
+	<script type="module" src="{% static 'scripts/pong.js' %}"></script>
+	<script type="module" src="{% static 'online/index.js' %}"></script>
+</head>
+
+<body>
+	<button type="button" id="hamburger-icon">
+		<i class="bi bi-list"></i>
+		<h6>TABS</h6>
+	</button>
+	<div id="vertical-tab">
+		<button type="button" id="chat-button">CHAT<i class="bi bi-chat-left-text"></i></button>
+		<button type="button" id="profile-button">PROFILE<i class="bi bi-person"></i></button>
+		<button type="button">FRIENDS<i class="bi bi-people"></i></button>
+		<button type="button">SETTINGS<i class="bi bi-gear"></i></button>
+	</div>
+	<div id="chat-box">
+		<h6>> dferreir: Hi! I'm dogygo also I'm omega gay + george bush did 9/11</h6>
+	</div>
+	<div id="profile-box">
+		<h6>dferreir</h6>
+		<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
+	</div>
+	<canvas id="game" width="1000" height="800"></canvas>
+	<script type="module" src="{% static 'scripts/main.js' %}"></script>
+	<div id="main-buttons">
+		<h1>PONG</h1>
+		<button type="button" id="pvp-mode">PvP</button>
+		<button type="button" id="cpu-mode">CPU</button>
+		<button type="button" id="tournoi-mode">TOURNEY</button>
+		<button type="button" id="online-mode">ONLINE</button>
+	</div>
+	<div id="login-box">
+		<h1>JOIN GAME</h1>
+		<form id="online_form">
+			{% csrf_token %}
+			<div class="user-box">
+				<input id="room_name_input" type="text" name="" required="">
+				<label>ROOM NAME</label>
+				<h6 id="empty_room_text">leave empty for random room</h6>
+			</div>
+			<button type="button" id="GO_O">GO</button>
+		</form>
+	</div>
+	<div id="profile-box_main">
+		<h1>SIGN UP</h1>
+		<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
+		<form>
+			<div class="user-box">
+				<input type="text" name="" required="">
+				<label>USER NAME</label>
+			</div>
+			<div class="user-box">
+				<input type="text" name="" required="">
+				<label>EMAIL</label>
+			</div>
+			<div class="user-box">
+				<input type="password" name="" required="">
+				<label>PASSWORD</label>
+			</div>
+			<button type="button">GO</button>
+		</form>
+	</div>
+	<div class="choice-box" id="tournoi">
+		<form>
+			<h1>TOURNEY</h1>
+			<h2 id="PLAYERS_T">PLAYERS</h2>
+			<input id="slider1" type="range" min="4" max="8" value="8" step="4" />
+			<h2 id="DIFFICULTY_T">DIFFICULTY</h2>
+			<input id="slider2" type="range" min="1" max="3" value="2" step="1" />
+			<h2 id="MODE_T">MODE</h2>
+			<input id="slider3" type="range" min="0" max="1" value="0" step="1" />
+			<button type="button" id="OK_T">OK</button>
+		</form>
+	</div>
+	<div id="brackets">
+		<i class="bi bi-trophy"></i>
+	</div>
+	<div class="language-switch">
+		<label for="language-select">Choose your language:</label>
+		<select id="language-select">
+			<option value="en">English</option>
+			<option value="fr">Français</option>
+			<option value="es">Español</option>
+		</select>
+	</div>
+	<div id="nickname_setup_box">
+		<h1>PLAYER NAMES</h1>
+	</div>
+</body>
+
+</html>

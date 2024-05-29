@@ -1,0 +1,54 @@
+{
+	"language_switch": {
+	  "label": "Elige tu idioma:",
+	  "english": "Inglés",
+	  "french": "Francés",
+	  "spanish": "Español"
+	},
+	"vertical_tab": {
+	  "chat": "CHAT",
+	  "profile": "PERFIL",
+	  "friends": "AMIGOS",
+	  "settings": "AJUSTES"
+	},
+	"chat_box": {
+	  "sample_message": "> dferreir: ¡Hola! Soy dogygo también soy mega gay + George Bush hizo el 11/9"
+	},
+	"profile_box": {
+	  "username": "dferreir",
+	  "avatar_alt": "Un perro negro, marrón y blanco"
+	},
+	"main_buttons": {
+	  "pvp": "Jugador vs Jugador",
+	  "cpu": "CPU",
+	  "tournament": "TORNEO",
+	  "online": "EN LÍNEA"
+	},
+	"login_box": {
+	  "title": "UNIRSE AL JUEGO",
+	  "room_name_placeholder": "NOMBRE DE LA SALA",
+	  "empty_room_text": "dejar vacío para sala aleatoria",
+	  "go_button": "IR"
+	},
+	"profile_box_main": {
+	  "title": "REGISTRARSE",
+	  "username_placeholder": "NOMBRE DE USUARIO",
+	  "email_placeholder": "CORREO ELECTRÓNICO",
+	  "password_placeholder": "CONTRASEÑA",
+	  "go_button": "IR"
+	},
+	"tourney": {
+	  "title": "TORNEO",
+	  "players": "JUGADORES",
+	  "difficulty": "DIFICULTAD",
+	  "mode": "MODO",
+	  "ok_button": "OK"
+	},
+	"brackets": {
+	  "title": "Cuadro del Torneo"
+	},
+	"nickname_setup_box": {
+	  "title": "NOMBRES DE LOS JUGADORES"
+	}
+  }
+  
