@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let friendRequestListUrl = "http://localhost:8000/auth/list-friend-requests/";
   let friendListUrl = "http://localhost:8000/auth/list-friends/";
   let delFriendUrl = "http://localhost:8000/auth/delete-friend/";
-  let chatRoom1Url = "http://localhost:8001/chat/room1/";
+  let chatRoom1Url = "http://localhost:8001/users/";
 
   // CSRF token
   let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
@@ -128,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRFToken": token,
       },
       body: JSON.stringify({ username, email, password }),
     })
@@ -140,6 +141,8 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         console.log(data);
+        console.log("token received : ", data.crsfToken);
+        updateCSRFToken(data.crsfToken);
 
         // displayProfile(data.data);
       })
@@ -164,6 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "X-CSRFToken": token,
       },
       body: JSON.stringify({ username, password }),
       credentials: "include",
@@ -583,6 +587,8 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((data) => {
         console.log("chat request data:", data);
         console.log("data : ", data.data);
+        console.log("token received : ", data.crsfToken);
+        updateCSRFToken(data.crsfToken);
       })
       .catch((error) => {
         console.error("Fetch error:", error);

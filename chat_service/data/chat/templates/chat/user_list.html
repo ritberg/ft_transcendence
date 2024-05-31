@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select a User to Chat</title>
+</head>
+<body>
+    <center><h1>Hello, {{ request.user }}! Select a User to Chat:</h1></center>
+    <br>
+    {% if request.user.is_authenticated %}
+    <center> Logout the chat Page <a href="{% url 'logout-user' %}">Logout</a></center>
+    {% endif %}
+    <div>
+        <ul>
+            {% for user in users %}
+            <li>
+                {{ user.username }}
+                <a href="{% url 'chat_room' username=user.username %}">
+                    <button>Start Chat</button>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>
