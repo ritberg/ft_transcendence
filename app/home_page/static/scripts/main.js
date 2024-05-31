@@ -79,7 +79,7 @@ document.getElementById("main-menu").addEventListener("click", function() {
 					drawBrackets(players);
 					await sleep(500);
 					document.getElementById("nickname_setup-box").style.display = "none";
-					await sleep(1000);
+					await sleep(2000);
 					document.getElementById("brackets-container").style.opacity = "1";
 					document.getElementById("brackets-container").classList.remove("shown");
 					document.getElementById("brackets-container").classList.add("hidden");

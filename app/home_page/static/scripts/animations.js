@@ -1,8 +1,9 @@
 import { sleep } from './utils.js';
 import { GameMode } from './main.js';
 
-document.getElementById("tabs-icon").addEventListener("click", function() {
-	document.getElementById("tabs-icon").classList.toggle("active");
+document.getElementById("tabs-icon").addEventListener("hover", function() {
+	// document.getElementById("tabs-icon").classList.toggle("active");
+	console.log(4);
 	document.getElementById("tabs-list").classList.toggle("active");
 });
 

@@ -1,19 +1,6 @@
-import { sleep, randomNumber } from './utils.js';
+import { sleep, randomNumber, Player } from './utils.js';
 
 export const players = [];
-
-class Player {
-	constructor(name, score, position, fighter) {
-		this.name = name;
-		this.score = score;
-		this.position = position;
-		this.fighter = fighter;
-	}
-
-	displayInfo() {
-		console.log(`Name: ${this.name}, Score: ${this.score}, Position: ${this.position}`);
-	}
-}
 
 export function createPlayers() {
 	let pos_list = [];
@@ -22,13 +9,13 @@ export function createPlayers() {
 	}
 	for (let i = 0; i < document.getElementById("s-players").value; i++) {
 		const position = randomNumber(pos_list);
-		const fighter = false;
-		if (i < 2)
-			fighter = true;
+		var fighter = false;
 		const player = new Player(document.getElementById(`player_${i + 1}`).value, 0, position, fighter);
 		players.push(player);
 	}
 	players.sort((a, b) => a.position - b.position);
+	players[0].fighter = true;
+	players[1].fighter = true;
 }
 
 export async function drawBrackets(players) {
@@ -46,13 +33,10 @@ export async function drawBrackets(players) {
 		boxes.push(new_box);
 	}
 
-	await sleep(500);
-	for (let i = 0; i < players.length; i++) {
-		if (players[i].fighter = true) {
-			boxes[i].style.background = `rgba(255, 255, 255, .15)`;
-			boxes[i].style.boxShadow = `white 0 0 10px`;
-		}
-	}
+	await sleep(1000);
+	for (let i = 0; i < players.length; i++)
+		if (players[i].fighter == true)
+			boxes[i].classList.add("fighter");
 }
 
 export function enterNicknames(n) {

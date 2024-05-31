@@ -17,15 +17,15 @@
 		<script type="module" src="{% static 'scripts/tourney_pong.js' %}"></script>
 	</head>
 	<body>
-		<button type="button" id="tabs-icon">
+		<div id="tabs-icon">
 			<i class="bi bi-list"></i>
 			<h6>TABS</h6>
-		</button>
-		<div id="tabs-list">
-			<button type="button" id="tl-chat">CHAT<i class="bi bi-chat-left-text"></i></button>
-			<button type="button" id="tl-profile">PROFILE<i class="bi bi-person"></i></button>
-			<button type="button">FRIENDS<i class="bi bi-people"></i></button>
-			<button type="button">SETTINGS<i class="bi bi-gear"></i></button>
+			<div id="tabs-list">
+				<button type="button" id="tl-chat">CHAT<i class="bi bi-chat-left-text"></i></button>
+				<button type="button" id="tl-profile">PROFILE<i class="bi bi-person"></i></button>
+				<button type="button">FRIENDS<i class="bi bi-people"></i></button>
+				<button type="button">SETTINGS<i class="bi bi-gear"></i></button>
+			</div>
 		</div>
 		<div id="chat-window">
 			<h6>> dferreir: Hi! I'm dogygo also I'm omega gay + george bush did 9/11</h6>
@@ -35,7 +35,6 @@
 			<img src="https://tinyurl.com/dkxknyfv" alt="Poop" class="pfp">
 		</div>
 		<canvas id="game_canvas" width="1000" height="800"></canvas>
-		<script type="module" src="{% static 'scripts/main.js' %}"></script>
 		<div id="main-menu">
 			<h1>PONG</h1>
 			<button type="button" id="pvp-mode">PvP</button>
@@ -93,5 +92,6 @@
 		<div id="nickname_setup-box">
 			<h1>PLAYER NAMES</h1>
 		</div>
+		<script type="module" src="{% static 'scripts/main.js' %}"></script>
 	</body>
 </html>

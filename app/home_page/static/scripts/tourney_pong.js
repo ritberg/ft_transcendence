@@ -1,3 +1,6 @@
+import { writeVerticalText } from './utils.js';
+import { players } from './brackets.js';
+
 let paddle_y1 = game_canvas.height / 2 - 100;
 let paddle_y2 = paddle_y1;
 let paddle_speed_y1 = 0;
@@ -79,15 +82,6 @@ function updatePos(time_diff) {
 	}
 }
 
-function writeVerticalText(context, text, x, y, font) {
-  context.save(); // Save the current state
-  context.translate(x, y); // Move the origin
-  context.rotate(Math.PI / 2); // Rotate 90 degrees counter-clockwise
-  context.font = font;
-  context.fillText(text, 0, 0); // Draw text horizontally at origin
-  context.restore(); // Restore the original state
-}
-
 function draw() {
 	if (!n) {
 		paddle_y2 += 2;
@@ -105,23 +99,20 @@ function draw() {
 	ctx.textAlign = "center";
 	ctx.fillText(score[0].toString(), game_canvas.width / 3, 100);
 	ctx.fillText(score[1].toString(), game_canvas.width - game_canvas.width / 3, 100);
-	// document.getElementById("nec").style.top = `${paddle_y1}px`;
-  // ctx.fillStyle = "rgb(100, 100, 100)";
-	// ctx.font = "20px Courier New";
-	// ctx.fillText("Ball Speed: " + Math.floor(ball_speed), 20, 30);
-	// ctx.fillText("Paddle Bounces: " + paddle_bounces, 20, 50);
   ctx.fillStyle = "rgb(255, 255, 255)";
   ctx.fillRect(20, paddle_y1, 30, 200);
   ctx.fillRect(950, paddle_y2, 30, 200);
 	ctx.beginPath();
 	ctx.fillRect(ball_x, ball_y, ball_length, ball_length);
 	ctx.fill();
-	ctx.textAlign = "left";
   ctx.fillStyle = "rgb(0, 0, 0)";
-	writeVerticalText(ctx, "NEC", 20, paddle_y1, "35px Arial");
+	writeVerticalText(ctx, players[0].name, 22.5, paddle_y1 + 100, "35px Arial", 0);
+	writeVerticalText(ctx, players[1].name, 977.5, paddle_y2 + 100, "35px Arial", 1);
 }
 
 export async function loop(current_frame) {
+	if (score[0] > 5 || score [1] > 5)
+		return;
 	const game_canvas = document.getElementById("game_canvas");
 	const ctx = game_canvas.getContext("2d");
   const time_diff = (current_frame - last_frame) / 1000 || 0;
