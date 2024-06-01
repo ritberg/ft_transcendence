@@ -1,25 +1,70 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Select a User to Chat</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
 </head>
+
 <body>
-    <center><h1>Hello, {{ request.user }}! Select a User to Chat:</h1></center>
+    <center>
+        <h1>Hello, {{ request.user }}! Select a User to Chat:</h1>
+    </center>
     <br>
-    {% if request.user.is_authenticated %}
-    <center> Logout the chat Page <a href="{% url 'logout-user' %}">Logout</a></center>
-    {% endif %}
-    <div>
-        <ul>
-            {% for user in users %}
-            <li>
-                {{ user.username }}
-                <a href="{% url 'chat_room' username=user.username %}">
-                    <button>Start Chat</button>
-                </a>
-            </li>
-            {% endfor %}
+
+    <button id="btnChat">Load Users</button>
+    <div id="userListContainer">
+        <ul id="userList">
+            <!-- User list will be populated here -->
         </ul>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const btnChat = document.getElementById("btnChat");
+            const userListContainer = document.getElementById("userListContainer");
+
+            // Existing URLs
+            let chatRoom1Url = "http://localhost:8001/users/";
+
+            btnChat.addEventListener("click", function (event) {
+                console.log("Sending chat room request...");
+
+                const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+                fetch(chatRoom1Url, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": token,
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include", // Important: Include credentials (cookies)
+                })
+                    .then((response) => {
+                        if (!response.ok) {
+                            throw new Error("Network response was not ok");
+                        }
+                        return response.json(); // Parse JSON response
+                    })
+                    .then((data) => {
+                        // Clear existing user list
+                        userListContainer.innerHTML = '';
+
+                        // Populate user list
+                        data.users.forEach((user) => {
+                            const li = document.createElement('li');
+                            li.textContent = user.username;
+                            userListContainer.appendChild(li);
+                        });
+                        console.log("token received : ", data.crsfToken);
+                        updateCSRFToken(data.crsfToken);
+                    })
+                    .catch((error) => {
+                        console.error("Fetch error:", error);
+                    });
+            });
+        });
+    </script>
 </body>
+
 </html>

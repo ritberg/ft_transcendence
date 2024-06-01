@@ -33,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let friendRequestListUrl = "http://localhost:8000/auth/list-friend-requests/";
   let friendListUrl = "http://localhost:8000/auth/list-friends/";
   let delFriendUrl = "http://localhost:8000/auth/delete-friend/";
-  let chatRoom1Url = "http://localhost:8001/users/";
 
   // CSRF token
   let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
@@ -562,36 +561,44 @@ document.addEventListener("DOMContentLoaded", function () {
   //     });
   // });
 
-  btnChat.addEventListener("click", function (event) {
-    console.log("Sending chat room request...");
-    console.log("token : ", token);
 
-    fetch(chatRoom1Url, {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": token,
-        "Content-Type": "application/json",
-      },
-      credentials: "include", // Important: Include credentials (cookies)
-    })
-      .then((response) => {
-        console.log("Response Headers:", [...response.headers.entries()]);
 
-        if (!response.ok) {
-          console.log("Full response:", response);
-          throw new Error("Network response was not ok");
-        }
+  // document.addEventListener('click', function() {
+  //   const btnChat = document.getElementById("btnChat");
+  //   const userListContainer = document.getElementById("userListContainer");
 
-        return response.json();
-      })
-      .then((data) => {
-        console.log("chat request data:", data);
-        console.log("data : ", data.data);
-        console.log("token received : ", data.crsfToken);
-        updateCSRFToken(data.crsfToken);
-      })
-      .catch((error) => {
-        console.error("Fetch error:", error);
-      });
+  //   // Existing URLs
+  //   let chatRoom1Url = "http://localhost:8001/users/";
+
+  //   btnChat.addEventListener("click", function (event) {
+  //       console.log("Sending chat room request...");
+
+  //       const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+  //       fetch(chatRoom1Url, {
+  //           method: "POST",
+  //           headers: {
+  //               "X-CSRFToken": token,
+  //               "Content-Type": "application/json",
+  //           },
+  //           credentials: "include", // Important: Include credentials (cookies)
+  //       })
+  //       .then((response) => {
+  //           console.log("Response Headers:", [...response.headers.entries()]);
+
+  //           if (!response.ok) {
+  //               console.log("Full response:", response);
+  //               throw new Error("Network response was not ok");
+  //           }
+
+  //           return response.text();
+  //       })
+  //       .then((html) => {
+  //           userListContainer.innerHTML = html;
+  //       })
+  //       .catch((error) => {
+  //           console.error("Fetch error:", error);
+  //       });
+  //     });
+  //   });
   });
-});

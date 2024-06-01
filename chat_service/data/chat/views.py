@@ -6,6 +6,7 @@ from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.shortcuts import render # to delete later
+from user_management.models import CustomUser
 
 # def chatRoom(request, room_name):
 #     if not request.user.is_authenticated:
@@ -48,5 +49,8 @@ def chatRoom(request, username):
 def userList(request):
     if not request.user.is_authenticated:
         return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
-    users = User.objects.exclude(username=request.user.username)
-    return render(request, 'chat/user_list.html', {'users': users})
+    if request.method == 'POST':
+        users = CustomUser.objects.exclude(username=request.user.username)
+        user_data = [{'username': user.username} for user in users]
+        return JsonResponse({'users': user_data})
+    return JsonResponse({"error": "Invalid request method"}, status=400)
