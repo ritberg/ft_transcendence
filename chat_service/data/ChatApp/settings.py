@@ -159,13 +159,13 @@ SESSION_COOKIE_SECURE = False
 
 CSRF_COOKIE_NAME = 'csrftoken'
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'None'
 CSRF_COOKIE_SECURE = False
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001/users']
 
 # CHANNELS_ALLOWED_ORIGINS = ["*"]
 

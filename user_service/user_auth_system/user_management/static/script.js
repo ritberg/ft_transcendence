@@ -601,4 +601,111 @@ document.addEventListener("DOMContentLoaded", function () {
   //       });
   //     });
   //   });
+
+
+  // const userListContainer = document.getElementById("users-list-container");
+
+  // // Existing URLs
+  // let chatRoom1Url = "http://localhost:8001/users/";
+
+  // btnChat.addEventListener("click", function (event) {
+  //     console.log("Sending chat room request...");
+
+  //     const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+  //     fetch(chatRoom1Url, {
+  //         method: "POST",
+  //         headers: {
+  //             "X-CSRFToken": token,
+  //             "Content-Type": "application/json",
+  //         },
+  //         credentials: "include", // Important: Include credentials (cookies)
+  //     })
+  //         .then((response) => {
+  //             if (!response.ok) {
+  //                 throw new Error("Network response was not ok");
+  //             }
+  //             return response.json(); // Parse JSON response
+  //         })
+  //         .then((data) => {
+  //             // Clear existing user list
+  //             userListContainer.innerHTML = '';
+
+  //             // Populate user list
+  //             data.users.forEach((user) => {
+  //                 const li = document.createElement('li');
+  //                 li.textContent = user.username;
+  //                 userListContainer.appendChild(li);
+  //             });
+  //             console.log("token received : ", data.crsfToken);
+  //         })
+  //         .catch((error) => {
+  //             console.error("Fetch error:", error);
+  //         });
+  // });
+
+
+
+  btnChat.addEventListener("click", function (event) {
+
+    console.log("weqewe");
+    fetch('http://localhost:8001/users/', {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": token,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then(response => response.json())
+      .then(data => {
+        const usersList = document.getElementById('users-list-container');
+        usersList.innerHTML = '';
+
+        data.users.forEach(user => {
+          const li = document.createElement('li');
+          li.textContent = user.username + ' ';
+
+          // const a = document.createElement('a');
+          // a.href = `localhost:8001/chat/${user.username}/`;
+
+          const button = document.createElement('button');
+          button.textContent = 'Start Chat';
+
+          button.addEventListener('click', () => handleChatLinkClick(user.username));
+
+          // a.appendChild(button);
+          // li.appendChild(a);
+          li.appendChild(button);
+          usersList.appendChild(li);
+        });
+      })
+      .catch(error => console.error('Error fetching user data:', error));
   });
+
+  function handleChatLinkClick(username) {
+    // Construct the chat URL dynamically based on the username
+    const chatUrl = `http://localhost:8001/chat/${username}/`;
+
+    // Fetch data from the chat URL
+    fetch(chatUrl, {
+      method: "POST", // Assuming you're fetching data using the GET method
+      headers: {
+        "X-CSRFToken": token,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json(); // Parse JSON response
+      })
+      .then((data) => {
+        console.log("data : ", data.data);
+      })
+      .catch(error => console.error('Error fetching chat data:', error));
+  }
+
+});

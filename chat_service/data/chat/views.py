@@ -21,13 +21,17 @@ from user_management.models import CustomUser
 #     return JsonResponse(context)
 
 def chatRoom(request, username):
+    print("chatRoom function in views.py - beginning")
     if not request.user.is_authenticated:
         return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
-    other_user = get_object_or_404(User, username=username)
-    print(other_user)
+    other_user = get_object_or_404(CustomUser, username=username)
+    print("other user: ", other_user)
+    print("ok")
     if other_user == request.user:
         # Prevent users from chatting with themselves
         return JsonResponse({"error": "User cannot chat with herself/himself"}, status=status.HTTP_401_UNAUTHORIZED)
+    
+    # condition blocked user
     
     room_name = f"{min(request.user.username, other_user.username)}_{max(request.user.username, other_user.username)}"
     
@@ -36,6 +40,10 @@ def chatRoom(request, username):
         chat_room = ChatRoom.objects.create(user1=request.user, user2=other_user, room_name=room_name)
 
     messages = ChatMessage.objects.filter(room_name=chat_room).order_by('timestamp')
+    print( "room_name: ", room_name)
+    print( "username: ", request.user.username)
+    print("messages: ", messages)
+    # print("other_user: ", other_user.username)
     context = {
         "room_name": room_name,
         "username": request.user.username,
@@ -44,7 +52,6 @@ def chatRoom(request, username):
         "status": status.HTTP_200_OK
     }
     return JsonResponse(context)
-
 
 def userList(request):
     if not request.user.is_authenticated:
