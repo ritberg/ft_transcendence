@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.shortcuts import render # to delete later
 from user_management.models import CustomUser
+from django.core import serializers
 
 # def chatRoom(request, room_name):
 #     if not request.user.is_authenticated:
@@ -26,7 +27,6 @@ def chatRoom(request, username):
         return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     other_user = get_object_or_404(CustomUser, username=username)
     print("other user: ", other_user)
-    print("ok")
     if other_user == request.user:
         # Prevent users from chatting with themselves
         return JsonResponse({"error": "User cannot chat with herself/himself"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -40,14 +40,15 @@ def chatRoom(request, username):
         chat_room = ChatRoom.objects.create(user1=request.user, user2=other_user, room_name=room_name)
 
     messages = ChatMessage.objects.filter(room_name=chat_room).order_by('timestamp')
+    serialized_messages = serializers.serialize('json', messages)
     print( "room_name: ", room_name)
     print( "username: ", request.user.username)
-    print("messages: ", messages)
-    # print("other_user: ", other_user.username)
+    print("messages: ", serialized_messages)
+    print("other_user: ", other_user.username)
     context = {
         "room_name": room_name,
         "username": request.user.username,
-        "messages": messages,
+        "messages": serialized_messages,
         "other_user": other_user.username,
         "status": status.HTTP_200_OK
     }
