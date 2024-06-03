@@ -1,13 +1,13 @@
 #!/bin/bash
 
-if [ ! -d "/home/transcendance/$SERVICE_NAME_ONLINE" ]; then
+if [ ! -d "/home/transcendance/$ONLINE_SERVICE_NAME" ]; then
     # creation of the new project
-    django-admin startproject $SERVICE_NAME_ONLINE
+    django-admin startproject $ONLINE_SERVICE_NAME
 else
     echo "project already exists"
 fi
 
-cd $SERVICE_NAME_ONLINE
+cd $ONLINE_SERVICE_NAME
 
 # # Create new app
 # python3 manage.py startapp channels_demo

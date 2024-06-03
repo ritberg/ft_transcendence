@@ -1,6 +1,6 @@
-compose_file = docker/docker-compose.yml
+compose_file = docker-compose.yml
 
-volume_dir = volume_online volume_page volume_db volume_nginx volume_bot
+volume_dir = online/project frontend/test_django databases/db_online nginx/nginx bot/project
 
 service = django
 
