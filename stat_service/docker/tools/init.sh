@@ -16,7 +16,7 @@ echo "initialisation of Django done" >> $LOGFILE
 ./manage.py createsuperuser --no-input
 
 echo "Starting Django server" >> $LOGFILE
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:8001
 
 # while true; do
 #   sleep 86400

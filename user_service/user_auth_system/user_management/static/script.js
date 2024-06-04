@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let logInfo = document.getElementById("info");
   let btnUpdateProfile = document.getElementById("update-profile");
   let btnUploadProfilePicture = document.getElementById("upload-avatar");
+  let btnDisplayHistory = document.getElementById("display-history");
+  let btnDisplayStats = document.getElementById("display-stats");
 
   // api ulrs
   let loginUrl = "http://localhost:8000/auth/login/";
@@ -32,6 +34,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let friendRequestListUrl = "http://localhost:8000/auth/list-friend-requests/";
   let friendListUrl = "http://localhost:8000/auth/list-friends/";
   let delFriendUrl = "http://localhost:8000/auth/delete-friend/";
+  let historyUrl = "http://localhost:8001/stat/game-history/";
+  let statsUrl = "http://localhost:8001/stat/stats/";
 
   // CSRF token
   let token = window.CSRF_TOKEN;
@@ -501,7 +505,107 @@ document.addEventListener("DOMContentLoaded", function () {
     .getElementById("del-friend-btn")
     .addEventListener("click", delFriend);
   document.getElementById("refresh-btn").addEventListener("click", () => {
-    fetchFriendRequests();
-    fetchFriends();
+    // fetchFriendRequests();
+    // fetchFriends();
+    console.log("refresh clicked");
+  });
+
+  async function addGame() {
+    console.log("add game clicked");
+
+    try {
+      const player_1_id = await getUserId("aless");
+      const player_2_id = await getUserId("rita");
+
+      const game = {
+        player_1_id: player_1_id,
+        player_2_id: player_2_id,
+        player_1_score: 10,
+        player_2_score: 5,
+        winner_id: player_1_id,
+        data_played: new Date().toISOString(),
+        duration: 300,
+      };
+
+      console.log("game : ", JSON.stringify(game));
+
+      const response = await fetch("http://localhost:8001/stat/game-history/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(game),
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(response);
+        throw new Error(
+          `Network response was not ok: ${JSON.stringify(errorData)}`
+        );
+      }
+
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Fetch error: ", error);
+    }
+  }
+
+  btnDisplayHistory.addEventListener("click", async function () {
+    console.log("button display history clicked");
+    await addGame();
+    await fetch(historyUrl, {
+      method: "GET",
+      headers: {
+        "X-CSRFToken": token,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.log(response);
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        historyList = document.getElementById("history");
+        historyList.innerHTML = JSON.stringify(data.data);
+      })
+      .catch((error) => {
+        console.error("Fetch error: ", error);
+      });
+  });
+
+  btnDisplayStats.addEventListener("click", function () {
+    console.log("button display stats clicked");
+    fetch(statsUrl, {
+      method: "GET",
+      headers: {
+        "X-CSRFToken": token,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          console.log(response);
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log(data);
+        statsList = document.getElementById("stats");
+        statsList.innerHTML = JSON.stringify(data.data);
+      })
+      .catch((error) => {
+        console.error("Fetch error: ", error);
+      });
   });
 });

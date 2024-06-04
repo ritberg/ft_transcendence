@@ -33,6 +33,7 @@ class GameHistoryModelTest(APITestCase):
 
 		url = reverse('game_history')
 
+		print("data send to : ", url)
 		print("data send : ", gameHistory)
 		# send a GameHistory
 		response = self.client.post(url, gameHistory, format='json')
@@ -41,6 +42,7 @@ class GameHistoryModelTest(APITestCase):
 
 		# get stats
 		url = reverse('stats')
+		print("data send to : ", url)
 		response = self.client.get(url)
 		print(response.data)
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -57,6 +59,7 @@ class GameHistoryModelTest(APITestCase):
 
 		url = reverse('game_history')
 
+		print("data send to : ", url)
 		print("data send : ", gameHistory)
 		# send a GameHistory
 		response = self.client.post(url, gameHistory, format='json')
@@ -65,6 +68,7 @@ class GameHistoryModelTest(APITestCase):
 
 		# get stats
 		url = reverse('stats')
+		print("data send to : ", url)
 		response = self.client.get(url)
 		print(response.data)
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
