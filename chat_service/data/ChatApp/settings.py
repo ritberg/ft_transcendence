@@ -165,7 +165,7 @@ CSRF_COOKIE_SECURE = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001/users']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001/users', 'http://localhost:8001']
 
 # CHANNELS_ALLOWED_ORIGINS = ["*"]
 

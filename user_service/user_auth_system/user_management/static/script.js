@@ -645,10 +645,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // });
 
 
-
   btnChat.addEventListener("click", function (event) {
-
-    console.log("weqewe");
     fetch('http://localhost:8001/users/', {
       method: "POST",
       headers: {
@@ -684,12 +681,10 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   function handleChatLinkClick(username) {
-    // Construct the chat URL dynamically based on the username
     const chatUrl = `http://localhost:8001/chat/${username}/`;
 
-    // Fetch data from the chat URL
     fetch(chatUrl, {
-      method: "POST", // Assuming you're fetching data using the GET method
+      method: "POST",
       headers: {
         "X-CSRFToken": token,
         "Content-Type": "application/json",
@@ -700,10 +695,90 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return response.json(); // Parse JSON response
+        return response.json(); 
       })
       .then((data) => {
-        console.log("data : ", data.data);
+        console.log("++ room_name : ", data.room_name);
+        console.log("++ other_user : ", data.other_user);
+        console.log("++ username : ", data.username);
+        console.log("++ messages : ", data.messages);
+
+        // Create chat container HTML
+        const chatContainer = document.createElement('div');
+        chatContainer.classList.add('chat__container');
+
+        if (data && data.other_user && Array.isArray(data.messages)) {
+          chatContainer.innerHTML = `
+          <center><h1>Chat with ${data.other_user}</h1></center>
+          <div class="chat__item__container" id="id_chat_item_container">
+            ${data.messages.map(message => `
+              <div class="chat__message ${message.fields.username === data.username ? 'chat__message--self' : 'chat__message--other'}">
+                <img src="https://via.placeholder.com/40" alt="User Photo">
+                <div class="chat__message__content">
+                  <div class="chat__message__username">${message.fields.username}</div>
+                  <div class="chat__message__text">${message.fields.message}</div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="chat__input__container">
+            <input type="text" id="id_message_send_input" placeholder="Type a message..." />
+            <button type="submit" id="id_message_send_button">Send Message</button>
+          </div>
+        `;
+        }
+        else {
+          console.error('data is missing or is not an array', data);
+        }
+  
+        const listItemElement = document.getElementById('chat-container');
+        listItemElement.appendChild(chatContainer);
+  
+        // Initialize WebSocket connection
+        const roomName = data.room_name;
+        const chatSocket = new WebSocket("ws://localhost:8001/chat/" + roomName + "/");
+  
+        chatSocket.onopen = function (e) {
+          console.log("The connection was set up successfully!");
+        };
+  
+        chatSocket.onclose = function (e) {
+          console.log("Something unexpected happened!");
+        };
+  
+        document.querySelector("#id_message_send_input").focus();
+        document.querySelector("#id_message_send_input").onkeyup = function (e) {
+          if (e.keyCode === 13) {
+            document.querySelector("#id_message_send_button").click();
+          }
+        };
+  
+        document.querySelector("#id_message_send_button").onclick = function (e) {
+          const messageInput = document.querySelector("#id_message_send_input").value;
+          chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
+        };
+  
+        chatSocket.onmessage = function (e) {
+          const data = JSON.parse(e.data);
+          const currentUser = data.username;
+          const div = document.createElement("div");
+          div.classList.add("chat__message");
+          if (data.username === currentUser) {
+            div.classList.add("chat__message--self");
+          } else {
+            div.classList.add("chat__message--other");
+          }
+          div.innerHTML = `
+            <img src="https://via.placeholder.com/40" alt="User Photo">
+            <div class="chat__message__content">
+              <div class="chat__message__username">${data.username}</div>
+              <div class="chat__message__text">${data.message}</div>
+            </div>
+          `;
+          document.querySelector("#id_message_send_input").value = "";
+          document.querySelector("#id_chat_item_container").appendChild(div);
+          document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
+        };
       })
       .catch(error => console.error('Error fetching chat data:', error));
   }

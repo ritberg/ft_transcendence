@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.shortcuts import render # to delete later
 from user_management.models import CustomUser
 from django.core import serializers
+import json
 
 # def chatRoom(request, room_name):
 #     if not request.user.is_authenticated:
@@ -22,11 +23,10 @@ from django.core import serializers
 #     return JsonResponse(context)
 
 def chatRoom(request, username):
-    print("chatRoom function in views.py - beginning")
+    print("------- chatRoom function in views.py - beginning ------")
     if not request.user.is_authenticated:
         return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     other_user = get_object_or_404(CustomUser, username=username)
-    print("other user: ", other_user)
     if other_user == request.user:
         # Prevent users from chatting with themselves
         return JsonResponse({"error": "User cannot chat with herself/himself"}, status=status.HTTP_401_UNAUTHORIZED)
@@ -41,14 +41,17 @@ def chatRoom(request, username):
 
     messages = ChatMessage.objects.filter(room_name=chat_room).order_by('timestamp')
     serialized_messages = serializers.serialize('json', messages)
-    print( "room_name: ", room_name)
-    print( "username: ", request.user.username)
-    print("messages: ", serialized_messages)
-    print("other_user: ", other_user.username)
+    messages_list = json.loads(serialized_messages)
+
+    print( "-- room_name: ", room_name)
+    print( "-- username: ", request.user.username)
+    print("-- messages: ", serialized_messages)
+    print("-- other_user: ", other_user.username)
+    
     context = {
         "room_name": room_name,
         "username": request.user.username,
-        "messages": serialized_messages,
+        "messages": messages_list,
         "other_user": other_user.username,
         "status": status.HTTP_200_OK
     }
