@@ -1,11 +1,11 @@
 import { sleep } from './utils.js';
 import { stars } from './stars.js';
 import { loop as loopPvp } from './pvp_pong.js';
-import { loop as loopTourney} from './tourney_pong.js';
+import { loop as loopTourney, loop_exec } from './tourney_pong.js';
 import { drawBrackets, enterNicknames, createPlayers, players } from './brackets.js';
 
 export let delta = 1.5;
-export let loop_exec = 0;
+// export var loop_exec = false;
 export let ai_activated = false;
 
 export async function GameMode(n) {
@@ -25,12 +25,14 @@ export async function GameMode(n) {
 	if (n <= 1) {
 		if (n == 1)
 			ai_activated = true;
-		loop_exec = true;
+		// loop_exec = true;
 		requestAnimationFrame(loopPvp);
 	}
 	else if (n == 2) {
-		loop_exec = true;
+		// loop_exec = true;
 		requestAnimationFrame(loopTourney);
+		delta = 1.5;
+		stars(document.getElementById("game_canvas"));
 	}
 }
 

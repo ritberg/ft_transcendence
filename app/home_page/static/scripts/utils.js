@@ -25,7 +25,7 @@ export class Player {
 	constructor(name, score, position, fighter) {
 		this.name = name;
 		// this.score = score;
-		// this.position = position;
+		this.position = position;
 		this.fighter = fighter;
 	}
 }

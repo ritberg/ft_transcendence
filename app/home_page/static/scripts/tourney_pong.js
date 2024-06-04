@@ -1,6 +1,9 @@
+import { sleep } from './utils.js';
+import { stars } from './stars.js';
 import { writeVerticalText } from './utils.js';
 import { players } from './brackets.js';
 
+export var loop_exec = false;
 let paddle_y1 = game_canvas.height / 2 - 100;
 let paddle_y2 = paddle_y1;
 let paddle_speed_y1 = 0;
@@ -110,11 +113,16 @@ function draw() {
 	writeVerticalText(ctx, players[1].name, 977.5, paddle_y2 + 100, "35px Arial", 1);
 }
 
-export async function loop(current_frame) {
-	if (score[0] > 5 || score [1] > 5)
-		return;
+export function loop(current_frame) {
 	const game_canvas = document.getElementById("game_canvas");
 	const ctx = game_canvas.getContext("2d");
+	loop_exec = true;
+	if (score[0] == 1 || score [1] == 1) {
+		ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
+		loop_exec = false;
+		// stars(document.getElementById("game_canvas"));
+		return;
+	}
   const time_diff = (current_frame - last_frame) / 1000 || 0;
   last_frame = current_frame;
 

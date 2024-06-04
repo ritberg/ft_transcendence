@@ -1,4 +1,5 @@
-import { loop_exec, delta } from './main.js';
+import { delta } from './main.js';
+import { loop_exec } from './tourney_pong.js';
 
 export function stars(stars_effect) {
 	const ctx_stars = stars_effect.getContext("2d");
@@ -62,10 +63,12 @@ export function stars(stars_effect) {
 	const stars_array = StarArray();
 
 	function Update() {
-		if (loop_exec == 1)
+		if (loop_exec == true)
 			return;
-		InitCanvas();
-		stars_array.forEach((star) => star.draw());
+		// if (loop_exec == false) {
+			InitCanvas();
+			stars_array.forEach((star) => star.draw());
+		// }
 		requestAnimationFrame(Update);
 	}
 	Update();
