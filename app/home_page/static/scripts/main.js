@@ -1,26 +1,14 @@
 import { sleep } from './utils.js';
-import { stars } from './stars.js';
+import { stars, starWars, modifyDelta } from './stars.js';
 import { loop as loopPvp } from './pvp_pong.js';
 import { loop as loopTourney, loop_exec } from './tourney_pong.js';
 import { drawBrackets, enterNicknames, createPlayers, players } from './brackets.js';
 
-export let delta = 1.5;
 // export var loop_exec = false;
 export let ai_activated = false;
 
 export async function GameMode(n) {
-	for (let i = 0; i < 40; i++) {
-		delta /= 1.05;
-		await sleep(20);
-	}
-	for (let i = 0; i < 20; i++) {
-		delta /= 1.05;
-		const brightness = i * 4; //18
-		document.getElementById("game_canvas").style.background = "rgba(" + brightness + ", " + brightness + ", " + brightness + ", 1)";
-		await sleep(20);
-	}
-	document.getElementById("game_canvas").style.background = "black";
-	document.getElementById("main-menu").style.display = "none";
+	await starWars();
 
 	if (n <= 1) {
 		if (n == 1)
@@ -31,8 +19,8 @@ export async function GameMode(n) {
 	else if (n == 2) {
 		// loop_exec = true;
 		requestAnimationFrame(loopTourney);
-		delta = 1.5;
-		stars(document.getElementById("game_canvas"));
+		// modifyDelta(1.5);
+		// stars(document.getElementById("game_canvas"));
 	}
 }
 
@@ -76,15 +64,8 @@ document.getElementById("main-menu").addEventListener("click", function() {
 					document.getElementById("nickname_setup-box").classList.add("hidden");
 					// document.getElementById("nickname_setup-box").style.display = "none";
 					await sleep(300);
-					document.getElementById("brackets-container").style.display = "flex";
-					document.getElementById("brackets-container").classList.add("shown");
-					drawBrackets(players);
-					await sleep(500);
-					document.getElementById("nickname_setup-box").style.display = "none";
-					await sleep(2000);
-					document.getElementById("brackets-container").style.opacity = "1";
-					document.getElementById("brackets-container").classList.remove("shown");
-					document.getElementById("brackets-container").classList.add("hidden");
+					await drawBrackets(players);
+					// await sleep(300);
 					GameMode(2);
 					await sleep(1000);
 					document.getElementById("brackets-container").style.display = "none";

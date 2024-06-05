@@ -1,7 +1,7 @@
 import { sleep } from './utils.js';
-import { stars } from './stars.js';
+import { stars, starWars, modifyDelta } from './stars.js';
 import { writeVerticalText } from './utils.js';
-import { players } from './brackets.js';
+import { players, drawBrackets } from './brackets.js';
 
 export var loop_exec = false;
 let paddle_y1 = game_canvas.height / 2 - 100;
@@ -113,22 +113,35 @@ function draw() {
 	writeVerticalText(ctx, players[1].name, 977.5, paddle_y2 + 100, "35px Arial", 1);
 }
 
-export function loop(current_frame) {
+export async function loop(current_frame) {
 	const game_canvas = document.getElementById("game_canvas");
 	const ctx = game_canvas.getContext("2d");
 	loop_exec = true;
 	if (score[0] == 1 || score [1] == 1) {
+		console.log(loop_exec);
+		score[0] = 0;
+		score[1] = 0;
+		paddle_y1 = game_canvas.height / 2 - 100;
+		paddle_y2 = paddle_y1;
 		ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
 		loop_exec = false;
-		// stars(document.getElementById("game_canvas"));
-		return;
+		modifyDelta(1.5);
+		stars(document.getElementById("game_canvas"));
+		await sleep(500);
+		await drawBrackets(players);
+		await starWars();
+		// loop_exec = true;
+		// requestAnimationFrame(loop);
+		// console.log(1);
+		// return;
+	} else {
+		const time_diff = (current_frame - last_frame) / 1000 || 0;
+		last_frame = current_frame;
+
+		// console.log(ball_y, game_canvas.height, ball_length);
+		updatePos(time_diff);
+		draw();
 	}
-  const time_diff = (current_frame - last_frame) / 1000 || 0;
-  last_frame = current_frame;
-
-  updatePos(time_diff);
-  draw();
-
   requestAnimationFrame(loop);
 }
 

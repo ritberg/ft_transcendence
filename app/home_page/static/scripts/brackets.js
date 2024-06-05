@@ -19,6 +19,9 @@ export function createPlayers() {
 }
 
 export async function drawBrackets(players) {
+	document.getElementById("brackets-container").style.opacity = "0";
+	document.getElementById("brackets-container").style.display = "flex";
+	document.getElementById("brackets-container").classList.add("shown");
 	const newDiv = document.createElement("div");
 	newDiv.classList.add("brackets");
 	document.querySelector("#brackets-container").appendChild(newDiv);
@@ -37,6 +40,15 @@ export async function drawBrackets(players) {
 	for (let i = 0; i < players.length; i++)
 		if (players[i].fighter == true)
 			boxes[i].classList.add("fighter");
+	await sleep(1000);
+	document.getElementById("brackets-container").style.opacity = "1";
+	document.getElementById("brackets-container").classList.remove("shown");
+	document.getElementById("brackets-container").classList.add("hidden");
+	await sleep(700);
+	for (let i = 0; i < players.length; i++)
+		if (players[i].fighter == true)
+			boxes[i].classList.remove("fighter");
+	document.getElementById("brackets-container").style.display = "none";
 }
 
 export function enterNicknames(n) {
