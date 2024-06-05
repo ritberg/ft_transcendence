@@ -62,13 +62,10 @@ document.getElementById("main-menu").addEventListener("click", function() {
 					document.getElementById("nickname_setup-box").style.opacity = "1";
 					document.getElementById("nickname_setup-box").classList.remove("shown");
 					document.getElementById("nickname_setup-box").classList.add("hidden");
-					// document.getElementById("nickname_setup-box").style.display = "none";
 					await sleep(300);
 					await drawBrackets(players);
-					// await sleep(300);
+					document.getElementById("nickname_setup-box").style.display = "none";
 					GameMode(2);
-					await sleep(1000);
-					document.getElementById("brackets-container").style.display = "none";
 				});
 			});
 		}

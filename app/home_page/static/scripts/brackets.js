@@ -1,6 +1,8 @@
 import { sleep, randomNumber, Player } from './utils.js';
 
 export const players = [];
+let game_phase = 0;
+let max_game_phase = 0;
 
 export function createPlayers() {
 	let pos_list = [];
@@ -16,26 +18,43 @@ export function createPlayers() {
 	players.sort((a, b) => a.position - b.position);
 	players[0].fighter = true;
 	players[1].fighter = true;
+	max_game_phase = Math.ceil(players.length / 2);
 }
 
 export async function drawBrackets(players) {
+	game_phase++;
+	// document.querySelector(".brackets").style.left = "0";
 	document.getElementById("brackets-container").style.opacity = "0";
 	document.getElementById("brackets-container").style.display = "flex";
 	document.getElementById("brackets-container").classList.add("shown");
-	const newDiv = document.createElement("div");
-	newDiv.classList.add("brackets");
-	document.querySelector("#brackets-container").appendChild(newDiv);
-
+	const divs = [];
 	const boxes = [];
+	for (let x = 0; x < game_phase; x++) {
+		const newDiv = document.createElement("div");
+		newDiv.classList.add("brackets");
+		document.querySelector("#brackets-container").appendChild(newDiv);
+		newDiv.style.left = `${x * 225}px`;
 
-	for (let i = 0; i < players.length; i++) {
-		const new_box = document.createElement("div");
-		new_box.classList.add("rectangle-div");
-		new_box.textContent = players[i].name;
-		newDiv.appendChild(new_box);
-		boxes.push(new_box);
+		for (let i = 0; i < players.length; i++) {
+			const new_box = document.createElement("div");
+			new_box.classList.add("rectangle-div");
+
+			const name_text = document.createElement("span");
+			name_text.classList.add("name");
+			name_text.innerText = players[i].name;
+
+			const score_text = document.createElement("span");
+			score_text.classList.add("score");
+			score_text.innerText = "1";
+
+			new_box.appendChild(name_text);
+			new_box.appendChild(score_text);
+			newDiv.appendChild(new_box);
+			boxes.push(new_box);
+		}
+
+		divs[x] = newDiv;
 	}
-
 	await sleep(1000);
 	for (let i = 0; i < players.length; i++)
 		if (players[i].fighter == true)
@@ -45,9 +64,12 @@ export async function drawBrackets(players) {
 	document.getElementById("brackets-container").classList.remove("shown");
 	document.getElementById("brackets-container").classList.add("hidden");
 	await sleep(700);
-	for (let i = 0; i < players.length; i++)
-		if (players[i].fighter == true)
-			boxes[i].classList.remove("fighter");
+	// for (let i = 0; i < players.length; i++)
+	// 	if (players[i].fighter == true)
+	// 		boxes[i].classList.remove("fighter");
+
+	for (let x = 0; x < game_phase; x++)
+		divs[x].remove();
 	document.getElementById("brackets-container").style.display = "none";
 }
 
@@ -75,3 +97,27 @@ export function enterNicknames(n) {
 	form.appendChild(button);
 	document.querySelector("#nickname_setup-box").appendChild(form);
 }
+
+/*
+
+		for (let i = 0; i < players.length; i++) {
+			const new_box = document.createElement("div");
+			new_box.classList.add("rectangle-div");
+			// if (x < game_phase) {
+			// new_box.textContent = players[i].name;
+			// } else {
+			// 	new_box.textContent = "?";
+			// 	new_box.style.border = "2px dashed white";
+			// }
+			newDiv.appendChild(new_box);
+			const box_text = document.createElement("h2");
+			box_text.classList.add("rectangle-div");
+			box_text.textContent = players[i].name;
+			box_text.appendChild(newDiv);
+			const box_score = document.createElement("h2");
+			box_score.classList.add("rectangle-div");
+			box_score.textContent = "1";
+			box_score.appendChild(newDiv);
+			boxes.push(new_box);
+		}
+		*/

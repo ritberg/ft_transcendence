@@ -24,12 +24,10 @@ export function writeVerticalText(context, text, x, y, font, rotation) {
 export class Player {
 	constructor(name, score, position, fighter) {
 		this.name = name;
-		// this.score = score;
+		this.score = score;
 		this.position = position;
 		this.fighter = fighter;
 	}
 }
 
-// export class Game {
-// 	constructor(player,
-// }
+export let game_phase = 1;
