@@ -203,6 +203,61 @@ class DeleteFriendView(APIView):
 			{'message': 'User is not in your friends list'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
+  
+  
+class BlockUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        user_to_block = get_object_or_404(User, id=request.data.get('to_user'))
+        
+        if user_to_block == request.user:
+            return Response(
+                {'message': 'You cannot block yourself'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        if request.user.blocked_users.filter(id=user_to_block.id).exists():
+            return Response(
+                {'message': 'User is already blocked'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        request.user.blocked_users.add(user_to_block)
+        return Response(
+            {'message': f'{user_to_block.username} has been blocked successfully'},
+            status=status.HTTP_200_OK
+        )
+        
+    
+class UnblockUserView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, *args, **kwargs):
+        user_to_unblock_id = request.data.get('user_to_unblock_id')
+        
+        user_to_unblock = get_object_or_404(User, id=user_to_unblock_id)
+        
+        if user_to_unblock in request.user.blocked_users.all():
+            request.user.blocked_users.remove(user_to_unblock)
+            return Response(
+                {'message': f'User {user_to_unblock.username} has been unblocked successfully'},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'message': f'User {user_to_unblock.username} is not currently blocked'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+class ListBlockedUsers(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        blocked_users = request.user.blocked_users.all()
+        blocked_usernames = [user.username for user in blocked_users]
+        return Response({'blocked_users': blocked_usernames}, status=status.HTTP_200_OK)
+
 
 class GetUserID(APIView):
 	permission_classes = [IsAuthenticated]

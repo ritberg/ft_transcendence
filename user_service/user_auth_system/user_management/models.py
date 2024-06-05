@@ -14,6 +14,7 @@ class CustomUser(AbstractUser):
 	
 	profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True, default=DEFAULT_PROFILE_PICTURE)
 	friends = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='user_friends')
+	blocked_users = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='blocked_by')
 	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='offline')
 
 	class Meta:

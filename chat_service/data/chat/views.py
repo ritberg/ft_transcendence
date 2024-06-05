@@ -31,7 +31,9 @@ def chatRoom(request, username):
         # Prevent users from chatting with themselves
         return JsonResponse({"error": "User cannot chat with herself/himself"}, status=status.HTTP_401_UNAUTHORIZED)
     
-    # condition blocked user
+    # Check if the other user is blocked by the authenticated user
+    if request.user.blocked_users.filter(id=other_user.id).exists():
+        return JsonResponse({"error": "User is blocked"}, status=status.HTTP_401_UNAUTHORIZED)
     
     room_name = f"{min(request.user.username, other_user.username)}_{max(request.user.username, other_user.username)}"
     

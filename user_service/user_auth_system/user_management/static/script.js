@@ -33,6 +33,9 @@ document.addEventListener("DOMContentLoaded", function () {
   let friendRequestListUrl = "http://localhost:8000/auth/list-friend-requests/";
   let friendListUrl = "http://localhost:8000/auth/list-friends/";
   let delFriendUrl = "http://localhost:8000/auth/delete-friend/";
+  let blockUserUrl = "http://localhost:8000/auth/block-user/";
+  let unblockUserUrl = "http://localhost:8000/auth/unblock-user/";
+  let ListBlockedUsersUrl = "http://localhost:8000/auth/list-blocked-users/";
 
   // CSRF token
   let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
@@ -432,6 +435,29 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
+
+/////////////     (Un)Blocking users start (Rita)  //////////////
+  const fetchBlockedUsers = async () => {
+    try {
+        const response = await fetch(ListBlockedUsersUrl, {
+            method: 'GET',
+            headers: {
+                "X-CSRFToken": token,
+                "Content-Type": "application/json",
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch blocked users');
+        }
+        const data = await response.json();
+        console.log('Blocked users:', data);
+    } catch (error) {
+        console.error('Error fetching blocked users:', error);
+    }
+};
+/////////////     (Un)Blocking users end (Rita)  //////////////
+
+
   // Function to add a friend
   const getUserId = async (username) => {
     const response = await fetch(
@@ -510,15 +536,91 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
+/////////////     (Un)Blocking users start (Rita)  //////////////
+  const blockUser = async () => {
+    const username = document.getElementById("user-username-to-block").value;
+    console.log("user username: ", username);
+    const messageContainer = document.getElementById("block-user-message");
+    if (!username) {
+        messageContainer.textContent = "Please enter a username";
+        return;
+    }
+
+    try {
+        const userId = await getUserId(username);
+        console.log("user id: ", userId);
+        const response = await fetch(blockUserUrl, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": token,
+                "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ to_user: userId }),
+        });
+        const data = await response.json();
+        messageContainer.textContent = data.message;
+        if (response.ok) {
+            document.getElementById("user-username-to-block").value = "";
+            fetchBlockedUsers();
+        }
+    } catch (error) {
+        console.error("Error blocking user:", error);
+        messageContainer.textContent = "Error blocking user";
+    }
+};
+
+
+const unblockUser = async () => {
+  const username = document.getElementById("user-username-to-unblock").value;
+  console.log("User username: ", username);
+  const messageContainer = document.getElementById("unblock-user-message");
+  if (!username) {
+      messageContainer.textContent = "Please enter a username";
+      return;
+  }
+
+  try {
+      const userId = await getUserId(username);
+      console.log("User id: ", userId);
+      const response = await fetch(unblockUserUrl, {
+          method: "POST",
+          headers: {
+              "X-CSRFToken": token,
+              "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ user_to_unblock_id: userId }),
+      });
+      const data = await response.json();
+      messageContainer.textContent = data.message;
+      if (response.ok) {
+          document.getElementById("user-username-to-unblock").value = "";
+          fetchBlockedUsers();
+      }
+  } catch (error) {
+      console.error("Error unblocking user:", error);
+      messageContainer.textContent = "Error unblocking user";
+  }
+};
+/////////////     (Un)Blocking users end (Rita)  //////////////
+
   document
     .getElementById("add-friend-btn")
     .addEventListener("click", addFriend);
   document
     .getElementById("del-friend-btn")
     .addEventListener("click", delFriend);
+  document
+    .getElementById("unblock-user-button")
+    .addEventListener("click", unblockUser);
+  document
+    .getElementById("block-user-button")
+    .addEventListener("click", blockUser);
   document.getElementById("refresh-btn").addEventListener("click", () => {
     fetchFriendRequests();
     fetchFriends();
+    fetchBlockedUsers();
   });
 
   // btnChat.addEventListener("click", function (event) {
@@ -645,6 +747,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // });
 
 
+  /////////////     Chat start (Rita)  //////////////
   btnChat.addEventListener("click", function (event) {
     fetch('http://localhost:8001/users/', {
       method: "POST",
@@ -663,16 +766,11 @@ document.addEventListener("DOMContentLoaded", function () {
           const li = document.createElement('li');
           li.textContent = user.username + ' ';
 
-          // const a = document.createElement('a');
-          // a.href = `localhost:8001/chat/${user.username}/`;
-
           const button = document.createElement('button');
           button.textContent = 'Start Chat';
 
           button.addEventListener('click', () => handleChatLinkClick(user.username));
 
-          // a.appendChild(button);
-          // li.appendChild(a);
           li.appendChild(button);
           usersList.appendChild(li);
         });
@@ -703,7 +801,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("++ username : ", data.username);
         console.log("++ messages : ", data.messages);
 
-        // Create chat container HTML
         const chatContainer = document.createElement('div');
         chatContainer.classList.add('chat__container');
 
@@ -784,3 +881,4 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
+  /////////////     Chat end (Rita)  //////////////
