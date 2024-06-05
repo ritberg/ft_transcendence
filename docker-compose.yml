@@ -11,7 +11,6 @@ services:
         DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
         DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
         DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
-
     env_file:
       - .env
     ports:
@@ -24,6 +23,7 @@ services:
     init: true
     depends_on:
       - db_user
+      - redis
 
   chats:
     container_name: chats
@@ -45,6 +45,7 @@ services:
     init: true
     depends_on:
       - db_user
+      - redis
 
   db_user:
     container_name: db_user
@@ -63,6 +64,14 @@ services:
     networks:
       - transcendance
     init: true
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - transcendance
 
 volumes:
   user_service:
@@ -84,5 +93,4 @@ volumes:
 
 networks:
   transcendance:
-    # name: transcendance
     driver: bridge
