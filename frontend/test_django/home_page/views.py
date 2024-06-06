@@ -4,3 +4,6 @@ from django.shortcuts import render
 # views.py
 def index_view(request):
     return render(request, 'index.html')
+
+def test_view(request):
+    return render(request, 'indexx.html')

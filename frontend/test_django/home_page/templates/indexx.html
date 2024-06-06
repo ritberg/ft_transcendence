@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>Transcendance</title>
+  <link rel="stylesheet" href="{% static 'userchat/style.css' %}" />
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css" />
+</head>
+
+<body>
+  <section class="profile">
+    <div class="profile-nav">
+      <img id="user-avatar" src="" />
+      <h3 id="user-name">Guest</h3>
+      <p id="user-email"></p>
+      <h3 id="info">Please login to access your profile</h3>
+      <h3 id="user-logout"></h3>
+      <div class="profile-modify">
+        <input type="text" id="new-username" placeholder="Enter new username" />
+        <input type="text" id="new-email" placeholder="Enter new email" />
+        <input type="password" id="new-password" placeholder="Enter new password" />
+        <button id="update-profile">Update Profile</button>
+      </div>
+    </div>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" id="input-avatar" name="image" accept="image/*" />
+      <button type="button" id="upload-avatar">Télécharger</button>
+    </form>
+    <div class="add-friend">
+      <h3>Add Friend</h3>
+      <input type="text" id="friend-username-to-add" placeholder="Enter friend's username" />
+      <button id="add-friend-btn">Add Friend</button>
+      <div id="add-friend-message"></div>
+    </div>
+    <div class="del-friend">
+      <h3>Del Friend</h3>
+      <input type="text" id="friend-username-to-del" placeholder="Enter friend's username" />
+      <button id="del-friend-btn">del Friend</button>
+      <div id="del-friend-message"></div>
+    </div>
+    <div class="friend-list">
+      <h3>Friends List</h3>
+      <div id="friends-list"></div>
+    </div>
+
+    <!-- Block/unblock users start (Rita)-->
+    <div class="blocked-users">
+      <h3>Blocked Users</h3>
+      <div id="blocked-users"></div>
+      <input type="text" id="user-username-to-block" placeholder="Username to block">
+      <button id="block-user-button">Block User</button>
+      <div id="block-user-message"></div>
+
+      <div id="unblocked-users"></div>
+      <input type="text" id="user-username-to-unblock" placeholder="Username to unblock">
+      <button id="unblock-user-button">Unblock User</button>
+      <div id="unblock-user-message"></div>
+    </div>
+    <!-- Block/unblock users end (Rita) -->
+
+
+    <div class="friend-requests">
+      <h3>Friend Requests</h3>
+      <div id="friend-requests"></div>
+    </div>
+    <button id="refresh-btn">Refresh Lists</button>
+
+    <!-- Chat start (Rita) -->
+    <button id="chat">chat</button>
+    <div id="users-list-container">
+      <ul id="users-List">
+        <!-- User list will be populated here -->
+      </ul>
+    </div>
+    <section id="chat-container">
+      <!-- Chat content will be dynamically inserted here -->
+    </section>
+    <!-- Chat end (Rita) -->
+
+  </section>
+
+  <section class="login-section">
+    <div class="form-container">
+      <!-- Login Form -->
+      <i class="uil uil-times form-close" id="btn-form-close"></i>
+      <div class="login-form">
+        <form action="#">
+          <h2>Login</h2>
+          <div class="input-box">
+            <input type="text" name="username" placeholder="Enter your name" required autocomplete="off" />
+          </div>
+          <div class="input-box">
+            <input type="password" name="password" placeholder="Enter your password" required />
+            <i class="uil uil-eye-slash toggle-password"></i>
+          </div>
+          <div class="option-field">
+            <label class="checkbox">
+              <input type="checkbox" id="remember" />
+              Remember me
+            </label>
+            <a href="#" class="forgot-pw">Forgot password?</a>
+          </div>
+          <button type="submit" class="button" id="login-submit">
+            Login Now
+          </button>
+          <div class="signup-link">
+            Don't have any account? <a href="#" id="signup">Signup</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- Signup Form -->
+      <div class="signup-form">
+        <form action="#">
+          <h2>Signup</h2>
+          <div class="input-box">
+            <input type="text" name="username" placeholder="Enter your name" required autocomplete="off" />
+          </div>
+          <div class="input-box">
+            <input type="email" name="email" placeholder="Enter your email" required autocomplete="off" />
+          </div>
+          <div class="input-box">
+            <input type="password" name="password" placeholder="Create your password" required />
+            <i class="uil uil-eye-slash toggle-password"></i>
+          </div>
+          <div class="input-box">
+            <input type="password" name="password-cofirmation" placeholder="Confirm your password" required />
+            <i class="uil uil-eye-slash toggle-password"></i>
+          </div>
+          <button type="submit" class="button" id="signup-submiy">
+            Signup Now
+          </button>
+          <div class="signup-link">
+            Already have an account? <a href="#" id="login">Login</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <script src="{% static 'userchat/script.js' %}"></script>
+</body>
+
+</html>

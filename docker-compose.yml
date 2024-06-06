@@ -22,6 +22,55 @@ services:
     init: true
     restart: on-failure
 
+  user:
+    container_name: user
+    build:
+      context: ./user/docker
+      dockerfile: Dockerfile
+      args:
+        USER_SERVICE_NAME: ${USER_SERVICE_NAME}
+        DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+        DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+        DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "8003:8003"
+    volumes:
+      - user:/home/transcendance/${USER_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - db_userchat
+      - redis
+    restart: on-failure
+
+  chat:
+    container_name: chat
+    build:
+      context: ./chat_service/docker
+      dockerfile: Dockerfile
+      args:
+        CHAT_SERVICE_NAME: ${CHAT_SERVICE_NAME}
+    env_file:
+      - .env
+    ports:
+      - "8004:8004"
+    volumes:
+      - chat:/home/transcendance/${CHAT_SERVICE_NAME}
+      - user:/home/transcendance/${USER_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - user
+      - db_userchat
+      - redis
+    restart: on-failure
+
   online:
     container_name: online
     depends_on:
@@ -86,7 +135,9 @@ services:
     depends_on:
       - online
       - frontend
-      - bot
+      # - bot
+      - user
+      - chat
     build:
       context: ./nginx/docker
       dockerfile: Dockerfile
@@ -99,6 +150,35 @@ services:
       - transcendance
     env_file: .env
     # tty: true
+    restart: on-failure
+
+  db_userchat:
+    container_name: db_userchat
+    image: postgres:16.2
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_USERCHAT_NAME}
+      POSTGRES_USER: ${DB_USERCHAT_USER}
+      POSTGRES_PASSWORD: ${DB_USERCHAT_PASSWORD}
+      PGPORT: ${DB_USERCHAT_PORT}
+    volumes:
+      - db_userchat:/var/lib/postgresql/data
+    ports:
+      - "5434:5434"
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    restart: on-failure
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - transcendance
     restart: on-failure
 
 volumes:
@@ -132,6 +212,24 @@ volumes:
       type: "none"
       o: "bind"
       device: "${PWD}/bot/${BOT_SERVICE_NAME}"
+  user:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/user/${USER_SERVICE_NAME}"
+  chat:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/chat_service/${CHAT_SERVICE_NAME}"
+  db_userchat:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/databases/db_userchat"
 
 networks:
   transcendance:
