@@ -2,7 +2,7 @@ import { sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
 import { loop as loopPvp } from './pvp_pong.js';
 import { loop as loopTourney, loop_exec } from './tourney_pong.js';
-import { drawBrackets, enterNicknames, createPlayers, players } from './brackets.js';
+import { drawBrackets, enterNicknames, createPlayers } from './brackets.js';
 
 // export var loop_exec = false;
 export let ai_activated = false;
@@ -63,7 +63,7 @@ document.getElementById("main-menu").addEventListener("click", function() {
 					document.getElementById("nickname_setup-box").classList.remove("shown");
 					document.getElementById("nickname_setup-box").classList.add("hidden");
 					await sleep(300);
-					await drawBrackets(players);
+					await drawBrackets();
 					document.getElementById("nickname_setup-box").style.display = "none";
 					GameMode(2);
 				});

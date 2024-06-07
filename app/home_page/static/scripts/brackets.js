@@ -1,74 +1,80 @@
-import { sleep, randomNumber, Player } from './utils.js';
+import { sleep, randomNumber, Player, Game } from './utils.js';
 
-export const players = [];
-let game_phase = 0;
-let max_game_phase = 0;
+export const game = new Game(0);
 
 export function createPlayers() {
-	let pos_list = [];
 	for (let i = 0; i < document.getElementById("s-players").value; i++) {
-		pos_list.push(i);
-	}
-	for (let i = 0; i < document.getElementById("s-players").value; i++) {
-		const position = randomNumber(pos_list);
 		var fighter = false;
-		const player = new Player(document.getElementById(`player_${i + 1}`).value, 0, position, fighter);
-		players.push(player);
+		game.player.push(new Player(document.getElementById(`player_${i + 1}`).value, fighter));
 	}
-	players.sort((a, b) => a.position - b.position);
-	players[0].fighter = true;
-	players[1].fighter = true;
-	max_game_phase = Math.ceil(players.length / 2);
+	game.player.sort(() => Math.random() - 0.5);
+	game.player[0].fighter = true;
+	game.player[1].fighter = true;
+	for (let i = 0; i < game.player.length; i++)
+		game.scores.push([game.player[i], 172]);
+	game.index = 0;
 }
 
-export async function drawBrackets(players) {
-	game_phase++;
+export async function drawBrackets() {
+	console.log(game.scores);
+	//let max_game_phase = Math.ceil(players.length / 2);
+	let max_game_phase = 0;
+	if (game.player.length == 4)
+		max_game_phase = 3;
+	else
+		max_game_phase = 4;
 	// document.querySelector(".brackets").style.left = "0";
 	document.getElementById("brackets-container").style.opacity = "0";
 	document.getElementById("brackets-container").style.display = "flex";
 	document.getElementById("brackets-container").classList.add("shown");
 	const divs = [];
 	const boxes = [];
-	for (let x = 0; x < game_phase; x++) {
+	let acc = game.player.length;
+	let cur_pos = 0;
+	for (let i = 0; i < max_game_phase; i++) {
 		const newDiv = document.createElement("div");
 		newDiv.classList.add("brackets");
 		document.querySelector("#brackets-container").appendChild(newDiv);
-		newDiv.style.left = `${x * 225}px`;
+		newDiv.style.left = `${i * 225}px`;
 
-		for (let i = 0; i < players.length; i++) {
+		for (let j = 0; j < acc; j++) {
+			//if (i != 0)
+			//	cur_pos = game.player.length / i + j;
 			const new_box = document.createElement("div");
 			new_box.classList.add("rectangle-div");
 
 			const name_text = document.createElement("span");
 			name_text.classList.add("name");
-			name_text.innerText = players[i].name;
-
+			//console.log(cur_pos, game.index);
+			//if (i > 0 && cur_pos > game.index * 2)
+			console.log(game.index, game.index * 2);
+			if (i > 0 && game.scores[cur_pos] === undefined) {
+				name_text.innerText = "?";
+				new_box.style.border = "2px dashed white";
+			} else
+				name_text.innerText = game.scores[cur_pos][0].name;
 			const score_text = document.createElement("span");
 			score_text.classList.add("score");
-			score_text.innerText = "1";
-
+			if (game.scores[cur_pos] && game.scores[cur_pos][1] != 172)
+				score_text.innerText = game.scores[cur_pos][1];
 			new_box.appendChild(name_text);
 			new_box.appendChild(score_text);
 			newDiv.appendChild(new_box);
 			boxes.push(new_box);
+			cur_pos++;
 		}
-
-		divs[x] = newDiv;
+		acc /= 2;
+		divs.push(newDiv);
 	}
 	await sleep(1000);
-	for (let i = 0; i < players.length; i++)
-		if (players[i].fighter == true)
-			boxes[i].classList.add("fighter");
+	boxes[game.index].classList.add("fighter");
+	boxes[game.index + 1].classList.add("fighter");
 	await sleep(1000);
 	document.getElementById("brackets-container").style.opacity = "1";
 	document.getElementById("brackets-container").classList.remove("shown");
 	document.getElementById("brackets-container").classList.add("hidden");
 	await sleep(700);
-	// for (let i = 0; i < players.length; i++)
-	// 	if (players[i].fighter == true)
-	// 		boxes[i].classList.remove("fighter");
-
-	for (let x = 0; x < game_phase; x++)
+	for (let x = 0; x < divs.length; x++)
 		divs[x].remove();
 	document.getElementById("brackets-container").style.display = "none";
 }
@@ -121,3 +127,43 @@ export function enterNicknames(n) {
 			boxes.push(new_box);
 		}
 		*/
+
+
+/*export async function drawBrackets(players) {
+	// document.querySelector(".brackets").style.left = "0";
+	document.getElementById("brackets-container").style.opacity = "0";
+	document.getElementById("brackets-container").style.display = "flex";
+	document.getElementById("brackets-container").classList.add("shown");
+	const divs = [];
+	const boxes = [];
+	for (let x = 0; x <= game.index; x++) {
+		const newDiv = document.createElement("div");
+		if (max_game_phase % (game.index / 2) == 0 || game.index == 0) {
+			newDiv.classList.add("brackets");
+			document.querySelector("#brackets-container").appendChild(newDiv);
+			newDiv.style.left = `${game_phase * 225}px`;
+			game_phase++;
+		}
+
+		for (let i = 0; i < 2; i++) {
+			const new_box = document.createElement("div");
+			new_box.classList.add("rectangle-div");
+
+			const name_text = document.createElement("span");
+			name_text.classList.add("name");
+			name_text.innerText = players[i % 2].name;
+
+			const score_text = document.createElement("span");
+			score_text.classList.add("score");
+			if (game.scores[x] && game.scores[x][i % 2])
+				score_text.innerText = game.scores[x][i % 2];
+
+			new_box.appendChild(name_text);
+			new_box.appendChild(score_text);
+			newDiv.appendChild(new_box);
+			boxes.push(new_box);
+		}
+
+		if (max_game_phase % (game.index / 2) == 0 || game.index == 0)
+			divs[x] = newDiv;
+	}*/

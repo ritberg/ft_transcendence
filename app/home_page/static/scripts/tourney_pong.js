@@ -1,7 +1,7 @@
 import { sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
 import { writeVerticalText } from './utils.js';
-import { players, drawBrackets } from './brackets.js';
+import { game, drawBrackets } from './brackets.js';
 
 export var loop_exec = false;
 let paddle_y1 = game_canvas.height / 2 - 100;
@@ -109,8 +109,8 @@ function draw() {
 	ctx.fillRect(ball_x, ball_y, ball_length, ball_length);
 	ctx.fill();
   ctx.fillStyle = "rgb(0, 0, 0)";
-	writeVerticalText(ctx, players[0].name, 22.5, paddle_y1 + 100, "35px Arial", 0);
-	writeVerticalText(ctx, players[1].name, 977.5, paddle_y2 + 100, "35px Arial", 1);
+	writeVerticalText(ctx, game.player[game.index].name, 22.5, paddle_y1 + 100, "35px Arial", 0);
+	writeVerticalText(ctx, game.player[game.index + 1].name, 977.5, paddle_y2 + 100, "35px Arial", 1);
 }
 
 export async function loop(current_frame) {
@@ -118,7 +118,14 @@ export async function loop(current_frame) {
 	const ctx = game_canvas.getContext("2d");
 	loop_exec = true;
 	if (score[0] == 1 || score [1] == 1) {
-		console.log(loop_exec);
+		//console.log(game.index, game.scores[0][0].name);
+		game.scores[game.index][1] = score[0];
+		game.scores[game.index + 1][1] = score[1];
+		if (score[0] > score[1])
+			game.scores.push([game.player[game.index], 172]);
+		else
+			game.scores.push([game.player[game.index + 1], 172]);
+		game.index += 2;
 		score[0] = 0;
 		score[1] = 0;
 		paddle_y1 = game_canvas.height / 2 - 100;
@@ -128,7 +135,7 @@ export async function loop(current_frame) {
 		modifyDelta(1.5);
 		stars(document.getElementById("game_canvas"));
 		await sleep(500);
-		await drawBrackets(players);
+		await drawBrackets(game.player);
 		await starWars();
 		// loop_exec = true;
 		// requestAnimationFrame(loop);
