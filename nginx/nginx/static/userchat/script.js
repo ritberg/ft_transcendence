@@ -437,6 +437,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /////////////     (Un)Blocking users start (Rita)  //////////////
+var blocked_users;
+
   const fetchBlockedUsers = async () => {
     try {
         const response = await fetch(ListBlockedUsersUrl, {
@@ -451,6 +453,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         const data = await response.json();
         console.log('Blocked users:', data);
+        blocked_users = data.blocked_users;
     } catch (error) {
         console.error('Error fetching blocked users:', error);
     }
@@ -804,7 +807,7 @@ const unblockUser = async () => {
         const chatContainer = document.createElement('div');
         chatContainer.classList.add('chat__container');
 
-        if (data && data.other_user && Array.isArray(data.messages)) {
+        if (data && data.other_user && Array.isArray(data.messages)){
           chatContainer.innerHTML = `
           <center><h1>Chat with ${data.other_user}</h1></center>
           <div class="chat__item__container" id="id_chat_item_container">
@@ -850,13 +853,34 @@ const unblockUser = async () => {
           }
         };
   
-        document.querySelector("#id_message_send_button").onclick = function (e) {
-          const messageInput = document.querySelector("#id_message_send_input").value;
-          chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
+        document.querySelector("#id_message_send_button").onclick = async function (e) {
+          await fetchBlockedUsers();
+          let ok = 0;
+          console.log("blocking situation ", blocked_users.length);
+          for (i = 0; i < blocked_users.length; i++)
+          {
+            if (blocked_users[i] == data.other_user)
+              ok = 1;
+          }
+          if (ok == 0) {
+            const messageInput = document.querySelector("#id_message_send_input").value;
+            chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
+          }
         };
   
-        chatSocket.onmessage = function (e) {
+        chatSocket.onmessage = async function (e) {
+          await fetchBlockedUsers();
           const data = JSON.parse(e.data);
+          let ok = 0;
+          console.log("blocking situation ", blocked_users.length);
+          for (i = 0; i < blocked_users.length; i++)
+          {
+            if (blocked_users[i] == data.username)
+              ok = 1;
+          }
+          if (ok == 1) 
+            return;
+        
           const currentUser = data.username;
           const div = document.createElement("div");
           div.classList.add("chat__message");
