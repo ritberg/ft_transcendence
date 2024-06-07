@@ -34,8 +34,8 @@ services:
         DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
     env_file:
       - .env
-    ports:
-      - "8003:8003"
+    expose:
+      - "8003"
     volumes:
       - user:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
@@ -56,8 +56,8 @@ services:
         CHAT_SERVICE_NAME: ${CHAT_SERVICE_NAME}
     env_file:
       - .env
-    ports:
-      - "8004:8004"
+    expose:
+      - "8004"
     volumes:
       - chat:/home/transcendance/${CHAT_SERVICE_NAME}
       - user:/home/transcendance/${USER_SERVICE_NAME}
@@ -165,7 +165,7 @@ services:
     volumes:
       - db_userchat:/var/lib/postgresql/data
     ports:
-      - "5434:5434"
+      - "5434"
     tty: true
     networks:
       - transcendance
@@ -176,7 +176,7 @@ services:
     container_name: redis
     image: redis:alpine
     ports:
-      - "6379:6379"
+      - "6379"
     networks:
       - transcendance
     restart: on-failure

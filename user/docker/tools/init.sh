@@ -19,11 +19,14 @@ cd /home/transcendance/$USER_SERVICE_NAME
 # echo "creation of superuser $DJANGO_SUPERUSER_USERNAME" >> /home/transcendance/logs/setup.log
 # echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD') | python manage.py shell
 
-echo "initialisation of Django done" >> /home/transcendance/logs/setup.log
-./manage.py createsuperuser --no-input
-
-echo "Starting Django server" >> /home/transcendance/logs/setup.log
-sleep 20
+echo "Waiting for postgres to get up and running..."
+while ! nc -z db_userchat 5434; do
+  # where the postgres_container is the hos, in my case, it is a Docker container.
+  # You can use localhost for example in case your database is running locally.
+  echo "waiting for postgress to be listening..."
+  sleep 1
+done
+echo "PostgreSQL started"
 python3 manage.py makemigrations
 python3 manage.py migrate
 python manage.py runserver 0.0.0.0:8003

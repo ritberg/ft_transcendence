@@ -8,6 +8,8 @@ ARG SERVICE_NAME
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
+RUN apt-get update && apt-get install -y netcat-openbsd
+
 RUN mkdir -p /home/transcendance
 WORKDIR /home/transcendance
 
