@@ -762,6 +762,14 @@ body {
 	z-index: 1;
 	cursor: pointer;
 	transition: all ease-out .1s;
+	color: white;
+	font-family: "Comic Sans MS";
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+.chat__message__text {
+	margin: 0;
+	word-wrap: break-word;
 }
 
 #chat-box ul {
@@ -791,13 +799,14 @@ body {
   }
   
 #users-list-box {
+	font-family: "Arial";
 	position: absolute;
 	width: 300px;
 	height: 500px;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
-	background: rgba(0, 0, 0, .8);
+	background: rgba(255, 255, 255, 0.8);
 	border: 2px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
 	display: none;

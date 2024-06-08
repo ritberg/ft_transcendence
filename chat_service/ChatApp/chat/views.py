@@ -23,7 +23,7 @@ import json
 #     return JsonResponse(context)
 
 def chatRoom(request, username):
-    print("------- chatRoom function in views.py - beginning ------")
+    print("-+--+--+-- chatRoom function in views.py - beginning ---+--+-")
     if not request.user.is_authenticated:
         return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
     other_user = get_object_or_404(CustomUser, username=username)
