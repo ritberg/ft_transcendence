@@ -6,6 +6,7 @@ from .models import ChatMessage, ChatRoom
 class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def create_chat(self, room_name, message, username):
+        print("create chat")
         return ChatMessage.objects.create(room_name=room_name, message=message, username=username)
     
     async def connect(self):
@@ -28,10 +29,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json["message"]
         username = text_data_json["username"]
+        print("receive")
         
         room = await self.get_room_instance(self.room_name)
         await self.create_chat(room, message, username)
-         
         await self.channel_layer.group_send(
             self.room_group_name,{
                 "type" : "sendMessage",
@@ -39,9 +40,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "username" : username
             })
         
-    async def sendMessage(self, event) : 
+    async def sendMessage(self, event) :
         message = event["message"]
         username = event["username"]
+        print("sendMessage")
 
         await self.send(text_data = json.dumps({"message" : message ,"username" : username}))
       
