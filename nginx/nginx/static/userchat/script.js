@@ -123,6 +123,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let username = signupForm.querySelector("input[name=username]").value;
     let email = signupForm.querySelector("input[name=email]").value;
     let password = signupForm.querySelector("input[name=password]").value;
+    let password2 = signupForm.querySelector("input[name=password-confirmation]").value;
+    
+    if ( password != password2) {
+      console.log("Not ok password2"); // TODO !!!
+      return;
+    }
 
     console.log({ username, email, password });
 

@@ -2,148 +2,296 @@ import { sleep } from './utils.js';
 import { GameMode } from './main.js';
 import { drawBrackets, enterNicknames } from './brackets.js';
 
-var token;
-var csrfMetaTag;
+// document.getElementById("user-name").innerHTML = username_global;
+
+// document.addEventListener("DOMContentLoaded", function () {
+// 	// CSRF token
+// 	let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
+// 	let token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
+
+// 	if (!token) {
+// 		console.error("CSRF token not found!");
+// 		return;
+// 	}
+
+// 	const updateCSRFToken = (newToken) => {
+// 		console.log("old token : ", token);
+// 		token = newToken;
+// 		console.log("new token : ", token);
+// 		document
+// 			.querySelector('meta[name="csrf-token"]')
+// 			.setAttribute("content", newToken);
+// 	};
+
+// 	let usernameLabel = document.getElementById("user-name");
+
+// 	displayProfile = (user) => {
+// 		usernameLabel.textContent = user.username;
+// 		// emailLabel.textContent = user.email;
+// 		// logout.textContent = "logout";
+// 		// logInfo.textContent = user.id;
+// 		// if (user.profile_picture) {
+// 			// profile_picture.src = user.profile_picture;
+// 		// }
+// 		localStorage.setItem("user", JSON.stringify(user));
+// 		// closeLogin();
+// 		// document.querySelector(".profile-modify").classList.add("show");
+// 	};
+
+// 	let storedUser = localStorage.getItem("user");
+// 	if (storedUser) {
+// 		let user = JSON.parse(storedUser);
+// 		displayProfile(user);
+// 	}
+
+
+// 	document.getElementById("hamburger-icon").addEventListener("click", function () {
+// 		document.getElementById("hamburger-icon").classList.toggle("active");
+// 		document.getElementById("vertical-tab").classList.toggle("active");
+// 	});
+
+// 	document.getElementById("profile-button").addEventListener("click", function () {
+// 		if (window.getComputedStyle(document.getElementById("profile-box_main")).display === "none") {
+// 			document.getElementById("profile-box_main").style.display = "block";
+// 			document.getElementById("profile-box_main1").style.display = "none";
+// 			document.getElementById("main-buttons").style.display = "none";
+
+// 		} else {
+// 			document.getElementById("profile-box_main").style.display = "none";
+// 			document.getElementById("profile-box_main1").style.display = "none";
+// 			document.getElementById("main-buttons").style.display = "flex";
+// 		}
+
+// 	});
+
+
+// 	let signupUrl = "https://localhost/auth/register/";
+
+// 	let signupForm = document.getElementById("go");
+
+// 	signupForm.addEventListener("click", function (event) {
+// 		event.preventDefault();
+// 		let username = document.getElementById("username").value;
+// 		let email = document.getElementById("email").value;
+// 		let password = document.getElementById("password").value;
+
+// 		console.log({ username, email, password });
+
+// 		fetch(signupUrl, {
+// 			method: "POST",
+// 			headers: {
+// 				"Content-Type": "application/json",
+// 				"X-CSRFToken": token,
+// 			},
+// 			body: JSON.stringify({ username, email, password }),
+// 		})
+// 			.then((response) => {
+// 				if (!response.ok) {
+// 					console.log(response);
+// 					throw new Error("Network response was not ok");
+// 				}
+// 				return response.json();
+// 			})
+// 			.then((data) => {
+// 				console.log(data);
+// 				console.log("token received : ", data.crsfToken);
+// 				updateCSRFToken(data.crsfToken);
+
+// 				// displayProfile(data.data);
+// 			})
+// 			.catch((error) => {
+// 				console.error("Fetch error: ", error);
+// 			});
+// 	});
+
+// 	let loginForm = document.getElementById("go1");
+// 	// loginForm.classList.add("show");
+// 	// signupForm.classList.remove("show");
+// 	let loginUrl = "https://localhost/auth/login/";
+
+// 	loginForm.addEventListener("click", function (event) {
+// 		event.preventDefault();
+
+// 		// Récupère les valeurs des champs du formulaire
+// 		let username = document.getElementById("username1").value;
+// 		let password = document.getElementById("password1").value;
+
+// 		// Logs de départ avant l'envoi de la requête
+// 		console.log("Sending login request...");
+
+// 		console.log("username : ", username);
+
+// 		fetch(loginUrl, {
+// 			method: "POST",
+// 			headers: {
+// 				"Content-Type": "application/json",
+// 				"X-CSRFToken": token,
+// 			},
+// 			body: JSON.stringify({ username, password }),
+// 			credentials: "include",
+// 		})
+// 			.then((response) => {
+// 				// Logs les headers de la réponse pour voir les cookies reçus
+// 				console.log("Response Headers:", [...response.headers.entries()]);
+
+// 				// Vérifie si la réponse est correcte (status 200-299)
+// 				if (!response.ok) {
+// 					console.log("Full response:", response);
+// 					throw new Error("Network response was not ok");
+// 				}
+
+// 				// Retourne la réponse en JSON
+// 				return response.json();
+// 			})
+// 			.then((data) => {
+// 				// Logs pour voir le contenu des cookies après la requête
+// 				console.log("Cookies after login response:", document.cookie);
+// 				console.log("Login successful. Server response data:", data);
+
+// 				// Met à jour les éléments d'interface utilisateur
+// 				console.log("data : ", data.data);
+// 				console.log("token received : ", data.crsfToken);
+// 				updateCSRFToken(data.crsfToken);
+// 				console.log(data);
+// 				// fetchFriendRequests();
+// 				// fetchFriends();
+// 				localStorage.setItem("user", JSON.stringify(data.data));
+// 				displayProfile(data.data);
+// 			})
+// 			.catch((error) => {
+// 				console.error("Fetch error:", error);
+// 			});
+// 	});
 
 document.addEventListener("DOMContentLoaded", function () {
-	// CSRF token
-	csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
-	token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
+    // CSRF token
+    let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
+    let token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
 
-	if (!token) {
-		console.error("CSRF token not found!");
-		return;
-	}
+    if (!token) {
+        console.error("CSRF token not found!");
+        return;
+    }
 
-	const updateCSRFToken = (newToken) => {
-		console.log("old token : ", token);
-		token = newToken;
-		console.log("new token : ", token);
-		document
-			.querySelector('meta[name="csrf-token"]')
-			.setAttribute("content", newToken);
-	};
+    const updateCSRFToken = (newToken) => {
+        console.log("old token : ", token);
+        token = newToken;
+        console.log("new token : ", token);
+        document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
+    };
 
+    let usernameLabel = document.getElementById("user-name");
 
-	document.getElementById("hamburger-icon").addEventListener("click", function () {
-		document.getElementById("hamburger-icon").classList.toggle("active");
-		document.getElementById("vertical-tab").classList.toggle("active");
-	});
+    const displayProfile = (user) => {
+        usernameLabel.textContent = user.username;
+        localStorage.setItem("user", JSON.stringify(user));
+    };
 
-	document.getElementById("profile-button").addEventListener("click", function () {
-		if (window.getComputedStyle(document.getElementById("profile-box_main")).display === "none") {
-			document.getElementById("profile-box_main").style.display = "block";
-			document.getElementById("profile-box_main1").style.display = "none";
-			document.getElementById("main-buttons").style.display = "none";
+    let storedUser = localStorage.getItem("user");
+    if (storedUser) {
+        let user = JSON.parse(storedUser);
+        displayProfile(user);
+    }
 
-		} else {
-			document.getElementById("profile-box_main").style.display = "none";
-			document.getElementById("profile-box_main1").style.display = "none";
-			document.getElementById("main-buttons").style.display = "flex";
-		}
+    document.getElementById("hamburger-icon").addEventListener("click", function () {
+        document.getElementById("hamburger-icon").classList.toggle("active");
+        document.getElementById("vertical-tab").classList.toggle("active");
+    });
 
-	});
+    document.getElementById("profile-button").addEventListener("click", function () {
+        if (window.getComputedStyle(document.getElementById("profile-box_main")).display === "none") {
+            document.getElementById("profile-box_main").style.display = "block";
+            document.getElementById("profile-box_main1").style.display = "none";
+            document.getElementById("main-buttons").style.display = "none";
+        } else {
+            document.getElementById("profile-box_main").style.display = "none";
+            document.getElementById("profile-box_main1").style.display = "none";
+            document.getElementById("main-buttons").style.display = "flex";
+        }
+    });
 
+    let signupUrl = "https://localhost/auth/register/";
+    let signupForm = document.getElementById("go");
 
-	let signupUrl = "https://localhost/auth/register/";
+    signupForm.addEventListener("click", function (event) {
+        event.preventDefault();
+        let username = document.getElementById("username").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
 
-	let signupForm = document.getElementById("go");
+        console.log({ username, email, password });
 
-	signupForm.addEventListener("click", function (event) {
-		event.preventDefault();
-		let username = document.getElementById("username").value;
-		let email = document.getElementById("email").value;
-		let password = document.getElementById("password").value;
+        fetch(signupUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": token,
+            },
+            body: JSON.stringify({ username, email, password }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    console.log(response);
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                console.log("token received : ", data.crsfToken);
+                updateCSRFToken(data.crsfToken);
+                localStorage.setItem("user", JSON.stringify(data.data));
+                displayProfile(data.data);
+            })
+            .catch((error) => {
+                console.error("Fetch error: ", error);
+            });
+    });
 
-		console.log({ username, email, password });
+    let loginForm = document.getElementById("go1");
+    let loginUrl = "https://localhost/auth/login/";
 
-		fetch(signupUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			body: JSON.stringify({ username, email, password }),
-		})
-			.then((response) => {
-				if (!response.ok) {
-					console.log(response);
-					throw new Error("Network response was not ok");
-				}
-				return response.json();
-			})
-			.then((data) => {
-				console.log(data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
+    loginForm.addEventListener("click", function (event) {
+        event.preventDefault();
 
-				// displayProfile(data.data);
-			})
-			.catch((error) => {
-				console.error("Fetch error: ", error);
-			});
-	});
+        let username = document.getElementById("username1").value;
+        let password = document.getElementById("password1").value;
 
-	let loginForm = document.getElementById("go1");
-	// loginForm.classList.add("show");
-	// signupForm.classList.remove("show");
-	let loginUrl = "https://localhost/auth/login/";
+        console.log("Sending login request...");
+        console.log("username : ", username);
 
-	loginForm.addEventListener("click", function (event) {
-		event.preventDefault();
+        fetch(loginUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": token,
+            },
+            body: JSON.stringify({ username, password }),
+            credentials: "include",
+        })
+            .then((response) => {
+                console.log("Response Headers:", [...response.headers.entries()]);
 
-		// Récupère les valeurs des champs du formulaire
-		let username = document.getElementById("username1").value;
-		let password = document.getElementById("password1").value;
+                if (!response.ok) {
+                    console.log("Full response:", response);
+                    throw new Error("Network response was not ok");
+                }
 
-		// Logs de départ avant l'envoi de la requête
-		console.log("Sending login request...");
-
-		console.log("username : ", username);
-
-		fetch(loginUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			body: JSON.stringify({ username, password }),
-			credentials: "include",
-		})
-			.then((response) => {
-				// Logs les headers de la réponse pour voir les cookies reçus
-				console.log("Response Headers:", [...response.headers.entries()]);
-
-				// Vérifie si la réponse est correcte (status 200-299)
-				if (!response.ok) {
-					console.log("Full response:", response);
-					throw new Error("Network response was not ok");
-				}
-
-				// Retourne la réponse en JSON
-				return response.json();
-			})
-			.then((data) => {
-				// Logs pour voir le contenu des cookies après la requête
-				console.log("Cookies after login response:", document.cookie);
-				console.log("Login successful. Server response data:", data);
-
-				// Met à jour les éléments d'interface utilisateur
-				console.log("data : ", data.data);
-				// displayProfile(data.data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
-				console.log(data);
-				document.getElementById("user-name").innerHTML = data.data.username;
-				// fetchFriendRequests();
-				// fetchFriends();
-			})
-			.catch((error) => {
-				console.error("Fetch error:", error);
-			});
-	});
-
-
+                return response.json();
+            })
+            .then((data) => {
+                console.log("Cookies after login response:", document.cookie);
+                console.log("Login successful. Server response data:", data);
+                console.log("data : ", data.data);
+                console.log("token received : ", data.crsfToken);
+                updateCSRFToken(data.crsfToken);
+                localStorage.setItem("user", JSON.stringify(data.data));
+                displayProfile(data.data);
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
+    });
 
 
 	let btnLogin = document.getElementById("login");
@@ -276,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			usersListBox.classList.remove('show');
 			document.getElementById("main-buttons").style.display = "block";
 		}
-		console.log("ici");
+		console.log("token: ", token);
 		fetch('https://localhost/users/', {
 			method: "POST",
 			headers: {
