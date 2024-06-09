@@ -5,7 +5,9 @@ import { online_game } from '../online/index.js';
 
 
 document.addEventListener("DOMContentLoaded", function () {
-	// CSRF token
+	
+	//////// CSRF token ////////
+
 	let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
 	let token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
 	var username_global = "guest";
@@ -22,6 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 	};
 
+	/////////// frontend ////////////
+	
 	let usernameLabel = document.getElementById("user-name");
 
 	const displayProfile = (user) => {
@@ -54,7 +58,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	});
 
-	let signupUrl = "https://localhost/auth/register/";
+
+	////////////////////// SIGNUP ////////////////////////////
+
+	let signupUrl = "https://" + window.location.host + "/auth/register/";
 	let signupForm = document.getElementById("go");
 
 	signupForm.addEventListener("click", function (event) {
@@ -92,8 +99,11 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 	});
 
+
+	////////////////////// LOGIN ////////////////////////////
+
 	let loginForm = document.getElementById("go1");
-	let loginUrl = "https://localhost/auth/login/";
+	let loginUrl = "https://" + window.location.host + "/auth/login/";
 
 	loginForm.addEventListener("click", function (event) {
 		event.preventDefault();
@@ -139,6 +149,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 
+	/////////// frontend ////////////
+
 	let btnLogin = document.getElementById("login");
 	let btnSignup = document.getElementById("signup");
 
@@ -153,11 +165,14 @@ document.addEventListener("DOMContentLoaded", function () {
 	});
 
 
-	/////////////     (Un)Blocking users start (Rita)  //////////////
+
+
+	////////////////////// UPDATE THE BLOCKED USERS LIST ////////////////////////////
+
 	var blocked_users;
-	let blockUserUrl = "https://localhost/auth/block-user/";
-	let unblockUserUrl = "https://localhost/auth/unblock-user/";
-	let ListBlockedUsersUrl = "https://localhost/auth/list-blocked-users/";
+	let blockUserUrl = "https://" + window.location.host + "/auth/block-user/";
+	let unblockUserUrl = "https://" + window.location.host + "/auth/unblock-user/";
+	let ListBlockedUsersUrl = "https://"  + window.location.host + "/auth/list-blocked-users/";
 
 	const fetchBlockedUsers = async () => {
 		try {
@@ -178,10 +193,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			console.error('Error fetching blocked users:', error);
 		}
 	};
-	/////////////     (Un)Blocking users end (Rita)  //////////////
 
 
-	/////////////     (Un)Blocking users start (Rita)  //////////////
+	////////////////////// BLOCK A USER (not used yet) ////////////////////////////
+
 	const blockUser = async () => {
 		const username = document.getElementById("user-username-to-block").value;
 		console.log("user username: ", username);
@@ -216,6 +231,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	};
 
 
+	////////////////////// UNBLOCK A USER (not used yet) ////////////////////////////
+
 	const unblockUser = async () => {
 		const username = document.getElementById("user-username-to-unblock").value;
 		console.log("User username: ", username);
@@ -224,7 +241,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			messageContainer.textContent = "Please enter a username";
 			return;
 		}
-
 		try {
 			const userId = await getUserId(username);
 			console.log("User id: ", userId);
@@ -248,16 +264,15 @@ document.addEventListener("DOMContentLoaded", function () {
 			messageContainer.textContent = "Error unblocking user";
 		}
 	};
-	/////////////     (Un)Blocking users end (Rita)  //////////////
 
 
-	/////////////     Chat start (Rita)  //////////////
+	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////
 
 	let usrsLst = document.getElementById("users-full-list-button");
 	let usersListBox = document.getElementById("users-list-box");
 	var chat_room_name;
 
-	usrsLst.addEventListener("click", function (event) {
+	usrsLst.addEventListener("click", function (event) {					//// frontend
 		document.getElementById("profile-box_main").style.display = "none";
 		document.getElementById("profile-box_main1").style.display = "none";
 		if (window.getComputedStyle(document.getElementById("users-list-box")).display === "none") {
@@ -268,8 +283,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			usersListBox.classList.remove('show');
 			document.getElementById("main-buttons").style.display = "block";
 		}
-		console.log("token: ", token);
-		fetch('https://localhost/users/', {
+
+
+		fetch("https://" + window.location.host + "/users/", {
 			method: "POST",
 			headers: {
 				"X-CSRFToken": token,
@@ -284,17 +300,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				if (data.users.length != 0) {
 					data.users.forEach(user => {
-						const li = document.createElement('li');
-						li.textContent = user.username + ' ';
-
-						const button = document.createElement('button');
-						button.textContent = 'Start Chat';
+						const li = document.createElement('li');     		////
+						li.textContent = user.username + ' ';        		//// dinamically creating users list with
+																			//// buttons "start chat" 
+						const button = document.createElement('button');	////
+						button.textContent = 'Start Chat';					////
 
 						button.addEventListener('click', (e) => {
 							e.preventDefault();
 							if (!(document.getElementById("chat-box").classList.item("active")))
 								document.getElementById("chat-box").classList.toggle("active");
-							handleChatLinkClick(user.username);
+							handleChatLinkClick(user.username);				//// opening chat
 						});
 
 						li.appendChild(button);
@@ -304,6 +320,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			})
 			.catch(error => console.error('Error fetching user data:', error));
 	});
+
+
+	////////////////////// ACCEPT INVITATION TO PLAY PONG ////////////////////////////
 
 	function invite_accept() {
 		let ws
@@ -328,31 +347,33 @@ document.addEventListener("DOMContentLoaded", function () {
 				else {
 					usersListBox.classList.remove('show');
 					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
-					online_game(ws);
+					online_game(ws);			//// launching the online pong game
 				}
 			})
 	}
+
 	const chatContainer = document.getElementById("chat-container");
 
-	// Event delegation for dynamically added button
-	chatContainer.addEventListener("click", function (event) {
-		if (event.target && event.target.id === "invite-link") {
+	chatContainer.addEventListener("click", function (event) {			//// invitation to play pong online
+		if (event.target && event.target.id === "invite-link") {		//// clicking on a dynamically added button
 			invite_accept(event);
 		}
 	});
+
+
+	////////////////////// CHAT ////////////////////////////
 
 	var active_connections = [];
 	var active_connections_num = 0;
 
 	function handleChatLinkClick(username) {
-		for (let j = 0; j < active_connections.length; j++) {
-			if (active_connections[j] == username)
+		for (let j = 0; j < active_connections.length; j++) {			//// prevent starting the same chat
+			if (active_connections[j] == username)						//// several times
 				return;
 		}
 		active_connections[active_connections_num++] = username;
 
-		const chatUrl = `https://localhost/chat/${username}/`;
-
+		const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
 
 		fetch(chatUrl, {
 			method: "POST",
@@ -379,7 +400,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				const chatContainer = document.createElement('div');
 				chatContainer.classList.add('chat__container');
 				document.getElementById("chat-container").innerHTML = "";
-				if (data && data.other_user && Array.isArray(data.messages)) {
+				if (data && data.other_user && Array.isArray(data.messages)) {		//// adding messages into the chat container dinamically
 					chatContainer.innerHTML = `
           <center><h1>Chat with ${data.other_user}</h1></center>
           <div class="chat__item__container" id="id_chat_item_container">
@@ -407,7 +428,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				const listItemElement = document.getElementById('chat-container');
 				listItemElement.appendChild(chatContainer);
 
-				// Initialize WebSocket connection
 				const roomName = data.room_name;
 				const chatSocket = new WebSocket("wss://" + window.location.host + "/chat/" + roomName + "/");
 
@@ -462,7 +482,7 @@ document.addEventListener("DOMContentLoaded", function () {
 								console.log("error: " + data.error);
 							else {
 								usersListBox.classList.remove('show');
-								chatSocket.send(JSON.stringify({ message: "a pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
+								chatSocket.send(JSON.stringify({ message: "A pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
 								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
 								online_game(ws);
 							}
@@ -491,6 +511,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					} else {
 						div.classList.add("chat__message--other");
 					}
+					
 					div.innerHTML = `
             <img src="https://via.placeholder.com/40" alt="User Photo">
             <div class="chat__message__content">
@@ -506,14 +527,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			.catch(error => console.error('Error fetching chat data:', error));
 	}
 
-	/////////////     Chat end (Rita)  //////////////
 
 
 
 
 
 
-	///////////////////////////////////////////////////////////
+	/////////////////////////// frontend ////////////////////////////////
 
 	document.addEventListener('DOMContentLoaded', () => {
 		const inputElement = document.getElementById('room_name_input');
