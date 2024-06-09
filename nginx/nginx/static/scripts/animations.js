@@ -284,8 +284,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			document.getElementById("main-buttons").style.display = "block";
 		}
 
+		let usersUrl = "https://" + window.location.host + "/users/";
 
-		fetch("https://" + window.location.host + "/users/", {
+		fetch(usersUrl, {
 			method: "POST",
 			headers: {
 				"X-CSRFToken": token,
