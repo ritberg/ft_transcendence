@@ -73,9 +73,9 @@ def CreateRoom(request):
 def CreateInvite(request):
     if request.method == 'POST':
         text_data_json = json.loads(request.body)
-        room = text_data_json["room"]
+        chat_name = text_data_json["chat_name"]
         try:
-            get_room = Room.objects.get(room_name=room)
+            get_room = Room.objects.get(invite_name=chat_name)
             if get_room.full == True:
                 context = {
                     "status": 500,
@@ -85,16 +85,17 @@ def CreateInvite(request):
                 return JsonResponse(context)
             context = {
                 "status": 200,
-                "room_name": room,
+                "room_name": get_room.room_name,
                 "error": "",
             }
             return JsonResponse(context)
         except Room.DoesNotExist:
-            new_room = Room(room_name = room)
+            new_room_name = str(uuid.uuid4())
+            new_room = Room(room_name = new_room_name, invite_name = chat_name)
             new_room.save()
             context = {
                 "status": 200,
-                "room_name": room,
+                "room_name": new_room_name,
                 "error": "",
             }
             return JsonResponse(context)

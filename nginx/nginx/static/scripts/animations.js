@@ -253,7 +253,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	let usrsLst = document.getElementById("users-full-list-button");
 	let usersListBox = document.getElementById("users-list-box");
-
+	var chat_room_name;
 
 	usrsLst.addEventListener("click", function (event) {
 		document.getElementById("profile-box_main").style.display = "none";
@@ -280,25 +280,62 @@ document.addEventListener("DOMContentLoaded", function () {
 				const usersList = document.getElementById('users-list-container');
 				usersList.innerHTML = '';
 
-				data.users.forEach(user => {
-					const li = document.createElement('li');
-					li.textContent = user.username + ' ';
+				if (data.users.length != 0) {
+					data.users.forEach(user => {
+						const li = document.createElement('li');
+						li.textContent = user.username + ' ';
 
-					const button = document.createElement('button');
-					button.textContent = 'Start Chat';
+						const button = document.createElement('button');
+						button.textContent = 'Start Chat';
 
-					button.addEventListener('click', (e) => {
-						e.preventDefault();
-						if (!(document.getElementById("chat-box").classList.item("active")))
-							document.getElementById("chat-box").classList.toggle("active");
-						handleChatLinkClick(user.username);
+						button.addEventListener('click', (e) => {
+							e.preventDefault();
+							if (!(document.getElementById("chat-box").classList.item("active")))
+								document.getElementById("chat-box").classList.toggle("active");
+							handleChatLinkClick(user.username);
+						});
+
+						li.appendChild(button);
+						usersList.appendChild(li);
 					});
-
-					li.appendChild(button);
-					usersList.appendChild(li);
-				});
+				}
 			})
 			.catch(error => console.error('Error fetching user data:', error));
+	});
+
+	function invite_accept() {
+		let ws
+		fetch("https://" + window.location.host + "/room/invite", {
+			method: "POST",
+			body: JSON.stringify({
+				chat_name: chat_room_name,
+			}),
+			headers: {
+				"Content-type": "application/json; charset=UTF-8",
+				"X-CSRFToken": token,
+			}
+		})
+			.then((response) => {
+				return response.json();
+			})
+			.then((data) => {
+				let code = data.status;
+				if (code == 500)
+					console.log("error: " + data.error);
+				else {
+					usersListBox.classList.remove('show');
+					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
+					online_game(ws);
+				}
+			})
+	}
+	const chatContainer = document.getElementById("chat-container");
+
+	// Event delegation for dynamically added button
+	chatContainer.addEventListener("click", function (event) {
+		if (event.target && event.target.id === "invite-link") {
+			invite_accept(event);
+		}
 	});
 
 	var active_connections = [];
@@ -313,9 +350,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		const chatUrl = `https://localhost/chat/${username}/`;
 
-		// document.getElementById("chat-box").style.display = "block";
-		// document.getElementById("chat-box").style.visibility = "visible";
-		// document.getElementById("chat-box").style.opacity = 1;
 
 		fetch(chatUrl, {
 			method: "POST",
@@ -336,6 +370,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("++ other_user : ", data.other_user);
 				console.log("++ username : ", data.username);
 				console.log("++ messages : ", data.messages);
+
+				chat_room_name = data.room_name;
 
 				const chatContainer = document.createElement('div');
 				chatContainer.classList.add('chat__container');
@@ -406,7 +442,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					fetch("https://" + window.location.host + "/room/invite", {
 						method: "POST",
 						body: JSON.stringify({
-							room: "id" + Math.random().toString(16).slice(2),
+							chat_name: data.room_name,
 						}),
 						headers: {
 							"Content-type": "application/json; charset=UTF-8",
@@ -422,13 +458,12 @@ document.addEventListener("DOMContentLoaded", function () {
 								console.log("error: " + data.error);
 							else {
 								usersListBox.classList.remove('show');
-								chatSocket.send(JSON.stringify({ message: "you have been invited you to pong <button id=\"invite-link\">accept</button>", username: "system" }));
+								chatSocket.send(JSON.stringify({ message: "you have been invited to pong <button type=\"submit\" id=\"invite-link\">accept</button>", username: "system" }));
 								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
 								online_game(ws);
 							}
 						})
 				};
-
 
 				chatSocket.onmessage = async function (e) {
 					await fetchBlockedUsers();
