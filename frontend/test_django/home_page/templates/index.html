@@ -48,30 +48,30 @@
 			<form id="online_form">
 				{% csrf_token %}
 				<div class="user-box">
-					<input id="room_name_input" type="text" name="" required="">
+					<input id="room_name_input" type="text" name="room_name" required="">
 					<label>ROOM NAME</label>
 					<h6 id="empty_room_text">leave empty for random room</h6>
 				</div>
-				<button type="button" id="GO_O">GO</button>
+				<button type="submit" id="GO_O">GO</button>
 			</form>
 		</div>
 		<div id="profile-box_main">
 			<h1>SIGN UP</h1>
 			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
-			<form>
+			<form id="signup_form">
 				<div class="user-box">
-					<input type="text" name="" required="">
+					<input type="text" id="username" name="username" required="">
 					<label>USER NAME</label>
 				</div>
 				<div class="user-box">
-					<input type="text" name="" required="">
+					<input type="email" id="email" name="email" required="">
 					<label>EMAIL</label>
 				</div>
 				<div class="user-box">
-					<input type="password" name="" required="">
+					<input type="password" id="password" name="password" required="">
 					<label>PASSWORD</label>
 				</div>
-				<button type="button">GO</button>
+				<button type="submit">GO</button>
 			</form>
 		</div>
 		<div class="choice-box" id="tournoi">
@@ -92,5 +92,35 @@
 		<div id="nickname_setup_box">
 			<h1>PLAYER NAMES</h1>
 		</div>
+		<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const signupForm = document.getElementById('signup_form');
+				if (signupForm) {
+					signupForm.addEventListener('submit', function(event) {
+						const username = document.getElementById('username').value;
+						const email = document.getElementById('email').value;
+						const password = document.getElementById('password').value;
+
+						const usernamePattern = /^[a-zA-Z0-9]+$/;
+						const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+						
+						if (!username.match(usernamePattern)) {
+							alert('Invalid username! Only alphanumeric characters are allowed.');
+							event.preventDefault();
+						}
+						
+						if (!email.match(emailPattern)) {
+							alert('Invalid email address!');
+							event.preventDefault();
+						}
+
+						if (password.length < 6) {
+							alert('Password must be at least 6 characters long!');
+							event.preventDefault();
+						}
+					});
+				}
+			});
+		</script>
 	</body>
 </html>

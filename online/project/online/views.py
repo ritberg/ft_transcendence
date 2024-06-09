@@ -1,9 +1,22 @@
 from django.shortcuts import render, redirect
 from .models import *
-from django.http import JsonResponse
-from channels.db import database_sync_to_async
+from django.http import JsonResponse, HttpResponse
+from channels.db import database_sync_to_async, IntegrityError
 import uuid
 import json
+
+def create_user(request):
+    if request.method == "POST":
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        try:
+            user = CustomUser.objects.create(username=username)
+            user.set_password(password)
+            user.save()
+            return HttpResponse("User created successfully!")
+        except IntegrityError:
+            return HttpResponse("Error: Username already exists.")
+    return render(request, 'create_user.html')
 
 def CreateRoom(request):
 
