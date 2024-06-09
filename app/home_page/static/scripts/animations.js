@@ -65,50 +65,50 @@ document.getElementById("s-points").addEventListener("mouseup", function() {
 	document.getElementById("t-points").textContent = `POINTS`;
 });
 
-document.getElementById("s-difficulty").addEventListener("mousedown", function() {
-	document.getElementById("t-difficulty").style.textShadow = `white 0 0 5px`;
-	if (`${this.value}` === '0') {
-		document.getElementById("t-difficulty").textContent = `EASY`;
-	} else if (`${this.value}` === '1') {
-		document.getElementById("t-difficulty").textContent = `MEDIUM`;
-	} else {
-		document.getElementById("t-difficulty").textContent = `HARD`;
-	}
-});
-document.getElementById("s-difficulty").addEventListener("input", function() {
-	if (`${this.value}` === '0') {
-		document.getElementById("t-difficulty").textContent = `EASY`;
-	} else if (`${this.value}` === '1') {
-		document.getElementById("t-difficulty").textContent = `MEDIUM`;
-	} else {
-		document.getElementById("t-difficulty").textContent = `HARD`;
-	}
-});
-document.getElementById("s-difficulty").addEventListener("mouseup", function() {
-	document.getElementById("t-difficulty").style.textShadow = `none`;
-	document.getElementById("t-difficulty").textContent = `DIFFICULTY`;
-});
-
-document.getElementById("s-mode").addEventListener("mousedown", function() {
-	document.getElementById("t-mode").style.textShadow = `white 0 0 5px`;
-	if (`${this.value}` === '0') {
-		document.getElementById("t-mode").textContent = `NONE`;
-	} else if (`${this.value}` === '1') {
-		document.getElementById("t-mode").textContent = `ALL`;
-	} else {
-		document.getElementById("t-mode").textContent = `REVERSED`;
-	}
-});
-document.getElementById("s-mode").addEventListener("input", function() {
-	if (`${this.value}` === '0') {
-		document.getElementById("t-mode").textContent = `DEFAULT`;
-	} else if (`${this.value}` === '1') {
-		document.getElementById("t-mode").textContent = `ALL`;
-	} else {
-		document.getElementById("t-mode").textContent = `REVERSED`;
-	}
-});
-document.getElementById("s-mode").addEventListener("mouseup", function() {
-	document.getElementById("t-mode").style.textShadow = `none`;
-	document.getElementById("t-mode").textContent = `POWER-UPS	`;
-});
+//document.getElementById("s-difficulty").addEventListener("mousedown", function() {
+//	document.getElementById("t-difficulty").style.textShadow = `white 0 0 5px`;
+//	if (`${this.value}` === '0') {
+//		document.getElementById("t-difficulty").textContent = `EASY`;
+//	} else if (`${this.value}` === '1') {
+//		document.getElementById("t-difficulty").textContent = `MEDIUM`;
+//	} else {
+//		document.getElementById("t-difficulty").textContent = `HARD`;
+//	}
+//});
+//document.getElementById("s-difficulty").addEventListener("input", function() {
+//	if (`${this.value}` === '0') {
+//		document.getElementById("t-difficulty").textContent = `EASY`;
+//	} else if (`${this.value}` === '1') {
+//		document.getElementById("t-difficulty").textContent = `MEDIUM`;
+//	} else {
+//		document.getElementById("t-difficulty").textContent = `HARD`;
+//	}
+//});
+//document.getElementById("s-difficulty").addEventListener("mouseup", function() {
+//	document.getElementById("t-difficulty").style.textShadow = `none`;
+//	document.getElementById("t-difficulty").textContent = `DIFFICULTY`;
+//});
+//
+//document.getElementById("s-mode").addEventListener("mousedown", function() {
+//	document.getElementById("t-mode").style.textShadow = `white 0 0 5px`;
+//	if (`${this.value}` === '0') {
+//		document.getElementById("t-mode").textContent = `NONE`;
+//	} else if (`${this.value}` === '1') {
+//		document.getElementById("t-mode").textContent = `ALL`;
+//	} else {
+//		document.getElementById("t-mode").textContent = `REVERSED`;
+//	}
+//});
+//document.getElementById("s-mode").addEventListener("input", function() {
+//	if (`${this.value}` === '0') {
+//		document.getElementById("t-mode").textContent = `DEFAULT`;
+//	} else if (`${this.value}` === '1') {
+//		document.getElementById("t-mode").textContent = `ALL`;
+//	} else {
+//		document.getElementById("t-mode").textContent = `REVERSED`;
+//	}
+//});
+//document.getElementById("s-mode").addEventListener("mouseup", function() {
+//	document.getElementById("t-mode").style.textShadow = `none`;
+//	document.getElementById("t-mode").textContent = `POWER-UPS	`;
+//});

@@ -156,6 +156,17 @@ body {
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
+#brackets-container i {
+	position: absolute;
+	font-size: 100px;
+	height: 100px;
+	font-family: "Arial";
+	color: rgb(255, 255, 255, .85);
+	top: 50%;
+	left: 50%;
+	transform: translate(320%, -50%);
+	animation: trophy-pulse 3s infinite;
+}
 #brackets-container.shown {
 	animation: fade-normal-in 1.5s;
 	animation-fill-mode: forwards;
@@ -172,16 +183,6 @@ body {
 	top: 50%;
 	left: 0;
 	transform: translateY(-50%);
-}
-.brackets i {
-	position: absolute;
-	font-size: 100px;
-	font-family: "Arial";
-	color: rgb(255, 255, 255, .85);
-	top: 50%;
-	left: 50%;
-	transform: translate(320%, -50%);
-	animation: trophy-pulse 3s infinite;
 }
 .pfp {
 	overflow: hidden;

@@ -21,25 +21,27 @@ export function writeVerticalText(context, text, x, y, font, rotation) {
 	context.restore(); // Restore the original state
 }
 
-export class Player {
-	constructor(name, fighter) {
-		this.name = name;
-		this.fighter = fighter;
-	}
-}
+//export class Player {
+//	constructor(name) {
+//		this.name = name;
+//		//this.fighter = fighter;
+//	}
+//}
 
 export class Game {
-	constructor(player, index, scores) {
+	constructor(player, index, scores, max_points, max_phases) {
 		this.player = [];
 		this.index = index;
-		this.scores = [];
+		this.score = [];
+		this.max_points;
+		this.max_phases;
 	}
-	addScore(scorePair) {
-		if (Array.isArray(scorePair) && scorePair.length === 2 && 
-			typeof scorePair[0] === 'number' && typeof scorePair[1] === 'number') {
-			this.scores.push(scorePair);
-		} else {
-			throw new Error('Score must be an array of two numbers');
-		}
-	}
+	//addScore(scorePair) {
+	//	if (Array.isArray(scorePair) && scorePair.length === 2 && 
+	//		typeof scorePair[0] === 'number' && typeof scorePair[1] === 'number') {
+	//		this.scores.push(scorePair);
+	//	} else {
+	//		throw new Error('Score must be an array of two numbers');
+	//	}
+	//}
 }

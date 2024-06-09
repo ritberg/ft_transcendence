@@ -1,28 +1,29 @@
-import { sleep, randomNumber, Player, Game } from './utils.js';
+import { sleep, randomNumber, Game } from './utils.js';
 
 export const game = new Game(0);
 
 export function createPlayers() {
 	for (let i = 0; i < document.getElementById("s-players").value; i++) {
-		var fighter = false;
-		game.player.push(new Player(document.getElementById(`player_${i + 1}`).value, fighter));
+		//var fighter = false;
+		game.player.push(document.getElementById(`player_${i + 1}`).value);
 	}
 	game.player.sort(() => Math.random() - 0.5);
-	game.player[0].fighter = true;
-	game.player[1].fighter = true;
+	//game.player[0].fighter = true;
+	//game.player[1].fighter = true;
 	for (let i = 0; i < game.player.length; i++)
-		game.scores.push([game.player[i], 172]);
+		game.score.push([game.player[i], 172]);
 	game.index = 0;
+	game.max_points = document.getElementById("s-points").value;
+	game.max_phases = 0;
+	if (game.player.length == 4)
+		game.max_phases = 3;
+	else
+		game.max_phases = 4;
 }
 
 export async function drawBrackets() {
-	console.log(game.scores);
-	//let max_game_phase = Math.ceil(players.length / 2);
-	let max_game_phase = 0;
-	if (game.player.length == 4)
-		max_game_phase = 3;
-	else
-		max_game_phase = 4;
+	//console.log(game.score);
+	//let game.max_phases = Math.ceil(players.length / 2);
 	// document.querySelector(".brackets").style.left = "0";
 	document.getElementById("brackets-container").style.opacity = "0";
 	document.getElementById("brackets-container").style.display = "flex";
@@ -31,7 +32,7 @@ export async function drawBrackets() {
 	const boxes = [];
 	let acc = game.player.length;
 	let cur_pos = 0;
-	for (let i = 0; i < max_game_phase; i++) {
+	for (let i = 0; i < game.max_phases; i++) {
 		const newDiv = document.createElement("div");
 		newDiv.classList.add("brackets");
 		document.querySelector("#brackets-container").appendChild(newDiv);
@@ -47,16 +48,16 @@ export async function drawBrackets() {
 			name_text.classList.add("name");
 			//console.log(cur_pos, game.index);
 			//if (i > 0 && cur_pos > game.index * 2)
-			console.log(game.index, game.index * 2);
-			if (i > 0 && game.scores[cur_pos] === undefined) {
+			//console.log(game.index, game.index * 2);
+			if (i > 0 && game.score[cur_pos] === undefined) {
 				name_text.innerText = "?";
 				new_box.style.border = "2px dashed white";
 			} else
-				name_text.innerText = game.scores[cur_pos][0].name;
+				name_text.innerText = game.score[cur_pos][0];
 			const score_text = document.createElement("span");
 			score_text.classList.add("score");
-			if (game.scores[cur_pos] && game.scores[cur_pos][1] != 172)
-				score_text.innerText = game.scores[cur_pos][1];
+			if (game.score[cur_pos] && game.score[cur_pos][1] != 172)
+				score_text.innerText = game.score[cur_pos][1];
 			new_box.appendChild(name_text);
 			new_box.appendChild(score_text);
 			newDiv.appendChild(new_box);
@@ -66,9 +67,19 @@ export async function drawBrackets() {
 		acc /= 2;
 		divs.push(newDiv);
 	}
-	await sleep(1000);
-	boxes[game.index].classList.add("fighter");
-	boxes[game.index + 1].classList.add("fighter");
+	let last_player = 0;
+	for (let z = game.player.length; z > 1; z /= 2)
+		last_player += z;
+	if (game.index != last_player) {
+		await sleep(1000);
+		boxes[game.index].classList.add("fighter");
+		boxes[game.index + 1].classList.add("fighter");
+	} else {
+		const crown = document.createElement("i");
+		crown.classList.add("bi", "bi-trophy");
+		document.querySelector("#brackets-container").appendChild(crown);
+		await sleep(1000);
+	}
 	await sleep(1000);
 	document.getElementById("brackets-container").style.opacity = "1";
 	document.getElementById("brackets-container").classList.remove("shown");
@@ -138,7 +149,7 @@ export function enterNicknames(n) {
 	const boxes = [];
 	for (let x = 0; x <= game.index; x++) {
 		const newDiv = document.createElement("div");
-		if (max_game_phase % (game.index / 2) == 0 || game.index == 0) {
+		if (game.max_phases % (game.index / 2) == 0 || game.index == 0) {
 			newDiv.classList.add("brackets");
 			document.querySelector("#brackets-container").appendChild(newDiv);
 			newDiv.style.left = `${game_phase * 225}px`;
@@ -155,8 +166,8 @@ export function enterNicknames(n) {
 
 			const score_text = document.createElement("span");
 			score_text.classList.add("score");
-			if (game.scores[x] && game.scores[x][i % 2])
-				score_text.innerText = game.scores[x][i % 2];
+			if (game.score[x] && game.score[x][i % 2])
+				score_text.innerText = game.score[x][i % 2];
 
 			new_box.appendChild(name_text);
 			new_box.appendChild(score_text);
@@ -164,6 +175,6 @@ export function enterNicknames(n) {
 			boxes.push(new_box);
 		}
 
-		if (max_game_phase % (game.index / 2) == 0 || game.index == 0)
+		if (game.max_phases % (game.index / 2) == 0 || game.index == 0)
 			divs[x] = newDiv;
 	}*/

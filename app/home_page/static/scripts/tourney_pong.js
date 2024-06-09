@@ -1,6 +1,5 @@
-import { sleep } from './utils.js';
+import { sleep, writeVerticalText } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
-import { writeVerticalText } from './utils.js';
 import { game, drawBrackets } from './brackets.js';
 
 export var loop_exec = false;
@@ -109,22 +108,25 @@ function draw() {
 	ctx.fillRect(ball_x, ball_y, ball_length, ball_length);
 	ctx.fill();
   ctx.fillStyle = "rgb(0, 0, 0)";
-	writeVerticalText(ctx, game.player[game.index].name, 22.5, paddle_y1 + 100, "35px Arial", 0);
-	writeVerticalText(ctx, game.player[game.index + 1].name, 977.5, paddle_y2 + 100, "35px Arial", 1);
+	//console.log(game.index. game.player);
+	writeVerticalText(ctx, game.score[game.index][0], 22.5, paddle_y1 + 100, "35px Arial", 0);
+	writeVerticalText(ctx, game.score[game.index + 1][0], 977.5, paddle_y2 + 100, "35px Arial", 1);
 }
 
 export async function loop(current_frame) {
 	const game_canvas = document.getElementById("game_canvas");
 	const ctx = game_canvas.getContext("2d");
 	loop_exec = true;
-	if (score[0] == 1 || score [1] == 1) {
-		//console.log(game.index, game.scores[0][0].name);
-		game.scores[game.index][1] = score[0];
-		game.scores[game.index + 1][1] = score[1];
+	//if (game.index == 8 && (score[0] == 1 || score[1] == 1))
+	//	return;
+	if (score[0] == game.max_points || score [1] == game.max_points) {
+		//console.log(game.index, game.score[0][0].name);
+		game.score[game.index][1] = score[0];
+		game.score[game.index + 1][1] = score[1];
 		if (score[0] > score[1])
-			game.scores.push([game.player[game.index], 172]);
+			game.score.push([game.score[game.index][0], 172]);
 		else
-			game.scores.push([game.player[game.index + 1], 172]);
+			game.score.push([game.score[game.index + 1][0], 172]);
 		game.index += 2;
 		score[0] = 0;
 		score[1] = 0;
@@ -135,9 +137,23 @@ export async function loop(current_frame) {
 		modifyDelta(1.5);
 		stars(document.getElementById("game_canvas"));
 		await sleep(500);
-		await drawBrackets(game.player);
+		await drawBrackets();
 		await starWars();
-		// loop_exec = true;
+		let last_player = 0;
+		for (let z = game.player.length; z > 1; z /= 2)
+			last_player += z;
+		if (game.index != last_player) {
+			modifyDelta(1.5);
+			document.getElementById("main-menu").style.display = "flex";
+			document.getElementById("main-menu").style.opacity = "0";
+			await sleep(100);
+			document.getElementById("main-menu").classList.remove("hidden");
+			document.getElementById("main-menu").classList.add("shown");
+			await sleep(200);
+			document.getElementById("main-menu").style.opacity = "1";
+			return;
+		}
+			// loop_exec = true;
 		// requestAnimationFrame(loop);
 		// console.log(1);
 		// return;
