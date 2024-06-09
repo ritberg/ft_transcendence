@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	// CSRF token
 	let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
 	let token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
+	var username_global = "guest";
 
 	if (!token) {
 		console.error("CSRF token not found!");
@@ -25,9 +26,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const displayProfile = (user) => {
 		usernameLabel.textContent = user.username;
+		username_global = user.username;
 		localStorage.setItem("user", JSON.stringify(user));
 	};
-
 	let storedUser = localStorage.getItem("user");
 	if (storedUser) {
 		let user = JSON.parse(storedUser);
@@ -129,6 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("token received : ", data.crsfToken);
 				updateCSRFToken(data.crsfToken);
 				localStorage.setItem("user", JSON.stringify(data.data));
+				username_global = data.data.username;
 				displayProfile(data.data);
 			})
 			.catch((error) => {
@@ -309,6 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			method: "POST",
 			body: JSON.stringify({
 				chat_name: chat_room_name,
+				username: username_global,
 			}),
 			headers: {
 				"Content-type": "application/json; charset=UTF-8",
@@ -433,7 +436,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					}
 					if (ok == 0) {
 						const messageInput = document.querySelector("#id_message_send_input").value;
-						chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
+						chatSocket.send(JSON.stringify({ message: messageInput, username: data.username}));
 					}
 				};
 
@@ -443,6 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						method: "POST",
 						body: JSON.stringify({
 							chat_name: data.room_name,
+							username: username_global,
 						}),
 						headers: {
 							"Content-type": "application/json; charset=UTF-8",
@@ -458,7 +462,7 @@ document.addEventListener("DOMContentLoaded", function () {
 								console.log("error: " + data.error);
 							else {
 								usersListBox.classList.remove('show');
-								chatSocket.send(JSON.stringify({ message: "you have been invited to pong <button type=\"submit\" id=\"invite-link\">accept</button>", username: "system" }));
+								chatSocket.send(JSON.stringify({ message: "a pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
 								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
 								online_game(ws);
 							}
@@ -478,6 +482,8 @@ document.addEventListener("DOMContentLoaded", function () {
 						return;
 
 					const currentUser = data.username;
+					console.log("currentUser ", currentUser);
+					console.log("username_global ", username_global);
 					const div = document.createElement("div");
 					div.classList.add("chat__message");
 					if (data.username === currentUser) {
@@ -495,7 +501,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					document.querySelector("#id_message_send_input").value = "";
 					document.querySelector("#id_chat_item_container").appendChild(div);
 					document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
-				};
+				}
 			})
 			.catch(error => console.error('Error fetching chat data:', error));
 	}
