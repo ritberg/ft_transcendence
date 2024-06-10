@@ -4,7 +4,7 @@ import { loop } from "./pong.js";
 import { online_game } from "../online/index.js";
 import { gameLoop_bot } from "../bot/pong.js";
 import { username_global } from "./user_api.js";
-import { getUser } from "./user_api.js";
+import { userIsConnected } from "./user_api.js";
 import { DisplayUserInfoBox } from "./user_info.js";
 
 // import { loop_t } from './pong_tournoi.js';
@@ -82,11 +82,9 @@ document.getElementById("profile_tab").addEventListener("click", function () {
   var usersList = document.getElementById("users-list-box");
   const userInfoBox = document.getElementById("user-info-box");
 
-  const { isConnected } = getUser();
+  console.log("user is connected in main: ", userIsConnected);
 
-  console.log("user is connected in main: ", isConnected);
-
-  if (isConnected) {
+  if (userIsConnected) {
     // Utilisation de la variable pour vérifier l'état de connexion
     if (window.getComputedStyle(userInfoBox).display === "none") {
       DisplayUserInfoBox(true);

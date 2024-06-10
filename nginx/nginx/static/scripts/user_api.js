@@ -4,22 +4,9 @@ import { drawBrackets, enterNicknames } from "./brackets.js";
 import { online_game } from "../online/index.js";
 import { updateUserInfo } from "./user_info.js";
 
+export var userIsConnected =
+  localStorage.getItem("isConnected") === "true" || false;
 export var username_global = "guest";
-export var userIsConnected = false;
-
-export const userState = {
-  username: "guest",
-  isConnected: false,
-};
-
-export function setUser(username, isConnected) {
-  userState.username = username;
-  userState.isConnected = isConnected;
-}
-
-export function getUser() {
-  return { username: userState.username, isConnected: userState.isConnected };
-}
 
 document.addEventListener("DOMContentLoaded", function () {
   //////// CSRF token ////////
@@ -43,14 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /////////// frontend ////////////
 
-  const updateProfile = (user) => {
-    localStorage.setItem("user", JSON.stringify(user));
-    updateUserInfo(user);
-  };
   let storedUser = localStorage.getItem("user");
+  console.log("stored user : ", storedUser);
   if (storedUser) {
     let user = JSON.parse(storedUser);
-    updateProfile(user);
+    updateUserInfo(user);
   }
 
   ////////////////////// SIGNUP ////////////////////////////
@@ -206,9 +190,10 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("data : ", data.data);
         console.log("token received : ", data.crsfToken);
         updateCSRFToken(data.crsfToken);
-        setUser(data.data.username, true);
-        console.log("getUser() when login : ", getUser());
-        updateProfile(data.data);
+        localStorage.setItem("user", JSON.stringify(data.data));
+        localStorage.setItem("isConnected", true);
+        userIsConnected = true;
+        updateUserInfo(data.data);
 
         // affichage du menu principal après connexion
         var signinBox = document.getElementById("profile-box_signin");
@@ -245,13 +230,13 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .then((data) => {
         console.log("data: ", data);
-        localStorage.clear();
-        setUser("guest", false);
-        console.log("user : ", getUser());
-        updateProfile(getUser());
+        updateUserInfo({ username: "guest" });
+        localStorage.setItem("user", JSON.stringify({ username: "guest" }));
+        localStorage.setItem("isConnected", false);
+        userIsConnected = false;
+
         var mainMenu = document.getElementById("main-menu");
         var userInfoBox = document.getElementById("user-info-box");
-
         mainMenu.style.display = "flex";
         userInfoBox.style.display = "none";
       })
@@ -381,14 +366,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   usrsLst.addEventListener("click", function (event) {
     //// frontend
-    document.getElementById("profile-box_signup").style.display = "none";
-    document.getElementById("profile-box_signin").style.display = "none";
     if (
       window.getComputedStyle(document.getElementById("users-list-box"))
         .display === "none"
     ) {
-      usersListBox.classList.add("show");
+      document.getElementById("profile-box_signup").style.display = "none";
+      document.getElementById("profile-box_signin").style.display = "none";
       document.getElementById("main-menu").style.display = "none";
+      document.getElementById("user-info-box").style.display = "none";
+      usersListBox.classList.add("show");
     } else {
       usersListBox.classList.remove("show");
       document.getElementById("main-menu").style.display = "flex";
