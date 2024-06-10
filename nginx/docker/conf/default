@@ -1,0 +1,92 @@
+server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name _;
+
+        location / {
+                return 301 https://$host$request_uri;
+        }
+}
+
+server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+
+	ssl_protocols TLSv1.2 TLSv1.3;
+	ssl_certificate /etc/nginx/ssl/ping.crt;
+	ssl_certificate_key /etc/nginx/ssl/ping.key;
+
+        server_name transcendance;
+        
+        location /ws/online/ {
+                proxy_pass http://online:8001;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+
+                #disable buffering for websockets
+                proxy_buffering off;
+        }
+
+        location /chat/ {
+                proxy_pass http://chat:8004;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+
+        location /users/ {
+                proxy_pass http://chat:8004;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+
+        location /auth/ {
+                proxy_pass http://user:8003;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+
+        # location /ws/bot/ {
+        #         proxy_pass http://bot:8002;
+        #         proxy_http_version 1.1;
+        #         proxy_set_header Upgrade $http_upgrade;
+        #         proxy_set_header Connection $connection_upgrade;
+        #         proxy_set_header Host $host;
+        #         proxy_cache_bypass $http_upgrade;
+
+        #         #disable buffering for websockets
+        #         proxy_buffering off;
+        # }
+
+        location /room/ {
+                proxy_pass http://online:8001;
+                proxy_http_version 1.1;
+                proxy_set_header Upgrade $http_upgrade;
+                proxy_set_header Connection $connection_upgrade;
+                proxy_set_header Host $host;
+                proxy_cache_bypass $http_upgrade;
+        }
+
+        location /static/ {
+                alias /etc/nginx/static/;
+        }
+
+        location / {
+                proxy_pass http://frontend:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+        }
+}
