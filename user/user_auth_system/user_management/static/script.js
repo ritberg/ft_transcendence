@@ -18,12 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let logInfo = document.getElementById("info");
   let btnUpdateProfile = document.getElementById("update-profile");
   let btnUploadProfilePicture = document.getElementById("upload-avatar");
-<<<<<<< HEAD:user/user_auth_system/user_management/static/script.js
   let btnChat = document.getElementById("chat");
-=======
-  let btnDisplayHistory = document.getElementById("display-history");
-  let btnDisplayStats = document.getElementById("display-stats");
->>>>>>> origin/stats:user_service/user_auth_system/user_management/static/script.js
 
   // api ulrs
   let loginUrl = "http://localhost:8003/auth/login/";
@@ -34,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let acceptFriendRequestUrl =
     "http://localhost:8003/auth/accept-friend-request/";
   let rejectFriendRequestUrl =
-<<<<<<< HEAD:user/user_auth_system/user_management/static/script.js
     "http://localhost:8003/auth/reject-friend-request/";
   let friendRequestListUrl = "http://localhost:8003/auth/list-friend-requests/";
   let friendListUrl = "http://localhost:8003/auth/list-friends/";
@@ -42,14 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let blockUserUrl = "http://localhost:8003/auth/block-user/";
   let unblockUserUrl = "http://localhost:8003/auth/unblock-user/";
   let ListBlockedUsersUrl = "http://localhost:8003/auth/list-blocked-users/";
-=======
-    "http://localhost:8000/auth/reject-friend-request/";
-  let friendRequestListUrl = "http://localhost:8000/auth/list-friend-requests/";
-  let friendListUrl = "http://localhost:8000/auth/list-friends/";
-  let delFriendUrl = "http://localhost:8000/auth/delete-friend/";
-  let historyUrl = "http://localhost:8001/stat/game-history/";
-  let statsUrl = "http://localhost:8001/stat/stats/";
->>>>>>> origin/stats:user_service/user_auth_system/user_management/static/script.js
 
   // CSRF token
   let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
@@ -449,28 +435,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   };
 
-
-/////////////     (Un)Blocking users start (Rita)  //////////////
+  /////////////     (Un)Blocking users start (Rita)  //////////////
   const fetchBlockedUsers = async () => {
     try {
-        const response = await fetch(ListBlockedUsersUrl, {
-            method: 'GET',
-            headers: {
-                "X-CSRFToken": token,
-                "Content-Type": "application/json",
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch blocked users');
-        }
-        const data = await response.json();
-        console.log('Blocked users:', data);
+      const response = await fetch(ListBlockedUsersUrl, {
+        method: "GET",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+      });
+      if (!response.ok) {
+        throw new Error("Failed to fetch blocked users");
+      }
+      const data = await response.json();
+      console.log("Blocked users:", data);
     } catch (error) {
-        console.error('Error fetching blocked users:', error);
+      console.error("Error fetching blocked users:", error);
     }
-};
-/////////////     (Un)Blocking users end (Rita)  //////////////
-
+  };
+  /////////////     (Un)Blocking users end (Rita)  //////////////
 
   // Function to add a friend
   const getUserId = async (username) => {
@@ -550,74 +534,73 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-/////////////     (Un)Blocking users start (Rita)  //////////////
+  /////////////     (Un)Blocking users start (Rita)  //////////////
   const blockUser = async () => {
     const username = document.getElementById("user-username-to-block").value;
     console.log("user username: ", username);
     const messageContainer = document.getElementById("block-user-message");
     if (!username) {
-        messageContainer.textContent = "Please enter a username";
-        return;
+      messageContainer.textContent = "Please enter a username";
+      return;
     }
 
     try {
-        const userId = await getUserId(username);
-        console.log("user id: ", userId);
-        const response = await fetch(blockUserUrl, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": token,
-                "Content-Type": "application/json",
-            },
-            credentials: "include",
-            body: JSON.stringify({ to_user: userId }),
-        });
-        const data = await response.json();
-        messageContainer.textContent = data.message;
-        if (response.ok) {
-            document.getElementById("user-username-to-block").value = "";
-            fetchBlockedUsers();
-        }
-    } catch (error) {
-        console.error("Error blocking user:", error);
-        messageContainer.textContent = "Error blocking user";
-    }
-};
-
-
-const unblockUser = async () => {
-  const username = document.getElementById("user-username-to-unblock").value;
-  console.log("User username: ", username);
-  const messageContainer = document.getElementById("unblock-user-message");
-  if (!username) {
-      messageContainer.textContent = "Please enter a username";
-      return;
-  }
-
-  try {
       const userId = await getUserId(username);
-      console.log("User id: ", userId);
-      const response = await fetch(unblockUserUrl, {
-          method: "POST",
-          headers: {
-              "X-CSRFToken": token,
-              "Content-Type": "application/json",
-          },
-          credentials: "include",
-          body: JSON.stringify({ user_to_unblock_id: userId }),
+      console.log("user id: ", userId);
+      const response = await fetch(blockUserUrl, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ to_user: userId }),
       });
       const data = await response.json();
       messageContainer.textContent = data.message;
       if (response.ok) {
-          document.getElementById("user-username-to-unblock").value = "";
-          fetchBlockedUsers();
+        document.getElementById("user-username-to-block").value = "";
+        fetchBlockedUsers();
       }
-  } catch (error) {
+    } catch (error) {
+      console.error("Error blocking user:", error);
+      messageContainer.textContent = "Error blocking user";
+    }
+  };
+
+  const unblockUser = async () => {
+    const username = document.getElementById("user-username-to-unblock").value;
+    console.log("User username: ", username);
+    const messageContainer = document.getElementById("unblock-user-message");
+    if (!username) {
+      messageContainer.textContent = "Please enter a username";
+      return;
+    }
+
+    try {
+      const userId = await getUserId(username);
+      console.log("User id: ", userId);
+      const response = await fetch(unblockUserUrl, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": token,
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({ user_to_unblock_id: userId }),
+      });
+      const data = await response.json();
+      messageContainer.textContent = data.message;
+      if (response.ok) {
+        document.getElementById("user-username-to-unblock").value = "";
+        fetchBlockedUsers();
+      }
+    } catch (error) {
       console.error("Error unblocking user:", error);
       messageContainer.textContent = "Error unblocking user";
-  }
-};
-/////////////     (Un)Blocking users end (Rita)  //////////////
+    }
+  };
+  /////////////     (Un)Blocking users end (Rita)  //////////////
 
   document
     .getElementById("add-friend-btn")
@@ -632,114 +615,9 @@ const unblockUser = async () => {
     .getElementById("block-user-button")
     .addEventListener("click", blockUser);
   document.getElementById("refresh-btn").addEventListener("click", () => {
-<<<<<<< HEAD:user/user_auth_system/user_management/static/script.js
     fetchFriendRequests();
     fetchFriends();
     fetchBlockedUsers();
-=======
-    // fetchFriendRequests();
-    // fetchFriends();
-    console.log("refresh clicked");
-  });
-
-  async function addGame() {
-    console.log("add game clicked");
-
-    try {
-      const player_1_id = await getUserId("aless");
-      const player_2_id = await getUserId("rita");
-
-      const game = {
-        player_1_id: player_1_id,
-        player_2_id: player_2_id,
-        player_1_score: 10,
-        player_2_score: 5,
-        winner_id: player_1_id,
-        data_played: new Date().toISOString(),
-        duration: 300,
-      };
-
-      console.log("game : ", JSON.stringify(game));
-
-      const response = await fetch("http://localhost:8001/stat/game-history/", {
-        method: "POST",
-        headers: {
-          "X-CSRFToken": token,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(game),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.log(response);
-        throw new Error(
-          `Network response was not ok: ${JSON.stringify(errorData)}`
-        );
-      }
-
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Fetch error: ", error);
-    }
-  }
-
-  btnDisplayHistory.addEventListener("click", async function () {
-    console.log("button display history clicked");
-    await addGame();
-    await fetch(historyUrl, {
-      method: "GET",
-      headers: {
-        "X-CSRFToken": token,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          console.log(response);
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        historyList = document.getElementById("history");
-        historyList.innerHTML = JSON.stringify(data.data);
-      })
-      .catch((error) => {
-        console.error("Fetch error: ", error);
-      });
-  });
-
-  btnDisplayStats.addEventListener("click", function () {
-    console.log("button display stats clicked");
-    fetch(statsUrl, {
-      method: "GET",
-      headers: {
-        "X-CSRFToken": token,
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    })
-      .then((response) => {
-        if (!response.ok) {
-          console.log(response);
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log(data);
-        statsList = document.getElementById("stats");
-        statsList.innerHTML = JSON.stringify(data.data);
-      })
-      .catch((error) => {
-        console.error("Fetch error: ", error);
-      });
->>>>>>> origin/stats:user_service/user_auth_system/user_management/static/script.js
   });
 
   // btnChat.addEventListener("click", function (event) {
@@ -782,8 +660,6 @@ const unblockUser = async () => {
   //     });
   // });
 
-
-
   // document.addEventListener('click', function() {
   //   const btnChat = document.getElementById("btnChat");
   //   const userListContainer = document.getElementById("userListContainer");
@@ -822,7 +698,6 @@ const unblockUser = async () => {
   //       });
   //     });
   //   });
-
 
   // const userListContainer = document.getElementById("users-list-container");
 
@@ -865,10 +740,9 @@ const unblockUser = async () => {
   //         });
   // });
 
-
   /////////////     Chat start (Rita)  //////////////
   btnChat.addEventListener("click", function (event) {
-    fetch('https://localhost/users/', {
+    fetch("https://localhost/users/", {
       method: "POST",
       headers: {
         "X-CSRFToken": token,
@@ -876,25 +750,27 @@ const unblockUser = async () => {
       },
       credentials: "include",
     })
-      .then(response => response.json())
-      .then(data => {
-        const usersList = document.getElementById('users-list-container');
-        usersList.innerHTML = '';
+      .then((response) => response.json())
+      .then((data) => {
+        const usersList = document.getElementById("users-list-container");
+        usersList.innerHTML = "";
 
-        data.users.forEach(user => {
-          const li = document.createElement('li');
-          li.textContent = user.username + ' ';
+        data.users.forEach((user) => {
+          const li = document.createElement("li");
+          li.textContent = user.username + " ";
 
-          const button = document.createElement('button');
-          button.textContent = 'Start Chat';
+          const button = document.createElement("button");
+          button.textContent = "Start Chat";
 
-          button.addEventListener('click', () => handleChatLinkClick(user.username));
+          button.addEventListener("click", () =>
+            handleChatLinkClick(user.username)
+          );
 
           li.appendChild(button);
           usersList.appendChild(li);
         });
       })
-      .catch(error => console.error('Error fetching user data:', error));
+      .catch((error) => console.error("Error fetching user data:", error));
   });
 
   function handleChatLinkClick(username) {
@@ -912,7 +788,7 @@ const unblockUser = async () => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        return response.json(); 
+        return response.json();
       })
       .then((data) => {
         console.log("++ room_name : ", data.room_name);
@@ -920,60 +796,81 @@ const unblockUser = async () => {
         console.log("++ username : ", data.username);
         console.log("++ messages : ", data.messages);
 
-        const chatContainer = document.createElement('div');
-        chatContainer.classList.add('chat__container');
+        const chatContainer = document.createElement("div");
+        chatContainer.classList.add("chat__container");
 
         if (data && data.other_user && Array.isArray(data.messages)) {
           chatContainer.innerHTML = `
           <center><h1>Chat with ${data.other_user}</h1></center>
           <div class="chat__item__container" id="id_chat_item_container">
-            ${data.messages.map(message => `
-              <div class="chat__message ${message.fields.username === data.username ? 'chat__message--self' : 'chat__message--other'}">
+            ${data.messages
+              .map(
+                (message) => `
+              <div class="chat__message ${
+                message.fields.username === data.username
+                  ? "chat__message--self"
+                  : "chat__message--other"
+              }">
                 <img src="https://via.placeholder.com/40" alt="User Photo">
                 <div class="chat__message__content">
-                  <div class="chat__message__username">${message.fields.username}</div>
-                  <div class="chat__message__text">${message.fields.message}</div>
+                  <div class="chat__message__username">${
+                    message.fields.username
+                  }</div>
+                  <div class="chat__message__text">${
+                    message.fields.message
+                  }</div>
                 </div>
               </div>
-            `).join('')}
+            `
+              )
+              .join("")}
           </div>
           <div class="chat__input__container">
             <input type="text" id="id_message_send_input" placeholder="Type a message..." />
             <button type="submit" id="id_message_send_button">Send Message</button>
           </div>
         `;
+        } else {
+          console.error("data is missing or is not an array", data);
         }
-        else {
-          console.error('data is missing or is not an array', data);
-        }
-  
-        const listItemElement = document.getElementById('chat-container');
+
+        const listItemElement = document.getElementById("chat-container");
         listItemElement.appendChild(chatContainer);
-  
+
         // Initialize WebSocket connection
         const roomName = data.room_name;
-        const chatSocket = new WebSocket("wss://" + window.location.host + "/chat/" + roomName + "/");
-  
+        const chatSocket = new WebSocket(
+          "wss://" + window.location.host + "/chat/" + roomName + "/"
+        );
+
         chatSocket.onopen = function (e) {
           console.log("The connection was set up successfully!");
         };
-  
+
         chatSocket.onclose = function (e) {
           console.log("Something unexpected happened!");
         };
-  
+
         document.querySelector("#id_message_send_input").focus();
-        document.querySelector("#id_message_send_input").onkeyup = function (e) {
+        document.querySelector("#id_message_send_input").onkeyup = function (
+          e
+        ) {
           if (e.keyCode === 13) {
             document.querySelector("#id_message_send_button").click();
           }
         };
-  
-        document.querySelector("#id_message_send_button").onclick = function (e) {
-          const messageInput = document.querySelector("#id_message_send_input").value;
-          chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
+
+        document.querySelector("#id_message_send_button").onclick = function (
+          e
+        ) {
+          const messageInput = document.querySelector(
+            "#id_message_send_input"
+          ).value;
+          chatSocket.send(
+            JSON.stringify({ message: messageInput, username: data.username })
+          );
         };
-  
+
         chatSocket.onmessage = function (e) {
           const data = JSON.parse(e.data);
           const currentUser = data.username;
@@ -993,11 +890,11 @@ const unblockUser = async () => {
           `;
           document.querySelector("#id_message_send_input").value = "";
           document.querySelector("#id_chat_item_container").appendChild(div);
-          document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
+          document.querySelector("#id_chat_item_container").scrollTop =
+            document.querySelector("#id_chat_item_container").scrollHeight;
         };
       })
-      .catch(error => console.error('Error fetching chat data:', error));
+      .catch((error) => console.error("Error fetching chat data:", error));
   }
-
 });
-  /////////////     Chat end (Rita)  //////////////
+/////////////     Chat end (Rita)  //////////////

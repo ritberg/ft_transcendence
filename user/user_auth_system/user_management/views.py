@@ -203,7 +203,6 @@ class DeleteFriendView(APIView):
 			{'message': 'User is not in your friends list'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-<<<<<<< HEAD:user/user_auth_system/user_management/views.py
   
   
 class BlockUserView(APIView):
@@ -259,8 +258,6 @@ class ListBlockedUsers(APIView):
 		blocked_usernames = [user.username for user in blocked_users]
 		return Response({'blocked_users': blocked_usernames}, status=status.HTTP_200_OK)
 
-=======
->>>>>>> origin/stats:user_service/user_auth_system/user_management/views.py
 
 class GetUserID(APIView):
 	permission_classes = [IsAuthenticated]
