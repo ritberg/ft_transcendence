@@ -838,6 +838,10 @@ body {
   z-index: 1000; /* S'assurer que l'élément est au-dessus des autres */
 }
 
+#user-info-box button {
+  cursor: pointer;
+}
+
 #user-info-box h1 {
   margin-top: 5px;
   margin-left: 5px;

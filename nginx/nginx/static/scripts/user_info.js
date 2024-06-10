@@ -1,9 +1,21 @@
-import { userIsConnected } from "./user_api.js";
+import { getUser } from "./user_api.js";
 
 export function updateUserInfo(user) {
+  const usernameLabel = document.getElementById("user-name");
   const usernameElement = document.getElementById("info-username");
+  // const profile_picture = document.getElementById("profile-picture");
 
-  console.log("user is connected: ", userIsConnected);
+  const { isConnected } = getUser();
+  const { username } = getUser();
+
+  if (username !== user.username) {
+    console.error("Username does not match");
+    return;
+  }
+
+  usernameLabel.textContent = username;
+
+  console.log("user is connected: ", isConnected);
   console.log("user: ", user);
   console.log("user.username: ", user.username);
 
@@ -14,7 +26,7 @@ export function updateUserInfo(user) {
     console.log("Element #info-username found");
   }
 
-  if (userIsConnected && user) {
+  if (isConnected && user) {
     if (user.username) {
       document.getElementById("info-username").textContent = `${user.username}`;
     }

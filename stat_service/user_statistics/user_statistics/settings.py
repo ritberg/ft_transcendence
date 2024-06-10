@@ -172,4 +172,4 @@ CSRF_COOKIE_SECURE = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://10.12.8.10']
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://10.12.8.10', 'https://localhost:8003/']

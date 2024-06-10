@@ -7,6 +7,20 @@ import { updateUserInfo } from "./user_info.js";
 export var username_global = "guest";
 export var userIsConnected = false;
 
+export const userState = {
+  username: "guest",
+  isConnected: false,
+};
+
+export function setUser(username, isConnected) {
+  userState.username = username;
+  userState.isConnected = isConnected;
+}
+
+export function getUser() {
+  return { username: userState.username, isConnected: userState.isConnected };
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   //////// CSRF token ////////
 
@@ -29,12 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   /////////// frontend ////////////
 
-  let usernameLabel = document.getElementById("user-name");
-
   const updateProfile = (user) => {
-    usernameLabel.textContent = user.username;
-    username_global = user.username;
-    userIsConnected = true;
     localStorage.setItem("user", JSON.stringify(user));
     updateUserInfo(user);
   };
@@ -90,6 +99,76 @@ document.addEventListener("DOMContentLoaded", function () {
 
   ////////////////////// LOGIN ////////////////////////////
 
+  //#region A SUPPRIMER C'EST POUR TESTER LES STATS
+
+  const getUserId = async (username) => {
+    const response = await fetch(
+      `https://localhost:8003/auth/get-user-id/?username=${username}`
+    );
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "Error getting user ID");
+    }
+    console.log("data : ", data);
+    return data.id;
+  };
+
+  async function addGame() {
+    console.log("add game clicked");
+
+    try {
+      const player_1_id = await getUserId("aless");
+      const player_2_id = await getUserId("rita");
+
+      const game = {
+        player_1_id: player_1_id,
+        player_2_id: player_2_id,
+        player_1_score: 10,
+        player_2_score: 5,
+        winner_id: player_1_id,
+        data_played: new Date().toISOString(),
+        duration: 300,
+      };
+
+      console.log("game : ", JSON.stringify(game));
+
+      const response = await fetch(
+        "https://localhost:8005/stat/game-history/",
+        {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": token,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(game),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.log(response);
+        throw new Error(
+          `Network response was not ok: ${JSON.stringify(errorData)}`
+        );
+      }
+
+      const data = await response.json();
+      console.log(data);
+      updateUserInfo(data.data);
+    } catch (error) {
+      console.error("Fetch error: ", error);
+    }
+  }
+
+  document
+    .getElementById("refresh-stats")
+    .addEventListener("click", function () {
+      addGame();
+    });
+
+  //#endregion
+
   let loginForm = document.getElementById("go1");
   let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
@@ -127,8 +206,8 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("data : ", data.data);
         console.log("token received : ", data.crsfToken);
         updateCSRFToken(data.crsfToken);
-        localStorage.setItem("user", JSON.stringify(data.data));
-        username_global = data.data.username;
+        setUser(data.data.username, true);
+        console.log("getUser() when login : ", getUser());
         updateProfile(data.data);
 
         // affichage du menu principal après connexion
@@ -136,6 +215,45 @@ document.addEventListener("DOMContentLoaded", function () {
         var mainMenu = document.getElementById("main-menu");
         signinBox.style.display = "none";
         mainMenu.style.display = "flex";
+      })
+      .catch((error) => {
+        console.error("Fetch error:", error);
+      });
+  });
+
+  ////////////////////// LOGOUT ////////////////////////////
+
+  let logoutUrl = "https://" + window.location.host + "/auth/logout/";
+  let logoutBtn = document.getElementById("logout");
+
+  logoutBtn.addEventListener("click", function (event) {
+    event.preventDefault();
+
+    fetch(logoutUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": token,
+      },
+      credentials: "include",
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.log("data: ", data);
+        localStorage.clear();
+        setUser("guest", false);
+        console.log("user : ", getUser());
+        updateProfile(getUser());
+        var mainMenu = document.getElementById("main-menu");
+        var userInfoBox = document.getElementById("user-info-box");
+
+        mainMenu.style.display = "flex";
+        userInfoBox.style.display = "none";
       })
       .catch((error) => {
         console.error("Fetch error:", error);
