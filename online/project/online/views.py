@@ -10,8 +10,8 @@ def CreateRoom(request):
     if request.method == 'POST':
         text_data_json = json.loads(request.body)
         room = text_data_json["room"]
+        username = text_data_json["username"]
         if (room != ""):
-
             if (room.strip() == ""):
                 context = {
                     "status": 500,
@@ -28,6 +28,16 @@ def CreateRoom(request):
                         "error": "room is full",
                     }
                     return JsonResponse(context)
+                if username in get_room.players:
+                    context = {
+                        "status": 500,
+                        "room_name": "",
+                        "error": "user already in room",
+                    }
+                    return JsonResponse(context)
+                else:
+                    get_room.players.append(username)
+                    get_room.save()
                 context = {
                     "status": 200,
                     "room_name": room,
@@ -36,6 +46,8 @@ def CreateRoom(request):
                 return JsonResponse(context)
             except Room.DoesNotExist:
                 new_room = Room(room_name = room)
+                new_room.save()
+                new_room.players.append(username)
                 new_room.save()
                 context = {
                     "status": 200,
@@ -46,6 +58,16 @@ def CreateRoom(request):
         else:
             try:
                 get_room = Room.objects.get(full=False, quickmatch=True)
+                if username in get_room.players:
+                    context = {
+                        "status": 500,
+                        "room_name": "",
+                        "error": "user already in room",
+                    }
+                    return JsonResponse(context)
+                else:
+                    get_room.players.append(username)
+                    get_room.save()
                 context = {
                     "status": 200,
                     "room_name": get_room.room_name,
@@ -55,6 +77,8 @@ def CreateRoom(request):
             except:
                 room = str(uuid.uuid4())
                 new_room = Room(room_name = room, quickmatch=True)
+                new_room.save()
+                new_room.players.append(username)
                 new_room.save()
                 context = {
                     "status": 200,
@@ -73,7 +97,6 @@ def CreateRoom(request):
 def CreateInvite(request):
     if request.method == 'POST':
         text_data_json = json.loads(request.body)
-        print(text_data_json)
         chat_name = text_data_json["chat_name"]
         username = text_data_json["username"]
         try:

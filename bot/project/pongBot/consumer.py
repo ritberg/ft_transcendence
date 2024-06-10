@@ -21,27 +21,24 @@ class AI:
     # # Set up colors
     # BLACK = (0, 0, 0)
     # WHITE = (255, 255, 255)
+    frame_num = 100000
+    epochs = 5
+    batch_size = 128
+    noise = 5
 
     # Width and height of the paddles, size of the ball, speed of the paddles
-    paddle_width = 10
-    paddle_height = 80
-    ball_size = 10
-    paddle_speed = 5
+    paddle_width = 30
+    paddle_height = 200
+    ball_size = 30
+    paddle_speed = 10
 
     # Paddles are initially centered vertically, ball is initially centered both vertically and horizontally
     player1_y = canvas_height / 2 - paddle_height / 2
     computer_y = canvas_height / 2 - paddle_height / 2
-    ball_x = canvas_width / 2
-    ball_y = canvas_height / 2
-    ball_speed_x = 5 #random.uniform(4, 5)
-    ball_speed_y = 5
-
-    def autonomous_player(self, ball_y, paddle_y, paddle_speed):
-        if ball_y < paddle_y + self.paddle_height / 2:
-            paddle_y -= paddle_speed
-        elif ball_y > paddle_y + self.paddle_height / 2:
-            paddle_y += paddle_speed
-        return paddle_y
+    ball_x = canvas_width / 2 - ball_size / 2
+    ball_y = canvas_height / 2 - ball_size / 2
+    ball_speed_x = 7 #random.uniform(4, 5)
+    ball_speed_y = 7
 
     def __init__(self):
         self.previous_data = None
@@ -61,75 +58,112 @@ class AI:
         # if loss is small, the model learns well
         asyncio.run(self.main())
 
+    def autonomous_player(self, ball_y, paddle_y, paddle_speed):
+        if ball_y < paddle_y + self.paddle_height / 2:
+            if paddle_y - paddle_speed > 0:
+                paddle_y -= paddle_speed
+            else:
+                paddle_y = 0
+        elif ball_y > paddle_y + self.paddle_height / 2:
+            if paddle_y + paddle_speed + self.paddle_height < self.canvas_height:
+                paddle_y += paddle_speed
+            else:
+                paddle_y = self.canvas_height - self.paddle_height
+        return paddle_y
 
     async def main(self):
         init = asyncio.create_task(self.initialize())
         #await self.initialize()
+
+    def ball_direction(self):
+        r1 = random.randint(0, 1)
+        if r1 == 0:
+            self.ball_speed_x *= -1
+ 
+        self.ball_speed_y = 0
+        while self.ball_speed_y == 0:
+            self.ball_speed_y = random.randint(-5, 5)
+    
+    def init_ball_values(self):
+        self.ball_x = (self.canvas_width / 2) - (self.ball_size / 2)
+        self.ball_y = (self.canvas_height / 2) - (self.ball_size / 2)
+        self.ball_speed_x = 0
+        self.ball_speed_y = 0
+
+    async def calculate_ball_changes(self):
+
+        #checks if ball hit the top or bottom
+        if (self.ball_y + self.ball_speed_y < 0 or self.ball_y + self.ball_speed_y + self.ball_size > self.canvas_height):
+            self.ball_speed_y *= -1
+
+        #checks if the ball hit the right paddle
+        if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0):
+                self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.computer_y + self.paddle_height / 2)) / 15
+                self.ball_speed_x *= -1
+                if self.ball_speed_x < 0:
+                    self.ball_speed_x -= 0.5
+                else:
+                    self.ball_speed_x += 0.5
+
+        #checks if the ball hit the left paddle
+        if (self.ball_x + self.ball_speed_x <= 20 + self.paddle_width):
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0):
+                self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.player1_y + self.paddle_height / 2)) / 15
+                self.ball_speed_x *= -1
+                if (self.ball_speed_x < 0):
+                    self.ball_speed_x -= 0.5
+                else:
+                    self.ball_speed_x += 0.5
+
+        #checks if a player has scored
+        if (self.ball_x + self.ball_speed_x < 0 or self.ball_x + self.ball_speed_x + self.ball_size > self.canvas_width):
+            #set ball starting values
+            self.init_ball_values()
+            self.ball_direction()
+
+        self.ball_x += self.ball_speed_x
+        self.ball_y += self.ball_speed_y
 
         # Game loop
     async def initialize(self):
         running = True
         frame_counter = 0  # Counter to track frames
         prev_second = -1
+        self.ball_direction()
         while running:
         
         # it was necessary to distinguish between 1) save data, 2) train the model, 3) predict movesЯ
             current_second = time.localtime().tm_sec
-            if frame_counter < 2000:
+            if frame_counter < self.frame_num:
                 # print(current_second)
                 self.player1_y = self.autonomous_player(self.ball_y, self.player1_y, self.paddle_speed)
                 self.computer_y = self.autonomous_player(self.ball_y, self.computer_y, self.paddle_speed)
                 # if current_second != prev_second: # Save game data each second
                 #     prev_second = current_second
-                print("computer_y", self.computer_y)
+                # print("computer_y", self.computer_y)
                 self.save_data(self.player1_y, self.computer_y, self.ball_x, self.ball_y)
-                print("Frame Counter:", frame_counter)
+                # print("Frame Counter:", frame_counter)
 
-            elif frame_counter == 2000:
+            elif frame_counter == self.frame_num:
+                print("starting training")
                 self.train()
+                print("finished")
 
             else:
                 break; 
 
             
             frame_counter += 1
+            await self.calculate_ball_changes()
 
-
-            # Move ball
-            self.ball_x += self.ball_speed_x
-            self.ball_y += self.ball_speed_y
-
-            # Ball collisions
-            if self.ball_y <= 0 or self.ball_y >= self.canvas_height - self.ball_size:
-                self.ball_speed_y = -self.ball_speed_y
-
-            if self.ball_x <= 0:
-                # computer_score += 1
-                self.ball_x = self.canvas_width / 2
-                self.ball_y = self.canvas_height / 2
-                self.ball_speed_y = random.uniform(0, 1) * 6 - 3
-                self.ball_speed_x = -self.ball_speed_x
-
-            if self.ball_x >= self.canvas_width:
-                # player1_score += 1
-                self.ball_x = self.canvas_width / 2
-                self.ball_y = self.canvas_height / 2
-                self.ball_speed_y = random.uniform(0, 1) * 6 - 3
-                self.ball_speed_x = -self.ball_speed_x
-
-            # Paddle collisions
-            if (self.ball_x <= self.paddle_width and self.player1_y <= self.ball_y <= self.player1_y + self.paddle_height) or \
-                    (self.ball_x >= self.canvas_width - self.paddle_width - self.ball_size and
-                    self.computer_y <= self.ball_y <= self.computer_y + self.paddle_height):
-                self.ball_speed_y += random.uniform(0, 1) - 0.5
-                self.ball_speed_x = -self.ball_speed_x 
 
 # / canvas_height or canvas_width - because without this the prediction values are too big
     def save_data(self, player_y, computer_y, ball_x, ball_y):
-        print("Player Y:", player_y)
-        print("Computer Y:", computer_y)
-        print("Ball X:", ball_x)
-        print("Ball Y:", ball_y)
+        # print("Player Y:", player_y)
+        # print("Computer Y:", computer_y)
+        # print("Ball X:", ball_x)
+        # print("Ball Y:", ball_y)
         if self.previous_data is None:
             self.previous_data = [player_y / self.canvas_height, computer_y / self.canvas_height, ball_x / self.canvas_width, ball_y / self.canvas_height]
             return
@@ -178,14 +212,14 @@ class AI:
             data_ys += [[1 if i == j else 0 for j in range(3)]] * len(self.training_data[i])
 
         xs = tf.convert_to_tensor(data_xs, dtype=tf.float32)
-        xs += tf.random.normal(xs.shape) / 5   # add gaussian noise because the data is perfect otherwise - risk of overfitting
+        xs += tf.random.normal(xs.shape) / self.noise   # add gaussian noise because the data is perfect otherwise - risk of overfitting
         ys = tf.convert_to_tensor(data_ys, dtype=tf.float32)
-        ys += tf.random.normal(ys.shape) / 5
-        print("------------------ xs -----------------------------")
-        print(xs)
-        print("------------------ ys -----------------------------")
-        print(ys)
-        self.model.fit(xs, ys, epochs=100, verbose=0) # the model is trained in epochs, no matter how many frames
+        ys += tf.random.normal(ys.shape) / self.noise
+        # print("------------------ xs -----------------------------")
+        # print(xs)
+        # print("------------------ ys -----------------------------")
+        # print(ys)
+        self.model.fit(xs, ys, epochs=self.epochs, batch_size=self.batch_size, verbose=1) # the model is trained in epochs, no matter how many frames
 
     def predict_move(self):
         if self.last_data_object is not None:

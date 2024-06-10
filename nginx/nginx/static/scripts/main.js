@@ -2,7 +2,8 @@ import { sleep } from './utils.js';
 import { stars } from './stars.js';
 import { loop } from './pong.js';
 import { online_game } from '../online/index.js';
-import { gameLoop_init } from '../bot/pong.js';
+import { gameLoop_bot } from '../bot/pong.js';
+import { username_global } from './animations.js';
 
 // import { loop_t } from './pong_tournoi.js';
 
@@ -32,7 +33,8 @@ export async function GameMode(n) {
 	else if (n == 1)
 	{
 		let ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
-		gameLoop_init(ws);
+		await gameLoop_bot(ws);
+		// ws.close();
 	}
 	else if (n == 3)
 	{
@@ -44,6 +46,7 @@ export async function GameMode(n) {
 			method: "POST",
 			body: JSON.stringify({
 				room: room_selected,
+				username: username_global,
 			}),
 			headers: {
 				"Content-type": "application/json; charset=UTF-8",
@@ -60,6 +63,7 @@ export async function GameMode(n) {
 			else {
 				ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
 				online_game(ws);
+				// ws.close();
 			}
 		})
 	}

@@ -11,12 +11,12 @@ let board_height = 800;
 let board_width = 1000;
 
 //player
-let player_width = 15;
-let player_height = 100;
+let player_width = 30;
+let player_height = 200;
 
 //balling
-let ball_width = 15;
-let ball_height = 15;
+let ball_width = 30;
+let ball_height = 30;
 
 let ball = {
     width: ball_width,
@@ -26,7 +26,7 @@ let ball = {
 }
 
 let player1 = {
-    xPos: 10,
+    xPos: 20,
     yPos: board_height / 2 - player_height / 2,
     score: 0,
     velocity: 0,
@@ -96,40 +96,44 @@ export function online_game(new_ws) {
     // startAnimating(60);
 }
 
-function draw_board()
-{
-    context.fillStyle = "white";
-    //player 1
-    context.fillRect(player1.xPos, player1.yPos, player_width, player_height);
+function fill_middle_lines() {
+	for (let i = 10; i < board_height - 30; i += 50) {
+		context.fillRect(board_width / 2 - 5, i, 10, 30);
+	}
+}
 
-    //player 2
-    context.fillRect(player2.xPos, player2.yPos, player_width, player_height);
+function draw_board() {
+    context.clearRect(0, 0, board_width, board_height);
 
+    context.fillStyle = "rgb(70, 70, 70)";
     //middle_line
     fill_middle_lines();
 
     //score
-    context.font = "48px serif";
-    context.fillText(player1.score, 100, 50);
+    context.font = "100px Arial";
+	context.textAlign = "center";
+	context.fillText(player1.score.toString(), board_width / 3, 100);
+	context.fillText(player2.score.toString(), board_width - board_width / 3, 100);
 
-    context.fillText(player2.score, board_width - 130, 50);
+    context.textAlign = "left";
+    context.fillStyle = "white";
+
+    //players
+    context.fillRect(player1.xPos, player1.yPos, player_width, player_height);
+    context.fillRect(player2.xPos, player2.yPos, player_width, player_height);
 
     //ball
-    context.fillStyle = "white";
     context.fillRect(ball.xPos, ball.yPos, ball.width, ball.height);
-
 }
 
 var trigger = true;
 
 function gameLoop() {
     window.requestAnimationFrame(gameLoop);
-
-    context.clearRect(0, 0, board.width, board.height);
-
     draw_board();
     if (isalone == true && player1.score != 5 && player2.score != 5)
     {
+        context.font = "48px serif";
         context.fillStyle = "white";
         context.fillText("waiting for a second player", 250, 315);
     }
@@ -158,14 +162,6 @@ function gameLoop() {
         context.fillStyle = "red";
         context.font = "100px serif";
         context.fillText(time_left, 575, 190);
-    }
-}
-
-function fill_middle_lines() {
-    for (let i = 0; i < board_height; i += 4.2) {
-        context.fillStyle = "gray";
-        context.fillRect(board_width / 2 - 5, i, 10, 30);
-        i += 60;
     }
 }
 

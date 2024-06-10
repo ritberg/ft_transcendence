@@ -33,13 +33,13 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
     board_width = 1000
 
     #player
-    player_height = 100
+    player_height = 200
     playerVelocity = 15
 
     #balling
-    ball_width = 15
-    ball_height = 15
-    ball_velocity = 10
+    ball_width = 30
+    ball_height = 30
+    ball_velocity = 7
 
     #where all the rooms are stored
 

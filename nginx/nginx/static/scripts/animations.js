@@ -3,6 +3,7 @@ import { GameMode } from './main.js';
 import { drawBrackets, enterNicknames } from './brackets.js';
 import { online_game } from '../online/index.js';
 
+export var username_global = "guest";
 
 document.addEventListener("DOMContentLoaded", function () {
 	
@@ -10,7 +11,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
 	let token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
-	var username_global = "guest";
 
 	if (!token) {
 		console.error("CSRF token not found!");
@@ -91,8 +91,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log(data);
 				console.log("token received : ", data.crsfToken);
 				updateCSRFToken(data.crsfToken);
-				localStorage.setItem("user", JSON.stringify(data.data));
-				displayProfile(data.data);
+				// localStorage.setItem("user", JSON.stringify(data.data));
+				// displayProfile(data.data);
 			})
 			.catch((error) => {
 				console.error("Fetch error: ", error);
@@ -349,6 +349,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					usersListBox.classList.remove('show');
 					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
 					online_game(ws);			//// launching the online pong game
+					close(ws);
 				}
 			})
 	}
@@ -366,13 +367,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	var active_connections = [];
 	var active_connections_num = 0;
+	var chatSocket = null;
 
 	function handleChatLinkClick(username) {
-		for (let j = 0; j < active_connections.length; j++) {			//// prevent starting the same chat
-			if (active_connections[j] == username)						//// several times
-				return;
-		}
-		active_connections[active_connections_num++] = username;
+		// for (let j = 0; j < active_connections.length; j++) {			//// prevent starting the same chat
+		// 	if (active_connections[j] == username)						//// several times
+		// 		return;
+		// }
+		// active_connections[active_connections_num++] = username;
 
 		const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
 
@@ -430,14 +432,17 @@ document.addEventListener("DOMContentLoaded", function () {
 				listItemElement.appendChild(chatContainer);
 
 				const roomName = data.room_name;
-				const chatSocket = new WebSocket("wss://" + window.location.host + "/chat/" + roomName + "/");
+				if (chatSocket !== null) {
+					chatSocket.close();
+				}
+				chatSocket = new WebSocket("wss://" + window.location.host + "/chat/" + roomName + "/");
 
 				chatSocket.onopen = function (e) {
 					console.log("The connection was set up successfully!");
 				};
 
 				chatSocket.onclose = function (e) {
-					console.log("Something unexpected happened!");
+					console.log("The connection was closed successfully!");
 				};
 
 				document.querySelector("#id_message_send_input").focus();
@@ -486,6 +491,7 @@ document.addEventListener("DOMContentLoaded", function () {
 								chatSocket.send(JSON.stringify({ message: "A pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
 								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
 								online_game(ws);
+								close(ws);
 							}
 						})
 				};
@@ -503,8 +509,6 @@ document.addEventListener("DOMContentLoaded", function () {
 						return;
 
 					const currentUser = data.username;
-					console.log("currentUser ", currentUser);
-					console.log("username_global ", username_global);
 					const div = document.createElement("div");
 					div.classList.add("chat__message");
 					if (data.username === currentUser) {

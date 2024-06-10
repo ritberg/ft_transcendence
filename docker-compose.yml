@@ -164,7 +164,7 @@ services:
       PGPORT: ${DB_USERCHAT_PORT}
     volumes:
       - db_userchat:/var/lib/postgresql/data
-    ports:
+    expose:
       - "5434"
     tty: true
     networks:
@@ -175,7 +175,7 @@ services:
   redis:
     container_name: redis
     image: redis:alpine
-    ports:
+    expose:
       - "6379"
     networks:
       - transcendance
