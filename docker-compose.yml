@@ -63,7 +63,7 @@ services:
       - "8005"
     volumes:
       - stat_service:/home/transcendance/${STAT_SERVICE_NAME}
-      - user_service:/home/transcendance/${USER_SERVICE_NAME}
+      - user:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
@@ -242,6 +242,12 @@ volumes:
       type: "none"
       o: "bind"
       device: "${PWD}/user/${USER_SERVICE_NAME}"
+  stat_service:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/stat_service/${STAT_SERVICE_NAME}"
   chat:
     driver: local
     driver_opts:

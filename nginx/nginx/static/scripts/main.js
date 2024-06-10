@@ -3,8 +3,8 @@ import { stars } from "./stars.js";
 import { loop } from "./pong.js";
 import { online_game } from "../online/index.js";
 import { gameLoop_bot } from "../bot/pong.js";
-import { username_global } from "./rita.js";
-import { userIsConnected } from "./rita.js";
+import { username_global } from "./user_api.js";
+import { userIsConnected } from "./user_api.js";
 import { DisplayUserInfoBox } from "./user_info.js";
 
 // import { loop_t } from './pong_tournoi.js';

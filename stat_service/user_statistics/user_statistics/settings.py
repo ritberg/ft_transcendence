@@ -23,13 +23,13 @@ environ.Env.read_env(env_file='.env.django')
 
 USER_SERVICE_NAME = env('USER_SERVICE_NAME')
 STAT_SERVICE_NAME = env('STAT_SERVICE_NAME')
-AUTH_APP_NAME = env('AUTH_APP_NAME')
+AUTH_APP_NAME = env('USER_APP_NAME')
 STAT_APP_NAME = env('STAT_APP_NAME')
-DB_NAME = env('DB_NAME')
-DB_USER = env('DB_USER')
-DB_PASSWORD = env('DB_PASSWORD')
-DB_HOST = env('DB_HOST')
-DB_PORT = env('DB_PORT')
+DB_NAME = env('DB_USERCHAT_NAME')
+DB_USER = env('DB_USERCHAT_USER')
+DB_PASSWORD = env('DB_USERCHAT_PASSWORD')
+DB_HOST = env('DB_USERCHAT_HOST')
+DB_PORT = env('DB_USERCHAT_PORT')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -172,4 +172,4 @@ CSRF_COOKIE_SECURE = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8000', 'http://localhost:8001']
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://10.12.8.10']
