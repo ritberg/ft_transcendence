@@ -75,9 +75,11 @@ export async function drawBrackets() {
 		boxes[game.index].classList.add("fighter");
 		boxes[game.index + 1].classList.add("fighter");
 	} else {
-		const crown = document.createElement("i");
-		crown.classList.add("bi", "bi-trophy");
-		document.querySelector("#brackets-container").appendChild(crown);
+		await sleep(1000);
+		boxes[game.index].classList.add("winner");
+		//const crown = document.createElement("i");
+		//crown.classList.add("bi", "bi-trophy");
+		//document.querySelector("#brackets-container").appendChild(crown);
 		await sleep(1000);
 	}
 	await sleep(1000);

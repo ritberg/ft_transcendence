@@ -138,11 +138,13 @@ export async function loop(current_frame) {
 		stars(document.getElementById("game_canvas"));
 		await sleep(500);
 		await drawBrackets();
-		await starWars();
+		//await starWars();
 		let last_player = 0;
 		for (let z = game.player.length; z > 1; z /= 2)
 			last_player += z;
-		if (game.index != last_player) {
+		if (game.index != last_player)
+			await starWars();
+		else {
 			modifyDelta(1.5);
 			document.getElementById("main-menu").style.display = "flex";
 			document.getElementById("main-menu").style.opacity = "0";

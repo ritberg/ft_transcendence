@@ -73,8 +73,8 @@ document.getElementById("main-menu").addEventListener("click", function() {
 			GameMode(0);
 		else if (button_id === "cpu-mode")
 			GameMode(1);
-		document.getElementById("main-menu").addEventListener("animationend", function() {
-			document.getElementById("main-menu").style.display = "none";
-		});
+		//document.getElementById("main-menu").addEventListener("animationend", function() {
+		//	document.getElementById("main-menu").style.display = "none";
+		//});
 	}
 });
