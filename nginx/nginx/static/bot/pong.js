@@ -178,8 +178,10 @@ function changeBallVelocity() {
     if (!(ball.yPos + ball.velocityY > 0 && ball.yPos + ball.velocityY + ball.height < board_height)) {
         ball.velocityY *= -1;
     }
-    if (ball.xPos + ball.velocityX + ball.width >= board_width - player1.xPos - computer.width) {
-        if (ball.yPos + ball.velocityY + ball.height + 2 >= computer.yPos && ball.yPos + ball.velocityY - 2 <= computer.yPos + computer.height && ball.velocityX > 0) {
+    // if (ball.xPos + ball.velocityX + ball.width >= board_width - player1.xPos - 1) {  //previous collisions params
+    if (ball.xPos + ball.velocityX + ball.width >= board_width - player1.xPos - computer.width) { //current collisions params
+        // if (ball.yPos + ball.velocityY + ball.height + 2 >= computer.yPos && ball.yPos + ball.velocityY - 2 <= computer.yPos + computer.height) {  //previous collisions params
+        if (ball.yPos + ball.velocityY + ball.height + 2 >= computer.yPos && ball.yPos + ball.velocityY - 2 <= computer.yPos + computer.height && ball.velocityX > 0) { //current collisions params
             ball.velocityY = ((ball.yPos + ball.height / 2) - (computer.yPos + computer.height / 2)) / 15;
             ball.velocityX *= -1;
             if (ball.velocityX < 0)
@@ -188,8 +190,10 @@ function changeBallVelocity() {
                 ball.velocityX += 0.5;
         }
     }
-    if (ball.xPos + ball.velocityX <= player1.xPos + player1.width) {
-        if (ball.yPos + ball.velocityY + ball.height + 2 >= player1.yPos && ball.yPos + ball.velocityY - 2 <= player1.yPos + player1.height && ball.velocityX < 0) {
+    // if (ball.xPos + ball.velocityX <= player1.xPos + 1) {  //previous collisions params
+    if (ball.xPos + ball.velocityX <= player1.xPos + player1.width) { //current collisions params
+        // if (ball.yPos + ball.velocityY + ball.height + 2 >= player1.yPos && ball.yPos + ball.velocityY - 2 <= player1.yPos + player1.height) {  //previous collisions params
+        if (ball.yPos + ball.velocityY + ball.height + 2 >= player1.yPos && ball.yPos + ball.velocityY - 2 <= player1.yPos + player1.height && ball.velocityX < 0) {  //current collisions params
             ball.velocityY = ((ball.yPos + ball.height / 2) - (player1.yPos + player1.height / 2)) / 15;
             ball.velocityX *= -1;
             if (ball.velocityX < 0)

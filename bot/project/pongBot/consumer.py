@@ -21,8 +21,8 @@ class AI:
     # # Set up colors
     # BLACK = (0, 0, 0)
     # WHITE = (255, 255, 255)
-    frame_num = 100000
-    epochs = 5
+    frame_num = 5000  # 10 000 frames, 10 epoches
+    epochs = 50
     batch_size = 128
     noise = 5
 
@@ -97,8 +97,10 @@ class AI:
             self.ball_speed_y *= -1
 
         #checks if the ball hit the right paddle
-        if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):
-            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0):
+        # if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 21): #previous collisions params
+        if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):  #current collisions params
+            # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height): #previous collisions params
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0): #current collisions params
                 self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.computer_y + self.paddle_height / 2)) / 15
                 self.ball_speed_x *= -1
                 if self.ball_speed_x < 0:
@@ -107,8 +109,10 @@ class AI:
                     self.ball_speed_x += 0.5
 
         #checks if the ball hit the left paddle
-        if (self.ball_x + self.ball_speed_x <= 20 + self.paddle_width):
-            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0):
+        # if (self.ball_x + self.ball_speed_x <= 21): #previous collisions params
+        if (self.ball_x + self.ball_speed_x <= 20 + self.paddle_width): #current collisions params
+            # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height): #previous collisions params
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0): #current collisions params
                 self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.player1_y + self.paddle_height / 2)) / 15
                 self.ball_speed_x *= -1
                 if (self.ball_speed_x < 0):
