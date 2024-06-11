@@ -3,7 +3,7 @@ import { stars } from './stars.js';
 import { loop } from './pong.js';
 import { online_game } from '../online/index.js';
 import { gameLoop_bot } from '../bot/pong.js';
-import { username_global } from './animations.js';
+import { username_global } from './rita.js';
 
 // import { loop_t } from './pong_tournoi.js';
 
@@ -23,7 +23,7 @@ export async function GameMode(n) {
 		await sleep(20);
 	}
 	document.getElementById("game").style.background = "black";
-	document.getElementById("main-buttons").style.display = "none";
+	document.getElementById("main-menu").style.display = "none";
 
 	if (n == 0)
 	{
@@ -38,9 +38,9 @@ export async function GameMode(n) {
 	}
 	else if (n == 3)
 	{
-		document.getElementById("login-box").style.display = "none";
+		document.getElementById("online-box").style.display = "none";
 		const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-		let room_selected = document.querySelector("#room_name_input").value;
+		let room_selected = document.querySelector("#i-room_name").value;
 		let ws;
 		fetch("https://" + window.location.host + "/room/", {
 			method: "POST",
@@ -71,3 +71,13 @@ export async function GameMode(n) {
 }
 
 stars(document.getElementById("game"));
+
+document.getElementById("profile_tab").addEventListener("click", function() {
+	if (window.getComputedStyle(document.getElementById("profile-box_signup")).display === "none") {
+		document.getElementById("profile-box_signup").style.display = "block";
+		document.getElementById("main-menu").style.display = "none";
+	} else {
+		document.getElementById("profile-box_signup").style.display = "none";
+		document.getElementById("main-menu").style.display = "flex";
+	}
+});
