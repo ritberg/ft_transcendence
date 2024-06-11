@@ -21,8 +21,8 @@ class AI:
     # # Set up colors
     # BLACK = (0, 0, 0)
     # WHITE = (255, 255, 255)
-    frame_num = 5000  # 10 000 frames, 10 epoches
-    epochs = 50
+    frame_num = 10000  # 5 000 frames, 50 epoches
+    epochs = 100
     batch_size = 128
     noise = 5
 
@@ -236,8 +236,12 @@ class Consumer(AsyncWebsocketConsumer):
     ai = AI()
 
     async def receive(self, text_data):
+        prev_second = -1
         data = json.loads(text_data)
-        self.ai.save_data(data["player"], data["computer"], data["ballX"], data["ballY"]) # update coordinates after training
+        current_second = time.localtime().tm_sec
+        if current_second != prev_second:
+            prev_second = current_second
+            self.ai.save_data(data["player"], data["computer"], data["ballX"], data["ballY"]) # update coordinates after training
         move = self.ai.predict_move()
         print("Return of predict_move():", move)
         # ai_update(move)
