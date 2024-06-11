@@ -21,8 +21,8 @@ class AI:
     # # Set up colors
     # BLACK = (0, 0, 0)
     # WHITE = (255, 255, 255)
-    frame_num = 100000
-    epochs = 5
+    frame_num = 10000  # 5 000 frames, 50 epoches
+    epochs = 100
     batch_size = 128
     noise = 5
 
@@ -97,8 +97,10 @@ class AI:
             self.ball_speed_y *= -1
 
         #checks if the ball hit the right paddle
-        if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):
-            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0):
+        # if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 21): #previous collisions params
+        if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):  #current collisions params
+            # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height): #previous collisions params
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0): #current collisions params
                 self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.computer_y + self.paddle_height / 2)) / 15
                 self.ball_speed_x *= -1
                 if self.ball_speed_x < 0:
@@ -107,8 +109,10 @@ class AI:
                     self.ball_speed_x += 0.5
 
         #checks if the ball hit the left paddle
-        if (self.ball_x + self.ball_speed_x <= 20 + self.paddle_width):
-            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0):
+        # if (self.ball_x + self.ball_speed_x <= 21): #previous collisions params
+        if (self.ball_x + self.ball_speed_x <= 20 + self.paddle_width): #current collisions params
+            # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height): #previous collisions params
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0): #current collisions params
                 self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.player1_y + self.paddle_height / 2)) / 15
                 self.ball_speed_x *= -1
                 if (self.ball_speed_x < 0):
@@ -232,8 +236,12 @@ class Consumer(AsyncWebsocketConsumer):
     ai = AI()
 
     async def receive(self, text_data):
+        prev_second = -1
         data = json.loads(text_data)
-        self.ai.save_data(data["player"], data["computer"], data["ballX"], data["ballY"]) # update coordinates after training
+        current_second = time.localtime().tm_sec
+        if current_second != prev_second:
+            prev_second = current_second
+            self.ai.save_data(data["player"], data["computer"], data["ballX"], data["ballY"]) # update coordinates after training
         move = self.ai.predict_move()
         print("Return of predict_move():", move)
         # ai_update(move)
