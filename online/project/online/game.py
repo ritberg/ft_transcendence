@@ -49,8 +49,8 @@ class GameLoop(AsyncWebsocketConsumer):
             return
 
         #variables are declared before start of game to hopefully reduce calculation time
-        self.player1 = self.find_player("left")
-        self.player2 = self.find_player("right")
+        self.player1 = self.find_player("left", self.room)
+        self.player2 = self.find_player("right", self.room)
         self.room_var = room_vars[self.room]
 
         #timer which seems to slow down the start of the game
@@ -229,10 +229,10 @@ class GameLoop(AsyncWebsocketConsumer):
         room_vars[current_room]["ball_velocityX"] = 0
 
     #returns a player with the corresponding side
-    def find_player(self, target_side):
-        if self.room not in room_vars:
+    def find_player(self, target_side, room):
+        if room not in room_vars:
             return
-        for player in room_vars[self.room]["players"].values():
+        for player in room_vars[room]["players"].values():
             if player["side"] == target_side:
                 return player
         return None

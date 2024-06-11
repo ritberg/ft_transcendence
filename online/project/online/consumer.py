@@ -114,9 +114,17 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
         if not room_vars[self.room]["running"]:
             init = asyncio.create_task(self.game.game_loop(self.room))
         if len(room_vars[self.room]["players"]) == 2:
+            name1 = ""
+            name2 = ""
+            player1 = self.game.find_player("left", self.room)
+            if player1:
+                name1 = player1["username"]
+            player2 = self.game.find_player("right", self.room)
+            if player2:
+                name2 = player2["username"]
             await self.channel_layer.group_send(
                 self.room_name,
-                {"type": "player_num", "objects": 2},
+                {"type": "player_num", "objects": {"num": 2, "p1Name": name1, "p2Name": name2}},
             )
             messages = asyncio.create_task(self.send_messages())
 
@@ -169,9 +177,17 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
 
         #tells the other client that the opponent left
         if self.assign_player_side() != 2:
+            name1 = ""
+            name2 = ""
+            player1 = self.game.find_player("left", self.room)
+            if player1:
+                name1 = player1["username"]
+            player2 = self.game.find_player("right", self.room)
+            if player2:
+                name2 = player2["username"]
             await self.channel_layer.group_send(
                 self.room_name,
-                {"type": "player_num", "objects": 1},
+                {"type": "player_num", "objects": {"num": 1, "p1Name": name1, "p2Name": name2}},
             )
             
             #sends an update to the other player so that the board looks reset on the frontend
@@ -237,7 +253,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
         await self.send_json(
             {
                 "type": "playerNum",
-                "num": event["objects"],
+                "objects": event["objects"],
             }
         )
 

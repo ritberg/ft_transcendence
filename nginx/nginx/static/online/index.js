@@ -1,5 +1,8 @@
 var ws;
 var username;
+
+var p1 = "";
+var p2 = "";
 var side = 0;
 
 const audio = new Audio("static/online/utils/1.mp3");
@@ -68,10 +71,13 @@ export function online_game(new_ws) {
                 play();
         }
         else if (messageData.type === "playerNum") {
-            if (messageData.num === 2)
+            if (messageData.objects.num === 2)
                 isalone = false;
-            else if (messageData.num === 1)
+            else if (messageData.objects.num === 1)
                 isalone = true;
+            
+            p1 = messageData.objects.p1Name;
+            p2 = messageData.objects.p2Name;
         }
         else if (messageData.type === "playerId") {
             username = messageData.objects.id;
@@ -114,6 +120,12 @@ function draw_board() {
 	context.textAlign = "center";
 	context.fillText(player1.score.toString(), board_width / 3, 100);
 	context.fillText(player2.score.toString(), board_width - board_width / 3, 100);
+
+    context.font = "30px Comic Sans MS";
+    let textWidth = context.measureText(p1).width;
+    context.fillText(p1, (board_width / 8) - (textWidth / 10), 50);
+    textWidth = context.measureText(p2).width;
+    context.fillText(p2, (board_width / (1)) - (textWidth / (1)), 50);
 
     context.textAlign = "left";
     context.fillStyle = "white";
