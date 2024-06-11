@@ -4,6 +4,7 @@ import { loop } from './pong.js';
 import { online_game } from '../online/index.js';
 import { gameLoop_bot } from '../bot/pong.js';
 import { username_global } from './rita.js';
+import { token } from './rita.js';
 
 // import { loop_t } from './pong_tournoi.js';
 
@@ -33,13 +34,12 @@ export async function GameMode(n) {
 	else if (n == 1)
 	{
 		let ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
-		await gameLoop_bot(ws);
+		gameLoop_bot(ws);
 		// ws.close();
 	}
 	else if (n == 3)
 	{
 		document.getElementById("online-box").style.display = "none";
-		const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 		let room_selected = document.querySelector("#i-room_name").value;
 		let ws;
 		fetch("https://" + window.location.host + "/room/", {
@@ -50,7 +50,7 @@ export async function GameMode(n) {
 			}),
 			headers: {
 				"Content-type": "application/json; charset=UTF-8",
-				"X-CSRFToken": csrftoken,
+				"X-CSRFToken": token,
 			}
 		})
 		.then((response) => {
@@ -61,7 +61,7 @@ export async function GameMode(n) {
 			if (code == 500)
 				console.log("error: " + data.error);
 			else {
-				ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
+				ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
 				online_game(ws);
 				// ws.close();
 			}

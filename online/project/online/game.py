@@ -18,8 +18,6 @@ from .game_struct import room_vars, state_update
 
 
 class GameLoop(AsyncWebsocketConsumer):
-    room = ""
-
     #board
     board_height = 800
     board_width = 1000
@@ -71,7 +69,7 @@ class GameLoop(AsyncWebsocketConsumer):
         #     await asyncio.sleep(0.03)
 
         #initializes ball direction/position
-        self.init_ball_values()
+        self.init_ball_values(self.room)
         self.ball_direction()
 
         #initialize fps restriction
@@ -80,7 +78,6 @@ class GameLoop(AsyncWebsocketConsumer):
 
         #the main loop
         while len(self.room_var["players"]) == 2 and self.room in room_vars:
-            # print(self.room)
             now = asyncio.get_event_loop().time()
             elapsed = now - then
             if (elapsed > fpsInterval):
@@ -177,7 +174,7 @@ class GameLoop(AsyncWebsocketConsumer):
             self.room_var["ball_velocityY"] = ball_velocityY
 
             #set ball starting values
-            self.init_ball_values()
+            self.init_ball_values(self.room)
             if self.player2["score"] != 5 and self.player1["score"] != 5:
                 self.ball_direction()
         else:
@@ -223,13 +220,13 @@ class GameLoop(AsyncWebsocketConsumer):
             room_vars[self.room]["ball_velocityY"] = value
 
     #sets ball values to default
-    def init_ball_values(self):
-        if self.room not in room_vars:
+    def init_ball_values(self, current_room):
+        if current_room not in room_vars:
             return
-        room_vars[self.room]["ball_xPos"] = (self.board_width / 2) - (self.ball_width / 2)
-        room_vars[self.room]["ball_yPos"] = (self.board_height / 2) - (self.ball_height / 2)
-        room_vars[self.room]["ball_velocityY"] = 0
-        room_vars[self.room]["ball_velocityX"] = 0
+        room_vars[current_room]["ball_xPos"] = (self.board_width / 2) - (self.ball_width / 2)
+        room_vars[current_room]["ball_yPos"] = (self.board_height / 2) - (self.ball_height / 2)
+        room_vars[current_room]["ball_velocityY"] = 0
+        room_vars[current_room]["ball_velocityX"] = 0
 
     #returns a player with the corresponding side
     def find_player(self, target_side):
@@ -241,17 +238,18 @@ class GameLoop(AsyncWebsocketConsumer):
         return None
 
     #resets main values to default
-    def reset_board(self):
-        self.init_ball_values()
-        if self.room not in room_vars:
+    def reset_board(self, current_room):
+        self.init_ball_values(current_room)
+        if current_room not in room_vars:
             return
-        state_update[self.room]["player1Pos"] = self.board_height / 2 - self.player_height / 2
-        state_update[self.room]["player2Pos"] = self.board_height / 2 - self.player_height / 2
-        state_update[self.room]["ball_yPos"] = (self.board_height / 2) - (self.ball_height / 2)
-        state_update[self.room]["ball_xPos"] = (self.board_width / 2) - (self.ball_width / 2)
-        state_update[self.room]["player1Score"] = 0
-        state_update[self.room]["player2Score"] = 0
-        state_update[self.room]["sound"] = False
-        for player in room_vars[self.room]["players"].values():
+            #doesn't work when 2nd player leaves smh
+        state_update[current_room]["player1Pos"] = self.board_height / 2 - self.player_height / 2
+        state_update[current_room]["player2Pos"] = self.board_height / 2 - self.player_height / 2
+        state_update[current_room]["ball_yPos"] = (self.board_height / 2) - (self.ball_height / 2)
+        state_update[current_room]["ball_xPos"] = (self.board_width / 2) - (self.ball_width / 2)
+        state_update[current_room]["player1Score"] = 0
+        state_update[current_room]["player2Score"] = 0
+        state_update[current_room]["sound"] = False
+        for player in room_vars[current_room]["players"].values():
             player["yPos"] = self.board_height / 2 - self.player_height / 2
             player["score"] = 0

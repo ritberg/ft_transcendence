@@ -1,5 +1,5 @@
 var ws;
-var player_id = 0;
+var username;
 var side = 0;
 
 const audio = new Audio("static/online/utils/1.mp3");
@@ -74,7 +74,7 @@ export function online_game(new_ws) {
                 isalone = true;
         }
         else if (messageData.type === "playerId") {
-            player_id = messageData.objects.id;
+            username = messageData.objects.id;
             side = messageData.objects.side;
         }
         else if (messageData.type === "countdown") {
@@ -174,11 +174,11 @@ var lastSent = "none";
 
 function movePlayer(e) {
     if (e.key == 'w' && lastSent != "keyW") {
-        ws.send(JSON.stringify({ type: "keyW", playerId: player_id }));
+        ws.send(JSON.stringify({ type: "keyW", username: username }));
         lastSent = "keyW";
     }
     if (e.key == 's' && lastSent != "keyS") {
-        ws.send(JSON.stringify({ type: "keyS", playerId: player_id }));
+        ws.send(JSON.stringify({ type: "keyS", username: username }));
         lastSent = "keyS"
     }
 }
@@ -186,11 +186,11 @@ function movePlayer(e) {
 //allows the player to stop if key is released
 function stopPlayer(e) {
     if (e.key == 'w' && lastSent != "keyStop") {
-        ws.send(JSON.stringify({ type: "keyStop", playerId: player_id }));
+        ws.send(JSON.stringify({ type: "keyStop", username: username }));
         lastSent = "keyStop"
     }
     if (e.key == 's' && lastSent != "keyStop") {
-        ws.send(JSON.stringify({ type: "keyStop", playerId: player_id }));
+        ws.send(JSON.stringify({ type: "keyStop", username: username }));
         lastSent = "keyStop"  
     }
 }

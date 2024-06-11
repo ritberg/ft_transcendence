@@ -7,7 +7,7 @@ from user_management.views import (LoginUserView, LogoutUserView, RegisterUserVi
 
 urlpatterns = [
 	path('index/', IndexView.as_view(), name='index'),
-    path('login/', LoginUserView.as_view(), name='login'),
+    path('signin/', LoginUserView.as_view(), name='login'),
     path('logout/', LogoutUserView.as_view(), name='logout'),
     path('register/', RegisterUserView.as_view(), name='register'),
 	path('update/', UpdateUserView.as_view(), name='update'),

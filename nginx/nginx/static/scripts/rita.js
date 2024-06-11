@@ -4,13 +4,14 @@ import { drawBrackets, enterNicknames } from './brackets.js';
 import { online_game } from '../online/index.js';
 
 export var username_global = "guest";
+export var token;
 
 document.addEventListener("DOMContentLoaded", function () {
 	
 	//////// CSRF token ////////
 
 	let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
-	let token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
+	token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
 
 	if (!token) {
 		console.error("CSRF token not found!");
@@ -327,7 +328,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					console.log("error: " + data.error);
 				else {
 					usersListBox.classList.remove('show');
-					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
+					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
 					online_game(ws);			//// launching the online pong game
 					close(ws);
 				}
@@ -469,7 +470,7 @@ document.addEventListener("DOMContentLoaded", function () {
 							else {
 								usersListBox.classList.remove('show');
 								chatSocket.send(JSON.stringify({ message: "A pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
-								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/");
+								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
 								online_game(ws);
 								close(ws);
 							}

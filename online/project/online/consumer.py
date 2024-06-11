@@ -12,8 +12,6 @@ import asyncio
 import math
 #used to set fps and other
 import time
-#to make the delay when ball spawns
-from threading import Timer
 #to make the class async
 from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
@@ -46,8 +44,8 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
     update_lock = asyncio.Lock()
     async def connect(self):
         self.room = f"{self.scope['url_route']['kwargs']['room_name']}"
-        self.player_id = str(uuid.uuid4())
         self.room_name = f"room_{self.scope['url_route']['kwargs']['room_name']}"
+        self.user_name = f"{self.scope['url_route']['kwargs']['user_name']}"
         self.game = GameLoop()
 
         #adds player to the room layer
@@ -83,8 +81,8 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             player_side = self.assign_player_side()
         if player_side == 0:
             async with self.update_lock:
-                room_vars[self.room]["players"][self.player_id] = {
-                    "id": self.player_id,
+                room_vars[self.room]["players"][self.user_name] = {
+                    "username": self.user_name,
                     "side": "left",
                     "yPos": self.board_height / 2 - self.player_height / 2,
                     "score": 0,
@@ -93,8 +91,8 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
                 }
         elif player_side == 1:
             async with self.update_lock:
-                room_vars[self.room]["players"][self.player_id] = {
-                    "id": self.player_id,
+                room_vars[self.room]["players"][self.user_name] = {
+                    "username": self.user_name,
                     "side": "right",
                     "yPos": self.board_height / 2 - self.player_height / 2,
                     "score": 0,
@@ -106,7 +104,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             return
 
         #sends the player his ID
-        await self.send_json({"type": "playerId", "objects": {"id": self.player_id, "side": room_vars[self.room]["players"][self.player_id]["side"]}})
+        await self.send_json({"type": "playerId", "objects": {"id": self.user_name, "side": room_vars[self.room]["players"][self.user_name]["side"]}})
 
         #updates the database to determine wether another player can enter or not
         async with self.update_lock:
@@ -129,6 +127,13 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             Room.objects.filter(room_name=self.room).update(full=True)
         else:
             Room.objects.filter(room_name=self.room).update(full=False)
+    
+    @database_sync_to_async
+    def remove_user(self):
+        get_room = Room.objects.get(room_name=self.room)
+        if self.user_name in get_room.players:
+            get_room.players.remove(self.user_name)
+            get_room.save()
 
     #checks which sides are occupied and if any are free
     def assign_player_side(self):
@@ -154,11 +159,13 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
 
         #removes the player from the dict
         async with self.update_lock:
-            if self.player_id in room_vars[self.room]["players"]:
-                del room_vars[self.room]["players"][self.player_id]
+            if self.user_name in room_vars[self.room]["players"]:
+                del room_vars[self.room]["players"][self.user_name]
         async with self.update_lock:
             await self.check_full()
-        # print("in consumer")
+            await self.remove_user()
+
+        self.game.reset_board(self.room)
 
         #tells the other client that the opponent left
         if self.assign_player_side() != 2:
@@ -166,8 +173,6 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
                 self.room_name,
                 {"type": "player_num", "objects": 1},
             )
-
-            self.game.reset_board()
             
             #sends an update to the other player so that the board looks reset on the frontend
             await self.channel_layer.group_send(
@@ -192,34 +197,12 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
     def delete_room(self):
         Room.objects.filter(room_name=self.room).delete()
 
-    #this function is triggered when a client sends a message
-    # async def receive(self, text_data):
-    #     text_data_json = rapidjson.loads(text_data)
-    #     message_type = text_data_json["type"]
-
-    #     player_id = text_data_json["playerId"]
-
-    #     player = room_vars[self.room]["players"][self.player_id]
-    #     if not player:
-    #         print("no player")
-    #         return
-
-    #     if message_type == "keyW":
-    #         player["moveUp"] = True
-    #         player["moveDown"] = False
-    #     elif message_type == "keyS":
-    #         player["moveDown"] = True
-    #         player["moveUp"] = False
-    #     elif message_type == "keyStop":
-    #         player["moveDown"] = False
-    #         player["moveUp"] = False
-
     async def receive_json(self, content):
         message_type = content["type"]
 
-        player_id = content["playerId"]
+        username = content["username"]
 
-        player = room_vars[self.room]["players"][self.player_id]
+        player = room_vars[self.room]["players"][username]
         if not player:
             print("no player")
             return
