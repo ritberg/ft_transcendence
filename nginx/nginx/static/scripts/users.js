@@ -267,7 +267,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		  updateCSRFToken(data.crsfToken);
 		  localStorage.setItem("userIsConnected", "true");
 		  userIsConnected = true;
-		  updateProfile(data.data);
+		  let user = data.data;
+		  user.stats = getStats();
+		  user.match_history = getMatchHistory();
+		  updateProfile(user);
 		  // code à supprimer si vous avez envie
 		  document.getElementById("profile-box_signin").style.display = "none";
 		  document.getElementById("main-menu").style.display = "flex";
@@ -809,6 +812,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			const stats = {
 			stats: data,
 			};
+			let user = JSON.parse(localStorage.getItem("user"));
+			user.stats = stats.stats;
+			localStorage.setItem("user", JSON.stringify(user));
 			updateUserInfoDisplay(stats);
 		})
 		.catch((error) => {
@@ -838,6 +844,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			const match_history = {
 				match_history: data,
 			};
+			let user = JSON.parse(localStorage.getItem("user"));
+			user.match_history = match_history.match_history;
+			localStorage.setItem("user", JSON.stringify(user));
 			updateUserInfoDisplay(match_history);
 		})
 		.catch((error) => {
