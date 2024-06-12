@@ -38,7 +38,6 @@ export async function GameMode(n) {
 	}
 	else if (n == 3)
 	{
-		document.getElementById("online-box").style.display = "none";
 		const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 		let room_selected = document.querySelector("#i-room_name").value;
 		let ws;
@@ -72,12 +71,12 @@ export async function GameMode(n) {
 
 stars(document.getElementById("game"));
 
-document.getElementById("profile_tab").addEventListener("click", function() {
-	if (window.getComputedStyle(document.getElementById("profile-box_signup")).display === "none") {
-		document.getElementById("profile-box_signup").style.display = "block";
-		document.getElementById("main-menu").style.display = "none";
-	} else {
-		document.getElementById("profile-box_signup").style.display = "none";
-		document.getElementById("main-menu").style.display = "flex";
-	}
-});
+// document.getElementById("profile_tab").addEventListener("click", function() {
+// 	if (window.getComputedStyle(document.getElementById("profile-box_signup")).display === "none") {
+// 		document.getElementById("profile-box_signup").style.display = "block";
+// 		document.getElementById("main-menu").style.display = "none";
+// 	} else {
+// 		document.getElementById("profile-box_signup").style.display = "none";
+// 		document.getElementById("main-menu").style.display = "flex";
+// 	}
+// });

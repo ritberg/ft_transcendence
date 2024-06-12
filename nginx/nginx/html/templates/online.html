@@ -1,0 +1,17 @@
+<div id="online-box">
+    <h1>JOIN GAME</h1>
+    <form id="online_form">
+        {% csrf_token %}
+        <div class="input-div">
+            <input id="i-room_name" type="text" name="" required="">
+            <label>ROOM NAME</label>
+            <h6 id="t-empty_room">leave empty for random room</h6>
+        </div>
+        <button type="button" id="b-online-go">GO</button>
+        <script>
+            document.getElementById("online-box").style.display = "block";
+            console.log("fdsafasd");
+            document.getElementById("online-box").classList.add("shown");
+        </script>
+    </form>
+</div>
