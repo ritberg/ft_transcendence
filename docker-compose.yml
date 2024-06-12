@@ -1,0 +1,236 @@
+version: "3.8"
+
+services:
+  frontend:
+    container_name: frontend
+    depends_on:
+      - db_online
+    build:
+      context: ./frontend/docker
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${FRONTEND_SERVICE_NAME}
+    env_file:
+      - .env
+    expose:
+      - "8000"
+    volumes:
+      - frontend:/home/transcendance/${FRONTEND_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    restart: on-failure
+
+  user:
+    container_name: user
+    build:
+      context: ./user/docker
+      dockerfile: Dockerfile
+      args:
+        USER_SERVICE_NAME: ${USER_SERVICE_NAME}
+        DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+        DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+        DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+    env_file:
+      - .env
+    expose:
+      - "8003"
+    volumes:
+      - user:/home/transcendance/${USER_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - db_userchat
+      - redis
+    restart: on-failure
+
+  chat:
+    container_name: chat
+    build:
+      context: ./chat_service/docker
+      dockerfile: Dockerfile
+      args:
+        CHAT_SERVICE_NAME: ${CHAT_SERVICE_NAME}
+    env_file:
+      - .env
+    expose:
+      - "8004"
+    volumes:
+      - chat:/home/transcendance/${CHAT_SERVICE_NAME}
+      - user:/home/transcendance/${USER_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - user
+      - db_userchat
+      - redis
+    restart: on-failure
+
+  online:
+    container_name: online
+    depends_on:
+      - db_online
+    build:
+      context: ./online/docker
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${ONLINE_SERVICE_NAME}
+    env_file:
+      - .env
+    expose:
+      - "8001"
+    volumes:
+      - online:/home/transcendance/${ONLINE_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    restart: on-failure
+
+  bot:
+    container_name: bot
+    depends_on:
+      - db_online
+    build:
+      context: ./bot/docker
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${BOT_SERVICE_NAME}
+    env_file:
+      - .env
+    expose:
+      - "8002"
+    volumes:
+      - bot:/home/transcendance/${BOT_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    restart: on-failure
+
+  db_online:
+    container_name: db_online
+    image: postgres:16.2
+    volumes:
+      - db_online:/var/lib/postgresql/data/
+    environment:
+      # POSTGRES_HOST_AUTH_METHOD: trust
+      POSTGRES_DB: ${DB_ONLINE_NAME}
+      POSTGRES_USER: ${DB_ONLINE_USER}
+      POSTGRES_PASSWORD: ${DB_ONLINE_PASSWORD}
+      PGPORT: ${DB_ONLINE_PORT}
+    expose:
+      - "5433"
+    networks:
+      - transcendance
+    restart: on-failure
+
+  nginx:
+    container_name: nginx
+    depends_on:
+      - online
+      - frontend
+      # - bot
+      - user
+      - chat
+    build:
+      context: ./nginx/docker
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - nginx:/etc/nginx
+    networks:
+      - transcendance
+    env_file: .env
+    # tty: true
+    restart: on-failure
+
+  db_userchat:
+    container_name: db_userchat
+    image: postgres:16.2
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${DB_USERCHAT_NAME}
+      POSTGRES_USER: ${DB_USERCHAT_USER}
+      POSTGRES_PASSWORD: ${DB_USERCHAT_PASSWORD}
+      PGPORT: ${DB_USERCHAT_PORT}
+    volumes:
+      - db_userchat:/var/lib/postgresql/data
+    expose:
+      - "5434"
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    restart: on-failure
+
+  redis:
+    container_name: redis
+    image: redis:alpine
+    expose:
+      - "6379"
+    networks:
+      - transcendance
+    restart: on-failure
+
+volumes:
+  frontend:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/frontend/${FRONTEND_SERVICE_NAME}"
+  db_online:
+    driver: local
+    driver_opts:
+      type: "none" 
+      o: "bind"
+      device: "${PWD}/databases/db_online"
+  nginx:
+    driver: local
+    driver_opts:
+      type: "none" 
+      o: "bind"
+      device: "${PWD}/nginx/nginx"
+  online:
+    driver: local
+    driver_opts:
+      type: "none" 
+      o: "bind"
+      device: "${PWD}/online/${ONLINE_SERVICE_NAME}"
+  bot:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/bot/${BOT_SERVICE_NAME}"
+  user:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/user/${USER_SERVICE_NAME}"
+  chat:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/chat_service/${CHAT_SERVICE_NAME}"
+  db_userchat:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/databases/db_userchat"
+
+networks:
+  transcendance:
+    driver: bridge
