@@ -1,9 +1,0 @@
-Django>=4.2,<4.3
-daphne==4.0.0
-channels==4.0.0
-channels_redis==4.0.0
-djangorestframework==3.15.0
-psycopg[binary]==3.1.12
-django-cors-headers
-django-environ
-pillow
