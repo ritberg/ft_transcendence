@@ -1,6 +1,6 @@
 docker_dir = docker
-user_service_dir = user_service
-stat_service_dir = stat_service
+user_service_dir = user
+stat_service_dir = stat
 
 user_volume_dir = $(shell grep USER_SERVICE_NAME .env | cut -d '=' -f2)
 stat_volume_dir = $(shell grep STAT_SERVICE_NAME .env | cut -d '=' -f2)
