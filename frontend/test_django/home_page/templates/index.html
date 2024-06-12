@@ -41,6 +41,35 @@
 			<h6 id="user-name">guest</h6>
 			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
 		</div>
+		<!--#region CODE ALESSANDRO USER INFO -->
+
+		<div id="user-info-box">
+			<h1 id="info-username"></h1>
+			<button type="button" id="logout">LOGOUT</button>
+			<button type="button" id="refresh-stats">Refresh Stats</button>
+			<div id="user-content">
+				<div id="user-stats" class="user-info-section">
+					<h2>Stats</h2>
+					<ul>
+						<li id="stat-wins">Wins: 0</li>
+						<li id="stat-losses">Losses: 0</li>
+						<li id="stat-win-rate">Win Rate: 0%</li>
+						<li id="stat-total-games">Total Games Played: 0</li>
+						<li id="stat-total-hours">Total Hours Played: 0</li>
+						<li id="stat-goals-scored">Goals Scored: 0</li>
+						<li id="stat-goals-conceded">Goals Conceded: 0</li>
+					</ul>
+				</div>
+				<div id="match-history" class="user-info-section">
+					<h2>Match History</h2>
+					<ul id="history-list">
+						<!-- Match history will be populated here -->
+					</ul>
+				</div>
+			</div>
+		</div>
+	
+		<!--#endregion-->
 		<canvas id="game_canvas" width="1000" height="800"></canvas>
 		<div id="main-menu">
 			<h1>PONG</h1>

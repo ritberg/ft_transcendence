@@ -3,8 +3,12 @@ import { GameMode } from './main.js';
 import { drawBrackets, enterNicknames } from './brackets.js';
 import { online_game } from '../online/pong_online.js';
 
-export var username_global = "guest";
+export var username_global = localStorage.getItem("user") !== null
+    ? JSON.parse(localStorage.getItem("user")).username
+    : "guest";
 export var token;
+export var userIsConnected = localStorage.getItem("userIsConnected") === "true"
+	|| false;
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -27,57 +31,103 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	/////////// frontend ////////////
 
-	let usernameLabel = document.getElementById("user-name");
-
-	const displayProfile = (user) => {
-		usernameLabel.textContent = user.username;
+	const updateProfile = (user) => {
 		username_global = user.username;
 		localStorage.setItem("user", JSON.stringify(user));
+		updateUserInfoDisplay(user);
 	};
 	let storedUser = localStorage.getItem("user");
 	if (storedUser) {
 		let user = JSON.parse(storedUser);
-		displayProfile(user);
+		updateProfile(user);
+	}
+
+	function updateUserInfoDisplay(userInfo) {
+		console.log("updateUserInfo called with userInfo =", userInfo);
+		if (userInfo) {
+			const username = userInfo.username;
+			if (username) {
+				document.getElementById("info-username").textContent = `${username}`;
+				document.getElementById("user-name").textContent = `${username}`;
+			} else {
+				document.getElementById("info-username").textContent = "guest";
+				document.getElementById("user-name").textContent = "guest";
+			}
+		
+			if (userInfo.stats) {
+				document.getElementById(
+				"stat-wins"
+				).textContent = `Wins: ${userInfo.stats.wins}`;
+				document.getElementById(
+				"stat-losses"
+				).textContent = `Losses: ${userInfo.stats.losses}`;
+				document.getElementById(
+				"stat-win-rate"
+				).textContent = `Win Rate: ${userInfo.stats.win_rate}%`;
+				document.getElementById(
+				"stat-total-games"
+				).textContent = `Total Games Played: ${userInfo.stats.total_games}`;
+				document.getElementById(
+				"stat-total-hours"
+				).textContent = `Total Hours Played: ${userInfo.stats.total_hours}`;
+				document.getElementById(
+				"stat-goals-scored"
+				).textContent = `Goals Scored: ${userInfo.stats.goals_scored}`;
+				document.getElementById(
+				"stat-goals-conceded"
+				).textContent = `Goals Conceded: ${userInfo.stats.goals_conceded}`;
+		  	}
+	  
+			if (userInfo.match_history) {
+				const historyList = document.getElementById("history-list");
+				historyList.innerHTML = ""; // Clear previous history
+				userInfo.match_history.forEach((match) => {
+				const listItem = document.createElement("li");
+				listItem.textContent = `${match.date}: ${match.opponent} - ${match.result}`;
+				historyList.appendChild(listItem);
+				});
+			}
+		}
 	}
 
 	////////////////////// SIGNUP ////////////////////////////
 
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
 	let signupForm = document.getElementById("b-signup-ok");
-
+  
 	signupForm.addEventListener("click", function (event) {
 		event.preventDefault();
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
-
+	
 		console.log({ username, email, password });
-
+	
 		fetch(signupUrl, {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
+			"Content-Type": "application/json",
+			"X-CSRFToken": token,
 			},
 			body: JSON.stringify({ username, email, password }),
 		})
-			.then((response) => {
-				if (!response.ok) {
-					console.log(response);
-					throw new Error("Network response was not ok");
-				}
-				return response.json();
-			})
-			.then((data) => {
-				console.log(data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
-				// localStorage.setItem("user", JSON.stringify(data.data));
-				// displayProfile(data.data);
-			})
-			.catch((error) => {
-				console.error("Fetch error: ", error);
-			});
+		.then((response) => {
+		if (!response.ok) {
+			console.log(response);
+			throw new Error("Network response was not ok");
+		}
+		return response.json();
+		})
+		.then((data) => {
+		console.log(data);
+		console.log("token received : ", data.crsfToken);
+		updateCSRFToken(data.crsfToken);
+		// localStorage.setItem("user", JSON.stringify(data.data));
+		// displayProfile(data.data);
+		})
+		.catch((error) => {
+		console.error("Fetch error: ", error);
+		});
 	});
 
 
@@ -85,48 +135,92 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	let loginForm = document.getElementById("go1");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
-
+  
 	loginForm.addEventListener("click", function (event) {
-		event.preventDefault();
-
-		let username = document.getElementById("username1").value;
-		let password = document.getElementById("password1").value;
-
-		console.log("Sending signin request...");
-		console.log("username : ", username);
-
-		fetch(loginUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			body: JSON.stringify({ username, password }),
-			credentials: "include",
+	  event.preventDefault();
+  
+	  let username = document.getElementById("username1").value;
+	  let password = document.getElementById("password1").value;
+  
+	  console.log("Sending signin request...");
+	  console.log("username : ", username);
+  
+	  fetch(loginUrl, {
+		method: "POST",
+		headers: {
+		  "Content-Type": "application/json",
+		  "X-CSRFToken": token,
+		},
+		body: JSON.stringify({ username, password }),
+		credentials: "include",
+	  })
+		.then((response) => {
+		  console.log("Response Headers:", [...response.headers.entries()]);
+  
+		  if (!response.ok) {
+			console.log("Full response:", response);
+			throw new Error("Network response was not ok");
+		  }
+  
+		  return response.json();
 		})
-			.then((response) => {
-				console.log("Response Headers:", [...response.headers.entries()]);
+		.then((data) => {
+		  console.log("Cookies after signin response:", document.cookie);
+		  console.log("Login successful. Server response data:", data);
+		  console.log("data : ", data.data);
+		  console.log("token received : ", data.crsfToken);
+		  updateCSRFToken(data.crsfToken);
+		  localStorage.setItem("userIsConnected", "true");
+		  userIsConnected = true;
+		  updateProfile(data.data);
+		  // code à supprimer si vous avez envie
+		  document.getElementById("profile-box_signin").style.display = "none";
+		  document.getElementById("main-menu").style.display = "flex";
+		})
+		.catch((error) => {
+		  console.error("Fetch error:", error);
+		});
+	});
+  
 
-				if (!response.ok) {
-					console.log("Full response:", response);
-					throw new Error("Network response was not ok");
-				}
-
-				return response.json();
-			})
-			.then((data) => {
-				console.log("Cookies after signin response:", document.cookie);
-				console.log("Login successful. Server response data:", data);
-				console.log("data : ", data.data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
-				localStorage.setItem("user", JSON.stringify(data.data));
-				username_global = data.data.username;
-				displayProfile(data.data);
-			})
-			.catch((error) => {
-				console.error("Fetch error:", error);
-			});
+	////////////////////// LOGOUT ////////////////////////////
+  
+	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
+	let logoutBtn = document.getElementById("logout");
+  
+	logoutBtn.addEventListener("click", function (event) {
+	  event.preventDefault();
+  
+	  fetch(logoutUrl, {
+		method: "POST",
+		headers: {
+		  "Content-Type": "application/json",
+		  "X-CSRFToken": token,
+		},
+		credentials: "include",
+	  })
+		.then((response) => {
+		  if (!response.ok) {
+			throw new Error("Network response was not ok");
+		  }
+		  return response.json();
+		})
+		.then((data) => {
+		  console.log("data: ", data);
+		  let user = {
+			username: "guest",
+		  };
+		  updateProfile(user);
+		  localStorage.setItem("userIsConnected", false);
+		  userIsConnected = false;
+		  var mainMenu = document.getElementById("main-menu");
+		  var userInfoBox = document.getElementById("user-info-box");
+		  mainMenu.style.display = "flex";
+		  userInfoBox.style.display = "none";
+		})
+		.catch((error) => {
+		  console.error("Fetch error:", error);
+		});
 	});
 
 
@@ -253,54 +347,72 @@ document.addEventListener("DOMContentLoaded", function () {
 	let usersListBox = document.getElementById("users-list-box");
 	var chat_room_name;
 
-	usrsLst.addEventListener("click", function (event) {					//// frontend
+	usrsLst.addEventListener("click", function (event) {
+		//// frontend
+
+		let signin = document.getElementById("profile-box_signin");
+		let menu = document.getElementById("main-menu");
+		menu.style.display = "none";
 		document.getElementById("profile-box_signup").style.display = "none";
-		document.getElementById("profile-box_signin").style.display = "none";
+		document.getElementById("user-info-box").style.display = "none";
+
+		if (!userIsConnected) {
+			console.log("l'utilisateur n'est pas connecté");
+
+			// Basculez l'affichage
+			if (signin.style.display === "none" || signin.style.display === "") {
+				console.log("afficher la connexion");
+				signin.style.display = "block";
+			}
+			return;
+		}
+
+		signin.style.display = "none";
+
 		if (window.getComputedStyle(document.getElementById("users-list-box")).display === "none") {
-			usersListBox.classList.add('show');
-			document.getElementById("main-menu").style.display = "none";
+			usersListBox.classList.add("show");
 		}
 		else {
-			usersListBox.classList.remove('show');
+			usersListBox.classList.remove("show");
 			document.getElementById("main-menu").style.display = "flex";
 		}
 
 		let usersUrl = "https://" + window.location.host + "/users/";
 
 		fetch(usersUrl, {
-			method: "POST",
-			headers: {
-				"X-CSRFToken": token,
-				"Content-Type": "application/json",
-			},
-			credentials: "include",
+		method: "POST",
+		headers: {
+			"X-CSRFToken": token,
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
 		})
-			.then(response => response.json())
-			.then(data => {
-				const usersList = document.getElementById('users-list-container');
-				usersList.innerHTML = '';
+		.then((response) => response.json())
+		.then((data) => {
+			const usersList = document.getElementById("users-list-container");
+			usersList.innerHTML = "";
 
-				if (data.users.length != 0) {
-					data.users.forEach(user => {
-						const li = document.createElement('li');     		////
-						li.textContent = user.username + ' ';        		//// dinamically creating users list with
-																			//// buttons "start chat" 
-						const button = document.createElement('button');	////
-						button.textContent = 'Start Chat';					////
+			if (data.users.length !== 0) {
+				data.users.forEach((user) => {
+					const li = document.createElement("li"); ////
+					li.textContent = user.username + " "; //// dinamically creating users list with
+					//// buttons "start chat"
+					const button = document.createElement("button"); ////
+					button.textContent = "Start Chat"; ////
 
-						button.addEventListener('click', (e) => {
-							e.preventDefault();
-							if (!(document.getElementById("chat-box").classList.item("active")))
-								document.getElementById("chat-box").classList.toggle("active");
-							handleChatLinkClick(user.username);				//// opening chat
-						});
-
-						li.appendChild(button);
-						usersList.appendChild(li);
+					button.addEventListener("click", (e) => {
+					e.preventDefault();
+					if (!document.getElementById("chat-box").classList.item("active"))
+						document.getElementById("chat-box").classList.toggle("active");
+					handleChatLinkClick(user.username); //// opening chat
 					});
-				}
-			})
-			.catch(error => console.error('Error fetching user data:', error));
+
+					li.appendChild(button);
+					usersList.appendChild(li);
+				});
+			}
+		})
+		.catch((error) => console.error("Error fetching user data:", error));
 	});
 
 
@@ -512,4 +624,14 @@ document.addEventListener("DOMContentLoaded", function () {
 			})
 			.catch(error => console.error('Error fetching chat data:', error));
 	}
+
+
+	////////////////////// A SUPPRIMER (DEMANDER A ALESS SI C'EST OK) ////////////////////////////
+
+	document
+    .getElementById("refresh-stats")
+    .addEventListener("click", function () {
+      addGame();
+    });
+
 });

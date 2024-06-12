@@ -6,6 +6,7 @@ import { drawBrackets, enterNicknames, createPlayers } from './brackets.js';
 import { online_game } from '../online/pong_online.js';
 import { gameLoop_bot } from '../bot/pong_bot.js';
 import { username_global, token } from './users.js';
+import { userIsConnected } from "./users.js";
 
 // import { loop_t } from './pong_tournoi.js';
 
@@ -57,13 +58,36 @@ export async function GameMode(n) {
 
 stars(document.getElementById("game_canvas"));
 
-document.getElementById("profile_tab").addEventListener("click", function() {
-	if (window.getComputedStyle(document.getElementById("profile-box_signup")).display === "none") {
-		document.getElementById("profile-box_signup").style.display = "block";
-		document.getElementById("main-menu").style.display = "none";
-	} else {
-		document.getElementById("profile-box_signup").style.display = "none";
-		document.getElementById("main-menu").style.display = "flex";
+document.getElementById("profile_tab").addEventListener("click", function () {
+	var mainMenu = document.getElementById("main-menu");
+	var signinBox = document.getElementById("profile-box_signin");
+	var usersListBox = document.getElementById("users-list-box");
+	const userInfoBox = document.getElementById("user-info-box");
+  
+	console.log("user is connected in main: ", userIsConnected);
+  
+	if (userIsConnected) {
+		// Utilisation de la variable pour vérifier l'état de connexion
+		if (window.getComputedStyle(userInfoBox).display === "none") {
+			userInfoBox.style.display = "block";
+			mainMenu.style.display = "none";
+			signinBox.style.display = "none";
+			usersListBox.classList.remove("show");
+		}
+		else {
+			userInfoBox.style.display = "none";
+    		mainMenu.style.display = "flex";
+		}
+	}
+	else {
+		if (window.getComputedStyle(signinBox).display === "none") {
+			signinBox.style.display = "block";
+			mainMenu.style.display = "none";
+		}
+		else {
+			signinBox.style.display = "none";
+			mainMenu.style.display = "flex";
+		}
 	}
 });
 
