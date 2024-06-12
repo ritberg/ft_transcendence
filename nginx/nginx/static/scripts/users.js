@@ -42,45 +42,23 @@ document.addEventListener("DOMContentLoaded", function () {
 		updateProfile(user);
 	}
 
-	function updateUserInfoDisplay(userInfo) {
-		console.log("updateUserInfo called with userInfo =", userInfo);
-		if (userInfo) {
-			const username = userInfo.username;
-			if (username) {
-				document.getElementById("info-username").textContent = `${username}`;
-				document.getElementById("user-name").textContent = `${username}`;
-			}
-		
-			if (userInfo.stats) {
-				document.getElementById(
-				"stat-wins"
-				).textContent = `Wins: ${userInfo.stats.wins}`;
-				document.getElementById(
-				"stat-losses"
-				).textContent = `Losses: ${userInfo.stats.losses}`;
-				document.getElementById(
-				"stat-win-rate"
-				).textContent = `Win Rate: ${userInfo.stats.win_rate}%`;
-				document.getElementById(
-				"stat-total-games"
-				).textContent = `Total Games Played: ${userInfo.stats.total_games_played}`;
-				document.getElementById(
-				"stat-total-hours"
-				).textContent = `Total Hours Played: ${userInfo.stats.total_hours_played.toFixed(2)}`;
-				document.getElementById(
-				"stat-goals-scored"
-				).textContent = `Goals Scored: ${userInfo.stats.goal_scored}`;
-				document.getElementById(
-				"stat-goals-conceded"
-				).textContent = `Goals Conceded: ${userInfo.stats.goal_conceded}`;
+	function updateUserStats(stats) {
+		if (stats) {
+			document.getElementById("stat-wins").textContent = `Wins: ${stats.wins}`;
+			document.getElementById("stat-losses").textContent = `Losses: ${stats.losses}`;
+			document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate}%`;
+			document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
+			document.getElementById("stat-total-hours").textContent = `Total Hours Played: ${stats.total_hours_played.toFixed(2)}`;
+			document.getElementById("stat-goals-scored").textContent = `Goals Scored: ${stats.goal_scored}`;
+			document.getElementById("stat-goals-conceded").textContent = `Goals Conceded: ${stats.goal_conceded}`;
+		}
+	}
 
-				createChart(userInfo.stats);
-		  	}
-	  
-			if (userInfo.match_history) {
-				const historyList = document.getElementById("history-list");
-				historyList.innerHTML = ""; // Clear previous history
-				userInfo.match_history.forEach((match) => {
+	function updateMatchHistory(matchHistory) {
+		if (matchHistory) {
+			const historyList = document.getElementById("history-list");
+			historyList.innerHTML = ""; // Clear previous history
+			matchHistory.forEach((match) => {
 				const listItem = document.createElement("li");
 				let data_played = new Date(match.date_played).toLocaleDateString('fr-FR');
 				let opponent = (username_global === match.player_1.username) ? match.player_2.username : match.player_1.username;
@@ -93,32 +71,110 @@ document.addEventListener("DOMContentLoaded", function () {
 				listItem.textContent = `${data_played}: ${opponent} - ${status} (${player_1_score} - ${player_2_score}) - ${time}min`;
 				listItem.classList.add(status === winStatus ? "win" : "loss");
 				historyList.appendChild(listItem);
-				});
+			});
+		}
+	}
+
+	function updateUserInfoDisplay(user) {
+		console.log("updateUserInfo called with userInfo =", user);
+		if (user) {
+			const username = user.username;
+			if (username) {
+				document.getElementById("info-username").textContent = `${username}`;
+				document.getElementById("user-name").textContent = `${username}`;
+			}
+			if (user.stats) {
+				updateUserStats(user.stats);
+				createChartGames(user.stats);
+				createGoalsChart(user.stats);
+		  	}
+			if (user.match_history) {
+				updateMatchHistory(user.match_history);
 			}
 		}
 	}
 
-	function createChart(stats) {
-		const ctx = document.getElementById('playerStatsChart').getContext('2d');
+	function createChartGames(stats) {
+		const ctx = document.getElementById('playerGamesChart').getContext('2d');
 		new Chart(ctx, {
-			type: 'bar',
+			type: 'doughnut',
 			data: {
-				labels: ['Wins', 'Losses', 'Games Played'],
+				labels: ['Wins', 'Losses'],
 				datasets: [
 					{
-						label: 'Player Statistics',
-						data: [
-						stats.wins,
-						stats.losses,
-						stats.total_games_played,
-						],
-						backgroundColor: 'rgba(75, 192, 192, 0.2)',
-						borderColor: 'rgba(75, 192, 192, 1)',
+						label: 'Win Rate',
+						data: [stats.wins, stats.losses],
+						backgroundColor: ['#008000', '#FF0000'],
+						borderColor: ['#388e3c', '#d32f2f'],
 						borderWidth: 1,
 					},
 				],
 			},
 			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						position: 'top',
+					},
+					title: {
+						display: true,
+						text: 'Win Rate',
+						font: {
+							size: 18
+						},
+						color: '#FFFFFF',
+					},
+					tooltip: {
+						callbacks: {
+							label: function(tooltipItem) {
+								const label = tooltipItem.label || '';
+								const value = tooltipItem.raw;
+								const total = tooltipItem.chart._metasets[0].total;
+								const percentage = ((value / total) * 100).toFixed(2);
+								return `${label}: ${value} (${percentage}%)`;
+							}
+						}
+					}
+				}
+			},
+		});
+	}
+
+	function createGoalsChart(stats) {
+		const ctx = document.getElementById('playerGoalsChart').getContext('2d');
+		new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: ['Goals Scored', 'Goals Conceded', 'Total Goals'],
+				datasets: [
+					{
+						data: [
+							stats.goal_scored,
+							stats.goal_conceded,
+							stats.goal_scored + stats.goal_conceded,
+						],
+						backgroundColor: ['#008000', '#FF0000', '#FF8000'],
+						borderColor: ['#388e3c', '#d32f2f', '#fbc02d'],
+						borderWidth: 1,
+					},
+				],
+			},
+			options: {
+				responsive: true,
+				plugins: {
+					legend: {
+						display: false,
+					},
+					title: {
+						display: true,
+						text: 'Goals',
+						color: '#FFFFFF',
+						font: {
+							size: 18,
+						},
+						position: 'top',
+					},
+				},
 				scales: {
 					y: {
 						beginAtZero: true,
@@ -127,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			},
 		});
 	}
+	
 
 	////////////////////// SIGNUP ////////////////////////////
 
