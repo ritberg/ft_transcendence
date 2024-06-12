@@ -15,14 +15,16 @@ class GameHistoryView(APIView):
 		serializer = GameHistorySerializer(data=request.data)
 		if serializer.is_valid():
 			serializer.save()
+			print("serilizer post: ",serializer.data)
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-	
+
 	def get(self, request):
 		try:
 			user = request.user
 			games = GameHistory.objects.filter(Q(player_1_id=user) | Q(player_2_id=user)).order_by('-date_played')[:10]
 			serializer = GameHistorySerializer(games, many=True)
+			print("serilizer get: ",serializer.data)
 			return Response(serializer.data, status=status.HTTP_200_OK)
 		except Exception as e:
 			return Response(

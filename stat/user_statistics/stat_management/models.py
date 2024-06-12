@@ -4,9 +4,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-# Create your models here.
 class GameHistory(models.Model):
-
 	player_1_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_1')
 	player_2_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player_2')
 	player_1_score = models.IntegerField(default=0)
@@ -23,6 +21,18 @@ class GameHistory(models.Model):
 				f'on {self.date_played} '
 				f'winner is {self.winner_id} '
 				f'score is {self.player_1_score} - {self.player_2_score}')
+
+	@property
+	def player_1(self):
+		return {'username': self.player_1_id.username, 'score': self.player_1_score}
+
+	@property
+	def player_2(self):
+		return {'username': self.player_2_id.username, 'score': self.player_2_score}
+
+	@property
+	def winner(self):
+		return {'username': self.winner_id.username}
 	
 class Stats(models.Model):
 	player_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='player')

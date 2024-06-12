@@ -4,8 +4,8 @@ import { drawBrackets, enterNicknames } from './brackets.js';
 import { online_game } from '../online/pong_online.js';
 
 export var username_global = localStorage.getItem("user") !== null
-    ? JSON.parse(localStorage.getItem("user")).username
-    : "guest";
+	? JSON.parse(localStorage.getItem("user")).username
+	: "guest";
 export var token;
 export var userIsConnected = localStorage.getItem("userIsConnected") === "true"
 	|| false;
@@ -49,9 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (username) {
 				document.getElementById("info-username").textContent = `${username}`;
 				document.getElementById("user-name").textContent = `${username}`;
-			} else {
-				document.getElementById("info-username").textContent = "guest";
-				document.getElementById("user-name").textContent = "guest";
 			}
 		
 			if (userInfo.stats) {
@@ -66,16 +63,18 @@ document.addEventListener("DOMContentLoaded", function () {
 				).textContent = `Win Rate: ${userInfo.stats.win_rate}%`;
 				document.getElementById(
 				"stat-total-games"
-				).textContent = `Total Games Played: ${userInfo.stats.total_games}`;
+				).textContent = `Total Games Played: ${userInfo.stats.total_games_played}`;
 				document.getElementById(
 				"stat-total-hours"
-				).textContent = `Total Hours Played: ${userInfo.stats.total_hours}`;
+				).textContent = `Total Hours Played: ${userInfo.stats.total_hours_played.toFixed(2)}`;
 				document.getElementById(
 				"stat-goals-scored"
-				).textContent = `Goals Scored: ${userInfo.stats.goals_scored}`;
+				).textContent = `Goals Scored: ${userInfo.stats.goal_scored}`;
 				document.getElementById(
 				"stat-goals-conceded"
-				).textContent = `Goals Conceded: ${userInfo.stats.goals_conceded}`;
+				).textContent = `Goals Conceded: ${userInfo.stats.goal_conceded}`;
+
+				createChart(userInfo.stats);
 		  	}
 	  
 			if (userInfo.match_history) {
@@ -83,11 +82,50 @@ document.addEventListener("DOMContentLoaded", function () {
 				historyList.innerHTML = ""; // Clear previous history
 				userInfo.match_history.forEach((match) => {
 				const listItem = document.createElement("li");
-				listItem.textContent = `${match.date}: ${match.opponent} - ${match.result}`;
+				let data_played = new Date(match.date_played).toLocaleDateString('fr-FR');
+				let opponent = (username_global === match.player_1.username) ? match.player_2.username : match.player_1.username;
+				const winStatus = "WIN"
+				let status = (username_global === match.winner.username) ? winStatus : "LOSS";
+				let player_1_score = match.player_1.score;
+				let player_2_score = match.player_2.score;
+				let time = match.duration / 60;
+
+				listItem.textContent = `${data_played}: ${opponent} - ${status} (${player_1_score} - ${player_2_score}) - ${time}min`;
+				listItem.classList.add(status === winStatus ? "win" : "loss");
 				historyList.appendChild(listItem);
 				});
 			}
 		}
+	}
+
+	function createChart(stats) {
+		const ctx = document.getElementById('playerStatsChart').getContext('2d');
+		new Chart(ctx, {
+			type: 'bar',
+			data: {
+				labels: ['Wins', 'Losses', 'Games Played'],
+				datasets: [
+					{
+						label: 'Player Statistics',
+						data: [
+						stats.wins,
+						stats.losses,
+						stats.total_games_played,
+						],
+						backgroundColor: 'rgba(75, 192, 192, 0.2)',
+						borderColor: 'rgba(75, 192, 192, 1)',
+						borderWidth: 1,
+					},
+				],
+			},
+			options: {
+				scales: {
+					y: {
+						beginAtZero: true,
+					},
+				},
+			},
+		});
 	}
 
 	////////////////////// SIGNUP ////////////////////////////
@@ -498,24 +536,24 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("chat-container").innerHTML = "";
 				if (data && data.other_user && Array.isArray(data.messages)) {		//// adding messages into the chat container dinamically
 					chatContainer.innerHTML = `
-          <center><h1>Chat with ${data.other_user}</h1></center>
-          <div class="chat__item__container" id="id_chat_item_container">
-            ${data.messages.map(message => `
-              <div class="chat__message ${message.fields.username === data.username ? 'chat__message--self' : 'chat__message--other'}">
-                <img src="https://via.placeholder.com/40" alt="User Photo">
-                <div class="chat__message__content">
-                  <div class="chat__message__username">${message.fields.username}</div>
-                  <div class="chat__message__text">${message.fields.message}</div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <div class="chat__input__container">
-            <input type="text" id="id_message_send_input" placeholder="Type a message..." />
-            <button type="submit" id="id_message_send_button">Send Message</button>
+		  <center><h1>Chat with ${data.other_user}</h1></center>
+		  <div class="chat__item__container" id="id_chat_item_container">
+			${data.messages.map(message => `
+			  <div class="chat__message ${message.fields.username === data.username ? 'chat__message--self' : 'chat__message--other'}">
+				<img src="https://via.placeholder.com/40" alt="User Photo">
+				<div class="chat__message__content">
+				  <div class="chat__message__username">${message.fields.username}</div>
+				  <div class="chat__message__text">${message.fields.message}</div>
+				</div>
+			  </div>
+			`).join('')}
+		  </div>
+		  <div class="chat__input__container">
+			<input type="text" id="id_message_send_input" placeholder="Type a message..." />
+			<button type="submit" id="id_message_send_button">Send Message</button>
 			<button type="submit" id="id_invit_button">Invite to Pong</button>
-          </div>
-        `;
+		  </div>
+		`;
 				}
 				else {
 					console.error('data is missing or is not an array', data);
@@ -611,12 +649,12 @@ document.addEventListener("DOMContentLoaded", function () {
 					}
 
 					div.innerHTML = `
-            <img src="https://via.placeholder.com/40" alt="User Photo">
-            <div class="chat__message__content">
-              <div class="chat__message__username">${data.username}</div>
-              <div class="chat__message__text">${data.message}</div>
-            </div>
-          `;
+			<img src="https://via.placeholder.com/40" alt="User Photo">
+			<div class="chat__message__content">
+			  <div class="chat__message__username">${data.username}</div>
+			  <div class="chat__message__text">${data.message}</div>
+			</div>
+		  `;
 					document.querySelector("#id_message_send_input").value = "";
 					document.querySelector("#id_chat_item_container").appendChild(div);
 					document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
@@ -628,10 +666,133 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	////////////////////// A SUPPRIMER (DEMANDER A ALESS SI C'EST OK) ////////////////////////////
 
-	document
-    .getElementById("refresh-stats")
-    .addEventListener("click", function () {
-      addGame();
-    });
+	const getUserId = async (username) => {
+		let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
+		const response = await fetch( getIdUrl,
+			{
+				method: "GET",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+			}
+		);
+		const data = await response.json();
+		if (!response.ok) {
+			throw new Error(data.error || "Error getting user ID");
+		}
+		console.log("data : ", data);
+		return data.id;
+	};
+	
+	async function addGame() {
+		console.log("add game clicked");
+	
+		try {
+			const player_1_id = await getUserId("aless");
+			const player_2_id = await getUserId("rita");
+	
+			const game = {
+				player_1_id: player_1_id,
+				player_2_id: player_2_id,
+				player_1_score: 10,
+				player_2_score: 5,
+				winner_id: player_1_id,
+				date_played: new Date().toISOString(),
+				duration: 300,
+			};
+	
+			console.log("game : ", JSON.stringify(game));
+	
+			let setGameUrl = "https://" + window.location.host + "/stat/game-history/";
+			
+			const response = await fetch(setGameUrl, {
+				method: "POST",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(game),
+				credentials: "include",
+			});
+	
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.log(response);
+				throw new Error(`Network response was not ok: ${JSON.stringify(errorData)}`);
+			}
+	
+			const data = await response.json();
+			console.log(data);
+		} catch (error) {
+			console.error("Fetch error: ", error);
+		}
+	}
 
+	function getStats() {
+		let getStatsUrl = "https://" + window.location.host + "/stat/stats/";
+
+		fetch(getStatsUrl, {
+			method: "GET",
+			headers: {
+				"X-CSRFToken": token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+		})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data)
+			const stats = {
+			stats: data,
+			};
+			updateUserInfoDisplay(stats);
+		})
+		.catch((error) => {
+			console.error("Fetch error: ", error);
+		});
+	}
+
+	function getMatchHistory() {
+		let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/";
+
+		fetch(getMatchHistoryUrl, {
+			method: "GET",
+			headers: {
+				"X-CSRFToken": token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+		})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data)
+			const match_history = {
+				match_history: data,
+			};
+			updateUserInfoDisplay(match_history);
+		})
+		.catch((error) => {
+			console.error("Fetch error: ", error);
+		});
+	}
+
+	document
+	.getElementById("refresh-stats")
+	.addEventListener("click", function () {
+		addGame();
+		getStats();
+		getMatchHistory();
+	});
 });

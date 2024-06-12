@@ -931,4 +931,12 @@ body {
   margin-bottom: 10px;
 }
 
+.win {
+  background-color: green;
+}
+
+.loss {
+  background-color: red;
+}
+
 /* #endregion */

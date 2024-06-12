@@ -22,8 +22,8 @@ def update_player_stats(sender, instance, created, **kwargs):
 		player_2_stats.total_games_played += 1
 
 		# update win rate
-		player_1_stats.win_rate = player_1_stats.wins / player_1_stats.total_games_played % 100
-		player_2_stats.win_rate = player_2_stats.wins / player_2_stats.total_games_played % 100
+		player_1_stats.win_rate = player_1_stats.wins / player_1_stats.total_games_played * 100
+		player_2_stats.win_rate = player_2_stats.wins / player_2_stats.total_games_played * 100
 
 		# update hours played
 		player_1_stats.total_hours_played += instance.duration / 3600
