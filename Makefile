@@ -1,6 +1,6 @@
 compose_file = docker-compose.yml
 
-volume_dir = online/project frontend/test_django databases/db_online nginx/nginx bot/project databases/db_userchat chat_service/ChatApp user/user_auth_system
+volume_dir = online/project frontend/test_django databases/db_online nginx/nginx bot/project databases/db_userchat chat_service/ChatApp user/user_auth_system stat/user_statistics
 
 service = django
 

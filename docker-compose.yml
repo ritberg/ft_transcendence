@@ -47,6 +47,30 @@ services:
       - redis
     restart: on-failure
 
+  stat:
+    container_name: stat
+    build:
+      context: ./stat/docker
+      dockerfile: Dockerfile
+      args:
+        STAT_SERVICE_NAME: ${STAT_SERVICE_NAME}
+        DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+        DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+        DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "8005"
+    volumes:
+      - stat:/home/transcendance/${STAT_SERVICE_NAME}
+      - user:/home/transcendance/${USER_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - user
+
   chat:
     container_name: chat
     build:
@@ -191,19 +215,19 @@ volumes:
   db_online:
     driver: local
     driver_opts:
-      type: "none" 
+      type: "none"
       o: "bind"
       device: "${PWD}/databases/db_online"
   nginx:
     driver: local
     driver_opts:
-      type: "none" 
+      type: "none"
       o: "bind"
       device: "${PWD}/nginx/nginx"
   online:
     driver: local
     driver_opts:
-      type: "none" 
+      type: "none"
       o: "bind"
       device: "${PWD}/online/${ONLINE_SERVICE_NAME}"
   bot:
@@ -218,6 +242,14 @@ volumes:
       type: "none"
       o: "bind"
       device: "${PWD}/user/${USER_SERVICE_NAME}"
+
+  stat:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/stat/${STAT_SERVICE_NAME}"
+
   chat:
     driver: local
     driver_opts:
