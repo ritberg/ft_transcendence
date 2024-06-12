@@ -1,10 +1,6 @@
-var aSocket;
-
-var move = 0;
-
 /********** PONG INIT *************/
 
-const canvas = document.getElementById("game");
+const canvas = document.getElementById("game_canvas");
 const context = canvas.getContext('2d');
 
 //board
@@ -42,7 +38,7 @@ let player1 = {
     score: 0,
 }
 
-let computer = {
+let player2 = {
     xPos: board_width - player_width - 20,
     yPos: board_height / 2 - player_height / 2,
     width: player_width,
@@ -55,13 +51,13 @@ var stop = true;
 var animation_id = -1;
 
 function reset_board() {
-    computer.xPos = board_width - player_width - 20;
-    computer.yPos = board_height / 2 - player_height / 2;
-    computer.width = player_width;
-    computer.height = player_height;
-    computer.velocityY = playerVelocity;
-    computer.score = 0;
-    computer.prediction = -1;
+    player2.xPos = board_width - player_width - 20;
+    player2.yPos = board_height / 2 - player_height / 2;
+    player2.width = player_width;
+    player2.height = player_height;
+    player2.velocityY = playerVelocity;
+    player2.score = 0;
+    player2.prediction = -1;
     player1.xPos = 20;
     player1.yPos = board_height / 2 - player_height / 2;
     player1.width = player_width;
@@ -79,18 +75,8 @@ function reset_board() {
     ball.velocityYTmp = 0;
 }
 
-export function gameLoop_bot(ws)
+export function loop()
 {
-    aSocket = ws;
-    aSocket.onopen = function(event) {
-        aSocket.send(JSON.stringify({"player" : player1.yPos, "computer" : computer.yPos, "ballX" : ball.xPos, "ballY" : ball.yPos}));
-    };
-    aSocket.addEventListener('message', function (event) {
-        let messageData = JSON.parse(event.data);
-        move = messageData.predict;
-        console.log(move);
-        aSocket.send(JSON.stringify({"player" : player1.yPos, "computer" : computer.yPos, "ballX" : ball.xPos, "ballY" : ball.yPos}));
-    });
     canvas.width = board_width;
     canvas.height = board_height;
     let ran = Math.floor(Math.random() * 2);
@@ -142,21 +128,19 @@ function draw_board() {
     context.font = "100px Arial";
 	context.textAlign = "center";
 	context.fillText(player1.score.toString(), board_width / 3, 100);
-	context.fillText(computer.score.toString(), board_width - board_width / 3, 100);
+	context.fillText(player2.score.toString(), board_width - board_width / 3, 100);
 
     context.fillStyle = "white";
 
     //players
     context.fillRect(player1.xPos, player1.yPos, player1.width, player1.height);
-    context.fillRect(computer.xPos, computer.yPos, computer.width, computer.height);
+    context.fillRect(player2.xPos, player2.yPos, player2.width, player2.height);
 
     //ball
     context.fillRect(ball.xPos, ball.yPos, ball.width, ball.height);
 }
 
 function move_players() {
-    computer.velocityY = move * player_speed;
-
     //player 1
     if (player1.yPos + player1.velocityY > 0 && player1.yPos + player1.velocityY + player1.height < board_height)
         player1.yPos += player1.velocityY;
@@ -166,21 +150,22 @@ function move_players() {
         player1.yPos = board_height - player1.height;
 
     //player 2
-    if (computer.yPos + computer.velocityY > 0 && computer.yPos + computer.velocityY + computer.height < board_height)
-        computer.yPos += computer.velocityY;
-    else if (!(computer.yPos + computer.velocityY > 0))
-        computer.yPos = 0;
+    if (player2.yPos + player2.velocityY > 0 && player2.yPos + player2.velocityY + player2.height < board_height)
+        player2.yPos += player2.velocityY;
+    else if (!(player2.yPos + player2.velocityY > 0))
+        player2.yPos = 0;
     else
-        computer.yPos = board_height - computer.height;
+        player2.yPos = board_height - player2.height;
 }
 
 function changeBallVelocity() {
     if (!(ball.yPos + ball.velocityY > 0 && ball.yPos + ball.velocityY + ball.height < board_height)) {
         ball.velocityY *= -1;
     }
-    if (ball.xPos + ball.velocityX + ball.width >= board_width - player1.xPos - computer.width) {
-        if (ball.yPos + ball.velocityY + ball.height + 2 >= computer.yPos && ball.yPos + ball.velocityY - 2 <= computer.yPos + computer.height && ball.velocityX > 0) {
-            ball.velocityY = ((ball.yPos + ball.height / 2) - (computer.yPos + computer.height / 2)) / 15;
+    if (ball.xPos + ball.velocityX + ball.width >= board_width - player1.xPos - player2.width) {
+        if (ball.yPos + ball.velocityY + ball.height + 2 >= player2.yPos && ball.yPos + ball.velocityY - 2 <= player2.yPos + player2.height && ball.velocityX > 0) {
+            ball.velocityY = ((ball.yPos + ball.height / 2) - (player2.yPos + player2.height / 2)) / 15;
+            console.log(ball.velocityY);
             ball.velocityX *= -1;
             if (ball.velocityX < 0)
                 ball.velocityX -= 0.5;
@@ -191,6 +176,7 @@ function changeBallVelocity() {
     if (ball.xPos + ball.velocityX <= player1.xPos + player1.width) {
         if (ball.yPos + ball.velocityY + ball.height + 2 >= player1.yPos && ball.yPos + ball.velocityY - 2 <= player1.yPos + player1.height && ball.velocityX < 0) {
             ball.velocityY = ((ball.yPos + ball.height / 2) - (player1.yPos + player1.height / 2)) / 15;
+            console.log(ball.velocityY);
             ball.velocityX *= -1;
             if (ball.velocityX < 0)
                 ball.velocityX -= 0.5;
@@ -201,7 +187,7 @@ function changeBallVelocity() {
     if (!(ball.xPos + ball.velocityX > 0 && ball.xPos + ball.velocityX + ball.width < board_width)) {
         context.fillStyle = "white";
         if (!(ball.xPos + ball.velocityX > 0))
-            computer.score++;
+            player2.score++;
         else
             player1.score++;
 
@@ -212,7 +198,7 @@ function changeBallVelocity() {
         //     stop = true;
         //     return;
         // }
-        // if (computer.score == 5) {
+        // if (player2.score == 5) {
         //     stop_playing();
         //     context.font = "100px serif";
         //     context.fillText("Player 2 won !", 330, 400);
@@ -246,13 +232,17 @@ function movePlayer(e) {
     if (e.key == 's') {
         player1.velocityY = player_speed;
     }
+	if (e.key == 'ArrowUp') {
+        player2.velocityY = -player_speed;
+    }
+    if (e.key == 'ArrowDown') {
+        player2.velocityY = player_speed;
+    }
 }
 
 function stopPlayer(e) {
-    if (e.key == 'w') {
+    if (e.key == 'w' || e.key == 's')
         player1.velocityY = 0;
-    }
-    if (e.key == 's') {
-        player1.velocityY = 0;
-    }
+	else if (e.key == 'ArrowUp' || e.key == 'ArrowDown')
+		player2.velocityY = 0
 }

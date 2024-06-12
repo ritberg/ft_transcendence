@@ -90,7 +90,7 @@ export function online_game(new_ws) {
         //     console.log(messageData);
     });
 
-    board = document.getElementById("game");
+    board = document.getElementById("game_canvas");
     board.width = board_width;
     board.height = board_height;
     context = board.getContext("2d");

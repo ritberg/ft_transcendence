@@ -1,6 +1,6 @@
 /********** PONG INIT *************/
 
-const canvas = document.getElementById("game");
+const canvas = document.getElementById("game_canvas");
 const context = canvas.getContext('2d');
 
 //board

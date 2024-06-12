@@ -14,9 +14,11 @@
 		<script type="module" src="{% static 'scripts/animations.js' %}"></script>
 		<script type="module" src="{% static 'scripts/brackets.js' %}"></script>
 		<script type="module" src="{% static 'scripts/stars.js' %}"></script>
-		<script type="module" src="{% static 'scripts/pong.js' %}"></script>
-		<script type="module" src="{% static 'scripts/rita.js' %}"></script>
-		<script type="module" src="{% static 'online/index.js' %}"></script>
+		<script type="module" src="{% static 'scripts/pong_pvp.js' %}"></script>
+		<script type="module" src="{% static 'scripts/pong_tourney.js' %}"></script>
+		<script type="module" src="{% static 'scripts/users.js' %}"></script>
+		<script type="module" src="{% static 'online/pong_online.js' %}"></script>
+		<script type="module" src="{% static 'bot/pong_bot.js' %}"></script>
 	</head>
 	<body>
 		<div id="tabs-icon">
@@ -39,7 +41,7 @@
 			<h6 id="user-name">guest</h6>
 			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
 		</div>
-		<canvas id="game" width="1000" height="800"></canvas>
+		<canvas id="game_canvas" width="1000" height="800"></canvas>
 		<div id="main-menu">
 			<h1>PONG</h1>
 			<button type="button" id="pvp-mode">PvP</button>
@@ -117,15 +119,14 @@
 			<form>
 				<h1>SETTINGS</h1>
 				<h2 id="t-players">PLAYERS</h2>
-				<input id="s-players" type="range" min="4" max="8" value="8" step="4"/>
+				<input id="s-players" type="range" min="4" max="8" value="4" step="4"/>
 				<h2 id="t-points">POINTS</h2>
-				<input id="s-points" type="range" min="1" max="11" value="6" step="1"/>
+				<input id="s-points" type="range" min="1" max="11" value="1" step="1"/>
 				<button type="button" id="b-tourney_settings">OK</button>
 			</form>
 		</div>
-		<div id="brackets">
-			<i class="bi bi-trophy"></i>
-		</div>
+		<div id="brackets-container"></div>
+		<!-- <i class="bi bi-trophy"></i> -->
 		<div id="nickname_setup-box">
 			<h1>PLAYER NAMES</h1>
 		</div>

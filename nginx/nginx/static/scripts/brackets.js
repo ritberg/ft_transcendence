@@ -13,6 +13,7 @@ export function createPlayers() {
 	for (let i = 0; i < game.player.length; i++)
 		game.score.push([game.player[i], 172]);
 	game.index = 0;
+	console.log(game.index);
 	game.max_points = document.getElementById("s-points").value;
 	game.max_phases = 0;
 	if (game.player.length == 4)
@@ -93,6 +94,7 @@ export async function drawBrackets() {
 }
 
 export function enterNicknames(n) {
+	//console.log(1);
 	const form = document.createElement("form");
 	form.id = "nicknames_form";
 	for (let i = 0; i < n; i++) {
