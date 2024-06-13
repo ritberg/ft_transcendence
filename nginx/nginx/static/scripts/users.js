@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		if (stats) {
 			document.getElementById("stat-wins").textContent = `Wins: ${stats.wins}`;
 			document.getElementById("stat-losses").textContent = `Losses: ${stats.losses}`;
-			document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate}%`;
+			document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate.toFixed(2)}%`;
 			document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
 			document.getElementById("stat-total-hours").textContent = `Total Hours Played: ${stats.total_hours_played.toFixed(2)}`;
 			document.getElementById("stat-goals-scored").textContent = `Goals Scored: ${stats.goal_scored}`;
@@ -66,7 +66,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				let status = (username_global === match.winner.username) ? winStatus : "LOSS";
 				let player_1_score = match.player_1.score;
 				let player_2_score = match.player_2.score;
-				let time = match.duration / 60;
+				let time = (match.duration / 60).toFixed(2);
 
 				listItem.textContent = `${data_played}: ${opponent} - ${status} (${player_1_score} - ${player_2_score}) - ${time}min`;
 				listItem.classList.add(status === winStatus ? "win" : "loss");
@@ -95,7 +95,14 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function createChartGames(stats) {
-		const ctx = document.getElementById('playerGamesChart').getContext('2d');
+		const canvas = document.getElementById('playerGamesChart');
+		const ctx = canvas.getContext('2d');
+
+		const existingChart = Chart.getChart(canvas);
+		if (existingChart) {
+			existingChart.destroy();
+		}
+
 		new Chart(ctx, {
 			type: 'doughnut',
 			data: {
@@ -141,7 +148,14 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function createGoalsChart(stats) {
-		const ctx = document.getElementById('playerGoalsChart').getContext('2d');
+		const canvas = document.getElementById('playerGoalsChart');
+		const ctx = canvas.getContext('2d');
+
+		const existingChart = Chart.getChart(canvas);
+		if (existingChart) {
+			existingChart.destroy();
+		}
+
 		new Chart(ctx, {
 			type: 'bar',
 			data: {
@@ -183,21 +197,21 @@ document.addEventListener("DOMContentLoaded", function () {
 			},
 		});
 	}
-	
+
 
 	////////////////////// SIGNUP ////////////////////////////
 
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
 	let signupForm = document.getElementById("b-signup-ok");
-  
+
 	signupForm.addEventListener("click", function (event) {
 		event.preventDefault();
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
-	
+
 		console.log({ username, email, password });
-	
+
 		fetch(signupUrl, {
 			method: "POST",
 			headers: {
@@ -230,16 +244,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	let loginForm = document.getElementById("go1");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
-  
+
 	loginForm.addEventListener("click", function (event) {
 	  event.preventDefault();
-  
+
 	  let username = document.getElementById("username1").value;
 	  let password = document.getElementById("password1").value;
-  
+
 	  console.log("Sending signin request...");
 	  console.log("username : ", username);
-  
+
 	  fetch(loginUrl, {
 		method: "POST",
 		headers: {
@@ -251,12 +265,12 @@ document.addEventListener("DOMContentLoaded", function () {
 	  })
 		.then((response) => {
 		  console.log("Response Headers:", [...response.headers.entries()]);
-  
+
 		  if (!response.ok) {
 			console.log("Full response:", response);
 			throw new Error("Network response was not ok");
 		  }
-  
+
 		  return response.json();
 		})
 		.then((data) => {
@@ -279,16 +293,16 @@ document.addEventListener("DOMContentLoaded", function () {
 		  console.error("Fetch error:", error);
 		});
 	});
-  
+
 
 	////////////////////// LOGOUT ////////////////////////////
-  
+
 	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
 	let logoutBtn = document.getElementById("logout");
-  
+
 	logoutBtn.addEventListener("click", function (event) {
 	  event.preventDefault();
-  
+
 	  fetch(logoutUrl, {
 		method: "POST",
 		headers: {
@@ -745,14 +759,14 @@ document.addEventListener("DOMContentLoaded", function () {
 		console.log("data : ", data);
 		return data.id;
 	};
-	
+
 	async function addGame() {
 		console.log("add game clicked");
-	
+
 		try {
 			const player_1_id = await getUserId("aless");
 			const player_2_id = await getUserId("rita");
-	
+
 			const game = {
 				player_1_id: player_1_id,
 				player_2_id: player_2_id,
@@ -762,11 +776,11 @@ document.addEventListener("DOMContentLoaded", function () {
 				date_played: new Date().toISOString(),
 				duration: 300,
 			};
-	
+
 			console.log("game : ", JSON.stringify(game));
-	
+
 			let setGameUrl = "https://" + window.location.host + "/stat/game-history/";
-			
+
 			const response = await fetch(setGameUrl, {
 				method: "POST",
 				headers: {
@@ -776,13 +790,13 @@ document.addEventListener("DOMContentLoaded", function () {
 				body: JSON.stringify(game),
 				credentials: "include",
 			});
-	
+
 			if (!response.ok) {
 				const errorData = await response.json();
 				console.log(response);
 				throw new Error(`Network response was not ok: ${JSON.stringify(errorData)}`);
 			}
-	
+
 			const data = await response.json();
 			console.log(data);
 		} catch (error) {
