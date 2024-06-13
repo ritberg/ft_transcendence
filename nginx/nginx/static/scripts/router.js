@@ -19,11 +19,15 @@ const routes = {
         template: "/templates/online.html",
         title: "Online",
     },
+    "/cpu/": {                          ///// single page /////
+        template: "/templates/bot.html",
+        title: "Bot",
+    },
 }
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", (e) => {     ///// single page /////
     const { target } = e;
-    if (!target.matches("#profile_tab a, #user-name a, #online-mode a, #signup-switch a, #signin-switch a, #tabs-list a")) {
+    if (!target.matches("#profile_tab a, #user-name a, #online-mode a, #signup-switch a, #signin-switch a, #tabs-list a, #cpu-mode a")) {
         return;
     }
     e.preventDefault();
@@ -38,18 +42,44 @@ const route = (event) => {
     locationHandler();
 };
 
-const locationHandler = async () => {
+let previousPath = null;        ///// single page /////
+
+const locationHandler = async () => {       ///// single page /////
     const location = window.location.pathname; // get the url path
+    if (previousPath == "/cpu/" && location !== "/cpu/") {
+        window.stopGame(); // Call the globally accessible stopGame function
+    }
+    previousPath = location;
+
+    // removeScript();
     // if the path length is 0, set it to primary page route
     if (location.length == 0) {
         location = "/";
     }
+
+
     // get the route object from the urlRoutes object
     const route = routes[location] || routes["404"];
     // get the html from the template
     const html = await fetch(route.template).then((response) => response.text());
     // set the content of the content div to the html
     document.getElementById("content").innerHTML = html;
+
+    if (location == "/cpu/") {
+        const scriptElement = document.createElement('script');
+        scriptElement.setAttribute("src", "/static/bot/pong_bot.js");
+        document.getElementById("content").appendChild(scriptElement);
+    }
+
+    
+    // function removeScript() {
+    //     const scriptElement = document.getElementById('dynamicScript');
+    //     if (scriptElement) {
+    //         scriptElement.remove();
+    //     }
+    // }
+
+
     // set the title of the document to the title of the route
     document.title = route.title;
     // set the description of the document to the description of the route

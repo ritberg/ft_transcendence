@@ -2,7 +2,6 @@ import { sleep } from './utils.js';
 import { stars } from './stars.js';
 import { loop } from './pong.js';
 import { online_game } from '../online/index.js';
-import { gameLoop_bot } from '../bot/pong.js';
 import { username_global } from './rita.js';
 
 // import { loop_t } from './pong_tournoi.js';

@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	/////////// NAVIGATION //////////////
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", function (event) {
-		if (event.target && event.target.id === "b-signin-ok") {		//// clicking on a dynamically added button
+		if (event.target && event.target.id === "b-signin-ok") {
 			loginButton(event);
 		}
 		else if (event.target && event.target.id === "b-signup-ok") {

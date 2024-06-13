@@ -2,27 +2,30 @@ var aSocket;
 
 var move = 0;
 
+var animation_id = -1;      // signe page //
+var canvas;                 // signe page (const, let -> var) //
+var context;
 /********** PONG INIT *************/
 
-const canvas = document.getElementById("game");
-const context = canvas.getContext('2d');
+var canvas = document.getElementById("game-two");
+var context = canvas.getContext('2d');
 
 //board
-const board_height = 800;
-const board_width = 1000;
+var board_height = 800;
+var board_width = 1000;
 
 //player
-const player_width = 30;
-const player_height = 200;
-const playerVelocity = 0;
-const player_speed = 10;
+var player_width = 30;
+var player_height = 200;
+var playerVelocity = 0;
+var player_speed = 10;
 
 //balling
-const ball_width = 30;
-const ball_height = 30;
-let ball_velocity = 7;
+var ball_width = 30;
+var ball_height = 30;
+var ball_velocity = 7;
 
-let ball = {
+var ball = {
     width: ball_width,
     height: ball_height,
     xPos: (board_width / 2) - (ball_width / 2),
@@ -33,7 +36,7 @@ let ball = {
     velocityYTmp: 0,
 }
 
-let player1 = {
+var player1 = {
     xPos: 20,
     yPos: board_height / 2 - player_height / 2,
     width: player_width,
@@ -42,7 +45,7 @@ let player1 = {
     score: 0,
 }
 
-let computer = {
+var computer = {
     xPos: board_width - player_width - 20,
     yPos: board_height / 2 - player_height / 2,
     width: player_width,
@@ -52,7 +55,6 @@ let computer = {
 }
 
 var stop = true;
-var animation_id = -1;
 
 function reset_board() {
     computer.xPos = board_width - player_width - 20;
@@ -79,8 +81,10 @@ function reset_board() {
     ball.velocityYTmp = 0;
 }
 
-export function gameLoop_bot(ws)
+function gameLoop_bot(ws)
 {
+    document.getElementById("game").style.background = "black";
+
     aSocket = ws;
     aSocket.onopen = function(event) {
         aSocket.send(JSON.stringify({"player" : player1.yPos, "computer" : computer.yPos, "ballX" : ball.xPos, "ballY" : ball.yPos}));
@@ -260,3 +264,24 @@ function stopPlayer(e) {
         player1.velocityY = 0;
     }
 }
+
+// signle page //
+
+var ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
+gameLoop_bot(ws);
+
+function stopGame() {
+    if (animation_id !== -1) {
+        window.cancelAnimationFrame(animation_id);
+        animation_id = -1;
+    }
+    if (aSocket) {
+        aSocket.close();
+        aSocket = null;
+        console.log("Bot websocket successfully closed");
+    }
+    document.removeEventListener("keydown", movePlayer);
+    document.removeEventListener("keyup", stopPlayer);
+}
+
+window.stopGame = stopGame;

@@ -569,6 +569,17 @@ body {
 	width: 1000px;
 	height: 800px;
 }
+#game-two {
+	background-color: black;
+	position: fixed;
+	border-radius: 10px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	box-shadow: white 0px 0px 15px 5px;
+	width: 1000px;
+	height: 800px;
+}
 #main-menu {
 	position: absolute;
 	display: flex;
