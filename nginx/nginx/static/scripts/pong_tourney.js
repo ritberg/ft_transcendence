@@ -1,6 +1,7 @@
 import { sleep, writeVerticalText } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
 import { game, drawBrackets } from './brackets.js';
+import { route } from './router.js';
 
 export var loop_exec = false;
 let paddle_y1 = game_canvas.height / 2 - 100;
@@ -146,13 +147,14 @@ export async function loop(current_frame) {
 			await starWars();
 		else {
 			modifyDelta(1.5);
-			document.getElementById("main-menu").style.display = "flex";
-			document.getElementById("main-menu").style.opacity = "0";
-			await sleep(100);
-			document.getElementById("main-menu").classList.remove("hidden");
-			document.getElementById("main-menu").classList.add("shown");
-			await sleep(200);
-			document.getElementById("main-menu").style.opacity = "1";
+			// document.getElementById("main-menu").style.display = "flex";
+			// document.getElementById("main-menu").style.opacity = "0";
+			// await sleep(100);
+			// document.getElementById("main-menu").classList.remove("hidden");
+			// document.getElementById("main-menu").classList.add("shown");
+			// await sleep(200);
+			// document.getElementById("main-menu").style.opacity = "1";
+			route("/");
 			return;
 		}
 			// loop_exec = true;

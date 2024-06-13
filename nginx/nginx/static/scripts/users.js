@@ -2,6 +2,8 @@ import { sleep } from './utils.js';
 import { GameMode } from './main.js';
 import { drawBrackets, enterNicknames } from './brackets.js';
 import { online_game } from '../online/pong_online.js';
+import { tournamentSettings } from './animations.js';
+import { route } from './router.js';
 
 export var username_global = "guest";
 export var token;
@@ -27,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	/////////// frontend ////////////
 
-	let usernameLabel = document.getElementById("user-name");
+	let usernameLabel = document.getElementById("user-name-link");
 
 	const displayProfile = (user) => {
 		usernameLabel.textContent = user.username;
@@ -40,12 +42,36 @@ document.addEventListener("DOMContentLoaded", function () {
 		displayProfile(user);
 	}
 
+	/////////// NAVIGATION //////////////
+	const contentContainer = document.getElementById("content");
+	contentContainer.addEventListener("click", function (event) {
+		if (event.target && event.target.id === "b-signin-ok") {		//// clicking on a dynamically added button
+			loginButton(event);
+		}
+		else if (event.target && event.target.id === "b-signup-ok") {
+			signupButton(event);
+		}
+		else if (event.target && event.target.id === "pvp-mode") {
+			document.getElementById("main-menu").classList.add("hidden");
+			GameMode(0);
+		}
+		else if (event.target && event.target.id === "cpu-mode") {
+			document.getElementById("main-menu").classList.add("hidden");
+			GameMode(1);
+		}
+		else if (event.target && event.target.id === "b-tourney_settings") {
+			tournamentSettings();
+		}
+		else if (event.target && event.target.id === "b-online-go"){
+			GameMode(3);
+		}
+	});
+
 	////////////////////// SIGNUP ////////////////////////////
 
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
-	let signupForm = document.getElementById("b-signup-ok");
 
-	signupForm.addEventListener("click", function (event) {
+	function signupButton(event) {
 		event.preventDefault();
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
@@ -74,19 +100,19 @@ document.addEventListener("DOMContentLoaded", function () {
 				updateCSRFToken(data.crsfToken);
 				// localStorage.setItem("user", JSON.stringify(data.data));
 				// displayProfile(data.data);
+				route("/signin/");
 			})
 			.catch((error) => {
 				console.error("Fetch error: ", error);
 			});
-	});
+	}
 
 
 	////////////////////// LOGIN ////////////////////////////
 
-	let loginForm = document.getElementById("go1");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
-	loginForm.addEventListener("click", function (event) {
+	function loginButton(event) {
 		event.preventDefault();
 
 		let username = document.getElementById("username1").value;
@@ -123,30 +149,12 @@ document.addEventListener("DOMContentLoaded", function () {
 				localStorage.setItem("user", JSON.stringify(data.data));
 				username_global = data.data.username;
 				displayProfile(data.data);
+				route("/");
 			})
 			.catch((error) => {
 				console.error("Fetch error:", error);
 			});
-	});
-
-
-	/////////// frontend ////////////
-
-	let btnLogin = document.getElementById("b-to_signin");
-	let btnSignup = document.getElementById("b-to_signup");
-
-	btnSignup.addEventListener("click", function () {
-		document.getElementById("profile-box_signup").style.display = "block";
-		document.getElementById("profile-box_signin").style.display = "none";
-	});
-
-	btnLogin.addEventListener("click", function () {
-		document.getElementById("profile-box_signup").style.display = "none";
-		document.getElementById("profile-box_signin").style.display = "block";
-	});
-
-
-
+	}
 
 	////////////////////// UPDATE THE BLOCKED USERS LIST ////////////////////////////
 
@@ -254,18 +262,14 @@ document.addEventListener("DOMContentLoaded", function () {
 	var chat_room_name;
 
 	usrsLst.addEventListener("click", function (event) {					//// frontend
-		document.getElementById("profile-box_signup").style.display = "none";
-		document.getElementById("profile-box_signin").style.display = "none";
-		if (window.getComputedStyle(document.getElementById("users-list-box")).display === "none") {
-			usersListBox.classList.add('show');
-			document.getElementById("main-menu").style.display = "none";
-		}
-		else {
-			usersListBox.classList.remove('show');
-			document.getElementById("main-menu").style.display = "flex";
-		}
+		// if (window.getComputedStyle(document.getElementById("users-list-box")).display === "none") {
+		// 	usersListBox.classList.add('show');
+		// }
+		// else {
+		// 	usersListBox.classList.remove('show');
+		// }
 
-		let usersUrl = "https://" + window.location.host + "/users/";
+		let usersUrl = "https://" + window.location.host + "/users_list/";
 
 		fetch(usersUrl, {
 			method: "POST",
@@ -279,6 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			.then(data => {
 				const usersList = document.getElementById('users-list-container');
 				usersList.innerHTML = '';
+				console.log("data: ", data);
 
 				if (data.users.length != 0) {
 					data.users.forEach(user => {
@@ -346,17 +351,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	////////////////////// CHAT ////////////////////////////
 
-	var active_connections = [];
-	var active_connections_num = 0;
 	var chatSocket = null;
 
 	function handleChatLinkClick(username) {
-		// for (let j = 0; j < active_connections.length; j++) {			//// prevent starting the same chat
-		// 	if (active_connections[j] == username)						//// several times
-		// 		return;
-		// }
-		// active_connections[active_connections_num++] = username;
-
 		const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
 
 		fetch(chatUrl, {

@@ -90,7 +90,7 @@ export async function starWars() {
 		await sleep(20);
 	}
 	document.getElementById("game_canvas").style.background = "black";
-	document.getElementById("main-menu").style.display = "none";
+	// document.getElementById("main-menu").style.display = "none";
 }
 
 export function modifyDelta(newDelta) {
