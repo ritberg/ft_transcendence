@@ -1,5 +1,6 @@
 import { userIsConnected } from "./users.js";
 import { updateProfile } from "./users.js";
+import { usersClick } from "./users.js";
 
 // document.addEventListener('DOMContentLoaded', () => {
     const routes = {
@@ -64,19 +65,10 @@ import { updateProfile } from "./users.js";
         if (location.length == 0) {
             location = "/";
         }
-        if (location == "/profile/")
-        {
-            if (!userIsConnected)
-                location = "/signin/";
-        }
-        if (location == "/signin/") {
-            if (userIsConnected)
-                location = "/profile/";
-        }
         // get the route object from the urlRoutes object
         const route = routes[location] || routes["404"];
         // get the html from the template
-        console.log("PUT HTML WITH THIS LOCATION before: ", location);
+        console.log("LOCATION: ", location);
         if (location == "/profile/") {
             await fetch(route.template)
             .then((response) => {return response.text();})
@@ -94,7 +86,6 @@ import { updateProfile } from "./users.js";
             const html = await fetch(route.template).then((response) => response.text());
             document.getElementById("content").innerHTML = html;
         }
-        console.log("PUT HTML WITH THIS LOCATION after: ", location);
         if (location == "/online/") {
             const scriptContent = `
                 document.getElementById("online-box").style.display = "block";
@@ -114,8 +105,7 @@ import { updateProfile } from "./users.js";
             document.body.appendChild(scriptElement);
         }
         if (location == "/users/") {
-            let usrsLst = document.getElementById("users-full-list-button");
-            usrsLst.click();
+            usersClick();
         }
         // set the title of the document to the title of the route
         document.title = route.title;

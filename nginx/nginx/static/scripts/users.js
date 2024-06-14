@@ -74,7 +74,7 @@ function updateUserInfoDisplay(user) {
 		if (username) {
 			console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
 			document.getElementById("info-username").textContent = `${username}`;
-			document.getElementById("user-name-link").textContent = `${username}`;
+			document.getElementById("user-name").textContent = `${username}`;
 		}
 		if (user.stats) {
 			console.log("PUT STAT IN USERINFO DISPLAY: ", user.stats);
@@ -193,14 +193,14 @@ function createGoalsChart(stats) {
 	});
 }
 
-
+let usersClick;
 document.addEventListener("DOMContentLoaded", function () {
 
 	let storedUser = localStorage.getItem("user");
 	if (storedUser) {
 		let user = JSON.parse(storedUser);
 		username_global = user.username;
-		document.getElementById("user-name-link").textContent = user.username;
+		document.getElementById("user-name").textContent = user.username;
 	}
 
 	if (token == null) {
@@ -228,16 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", async function (event) {
 		if (event.target && event.target.id === "b-signin-ok") {
-			// console.log("waiting for loginButton");
-			// loginButton(event).then(async user => {
-			// 	route("/profile/");
-			// 	console.log("user after loginButton: ", user);
-			// 	updateProfile(user);
-			// 	// route("/");
-			//   });
-			let user = await loginButton(event);
+			await loginButton(event);
 			route('/profile/');
-			// route('/');
 		}
 		else if (event.target && event.target.id === "b-signup-ok") {
 			signupButton(event);
@@ -260,6 +252,39 @@ document.addEventListener("DOMContentLoaded", function () {
 			// addGame();
 			getStats();
 			getMatchHistory();
+		}
+		else if (event.target && event.target.id === "logout") {
+			logoutButton();
+			route("/");
+		}
+	});
+
+	document.getElementById("profile_tab").addEventListener("click", async function (event){
+		event.preventDefault();
+		let url = window.location.pathname;
+		if (url === "/profile/" || url === "/signin/" || url === "/signup/")
+		{	
+			route('/');
+		}
+		else if (userIsConnected)
+		{
+			if (url == "/") {
+				document.getElementById("main-menu").classList.remove("shown");
+				document.getElementById("main-menu").classList.add("hidden");
+				await sleep(500);
+			}
+			route('/profile/');
+			// await sleep(100);
+			// document.getElementById("user-info-box").style.opacity = "0";
+			// document.getElementById("user-info-box").classList.remove("hidden");
+			// document.getElementById("user-info-box").classList.add("shown");
+		}
+		else
+		{
+			document.getElementById("main-menu").classList.remove("shown");
+			document.getElementById("main-menu").classList.add("hidden");
+			await sleep(500);
+			route('/signin/');
 		}
 	});
 
@@ -357,7 +382,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				// console.log("user before ret : ", user);
 				localStorage.setItem("user", JSON.stringify(user));
 				localStorage.setItem("username", data.data.username);
-				return user;
+				return;
 			})
 			.catch((error) => {
 				console.error("Fetch error:", error);
@@ -391,10 +416,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			updateProfile(user);
 			localStorage.setItem("userIsConnected", false);
 			userIsConnected = false;
-			var mainMenu = document.getElementById("main-menu");
-			var userInfoBox = document.getElementById("user-info-box");
-			mainMenu.style.display = "flex";
-			userInfoBox.style.display = "none";
 		})
 		.catch((error) => {
 			console.error("Fetch error:", error);
@@ -503,21 +524,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////
 
-	let usrsLst = document.getElementById("users-full-list-button");
+	let usrsLst = document.getElementById("tabs-list");
 	let usersListBox = document.getElementById("users-list-box");
 	var chat_room_name;
 
-	usrsLst.addEventListener("click", function (event) {					//// frontend
-		// if (window.getComputedStyle(document.getElementById("users-list-box")).display === "none") {
-		// 	usersListBox.classList.add('show');
-		// }
-		// else {
-		// 	usersListBox.classList.remove('show');
-		// }
+	usrsLst.addEventListener("click", async function (event) {					//// frontend
+		event.preventDefault();
+		if (window.location.pathname === "/users/") {
+			route("/");
+		}
+		else {
+			if (window.location.pathname === "/") {
+				document.getElementById("main-menu").classList.remove("shown");
+				document.getElementById("main-menu").classList.add("hidden");
+				await sleep(500);
+			}
+			route("/users/");
+		}
+	});
 
+	usersClick = async function () {
 		let usersUrl = "https://" + window.location.host + "/users_list/";
 
-		fetch(usersUrl, {
+		await fetch(usersUrl, {
 		method: "POST",
 		headers: {
 			"X-CSRFToken": token,
@@ -534,7 +563,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (data.users.length !== 0) {
 				data.users.forEach((user) => {
 					const li = document.createElement("li"); ////
-					li.textContent = user.username + " "; //// dinamically creating users list with
+					li.textContent = user.username + " "; //// dynamically creating users list with
 					//// buttons "start chat"
 					const button = document.createElement("button"); ////
 					button.textContent = "Start Chat"; ////
@@ -552,7 +581,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			}
 		})
 		.catch((error) => console.error("Error fetching user data:", error));
-	});
+	}
 
 
 	////////////////////// ACCEPT INVITATION TO PLAY PONG ////////////////////////////
@@ -703,21 +732,21 @@ document.addEventListener("DOMContentLoaded", function () {
 							"X-CSRFToken": token,
 						}
 					})
-						.then((response) => {
-							return response.json();
-						})
-						.then((data) => {
-							let code = data.status;
-							if (code == 500)
-								console.log("error: " + data.error);
-							else {
-								usersListBox.classList.remove('show');
-								chatSocket.send(JSON.stringify({ message: "A pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
-								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
-								online_game(ws);
-								close(ws);
-							}
-						})
+					.then((response) => {
+						return response.json();
+					})
+					.then((data) => {
+						let code = data.status;
+						if (code == 500)
+							console.log("error: " + data.error);
+						else {
+							usersListBox.classList.remove('show');
+							chatSocket.send(JSON.stringify({ message: "A pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
+							ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+							online_game(ws);
+							close(ws);
+						}
+					})
 				};
 
 				chatSocket.onmessage = async function (e) {
@@ -867,3 +896,5 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 	}
 });
+
+export { usersClick }

@@ -892,6 +892,7 @@ body {
   color: white;
   box-sizing: border-box;
   z-index: 1000; /* S'assurer que l'élément est au-dessus des autres */
+  opacity: 1;
 }
 
 #user-info-box button {
