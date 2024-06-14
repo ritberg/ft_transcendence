@@ -15,6 +15,8 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 #other vars
 # import game_struct
 from .game_struct import room_vars, state_update
+import requests
+import socket
 
 
 class GameLoop(AsyncWebsocketConsumer):
@@ -177,6 +179,8 @@ class GameLoop(AsyncWebsocketConsumer):
             self.init_ball_values(self.room)
             if self.player2["score"] != 5 and self.player1["score"] != 5:
                 self.ball_direction()
+            # else:
+            #     await self.send_stats()
         else:
             self.room_var["ball_xPos"] = ball_xPos
             self.room_var["ball_yPos"] = ball_yPos
@@ -185,6 +189,25 @@ class GameLoop(AsyncWebsocketConsumer):
 
         self.room_var["ball_xPos"] += self.room_var["ball_velocityX"]
         self.room_var["ball_yPos"] += self.room_var["ball_velocityY"]
+
+    # async def send_stats(self):
+    #     # print("hey")
+    #     headers = {"Content-Type": "application/json"}
+    #     # hostname = socket.gethostname()
+    #     # print("hostname:", hostname)
+    #     # ip_address = socket.gethostbyname(hostname)
+    #     # print("ip_address:", ip_address)
+    #     try:
+    #         url = f"http://user:8003/auth/get-user-id/?username={self.player1['username']}"
+    #         print("url:", url)
+    #         player1Id = requests.get(url, headers=headers)
+    #         url = f"http://user:8003/auth/get-user-id/?username={self.player2['username']}"
+    #         player2Id = requests.get(url, headers=headers)
+    #         print("p1 id:", player1Id)
+    #         print("p2 id:", player2Id)
+    #     except Exception as e:
+    #         print(e)
+    #         print("fetch failed")
 
     #chooses a random direction for the ball to start
     def ball_direction(self):

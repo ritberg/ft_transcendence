@@ -1,0 +1,28 @@
+<div id="user-info-box">
+	<h1 id="info-username"></h1>
+	<button type="button" id="logout">LOGOUT</button>
+	<button type="button" id="refresh-stats">Refresh Stats</button>
+
+	<div id="user-content">
+		<div id="user-stats" class="user-info-section">
+			<h2>Stats</h2>
+			<ul>
+				<li id="stat-wins">Wins: 0</li>
+				<li id="stat-losses">Losses: 0</li>
+				<li id="stat-win-rate">Win Rate: 0%</li>
+				<li id="stat-total-games">Total Games Played: 0</li>
+				<li id="stat-total-hours">Total Hours Played: 0</li>
+				<li id="stat-goals-scored">Goals Scored: 0</li>
+				<li id="stat-goals-conceded">Goals Conceded: 0</li>
+			</ul>
+			<canvas id="playerGoalsChart"></canvas>
+			<canvas id="playerGamesChart"></canvas>
+		</div>
+		<div id="match-history" class="user-info-section">
+			<h2>Match History</h2>
+			<ul id="history-list">
+				<!-- Match history will be populated here -->
+			</ul>
+		</div>
+	</div>
+</div>

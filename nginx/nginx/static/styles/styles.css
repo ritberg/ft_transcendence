@@ -1,226 +1,226 @@
 body {
-	background: radial-gradient(lightgrey, black, grey);
+  background: radial-gradient(lightgrey, black, grey);
 }
 #nickname_setup-box {
-	background-color: rgb(0, 0, 0, 0.85);
-	border: 4px solid rgba(255, 255, 255, 0.8);
-	border-radius: 10px;
-	display: none;
-	opacity: 0;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	width: 350px;
-	box-sizing: border-box;
-	padding: 20px;
-	transform: translate(-50%, -50%);
-	display: none;
-	flex-direction: column;
+  background-color: rgb(0, 0, 0, 0.85);
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  display: none;
+  opacity: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 350px;
+  box-sizing: border-box;
+  padding: 20px;
+  transform: translate(-50%, -50%);
+  display: none;
+  flex-direction: column;
 }
 #nickname_setup-box.hidden {
-	animation: fade-wide-out 1s;
-	animation-fill-mode: forwards;
+  animation: fade-wide-out 1s;
+  animation-fill-mode: forwards;
 }
 @keyframes fade-wide-out {
-	to {
-		opacity: 0;
-		width: 600px;
-	}
+  to {
+    opacity: 0;
+    width: 600px;
+  }
 }
 #nickname_setup-box h1 {
-	width: 100%;
-	font-family: "Arial";
-	margin: 10px 0 30px 0;
-	padding: 0;
-	color: rgba(255, 255, 255, 0.8);
-	text-align: center;
+  width: 100%;
+  font-family: "Arial";
+  margin: 10px 0 30px 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
 }
 #nickname_setup-box form {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: center;
-	align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 #nickname_setup-box .input-div {
-	position: relative;
-	margin: 0 0 20px 0;
-	box-sizing: border-box;
-	font-family: "Arial";
-	width: 50%;
-	height: 50px;
+  position: relative;
+  margin: 0 0 20px 0;
+  box-sizing: border-box;
+  font-family: "Arial";
+  width: 50%;
+  height: 50px;
 }
-#nickname_setup-box .input-div:nth-last-child(-n+3) {
-	margin-bottom: 0;
+#nickname_setup-box .input-div:nth-last-child(-n + 3) {
+  margin-bottom: 0;
 }
 #nickname_setup-box .input-div input {
-	position: absolute;
-	top: 0;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 45%;
-	text-align: center;
-	padding: 5px 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.8);
-	margin: 10px 0 20px 0;
-	border: none;
-	border-bottom: 1px solid #fff;
-	outline: none;
-	background: transparent;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 45%;
+  text-align: center;
+  padding: 5px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 10px 0 20px 0;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
 }
 #nickname_setup-box .input-div label {
-	position: absolute;
-	top: 0px;
-	left: 50%;
-	transform: translateX(-50%);
-	padding: 10px 0;
-	font-size: 15px;
-	color: rgba(255, 255, 255, 0.8);
-	pointer-events: none;
-	transition: .2s;
+  position: absolute;
+  top: 0px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 0;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  transition: 0.2s;
 }
 #nickname_setup-box button {
-	color: rgba(255, 255, 255, 0.8);
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.8);
-	border-radius: 50px;
-	font-size: 40px;
-	height: 60px;
-	padding: 5px calc(50% - 40px);
-	line-height: 100%;
-	margin: 30px 0 10px 0;
-	transition: .1s;
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  font-size: 40px;
+  height: 60px;
+  padding: 5px calc(50% - 40px);
+  line-height: 100%;
+  margin: 30px 0 10px 0;
+  transition: 0.1s;
 }
 #nickname_setup-box button:hover {
-	color: white;
-	box-shadow: white 0 0 10px;
+  color: white;
+  box-shadow: white 0 0 10px;
 }
 #nickname_setup-box .input-div input:focus ~ label,
 #nickname_setup-box .input-div input:valid ~ label {
-	top: -15px;
-	text-shadow: white 0 0 8px;
-	font-size: 12px;
+  top: -15px;
+  text-shadow: white 0 0 8px;
+  font-size: 12px;
 }
 .rectangle-div {
-	position: relative;
-	font-family: "Arial";
-	font-size: 30px;
-	width: 200px;
-	height: 65px;
-	color: rgb(255, 255, 255, .85);
-	background-color: rgb(0, 0, 0, 0.85);
-	border: 2px solid white;
-	border-radius: 10px;
-	margin-bottom: 20px;
-	text-align: center;
-	line-height: 200%;
-	transition: .5s;
+  position: relative;
+  font-family: "Arial";
+  font-size: 30px;
+  width: 200px;
+  height: 65px;
+  color: rgb(255, 255, 255, 0.85);
+  background-color: rgb(0, 0, 0, 0.85);
+  border: 2px solid white;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  line-height: 200%;
+  transition: 0.5s;
 }
 .rectangle-div .name {
-	font-family: "Arial";
-	font-size: 30px;
-	color: rgb(255, 255, 255, .85);
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	text-align: center;
+  font-family: "Arial";
+  font-size: 30px;
+  color: rgb(255, 255, 255, 0.85);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
 }
 
 .rectangle-div .score {
-	font-family: "Arial";
-	font-size: 25px;
-	color: rgb(255, 255, 255, .85);
-	position: absolute;
-	top: 50%;
-	right: 20px; /* Adjust as needed */
-	transform: translateY(-50%);
-	text-align: right;
+  font-family: "Arial";
+  font-size: 25px;
+  color: rgb(255, 255, 255, 0.85);
+  position: absolute;
+  top: 50%;
+  right: 20px; /* Adjust as needed */
+  transform: translateY(-50%);
+  text-align: right;
 }
 .fighter {
-	background: rgba(255, 255, 255, .15);
-	/*color: rgb(0, 0, 0, .85);*/
-	border: 2px solid white;
-	box-shadow: white 0 0 10px;
+  background: rgba(255, 255, 255, 0.15);
+  /*color: rgb(0, 0, 0, .85);*/
+  border: 2px solid white;
+  box-shadow: white 0 0 10px;
 }
 .winner {
-	background: rgba(255, 200, 0, .8);
-	color: rgba(255, 0, 0, .85);
-	border: 2px solid orange;
-	box-shadow: orange 0 0 10px;
+  background: rgba(255, 200, 0, 0.8);
+  color: rgba(255, 0, 0, 0.85);
+  border: 2px solid orange;
+  box-shadow: orange 0 0 10px;
 }
 .rectangle-div:last-child {
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
 #brackets-container {
-	position: absolute;
-	display: none;
-	opacity: 0;
-	width: 950px;
-	height: 750px;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
+  position: absolute;
+  display: none;
+  opacity: 0;
+  width: 950px;
+  height: 750px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 #brackets-container i {
-	position: absolute;
-	font-size: 100px;
-	height: 100px;
-	font-family: "Arial";
-	color: rgb(255, 255, 255, .85);
-	top: 50%;
-	left: 50%;
-	transform: translate(220%, -50%);
-	animation: trophy-pulse 3s infinite;
+  position: absolute;
+  font-size: 100px;
+  height: 100px;
+  font-family: "Arial";
+  color: rgb(255, 255, 255, 0.85);
+  top: 50%;
+  left: 50%;
+  transform: translate(220%, -50%);
+  animation: trophy-pulse 3s infinite;
 }
 #brackets-container.shown {
-	animation: fade-normal-in 1.5s;
-	animation-fill-mode: forwards;
+  animation: fade-normal-in 1.5s;
+  animation-fill-mode: forwards;
 }
 @keyframes fade-normal-in {
-	to {
-		opacity: 1;
-	}
+  to {
+    opacity: 1;
+  }
 }
 .brackets {
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	top: 50%;
-	left: 0;
-	transform: translateY(-50%);
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
 }
 .avatar_pic {
-	overflow: hidden;
-	border-radius: 50%;
+  overflow: hidden;
+  border-radius: 50%;
 }
 .choice-box {
-	background-color: rgb(0, 0, 0, 0.85);
-	border: 4px solid rgba(255, 255, 255, 0.8);
-	border-radius: 10px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	padding: 20px;
-	transform: translate(-50%, -50%);
-	transition: 1s;
+  background-color: rgb(0, 0, 0, 0.85);
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 20px;
+  transform: translate(-50%, -50%);
+  transition: 1s;
 }
 #tourney_settings-box {
-	opacity: 0;
-	display: none;
-	text-align: center;
-	padding: 20px;
-	width: 350px;
-	box-sizing: border-box;
-	background-color: rgb(0, 0, 0, 0.85);
-	border: 4px solid rgba(255, 255, 255, 0.8);
-	border-radius: 10px;
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	padding: 20px;
-	transform: translate(-50%, -50%);
-	transition: 1s;
+  opacity: 0;
+  display: none;
+  text-align: center;
+  padding: 20px;
+  width: 350px;
+  box-sizing: border-box;
+  background-color: rgb(0, 0, 0, 0.85);
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  padding: 20px;
+  transform: translate(-50%, -50%);
+  transition: 1s;
 }
 /* #tourney_settings-box.shown { */
 /* 	animation: fade-in 1.5s forwards; */
@@ -235,89 +235,89 @@ body {
 /* 	} */
 /* } */
 #tourney_settings-box h1 {
-	font-family: "Arial";
-	font-size: 40px;
-	margin: 10px 0 0;
-	padding: 0;
-	color: rgba(255, 255, 255, 0.8);
-	text-align: center;
+  font-family: "Arial";
+  font-size: 40px;
+  margin: 10px 0 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
 }
 #tourney_settings-box h2 {
-	font-family: "Arial";
-	font-size: 30px;
-	padding: 0;
-	font-weight: normal;
-	color: rgba(255, 255, 255, 0.8);
-	text-align: center;
-	margin: 30px 0 10px 0;
+  font-family: "Arial";
+  font-size: 30px;
+  padding: 0;
+  font-weight: normal;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin: 30px 0 10px 0;
 }
 #tourney_settings-box input[type="range"] {
-	appearance: none;
-	outline: none;
-	height: 8px;
-	width: 50%;
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.8);
-	border-radius: 10px;
-	opacity: 0.8;
-	transition: all .1s;
+  appearance: none;
+  outline: none;
+  height: 8px;
+  width: 50%;
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  opacity: 0.8;
+  transition: all 0.1s;
 }
 #tourney_settings-box input[type="range"]::-moz-range-thumb {
-	appearance: none;
-	background: white;
-	color: white;
-	border: none;
-	border-radius: 0px;
-	width: 13px;
-	height: 13px;
-	box-shadow: white 0 0 10px;
-	transform: rotate(45deg);
-	transition: all .3s ease-out;
+  appearance: none;
+  background: white;
+  color: white;
+  border: none;
+  border-radius: 0px;
+  width: 13px;
+  height: 13px;
+  box-shadow: white 0 0 10px;
+  transform: rotate(45deg);
+  transition: all 0.3s ease-out;
 }
 #tourney_settings-box input[type="range"]::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	background: white;
-	color: white;
-	border: none;
-	border-radius: 0px;
-	width: 13px;
-	height: 13px;
-	box-shadow: white 0 0 10px;
-	transform: rotate(45deg);
-	transition: all .3s ease-out;
+  -webkit-appearance: none;
+  background: white;
+  color: white;
+  border: none;
+  border-radius: 0px;
+  width: 13px;
+  height: 13px;
+  box-shadow: white 0 0 10px;
+  transform: rotate(45deg);
+  transition: all 0.3s ease-out;
 }
 #tourney_settings-box button {
-	color: rgba(255, 255, 255, 0.8);
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.8);
-	border-radius: 50px;
-	font-size: 40px;
-	padding: 5px calc(50% - 40px);
-	margin: 30px 0 10px 0;
-	transition: .1s;
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  font-size: 40px;
+  padding: 5px calc(50% - 40px);
+  margin: 30px 0 10px 0;
+  transition: 0.1s;
 }
 #tourney_settings-box button:hover {
-	color: white;
-	box-shadow: white 0 0 10px;
+  color: white;
+  box-shadow: white 0 0 10px;
 }
 #tourney_settings-box input[type="range"]::-webkit-slider-thumb:active {
-	width: 18px;
-	height: 18px;
-	transform: rotate(225deg);
+  width: 18px;
+  height: 18px;
+  transform: rotate(225deg);
 }
 #tourney_settings-box input[type="range"]::-moz-range-thumb:active {
-	width: 18px;
-	height: 18px;
-	transform: rotate(225deg);
+  width: 18px;
+  height: 18px;
+  transform: rotate(225deg);
 }
 #tourney_settings-box input[type="range"]:hover {
-	box-shadow: white 0 0 7px;
+  box-shadow: white 0 0 7px;
 }
 #profile-box_signup {
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
-	display: none;
+	/* display: none; */
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -329,73 +329,73 @@ body {
 	box-sizing: border-box;
 }
 #profile-box_signup h1 {
-	font-family: "Arial";
-	margin: 0 0 20px;
-	padding: 0;
-	color: rgba(255, 255, 255, 0.8);
-	text-align: center;
+  font-family: "Arial";
+  margin: 0 0 20px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
 }
 #profile-box_signup .input-div {
-	font-family: "Arial";
-	position: relative;
+  font-family: "Arial";
+  position: relative;
 }
 #profile-box_signup .input-div input {
-	width: 100%;
-	padding: 10px 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.8);
-	margin-bottom: 30px;
-	border: none;
-	border-bottom: 1px solid #fff;
-	outline: none;
-	background: transparent;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
 }
 #profile-box_signup .input-div label {
-	position: absolute;
-	top:0;
-	left: 0;
-	padding: 10px 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.8);
-	pointer-events: none;
-	transition: .5s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  transition: 0.5s;
 }
 #profile-box_signup button {
-	position: relative;
-	left: 50%;
-	transform: translate(-50%, -40%);
-	color: rgba(255, 255, 255, 0.8);
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.8);
-	border-radius: 50px;
-	font-size: 40px;
-	padding: 5px 120px;
-	margin-top: 20px;
-	transition: .1s;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  font-size: 40px;
+  padding: 5px 120px;
+  margin-top: 20px;
+  transition: 0.1s;
 }
 #profile-box_signup button:hover {
-	color: white;
-	box-shadow: white 0 0 10px;
+  color: white;
+  box-shadow: white 0 0 10px;
 }
 #profile-box_signup .avatar_pic {
-	position: relative;
-	height: 100px;
-	width: 100px;
-	left: 50%;
-	transform: translateX(-50%);
+  position: relative;
+  height: 100px;
+  width: 100px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 #profile-box_signup .input-div input:focus ~ label,
 #profile-box_signup .input-div input:valid ~ label {
-	top: -20px;
-	left: 0;
-	text-shadow: white 0 0 8px;
-	font-size: 12px;
+  top: -20px;
+  left: 0;
+  text-shadow: white 0 0 8px;
+  font-size: 12px;
 }
 #profile-box_signin {
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
-	display: none;
+	/* display: none; */
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -407,271 +407,271 @@ body {
 	box-sizing: border-box;
 }
 #profile-box_signin h1 {
-	font-family: "Arial";
-	margin: 0 0 20px;
-	padding: 0;
-	color: rgba(255, 255, 255, 0.8);
-	text-align: center;
+  font-family: "Arial";
+  margin: 0 0 20px;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
 }
 #profile-box_signin .input-div {
-	font-family: "Arial";
-	position: relative;
+  font-family: "Arial";
+  position: relative;
 }
 #profile-box_signin .input-div input {
-	width: 100%;
-	padding: 10px 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.8);
-	margin-bottom: 30px;
-	border: none;
-	border-bottom: 1px solid #fff;
-	outline: none;
-	background: transparent;
+  width: 100%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
 }
 #profile-box_signin .input-div label {
-	position: absolute;
-	top:0;
-	left: 0;
-	padding: 10px 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.8);
-	pointer-events: none;
-	transition: .5s;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  transition: 0.5s;
 }
 #profile-box_signin button {
-	position: relative;
-	left: 50%;
-	transform: translate(-50%, -40%);
-	color: rgba(255, 255, 255, 0.8);
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.8);
-	border-radius: 50px;
-	font-size: 40px;
-	padding: 5px 120px;
-	margin-top: 20px;
-	transition: .1s;
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  font-size: 40px;
+  padding: 5px 120px;
+  margin-top: 20px;
+  transition: 0.1s;
 }
 #profile-box_signin button:hover {
-	color: white;
-	box-shadow: white 0 0 10px;
+  color: white;
+  box-shadow: white 0 0 10px;
 }
 #profile-box_signin .avatar_pic {
-	position: relative;
-	height: 100px;
-	width: 100px;
-	left: 50%;
-	transform: translateX(-50%);
+  position: relative;
+  height: 100px;
+  width: 100px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 #profile-box_signin .input-div input:focus ~ label,
 #profile-box_signin .input-div input:valid ~ label {
-	top: -20px;
-	left: 0;
-	text-shadow: white 0 0 8px;
-	font-size: 12px;
+  top: -20px;
+  left: 0;
+  text-shadow: white 0 0 8px;
+  font-size: 12px;
 }
 #tabs-icon {
-	display: flex;
-	justify-content: space-between;
-	flex-direction: row;
-	align-items: center;
-	background: rgba(0, 0, 0, .8);
-	position: absolute;
-	align-items: center;
-	border: 2px solid rgba(255, 255, 255, .8);
-	border-radius: 10px;
-	top: 20px;
-	left: 20px;
-	height: 60px;
-	width: 60px;
-	padding: 0;
-	z-index: 1;
-	cursor: pointer;
-	box-sizing: border-box;
-	transition: all ease-out .1s;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  position: absolute;
+  align-items: center;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  top: 20px;
+  left: 20px;
+  height: 60px;
+  width: 60px;
+  padding: 0;
+  z-index: 1;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: all ease-out 0.1s;
 }
 #tabs-icon i {
-	position: relative;
-	margin: 0 0 0 2.5px;
-	height: 50px;
-	font-size: 50px;
-	line-height: 100%;
-	color: white;
-	background-color: transparent;
+  position: relative;
+  margin: 0 0 0 2.5px;
+  height: 50px;
+  font-size: 50px;
+  line-height: 100%;
+  color: white;
+  background-color: transparent;
 }
 #tabs-icon h6 {
-	pointer-events: none;
-	position: relative;
-	font-family: "Arial";
-	font-weight: 300;
-	font-size: 25px;
-	left: -50px;
-	color: white;
-	opacity: 0;
-	margin: 10px 25px 10px 10px;
-	transform: scale(.5, 1);
-	transition: all ease-out .2s;
+  pointer-events: none;
+  position: relative;
+  font-family: "Arial";
+  font-weight: 300;
+  font-size: 25px;
+  left: -50px;
+  color: white;
+  opacity: 0;
+  margin: 10px 25px 10px 10px;
+  transform: scale(0.5, 1);
+  transition: all ease-out 0.2s;
 }
 #tabs-icon:hover {
-	border-radius: 15px;
-	width: 160px;
+  border-radius: 15px;
+  width: 160px;
 }
 #tabs-icon:hover h6 {
-	left: 0px;
-	transform: scale(1, 1);
-	pointer-events: auto;
-	opacity: 1;
+  left: 0px;
+  transform: scale(1, 1);
+  pointer-events: auto;
+  opacity: 1;
 }
 #tabs-list {
-	pointer-events: none;
-	background: rgba(0, 0, 0, .8);
-	border: 2px solid rgba(255, 255, 255, .8);
-	opacity: 0;
-	position: absolute;
-	border-radius: 10px;
-	top: 60px;
-	left: -150px;
-	width: 200px;
-	padding: 0;
-	z-index: 1;
-	transition: all ease-out .3s;
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  opacity: 0;
+  position: absolute;
+  border-radius: 10px;
+  top: 60px;
+  left: -150px;
+  width: 200px;
+  padding: 0;
+  z-index: 1;
+  transition: all ease-out 0.3s;
 }
 #tabs-icon:hover #tabs-list {
-	pointer-events: auto;
-	opacity: 1;
-	left: 0px;
+  pointer-events: auto;
+  opacity: 1;
+  left: 0px;
 }
 #tabs-list button {
-	position: relative;
-	display: flex;
-	justify-content: space-between;
-	border: none;
-	border-bottom: 1px solid rgba(255, 255, 255, .8);
-	background: transparent;
-	color: white;
-	opacity: 1;
-	left: 50%;
-	transform: translateX(-50%);
-	font-size: 30px;
-	width: 90%;
-	height: 45px;
-	padding: 5px 0px;
-	cursor: pointer;
-	text-align: left;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.8);
+  background: transparent;
+  color: white;
+  opacity: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  width: 90%;
+  height: 45px;
+  padding: 5px 0px;
+  cursor: pointer;
+  text-align: left;
 }
 #tabs-list i {
-	/* top: 6px; */
-	font-size: 25px;
-	height: 25px;
-	line-height: 35px;
-	/* margin: 3px 3px 0 0; */
+  /* top: 6px; */
+  font-size: 25px;
+  height: 25px;
+  line-height: 35px;
+  /* margin: 3px 3px 0 0; */
 }
 #tabs-list button:last-child {
-	border-bottom: none;
+  border-bottom: none;
 }
 #tabs-list button:hover {
-	text-shadow: white 0 0 5px;
+  text-shadow: white 0 0 5px;
 }
 #profile_tab {
-	position: absolute;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
-	background: rgba(0, 0, 0, .8);
-	border: 2px solid rgba(255, 255, 255, .8);
-	border-radius: 10px;
-	top: 20px;
-	right: 20px;
-	height: 60px;
-	box-sizing: border-box;
-	cursor: pointer;
-	z-index: 1;
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  top: 20px;
+  right: 20px;
+  height: 60px;
+  box-sizing: border-box;
+  cursor: pointer;
+  z-index: 1;
 }
 #profile_tab h6 {
-	font-size: 30px;
-	font-family: "Arial";
-	color: white;
-	height: 30px;
-	margin: 0 20px 0 20px;
-	text-align: center;
-	line-height: 100%;
-	font-weight: normal;
+  font-size: 30px;
+  font-family: "Arial";
+  color: white;
+  height: 30px;
+  margin: 0 20px 0 20px;
+  text-align: center;
+  line-height: 100%;
+  font-weight: normal;
 }
 #profile_tab .avatar_pic {
-	margin: 0 10px 0 0;
-	height: 80%;
-	width: 44.8px;
+  margin: 0 10px 0 0;
+  height: 80%;
+  width: 44.8px;
 }
 #game_canvas {
-	background-color: black;
-	position: fixed;
-	border-radius: 10px;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	box-shadow: white 0px 0px 15px 5px;
-	width: 1000px;
-	height: 800px;
+  background-color: black;
+  position: fixed;
+  border-radius: 10px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: white 0px 0px 15px 5px;
+  width: 1000px;
+  height: 800px;
 }
 #main-menu {
-	position: absolute;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	width: 300px;
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-	opacity: 1;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 300px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 1;
 }
 .shown {
-	animation: fade-in 1.5s;
-	animation-fill-mode: forwards;
+  animation: fade-in 1.5s;
+  animation-fill-mode: forwards;
 }
 .hidden {
-	animation: fade-down 1s;
-	animation-fill-mode: forwards;
+  animation: fade-down 1s;
+  animation-fill-mode: forwards;
 }
 @keyframes fade-down {
-	to {
-		opacity: 0;
-		top: 55%;
-	}
+  to {
+    opacity: 0;
+    top: 55%;
+  }
 }
 #main-menu h1 {
-	font-family: "Arial";
-	color: rgba(255, 255, 255, 0.5);
-	font-size: 100px;
-	margin: 0;
-	text-align: center;
-	font-weight: 300;
-	height: 100px;
-	line-height: 100%;
-	animation: text-shadow 3s infinite;
+  font-family: "Arial";
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 100px;
+  margin: 0;
+  text-align: center;
+  font-weight: 300;
+  height: 100px;
+  line-height: 100%;
+  animation: text-shadow 3s infinite;
 }
 #main-menu button {
-	color: rgba(255, 255, 255, 0.5);
-	background-color: rgb(0, 0, 0, 0.85);
-	border: 4px solid rgba(255, 255, 255, 0.5);
-	border-radius: 50px;
-	padding: 15px 0px;
-	margin: 5px;
-	width: 100%;
-	font-size: 50px;
-	font-family: "Arial";
-	cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  background-color: rgb(0, 0, 0, 0.85);
+  border: 4px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50px;
+  padding: 15px 0px;
+  margin: 5px;
+  width: 100%;
+  font-size: 50px;
+  font-family: "Arial";
+  cursor: pointer;
 }
 #main-menu button:hover {
-	color: lightgrey;
-	border: 4px solid lightgrey;
-	animation: hover-shadows 1.5s ease-out infinite;
+  color: lightgrey;
+  border: 4px solid lightgrey;
+  animation: hover-shadows 1.5s ease-out infinite;
 }
 #online-box {
 	opacity: 0;
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 4px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
-	display: none;
+	/* display: none; */
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -681,183 +681,183 @@ body {
 	box-sizing: border-box;
 }
 #online-box.shown {
-	animation: fade-in 1.5s;
-	animation-fill-mode: forwards;
+  animation: fade-in 1.5s;
+  animation-fill-mode: forwards;
 }
 @keyframes fade-in {
-	10% {
-		transform: translate(0%, -50%);
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-		transform: translate(-50%, -50%);
-	}
+  10% {
+    transform: translate(0%, -50%);
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
 #online-box h1 {
-	font-family: "Arial";
-	margin: 10px 0 20px 0;
-	padding: 0;
-	color: rgba(255, 255, 255, 0.8);
-	text-align: center;
+  font-family: "Arial";
+  margin: 10px 0 20px 0;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
 }
 #online-box form {
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-	width: 100%;
-	height: 80%;
-	align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  height: 80%;
+  align-items: center;
 }
 #online-box .input-div {
-	width: 100%;
-	font-family: "Arial";
-	position: relative;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  width: 100%;
+  font-family: "Arial";
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 #online-box .input-div input {
-	width: 85%;
-	padding: 10px 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.8);
-	margin-bottom: 30px;
-	border: none;
-	border-bottom: 1px solid #fff;
-	outline: none;
-	background: transparent;
+  width: 85%;
+  padding: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 30px;
+  border: none;
+  border-bottom: 1px solid #fff;
+  outline: none;
+  background: transparent;
 }
 #online-box .input-div label {
-	position: absolute;
-	top: 0;
-	left: 7.5%;
-	text-align: left;
-	padding: 10px 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.8);
-	pointer-events: none;
-	transition: .5s;
+  position: absolute;
+  top: 0;
+  left: 7.5%;
+  text-align: left;
+  padding: 10px 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  pointer-events: none;
+  transition: 0.5s;
 }
 #online-box .input-div h6 {
-	position: absolute;
-	top: 0;
-	left: 7.5%;
-	text-align: left;
-	padding: 0;
-	margin: 10px 0 0 0;
-	font-size: 16px;
-	color: rgba(255, 255, 255, 0.3);
-	opacity: 0;
-	font-weight: normal;
-	pointer-events: none;
-	transition: .5s;
+  position: absolute;
+  top: 0;
+  left: 7.5%;
+  text-align: left;
+  padding: 0;
+  margin: 10px 0 0 0;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.3);
+  opacity: 0;
+  font-weight: normal;
+  pointer-events: none;
+  transition: 0.5s;
 }
 
 #online-box button {
-	position: relative;
-	align-items: center;
-	color: rgba(255, 255, 255, 0.8);
-	background: transparent;
-	border: 2px solid rgba(255, 255, 255, 0.8);
-	border-radius: 50px;
-	font-size: 40px;
-	padding: 5px calc(50% - 40px);
-	margin: 10px 0 10px 0;
-	cursor: pointer;
-	transition: .1s;
+  position: relative;
+  align-items: center;
+  color: rgba(255, 255, 255, 0.8);
+  background: transparent;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  font-size: 40px;
+  padding: 5px calc(50% - 40px);
+  margin: 10px 0 10px 0;
+  cursor: pointer;
+  transition: 0.1s;
 }
 #online-box button:hover {
-	color: white;
-	box-shadow: white 0 0 10px;
+  color: white;
+  box-shadow: white 0 0 10px;
 }
 #online-box .input-div input:focus ~ label,
 #online-box .input-div input:valid ~ label {
-	top: -20px;
-	left: 7.5%;
-	text-shadow: white 0 0 8px;
-	font-size: 12px;
+  top: -20px;
+  left: 7.5%;
+  text-shadow: white 0 0 8px;
+  font-size: 12px;
 }
 @keyframes trophy-pulse {
-	50% {
-		text-shadow: white 0 0 10px;
-	}
+  50% {
+    text-shadow: white 0 0 10px;
+  }
 }
 @keyframes text-shadow {
-	0% {
-		color: rgba(255, 255, 255, 0.5);
-	}
-	50% {
-		color: lightgrey;
-		text-shadow: lightgrey 0 0 10px;
-	}
+  0% {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    color: lightgrey;
+    text-shadow: lightgrey 0 0 10px;
+  }
 }
 @keyframes hover-shadows {
-	0% {
-	}
-	50% {
-		text-shadow: lightgrey 0 0 10px;
-		box-shadow: lightgrey 0 0 10px;
-	}
+  0% {
+  }
+  50% {
+    text-shadow: lightgrey 0 0 10px;
+    box-shadow: lightgrey 0 0 10px;
+  }
 }
-.switch-pannel label{
-	color: white;
-	font-family: "Arial";
+.switch-pannel label {
+  color: white;
+  font-family: "Arial";
 }
 .switch-pannel a:hover {
-	cursor: pointer;
-	color: rgb(255, 75, 159);
+  cursor: pointer;
+  color: rgb(255, 75, 159);
 }
 #chat-box {
-	visibility: hidden;
-	position: absolute;
-	opacity: 0;
-	background: rgba(0, 0, 0, .8);
-	border: 2px solid rgba(255, 255, 255, .8);
-	border-radius: 10px;
-	bottom: 20px;
-	left: 20px;
-	height: 175px;
-	width: 400px;
-	z-index: 1;
-	cursor: pointer;
-	transition: all ease-out .1s;
-	color: white;
-	font-family: "Comic Sans MS";
-	overflow-y: scroll;
-	overflow-x: hidden;
+  visibility: hidden;
+  position: absolute;
+  opacity: 0;
+  background: rgba(0, 0, 0, 0.8);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  bottom: 20px;
+  left: 20px;
+  height: 175px;
+  width: 400px;
+  z-index: 1;
+  cursor: pointer;
+  transition: all ease-out 0.1s;
+  color: white;
+  font-family: "Comic Sans MS";
+  overflow-y: scroll;
+  overflow-x: hidden;
 }
 .chat__message__text {
-	margin: 0;
-	word-wrap: break-word;
+  margin: 0;
+  word-wrap: break-word;
 }
 
 #chat-box ul {
-	color: white;
+  color: white;
 }
 
 #chat-box.active {
-	visibility: visible;
-	opacity: 1;
+  visibility: visible;
+  opacity: 1;
 }
 #chat-box h6 {
-	position: absolute;
-	font-size: 20px;
-	font-family: "Arial";
-	color: white;
-	opacity: 0;
-	margin: 10px 10px;
-	font-weight: normal;
-	transition: all ease-out .1s;
+  position: absolute;
+  font-size: 20px;
+  font-family: "Arial";
+  color: white;
+  opacity: 0;
+  margin: 10px 10px;
+  font-weight: normal;
+  transition: all ease-out 0.1s;
 }
 #chat-box.active h6 {
-	opacity: 1;
+  opacity: 1;
 }
 
 .show {
-	display: block;
-  }
-  
+  display: block;
+}
+
 #users-list-box {
 	font-family: "Arial";
 	position: absolute;
@@ -869,9 +869,76 @@ body {
 	background: rgba(255, 255, 255, 0.8);
 	border: 2px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
-	display: none;
+	/* display: none; */
 }
 
 #users-list-box.show {
-	display: block;
+  display: block;
 }
+
+/* #region CODE ALESSANDRO USER INFO */
+
+#user-info-box {
+  /* display: none; */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.85);
+  border: 4px solid rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  padding: 20px;
+  width: 600px; /* Augmenter la largeur pour accueillir les deux sections */
+  color: white;
+  box-sizing: border-box;
+  z-index: 1000; /* S'assurer que l'élément est au-dessus des autres */
+}
+
+#user-info-box button {
+  cursor: pointer;
+}
+
+#user-info-box h1 {
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+#user-content,
+#chart-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+#user-stats,
+#match-history,
+#chart-content {
+  width: 45%;
+  text-align: left;
+  margin-left: 5px;
+}
+
+#user-stats h2,
+#match-history h2 {
+  margin-bottom: 10px;
+}
+
+#user-stats ul,
+#match-history ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+#user-stats li,
+#match-history li {
+  margin-bottom: 10px;
+}
+
+.win {
+  background-color: green;
+}
+
+.loss {
+  background-color: red;
+}
+
+/* #endregion */

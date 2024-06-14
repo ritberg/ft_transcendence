@@ -1,8 +1,14 @@
+import { route } from '../scripts/router.js';
+import { getUserId } from '../scripts/users.js'
+import { token } from '../scripts/users.js';
+
 var ws;
 var username;
 
 var p1 = "";
 var p2 = "";
+var p1Id = "";
+var p2Id = "";
 var side = 0;
 
 const audio = new Audio("static/online/utils/1.mp3");
@@ -44,7 +50,8 @@ let player2 = {
 
 var sound = false;
 var isalone = true;
-var time_left = 0;
+var disconnect = false;
+var start_time;
 
 // var fpsInterval;
 // var then;
@@ -57,7 +64,7 @@ var time_left = 0;
 
 export function online_game(new_ws) {
     ws = new_ws;
-    ws.addEventListener("message", event => {
+    ws.addEventListener("message", async (event) => {
         let messageData = JSON.parse(event.data);
         // console.log(messageData);
         if (messageData.type === "stateUpdate") {
@@ -72,22 +79,47 @@ export function online_game(new_ws) {
         }
         else if (messageData.type === "playerNum") {
             if (messageData.objects.num === 2)
+            {
                 isalone = false;
+                start_time = new Date();
+                p1Id = await getUserId(messageData.objects.p1Name);
+                p2Id = await getUserId(messageData.objects.p2Name);
+                console.log("p1Id: ", p1Id);
+                console.log("p2Id: ", p2Id);
+            }
             else if (messageData.objects.num === 1)
-                isalone = true;
+            {
+                disconnect = true;
+                let end_time = new Date();
+                let duration = (end_time - start_time) / 1000;
+                ws.close();
+                let winner;
+                if (side == "left")
+                    winner = p1Id;
+                else
+                    winner = p2Id;
+                const game = {
+                    player_1_id: p1Id,
+                    player_2_id: p2Id,
+                    player_1_score: player1.score,
+                    player_2_score: player2.score,
+                    winner_id: winner,
+                    data_played: new Date().toISOString(),
+                    duration: duration,
+                };
+                console.log("gamehere: ", game);
+                sendStats(game);
+                setTimeout(() => { route("/"); }, 5000);
+            }
             
             p1 = messageData.objects.p1Name;
             p2 = messageData.objects.p2Name;
+
         }
         else if (messageData.type === "playerId") {
             username = messageData.objects.id;
             side = messageData.objects.side;
         }
-        else if (messageData.type === "countdown") {
-            time_left = messageData.left;
-        }
-        // if (messageData.type != "stateUpdate")
-        //     console.log(messageData);
     });
 
     board = document.getElementById("game_canvas");
@@ -140,20 +172,68 @@ function draw_board() {
 
 var trigger = true;
 
+async function sendStats(game) {
+    try {
+        const response = await fetch("https://localhost/stat/game-history/", {
+            method: "POST",
+            headers: {
+            "X-CSRFToken": token,
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify(game),
+            credentials: "include",
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.log(response);
+            throw new Error(
+            `Network response was not ok: ${JSON.stringify(errorData)}`
+            );
+        }
+        const data = await response.json();
+        console.log(data);
+    } catch (error) {
+        console.error("Fetch error: ", error);
+    }
+}
+
 function gameLoop() {
     window.requestAnimationFrame(gameLoop);
     draw_board();
-    if (isalone == true && player1.score != 5 && player2.score != 5)
+    if (isalone == true)
     {
         context.font = "48px serif";
         context.fillStyle = "white";
         context.fillText("waiting for a second player", 250, 315);
     }
+    else if (disconnect == true)
+    {
+        context.font = "48px serif";
+        context.fillStyle = "white";
+        context.fillText("a player has disconnected", 250, 315);
+    }
     if (player1.score == 5)
     {
         if (trigger == true)
         {
-            setTimeout(() => { location.replace("https://" + window.location.host); }, 5000);
+            if (side == "left")
+            {
+                let end_time = new Date();
+                let duration = (end_time - start_time) / 1000;
+                const game = {
+                    player_1_id: p1Id,
+                    player_2_id: p2Id,
+                    player_1_score: player1.score,
+                    player_2_score: player2.score,
+                    winner_id: p1Id,
+                    data_played: new Date().toISOString(),
+                    duration: duration,
+                };
+                console.log("gamehere: ", game);
+                sendStats(game);
+            }
+            ws.close();
+            setTimeout(() => { route("/"); }, 5000);
             trigger = false;
         }
         context.font = "100px serif";
@@ -163,17 +243,28 @@ function gameLoop() {
     {
         if (trigger == true)
         {
-            setTimeout(() => { location.replace("https://" + window.location.host); }, 5000);
+            if (side == "right")
+            {
+                let end_time = new Date();
+                let duration = (end_time - start_time) / 1000;
+                const game = {
+                    player_1_id: p1Id,
+                    player_2_id: p2Id,
+                    player_1_score: player1.score,
+                    player_2_score: player2.score,
+                    winner_id: p2Id,
+                    data_played: new Date().toISOString(),
+                    duration: duration,
+                };
+                console.log("gamehere: ", game);
+                sendStats(game);
+            }
+            ws.close();
+            setTimeout(() => { route("/"); }, 5000);
             trigger = false;
         }
         context.font = "100px serif";
         context.fillText("Player 2 won !", 250, 400);
-    }
-    if (time_left != 0)
-    {
-        context.fillStyle = "red";
-        context.font = "100px serif";
-        context.fillText(time_left, 575, 190);
     }
 }
 
@@ -199,6 +290,7 @@ function movePlayer(e) {
 function stopPlayer(e) {
     if (e.key == 'w' && lastSent != "keyStop") {
         ws.send(JSON.stringify({ type: "keyStop", username: username }));
+
         lastSent = "keyStop"
     }
     if (e.key == 's' && lastSent != "keyStop") {

@@ -11,6 +11,7 @@ def CreateRoom(request):
         text_data_json = json.loads(request.body)
         room = text_data_json["room"]
         username = text_data_json["username"]
+        print("usernames test:", username)
         if (room != ""):
             if (room.strip() == ""):
                 context = {

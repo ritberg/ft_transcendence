@@ -1,27 +1,6 @@
 version: "3.8"
 
 services:
-  frontend:
-    container_name: frontend
-    depends_on:
-      - db_online
-    build:
-      context: ./frontend/docker
-      dockerfile: Dockerfile
-      args:
-        SERVICE_NAME: ${FRONTEND_SERVICE_NAME}
-    env_file:
-      - .env
-    expose:
-      - "8000"
-    volumes:
-      - frontend:/home/transcendance/${FRONTEND_SERVICE_NAME}
-    tty: true
-    networks:
-      - transcendance
-    init: true
-    restart: on-failure
-
   user:
     container_name: user
     build:
@@ -45,6 +24,31 @@ services:
     depends_on:
       - db_userchat
       - redis
+    restart: on-failure
+
+  stat:
+    container_name: stat
+    build:
+      context: ./stat/docker
+      dockerfile: Dockerfile
+      args:
+        STAT_SERVICE_NAME: ${STAT_SERVICE_NAME}
+        DJANGO_SUPERUSER_USERNAME: ${DJANGO_SUPERUSER_USERNAME}
+        DJANGO_SUPERUSER_EMAIL: ${DJANGO_SUPERUSER_EMAIL}
+        DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
+    env_file:
+      - .env
+    ports:
+      - "8005"
+    volumes:
+      - stat:/home/transcendance/${STAT_SERVICE_NAME}
+      - user:/home/transcendance/${USER_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    depends_on:
+      - user
     restart: on-failure
 
   chat:
@@ -92,26 +96,26 @@ services:
     init: true
     restart: on-failure
 
-  bot:
-    container_name: bot
-    depends_on:
-      - db_online
-    build:
-      context: ./bot/docker
-      dockerfile: Dockerfile
-      args:
-        SERVICE_NAME: ${BOT_SERVICE_NAME}
-    env_file:
-      - .env
-    expose:
-      - "8002"
-    volumes:
-      - bot:/home/transcendance/${BOT_SERVICE_NAME}
-    tty: true
-    networks:
-      - transcendance
-    init: true
-    restart: on-failure
+  # bot:
+  #   container_name: bot
+  #   depends_on:
+  #     - db_online
+  #   build:
+  #     context: ./bot/docker
+  #     dockerfile: Dockerfile
+  #     args:
+  #       SERVICE_NAME: ${BOT_SERVICE_NAME}
+  #   env_file:
+  #     - .env
+  #   expose:
+  #     - "8002"
+  #   volumes:
+  #     - bot:/home/transcendance/${BOT_SERVICE_NAME}
+  #   tty: true
+  #   networks:
+  #     - transcendance
+  #   init: true
+  #   restart: on-failure
 
   db_online:
     container_name: db_online
@@ -134,7 +138,6 @@ services:
     container_name: nginx
     depends_on:
       - online
-      - frontend
       # - bot
       - user
       - chat
@@ -182,28 +185,22 @@ services:
     restart: on-failure
 
 volumes:
-  frontend:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/frontend/${FRONTEND_SERVICE_NAME}"
   db_online:
     driver: local
     driver_opts:
-      type: "none" 
+      type: "none"
       o: "bind"
       device: "${PWD}/databases/db_online"
   nginx:
     driver: local
     driver_opts:
-      type: "none" 
+      type: "none"
       o: "bind"
       device: "${PWD}/nginx/nginx"
   online:
     driver: local
     driver_opts:
-      type: "none" 
+      type: "none"
       o: "bind"
       device: "${PWD}/online/${ONLINE_SERVICE_NAME}"
   bot:
@@ -218,6 +215,12 @@ volumes:
       type: "none"
       o: "bind"
       device: "${PWD}/user/${USER_SERVICE_NAME}"
+  stat:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/stat/${STAT_SERVICE_NAME}"
   chat:
     driver: local
     driver_opts:

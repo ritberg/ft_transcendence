@@ -173,7 +173,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             await self.check_full()
             await self.remove_user()
 
-        self.game.reset_board(self.room)
+        # self.game.reset_board(self.room)
 
         #tells the other client that the opponent left
         if self.assign_player_side() != 2:
@@ -191,10 +191,10 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             )
             
             #sends an update to the other player so that the board looks reset on the frontend
-            await self.channel_layer.group_send(
-                self.room_name,
-                {"type": "state_update", "objects": {"player1Pos": (self.board_height / 2 - self.player_height / 2), "player2Pos": (self.board_height / 2 - self.player_height / 2), "ball_yPos": ((self.board_height / 2) - (self.ball_height / 2)), "ball_xPos": ((self.board_width / 2) - (self.ball_width / 2)), "player1Score": 0, "player2Score": 0}},
-            )
+            # await self.channel_layer.group_send(
+            #     self.room_name,
+            #     {"type": "state_update", "objects": {"player1Pos": (self.board_height / 2 - self.player_height / 2), "player2Pos": (self.board_height / 2 - self.player_height / 2), "ball_yPos": ((self.board_height / 2) - (self.ball_height / 2)), "ball_xPos": ((self.board_width / 2) - (self.ball_width / 2)), "player1Score": 0, "player2Score": 0}},
+            # )
 
         #deletes room if empty
         if len(room_vars[self.room]["players"]) == 0:

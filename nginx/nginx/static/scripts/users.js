@@ -2,16 +2,211 @@ import { sleep } from './utils.js';
 import { GameMode } from './main.js';
 import { drawBrackets, enterNicknames } from './brackets.js';
 import { online_game } from '../online/pong_online.js';
+import { tournamentSettings } from './animations.js';
+import { route } from './router.js';
 
 export var username_global = "guest";
-export var token;
+export var token = localStorage.getItem("token") || null;
+export var userIsConnected = localStorage.getItem("userIsConnected") || false;
+
+export const getUserId = async (username) => {
+	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
+	const response = await fetch( getIdUrl,
+		{
+			method: "GET",
+			headers: {
+				"X-CSRFToken": token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+		}
+	);
+	const data = await response.json();
+	if (!response.ok) {
+		throw new Error(data.error || "Error getting user ID");
+	}
+	console.log("data : ", data);
+	return data.id;
+};
+
+export const updateProfile = (user) => {
+	username_global = user.username;
+	updateUserInfoDisplay(user);
+};
+
+function updateUserStats(stats) {
+	if (stats) {
+		document.getElementById("stat-wins").textContent = `Wins: ${stats.wins}`;
+		document.getElementById("stat-losses").textContent = `Losses: ${stats.losses}`;
+		document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate.toFixed(2)}%`;
+		document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
+		document.getElementById("stat-total-hours").textContent = `Total Hours Played: ${stats.total_hours_played.toFixed(2)}`;
+		document.getElementById("stat-goals-scored").textContent = `Goals Scored: ${stats.goal_scored}`;
+		document.getElementById("stat-goals-conceded").textContent = `Goals Conceded: ${stats.goal_conceded}`;
+	}
+}
+
+function updateMatchHistory(matchHistory) {
+	if (matchHistory) {
+		const historyList = document.getElementById("history-list");
+		historyList.innerHTML = ""; // Clear previous history
+		matchHistory.forEach((match) => {
+			const listItem = document.createElement("li");
+			let data_played = new Date(match.date_played).toLocaleDateString('fr-FR');
+			let opponent = (username_global === match.player_1.username) ? match.player_2.username : match.player_1.username;
+			const winStatus = "WIN"
+			let status = (username_global === match.winner.username) ? winStatus : "LOSS";
+			let player_1_score = match.player_1.score;
+			let player_2_score = match.player_2.score;
+			let time = (match.duration / 60).toFixed(2);
+
+			listItem.textContent = `${data_played}: ${opponent} - ${status} (${player_1_score} - ${player_2_score}) - ${time}min`;
+			listItem.classList.add(status === winStatus ? "win" : "loss");
+			historyList.appendChild(listItem);
+		});
+	}
+}
+
+function updateUserInfoDisplay(user) {
+	console.log("user in updateUserInfoDisplay: ", user);
+	if (user) {
+		const username = user.username;
+		if (username) {
+			console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
+			document.getElementById("info-username").textContent = `${username}`;
+			document.getElementById("user-name-link").textContent = `${username}`;
+		}
+		if (user.stats) {
+			console.log("PUT STAT IN USERINFO DISPLAY: ", user.stats);
+			updateUserStats(user.stats);
+			createChartGames(user.stats);
+			createGoalsChart(user.stats);
+		}
+		if (user.match_history) {
+			console.log("PUT MATCH HISTORY IN USERINFO DISPLAY: ", user.match_history);
+			updateMatchHistory(user.match_history);
+		}
+	}
+}
+
+function createChartGames(stats) {
+	const canvas = document.getElementById('playerGamesChart');
+	const ctx = canvas.getContext('2d');
+
+	const existingChart = Chart.getChart(canvas);
+	if (existingChart) {
+		existingChart.destroy();
+	}
+
+	new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+			labels: ['Wins', 'Losses'],
+			datasets: [
+				{
+					label: 'Win Rate',
+					data: [stats.wins, stats.losses],
+					backgroundColor: ['#008000', '#FF0000'],
+					borderColor: ['#388e3c', '#d32f2f'],
+					borderWidth: 1,
+				},
+			],
+		},
+		options: {
+			responsive: true,
+			plugins: {
+				legend: {
+					position: 'top',
+				},
+				title: {
+					display: true,
+					text: 'Win Rate',
+					font: {
+						size: 18
+					},
+					color: '#FFFFFF',
+				},
+				tooltip: {
+					callbacks: {
+						label: function(tooltipItem) {
+							const label = tooltipItem.label || '';
+							const value = tooltipItem.raw;
+							const total = tooltipItem.chart._metasets[0].total;
+							const percentage = ((value / total) * 100).toFixed(2);
+							return `${label}: ${value} (${percentage}%)`;
+						}
+					}
+				}
+			}
+		},
+	});
+}
+
+function createGoalsChart(stats) {
+	const canvas = document.getElementById('playerGoalsChart');
+	const ctx = canvas.getContext('2d');
+
+	const existingChart = Chart.getChart(canvas);
+	if (existingChart) {
+		existingChart.destroy();
+	}
+
+	new Chart(ctx, {
+		type: 'bar',
+		data: {
+			labels: ['Goals Scored', 'Goals Conceded', 'Total Goals'],
+			datasets: [
+				{
+					data: [
+						stats.goal_scored,
+						stats.goal_conceded,
+						stats.goal_scored + stats.goal_conceded,
+					],
+					backgroundColor: ['#008000', '#FF0000', '#FF8000'],
+					borderColor: ['#388e3c', '#d32f2f', '#fbc02d'],
+					borderWidth: 1,
+				},
+			],
+		},
+		options: {
+			responsive: true,
+			plugins: {
+				legend: {
+					display: false,
+				},
+				title: {
+					display: true,
+					text: 'Goals',
+					color: '#FFFFFF',
+					font: {
+						size: 18,
+					},
+					position: 'top',
+				},
+			},
+			scales: {
+				y: {
+					beginAtZero: true,
+				},
+			},
+		},
+	});
+}
+
 
 document.addEventListener("DOMContentLoaded", function () {
 
-	//////// CSRF token ////////
+	let storedUser = localStorage.getItem("user");
+	if (storedUser) {
+		let user = JSON.parse(storedUser);
+		username_global = user.username;
+		document.getElementById("user-name-link").textContent = user.username;
+	}
 
-	let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
-	token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
+	if (token == null) {
+		let csrfMetaTag = document.querySelector('meta[name="csrf-token"]');
+		token = csrfMetaTag ? csrfMetaTag.getAttribute("content") : null;
+	}
 
 	if (!token) {
 		console.error("CSRF token not found!");
@@ -21,31 +216,58 @@ document.addEventListener("DOMContentLoaded", function () {
 	const updateCSRFToken = (newToken) => {
 		console.log("old token : ", token);
 		token = newToken;
+		localStorage.setItem("token", token);
 		console.log("new token : ", token);
 		document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 	};
 
-	/////////// frontend ////////////
+	/////////// USER DISPLAY ////////////
 
-	let usernameLabel = document.getElementById("user-name");
 
-	const displayProfile = (user) => {
-		usernameLabel.textContent = user.username;
-		username_global = user.username;
-		localStorage.setItem("user", JSON.stringify(user));
-	};
-	let storedUser = localStorage.getItem("user");
-	if (storedUser) {
-		let user = JSON.parse(storedUser);
-		displayProfile(user);
-	}
+	/////////// NAVIGATION //////////////
+	const contentContainer = document.getElementById("content");
+	contentContainer.addEventListener("click", async function (event) {
+		if (event.target && event.target.id === "b-signin-ok") {
+			// console.log("waiting for loginButton");
+			// loginButton(event).then(async user => {
+			// 	route("/profile/");
+			// 	console.log("user after loginButton: ", user);
+			// 	updateProfile(user);
+			// 	// route("/");
+			//   });
+			let user = await loginButton(event);
+			route('/profile/');
+			// route('/');
+		}
+		else if (event.target && event.target.id === "b-signup-ok") {
+			signupButton(event);
+		}
+		else if (event.target && event.target.id === "pvp-mode") {
+			document.getElementById("main-menu").classList.add("hidden");
+			GameMode(0);
+		}
+		else if (event.target && event.target.id === "cpu-mode") {
+			document.getElementById("main-menu").classList.add("hidden");
+			GameMode(1);
+		}
+		else if (event.target && event.target.id === "b-tourney_settings") {
+			tournamentSettings();
+		}
+		else if (event.target && event.target.id === "b-online-go"){
+			GameMode(3);
+		}
+		else if (event.target && event.target.id === "refresh-stats") {
+			// addGame();
+			getStats();
+			getMatchHistory();
+		}
+	});
 
 	////////////////////// SIGNUP ////////////////////////////
 
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
-	let signupForm = document.getElementById("b-signup-ok");
 
-	signupForm.addEventListener("click", function (event) {
+	function signupButton(event) {
 		event.preventDefault();
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
@@ -56,8 +278,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		fetch(signupUrl, {
 			method: "POST",
 			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
+			"Content-Type": "application/json",
+			"X-CSRFToken": token,
 			},
 			body: JSON.stringify({ username, email, password }),
 		})
@@ -74,78 +296,110 @@ document.addEventListener("DOMContentLoaded", function () {
 				updateCSRFToken(data.crsfToken);
 				// localStorage.setItem("user", JSON.stringify(data.data));
 				// displayProfile(data.data);
+				route("/signin/");
 			})
 			.catch((error) => {
 				console.error("Fetch error: ", error);
 			});
-	});
+	}
 
 
 	////////////////////// LOGIN ////////////////////////////
 
-	let loginForm = document.getElementById("go1");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
-	loginForm.addEventListener("click", function (event) {
-		event.preventDefault();
+	async function loginButton(event) {
+	  event.preventDefault();
 
-		let username = document.getElementById("username1").value;
-		let password = document.getElementById("password1").value;
+	  let username = document.getElementById("username1").value;
+	  let password = document.getElementById("password1").value;
 
-		console.log("Sending signin request...");
-		console.log("username : ", username);
+	  console.log("Sending signin request...");
+	  console.log("username : ", username);
 
-		fetch(loginUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			body: JSON.stringify({ username, password }),
-			credentials: "include",
-		})
-			.then((response) => {
-				console.log("Response Headers:", [...response.headers.entries()]);
+	  	return await fetch(loginUrl, {
+		method: "POST",
+		headers: {
+		  "Content-Type": "application/json",
+		  "X-CSRFToken": token,
+		},
+		body: JSON.stringify({ username, password }),
+		credentials: "include",
+	  })
+		.then((response) => {
+		  console.log("Response Headers:", [...response.headers.entries()]);
 
-				if (!response.ok) {
-					console.log("Full response:", response);
-					throw new Error("Network response was not ok");
-				}
+		  if (!response.ok) {
+			console.log("Full response:", response);
+			throw new Error("Network response was not ok");
+		  }
 
 				return response.json();
 			})
-			.then((data) => {
+			.then(async (data) => {
 				console.log("Cookies after signin response:", document.cookie);
 				console.log("Login successful. Server response data:", data);
 				console.log("data : ", data.data);
 				console.log("token received : ", data.crsfToken);
 				updateCSRFToken(data.crsfToken);
-				localStorage.setItem("user", JSON.stringify(data.data));
-				username_global = data.data.username;
-				displayProfile(data.data);
+				localStorage.setItem("userIsConnected", "true");
+				userIsConnected = true;
+				let user = data.data;
+				console.log("user before ret : ", user);
+				// updateProfile(user);
+				// addGame();
+				let stats = await getStats();
+				// console.log("stats : ", stats);
+				user.stats = stats;
+				let match_history = await getMatchHistory();
+				// console.log("match_history : ", match_history);
+				user.match_history = match_history;
+				// console.log("user before ret : ", user);
+				localStorage.setItem("user", JSON.stringify(user));
+				localStorage.setItem("username", data.data.username);
+				return user;
 			})
 			.catch((error) => {
 				console.error("Fetch error:", error);
 			});
-	});
+	}
 
+	////////////////////// LOGOUT ////////////////////////////
 
-	/////////// frontend ////////////
+	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
 
-	let btnLogin = document.getElementById("b-to_signin");
-	let btnSignup = document.getElementById("b-to_signup");
-
-	btnSignup.addEventListener("click", function () {
-		document.getElementById("profile-box_signup").style.display = "block";
-		document.getElementById("profile-box_signin").style.display = "none";
-	});
-
-	btnLogin.addEventListener("click", function () {
-		document.getElementById("profile-box_signup").style.display = "none";
-		document.getElementById("profile-box_signin").style.display = "block";
-	});
-
-
+	function logoutButton() {
+		fetch(logoutUrl, {
+			method: "POST",
+			headers: {
+			  "Content-Type": "application/json",
+			  "X-CSRFToken": token,
+			},
+			credentials: "include",
+		})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log("data: ", data);
+			let user = {
+				username: "guest",
+			};
+			updateProfile(user);
+			localStorage.setItem("userIsConnected", false);
+			userIsConnected = false;
+			var mainMenu = document.getElementById("main-menu");
+			var userInfoBox = document.getElementById("user-info-box");
+			mainMenu.style.display = "flex";
+			userInfoBox.style.display = "none";
+		})
+		.catch((error) => {
+			console.error("Fetch error:", error);
+		});
+	}
 
 
 	////////////////////// UPDATE THE BLOCKED USERS LIST ////////////////////////////
@@ -254,53 +508,50 @@ document.addEventListener("DOMContentLoaded", function () {
 	var chat_room_name;
 
 	usrsLst.addEventListener("click", function (event) {					//// frontend
-		document.getElementById("profile-box_signup").style.display = "none";
-		document.getElementById("profile-box_signin").style.display = "none";
-		if (window.getComputedStyle(document.getElementById("users-list-box")).display === "none") {
-			usersListBox.classList.add('show');
-			document.getElementById("main-menu").style.display = "none";
-		}
-		else {
-			usersListBox.classList.remove('show');
-			document.getElementById("main-menu").style.display = "flex";
-		}
+		// if (window.getComputedStyle(document.getElementById("users-list-box")).display === "none") {
+		// 	usersListBox.classList.add('show');
+		// }
+		// else {
+		// 	usersListBox.classList.remove('show');
+		// }
 
-		let usersUrl = "https://" + window.location.host + "/users/";
+		let usersUrl = "https://" + window.location.host + "/users_list/";
 
 		fetch(usersUrl, {
-			method: "POST",
-			headers: {
-				"X-CSRFToken": token,
-				"Content-Type": "application/json",
-			},
-			credentials: "include",
+		method: "POST",
+		headers: {
+			"X-CSRFToken": token,
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
 		})
 			.then(response => response.json())
 			.then(data => {
 				const usersList = document.getElementById('users-list-container');
 				usersList.innerHTML = '';
+				console.log("data: ", data);
 
-				if (data.users.length != 0) {
-					data.users.forEach(user => {
-						const li = document.createElement('li');     		////
-						li.textContent = user.username + ' ';        		//// dinamically creating users list with
-																			//// buttons "start chat" 
-						const button = document.createElement('button');	////
-						button.textContent = 'Start Chat';					////
+			if (data.users.length !== 0) {
+				data.users.forEach((user) => {
+					const li = document.createElement("li"); ////
+					li.textContent = user.username + " "; //// dinamically creating users list with
+					//// buttons "start chat"
+					const button = document.createElement("button"); ////
+					button.textContent = "Start Chat"; ////
 
-						button.addEventListener('click', (e) => {
-							e.preventDefault();
-							if (!(document.getElementById("chat-box").classList.item("active")))
-								document.getElementById("chat-box").classList.toggle("active");
-							handleChatLinkClick(user.username);				//// opening chat
-						});
-
-						li.appendChild(button);
-						usersList.appendChild(li);
+					button.addEventListener("click", (e) => {
+					e.preventDefault();
+					if (!document.getElementById("chat-box").classList.item("active"))
+						document.getElementById("chat-box").classList.toggle("active");
+					handleChatLinkClick(user.username); //// opening chat
 					});
-				}
-			})
-			.catch(error => console.error('Error fetching user data:', error));
+
+					li.appendChild(button);
+					usersList.appendChild(li);
+				});
+			}
+		})
+		.catch((error) => console.error("Error fetching user data:", error));
 	});
 
 
@@ -346,17 +597,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	////////////////////// CHAT ////////////////////////////
 
-	var active_connections = [];
-	var active_connections_num = 0;
 	var chatSocket = null;
 
 	function handleChatLinkClick(username) {
-		// for (let j = 0; j < active_connections.length; j++) {			//// prevent starting the same chat
-		// 	if (active_connections[j] == username)						//// several times
-		// 		return;
-		// }
-		// active_connections[active_connections_num++] = username;
-
 		const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
 
 		fetch(chatUrl, {
@@ -386,24 +629,24 @@ document.addEventListener("DOMContentLoaded", function () {
 				document.getElementById("chat-container").innerHTML = "";
 				if (data && data.other_user && Array.isArray(data.messages)) {		//// adding messages into the chat container dinamically
 					chatContainer.innerHTML = `
-          <center><h1>Chat with ${data.other_user}</h1></center>
-          <div class="chat__item__container" id="id_chat_item_container">
-            ${data.messages.map(message => `
-              <div class="chat__message ${message.fields.username === data.username ? 'chat__message--self' : 'chat__message--other'}">
-                <img src="https://via.placeholder.com/40" alt="User Photo">
-                <div class="chat__message__content">
-                  <div class="chat__message__username">${message.fields.username}</div>
-                  <div class="chat__message__text">${message.fields.message}</div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-          <div class="chat__input__container">
-            <input type="text" id="id_message_send_input" placeholder="Type a message..." />
-            <button type="submit" id="id_message_send_button">Send Message</button>
+		  <center><h1>Chat with ${data.other_user}</h1></center>
+		  <div class="chat__item__container" id="id_chat_item_container">
+			${data.messages.map(message => `
+			  <div class="chat__message ${message.fields.username === data.username ? 'chat__message--self' : 'chat__message--other'}">
+				<img src="https://via.placeholder.com/40" alt="User Photo">
+				<div class="chat__message__content">
+				  <div class="chat__message__username">${message.fields.username}</div>
+				  <div class="chat__message__text">${message.fields.message}</div>
+				</div>
+			  </div>
+			`).join('')}
+		  </div>
+		  <div class="chat__input__container">
+			<input type="text" id="id_message_send_input" placeholder="Type a message..." />
+			<button type="submit" id="id_message_send_button">Send Message</button>
 			<button type="submit" id="id_invit_button">Invite to Pong</button>
-          </div>
-        `;
+		  </div>
+		`;
 				}
 				else {
 					console.error('data is missing or is not an array', data);
@@ -499,17 +742,128 @@ document.addEventListener("DOMContentLoaded", function () {
 					}
 
 					div.innerHTML = `
-            <img src="https://via.placeholder.com/40" alt="User Photo">
-            <div class="chat__message__content">
-              <div class="chat__message__username">${data.username}</div>
-              <div class="chat__message__text">${data.message}</div>
-            </div>
-          `;
+			<img src="https://via.placeholder.com/40" alt="User Photo">
+			<div class="chat__message__content">
+			  <div class="chat__message__username">${data.username}</div>
+			  <div class="chat__message__text">${data.message}</div>
+			</div>
+		  `;
 					document.querySelector("#id_message_send_input").value = "";
 					document.querySelector("#id_chat_item_container").appendChild(div);
 					document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
 				}
 			})
 			.catch(error => console.error('Error fetching chat data:', error));
+	}
+
+
+	////////////////////// A SUPPRIMER (DEMANDER A ALESS SI C'EST OK) ////////////////////////////
+
+	async function addGame() {
+		console.log("add game clicked");
+
+		try {
+			const player_1_id = await getUserId("aless");
+			const player_2_id = await getUserId("rita");
+
+			const game = {
+				player_1_id: player_1_id,
+				player_2_id: player_2_id,
+				player_1_score: 10,
+				player_2_score: 5,
+				winner_id: player_1_id,
+				date_played: new Date().toISOString(),
+				duration: 300,
+			};
+
+			console.log("game : ", JSON.stringify(game));
+
+			let setGameUrl = "https://" + window.location.host + "/stat/game-history/";
+
+			const response = await fetch(setGameUrl, {
+				method: "POST",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(game),
+				credentials: "include",
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json();
+				console.log(response);
+				throw new Error(`Network response was not ok: ${JSON.stringify(errorData)}`);
+			}
+
+			const data = await response.json();
+			console.log(data);
+		} catch (error) {
+			console.error("Fetch error: ", error);
+		}
+	}
+
+	async function getStats() {
+		let getStatsUrl = "https://" + window.location.host + "/stat/stats/";
+
+		fetch(getStatsUrl, {
+			method: "GET",
+			headers: {
+				"X-CSRFToken": token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+		})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data)
+			const stats = {
+			stats: data,
+			};
+			let user = JSON.parse(localStorage.getItem("user"));
+			user.stats = stats.stats;
+			localStorage.setItem("user", JSON.stringify(user));
+			updateUserInfoDisplay(stats);
+		})
+		.catch((error) => {
+			console.error("Fetch error: ", error);
+		});
+	}
+
+	async function getMatchHistory() {
+		let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/";
+
+		fetch(getMatchHistoryUrl, {
+			method: "GET",
+			headers: {
+				"X-CSRFToken": token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+		})
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data)
+			const match_history = {
+				match_history: data,
+			};
+			let user = JSON.parse(localStorage.getItem("user"));
+			user.match_history = match_history.match_history;
+			localStorage.setItem("user", JSON.stringify(user));
+			updateUserInfoDisplay(match_history);
+		})
+		.catch((error) => {
+			console.error("Fetch error: ", error);
+		});
 	}
 });
