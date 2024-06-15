@@ -1,5 +1,5 @@
 import { userIsConnected } from "./users.js";
-import { updateProfile } from "./users.js";
+import { displayProfile } from "./users.js";
 import { usersClick } from "./users.js";
 
 // document.addEventListener('DOMContentLoaded', () => {
@@ -74,18 +74,15 @@ import { usersClick } from "./users.js";
             .then((response) => {return response.text();})
             .then((data) => {
                 document.getElementById("content").innerHTML = data;
-                let storedUser = localStorage.getItem("user");
-                if (storedUser)
-                {
-                    let user = JSON.parse(storedUser);
-                    updateProfile(user);
-                }
+                displayProfile();
             })
         }
         else {
             const html = await fetch(route.template).then((response) => response.text());
             document.getElementById("content").innerHTML = html;
         }
+        // const html = await fetch(route.template).then((response) => response.text());
+        // document.getElementById("content").innerHTML = html;
         if (location == "/online/") {
             const scriptContent = `
                 document.getElementById("online-box").style.display = "block";
