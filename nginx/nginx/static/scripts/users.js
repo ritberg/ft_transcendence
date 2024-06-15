@@ -46,6 +46,7 @@ const updateProfile = (user, isConnected, token) => {
 	}
 	localStorage.setItem("userIsConnected", isConnected);
 	userIsConnected = isConnected;
+	console.log("userIsConnected : ", localStorage.getItem("userIsConnected"));
 	if (token !== null) {
 		updateCSRFToken(token);
 	} else {
@@ -96,6 +97,9 @@ function updateMatchHistory(matchHistory) {
 
 export async function displayProfile() {
 	let user = JSON.parse(localStorage.getItem("user")) || null;
+
+	console.log("userIsConnected in var : ", userIsConnected);
+	console.log("userIsConnected in localStorage : ", localStorage.getItem("userIsConnected"));
 
 	if (user === null) {
 		console.log("No user found for displayUserInfo");
