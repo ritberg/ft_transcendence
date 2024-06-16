@@ -311,6 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	/////////// NAVIGATION //////////////
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", async function (event) {
+		let url = window.location.pathname;
 		if (event.target && event.target.id === "b-signin-ok") {
 			await loginButton(event);
 			if (userIsConnected == true)
@@ -320,19 +321,27 @@ document.addEventListener("DOMContentLoaded", function () {
 			signupButton(event);
 		}
 		else if (event.target && event.target.id === "pvp-mode") {
-			document.getElementById("main-menu").classList.add("hidden");
-			GameMode(0);
+			if (url == "/") {
+				document.getElementById("main-menu").classList.remove("shown");
+				document.getElementById("main-menu").classList.add("hidden");
+				await sleep(500);
+			}
+			route("/pvp/");
 		}
 		else if (event.target && event.target.id === "tourney-mode") {
-			document.getElementById("main-menu").classList.remove("shown");
-			document.getElementById("main-menu").classList.add("hidden");
-			await sleep(500);
+			if (url == "/") {
+				document.getElementById("main-menu").classList.remove("shown");
+				document.getElementById("main-menu").classList.add("hidden");
+				await sleep(500);
+			}
 			route("/tourney/");
 		}
 		else if (event.target && event.target.id === "online-mode") {
-			document.getElementById("main-menu").classList.remove("shown");
-			document.getElementById("main-menu").classList.add("hidden");
-			await sleep(500);
+			if (url == "/") {
+				document.getElementById("main-menu").classList.remove("shown");
+				document.getElementById("main-menu").classList.add("hidden");
+				await sleep(500);
+			}
 			route("/online/");
 		}
 		else if (event.target && event.target.id === "cpu-mode") {

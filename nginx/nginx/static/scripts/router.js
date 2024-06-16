@@ -36,6 +36,10 @@ import { usersClick } from "./users.js";
             template: "/templates/profile.html",
             title: "Profile",
         },
+        "/pvp/": {
+            template: "/templates/pvp.html",
+            title: "PVP",
+        },
     }
 
     document.addEventListener("click", (e) => {
@@ -103,17 +107,13 @@ import { usersClick } from "./users.js";
         if (location == "/users/") {
             usersClick();
         }
+        // if (location == "/pvp/") {
+        //     const scriptElement = document.createElement('script');
+        //     scriptElement.setAttribute("src", "/static/scripts/pong_pvp.js");
+        //     document.getElementById("content").appendChild(scriptElement);
+        // }
         // set the title of the document to the title of the route
         document.title = route.title;
-        // set the description of the document to the description of the route
-        // document
-        //     .querySelector('meta[name="description"]')
-        //     .setAttribute("content", route.description);
-        // Ajoutez cette section pour mettre à jour les infos utilisateur après le chargement du HTML
-        // if (location == "/profile/") {
-        //     const user = JSON.parse(localStorage.getItem('user')) || {};
-        //     updateProfile(user);
-        // }
     };
 
     // add an event listener to the window that watches for url changes

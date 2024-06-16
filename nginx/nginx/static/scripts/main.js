@@ -1,6 +1,6 @@
 import { sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
-import { loop as loopPvp } from './pong_pvp.js';
+// import { loop as loopPvp } from './pong_pvp.js';
 import { loop as loopTourney, loop_exec } from './pong_tourney.js';
 import { drawBrackets, enterNicknames, createPlayers } from './brackets.js';
 import { online_game } from '../online/pong_online.js';
