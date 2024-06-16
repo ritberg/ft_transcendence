@@ -30,6 +30,8 @@ DB_USER = env('DB_USERCHAT_USER')
 DB_PASSWORD = env('DB_USERCHAT_PASSWORD')
 DB_HOST = env('DB_USERCHAT_HOST')
 DB_PORT = env('DB_USERCHAT_PORT')
+IP_ADDRESS= env('IP_ADDRESS')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -172,4 +174,4 @@ CSRF_COOKIE_SECURE = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://10.12.8.10']
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://' + IP_ADDRESS]

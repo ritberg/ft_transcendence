@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
+
+env = environ.Env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,10 +27,11 @@ SECRET_KEY = 'django-insecure-@rt_3#t8$+ik*=g_!s4q44ndzr6z3jwfk0q_clrl@85&oy5ze=
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+IP_ADDRESS= env('IP_ADDRESS')
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://10.12.8.10']
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://' + IP_ADDRESS]
 
 # Application definition
 

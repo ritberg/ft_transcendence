@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import sys
 from pathlib import Path
+import environ
 
+env = environ.Env()
 sys.path.append('/home/transcendance/user_auth_system')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -27,6 +29,8 @@ SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+IP_ADDRESS= env('IP_ADDRESS')
 
 ALLOWED_HOSTS = ['*']
 
@@ -165,7 +169,7 @@ CSRF_COOKIE_SECURE = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://10.12.8.10']
+CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://' + IP_ADDRESS]
 
 # CHANNELS_ALLOWED_ORIGINS = ["*"]
 

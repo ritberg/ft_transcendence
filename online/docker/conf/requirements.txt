@@ -6,3 +6,4 @@ psycopg[binary]==3.1.18
 python_rapidjson==1.17
 django-cors-headers==4.3.1
 requests==2.32.3
+django-environ

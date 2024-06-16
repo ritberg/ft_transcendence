@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y netcat-openbsd
 RUN mkdir -p logs
 
 # copy and execute the initialization script
-COPY /tools/init.sh /home/transcendance/init.sh
+COPY ./tools/init.sh /home/transcendance/init.sh
 
 # set the final working directory
 WORKDIR /home/transcendance/${STAT_SERVICE_NAME}

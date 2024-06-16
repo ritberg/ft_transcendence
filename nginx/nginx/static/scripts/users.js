@@ -7,7 +7,7 @@ import { route } from './router.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
-export var userIsConnected = localStorage.getItem("userIsConnected") || false;
+export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected")) || false;
 
 export const getUserId = async (username) => {
 	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
@@ -29,9 +29,37 @@ export const getUserId = async (username) => {
 	return data.id;
 };
 
-export const updateProfile = (user) => {
-	username_global = user.username;
-	updateUserInfoDisplay(user);
+const updateProfile = (user, isConnected, token) => {
+	console.log("updateProfile called with =", user, isConnected, token);
+
+	if (user !== null) {
+		console.log("user is not null")
+		username_global = user.username;
+		localStorage.setItem("user", JSON.stringify(user));
+		document.getElementById("user-name").textContent = user.username;
+	}
+	else {
+		console.log("user is null")
+		username_global = "guest";
+		localStorage.removeItem("user");
+		document.getElementById("user-name").textContent = "guest";
+	}
+	localStorage.setItem("userIsConnected", isConnected);
+	userIsConnected = isConnected;
+	console.log("userIsConnected : ", localStorage.getItem("userIsConnected"));
+	if (token !== null) {
+		updateCSRFToken(token);
+	} else {
+		localStorage.removeItem("token");
+	}
+};
+
+const updateCSRFToken = (newToken) => {
+	console.log("old token : ", token);
+	token = newToken;
+	localStorage.setItem("token", token);
+	console.log("new token : ", token);
+	document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 };
 
 function updateUserStats(stats) {
@@ -67,8 +95,22 @@ function updateMatchHistory(matchHistory) {
 	}
 }
 
-function updateUserInfoDisplay(user) {
-	console.log("user in updateUserInfoDisplay: ", user);
+export async function displayProfile() {
+	let user = JSON.parse(localStorage.getItem("user")) || null;
+
+	console.log("userIsConnected in var : ", userIsConnected);
+	console.log("userIsConnected in localStorage : ", localStorage.getItem("userIsConnected"));
+
+	if (user === null) {
+		console.log("No user found for displayUserInfo");
+		return;
+	}
+
+	user.stats = await getStats();
+	user.match_history = await getMatchHistory();
+	localStorage.setItem("user", JSON.stringify(user));
+
+	console.log("updateUserInfo called with userInfo =", user);
 	if (user) {
 		const username = user.username;
 		if (username) {
@@ -193,6 +235,58 @@ function createGoalsChart(stats) {
 	});
 }
 
+async function getStats() {
+	let getStatsUrl = "https://" + window.location.host + "/stat/stats/";
+
+	return await fetch(getStatsUrl, {
+		method: "GET",
+		headers: {
+			"X-CSRFToken": token,
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	})
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+		return response.json();
+	})
+	.then((data) => {
+		console.log(data)
+		return data
+	})
+	.catch((error) => {
+		console.error("Fetch error: ", error);
+	});
+}
+
+async function getMatchHistory() {
+	let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/";
+
+	return await fetch(getMatchHistoryUrl, {
+		method: "GET",
+		headers: {
+			"X-CSRFToken": token,
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	})
+	.then((response) => {
+		if (!response.ok) {
+			throw new Error("Network response was not ok");
+		}
+		return response.json();
+	})
+	.then((data) => {
+		console.log(data)
+		return data;
+	})
+	.catch((error) => {
+		console.error("Fetch error: ", error);
+	});
+}
+
 let usersClick;
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -213,23 +307,14 @@ document.addEventListener("DOMContentLoaded", function () {
 		return;
 	}
 
-	const updateCSRFToken = (newToken) => {
-		console.log("old token : ", token);
-		token = newToken;
-		localStorage.setItem("token", token);
-		console.log("new token : ", token);
-		document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
-	};
-
-	/////////// USER DISPLAY ////////////
-
 
 	/////////// NAVIGATION //////////////
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", async function (event) {
 		if (event.target && event.target.id === "b-signin-ok") {
 			await loginButton(event);
-			route('/profile/');
+			if (userIsConnected == true)
+				route('/');
 		}
 		else if (event.target && event.target.id === "b-signup-ok") {
 			signupButton(event);
@@ -237,6 +322,18 @@ document.addEventListener("DOMContentLoaded", function () {
 		else if (event.target && event.target.id === "pvp-mode") {
 			document.getElementById("main-menu").classList.add("hidden");
 			GameMode(0);
+		}
+		else if (event.target && event.target.id === "tourney-mode") {
+			document.getElementById("main-menu").classList.remove("shown");
+			document.getElementById("main-menu").classList.add("hidden");
+			await sleep(500);
+			route("/tourney/");
+		}
+		else if (event.target && event.target.id === "online-mode") {
+			document.getElementById("main-menu").classList.remove("shown");
+			document.getElementById("main-menu").classList.add("hidden");
+			await sleep(500);
+			route("/online/");
 		}
 		else if (event.target && event.target.id === "cpu-mode") {
 			document.getElementById("main-menu").classList.add("hidden");
@@ -250,12 +347,14 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 		else if (event.target && event.target.id === "refresh-stats") {
 			// addGame();
-			getStats();
-			getMatchHistory();
+			displayProfile();
 		}
 		else if (event.target && event.target.id === "logout") {
 			logoutButton();
 			route("/");
+		}
+		else if (event.target && event.target.id === "profile") {
+			displayProfile();
 		}
 	});
 
@@ -266,7 +365,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		{	
 			route('/');
 		}
-		else if (userIsConnected)
+		else if (userIsConnected == true)
 		{
 			if (url == "/") {
 				document.getElementById("main-menu").classList.remove("shown");
@@ -279,20 +378,23 @@ document.addEventListener("DOMContentLoaded", function () {
 			// document.getElementById("user-info-box").classList.remove("hidden");
 			// document.getElementById("user-info-box").classList.add("shown");
 		}
-		else
+		else if (userIsConnected == false)
 		{
-			document.getElementById("main-menu").classList.remove("shown");
-			document.getElementById("main-menu").classList.add("hidden");
-			await sleep(500);
+			if (url == "/") {
+				document.getElementById("main-menu").classList.remove("shown");
+				document.getElementById("main-menu").classList.add("hidden");
+				await sleep(500);
+			}
 			route('/signin/');
 		}
+		console.log("fdsafdsa", userIsConnected);
 	});
 
 	////////////////////// SIGNUP ////////////////////////////
 
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
 
-	function signupButton(event) {
+	async function signupButton(event) {
 		event.preventDefault();
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
@@ -300,7 +402,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		console.log({ username, email, password });
 
-		fetch(signupUrl, {
+		await fetch(signupUrl, {
 			method: "POST",
 			headers: {
 			"Content-Type": "application/json",
@@ -319,8 +421,6 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log(data);
 				console.log("token received : ", data.crsfToken);
 				updateCSRFToken(data.crsfToken);
-				// localStorage.setItem("user", JSON.stringify(data.data));
-				// displayProfile(data.data);
 				route("/signin/");
 			})
 			.catch((error) => {
@@ -334,67 +434,53 @@ document.addEventListener("DOMContentLoaded", function () {
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
 	async function loginButton(event) {
-	  event.preventDefault();
-
-	  let username = document.getElementById("username1").value;
-	  let password = document.getElementById("password1").value;
-
-	  console.log("Sending signin request...");
-	  console.log("username : ", username);
-
-	  	return await fetch(loginUrl, {
-		method: "POST",
-		headers: {
-		  "Content-Type": "application/json",
-		  "X-CSRFToken": token,
-		},
-		body: JSON.stringify({ username, password }),
-		credentials: "include",
-	  })
+		event.preventDefault();
+  
+		let username = document.getElementById("username1").value;
+		let password = document.getElementById("password1").value;
+  
+		console.log("Sending signin request...");
+		console.log("username : ", username);
+  
+		return await fetch(loginUrl, {
+			method: "POST",
+			headers: {
+			"Content-Type": "application/json",
+			"X-CSRFToken": token,
+			},
+			body: JSON.stringify({ username, password }),
+			credentials: "include",
+		})
 		.then((response) => {
-		  console.log("Response Headers:", [...response.headers.entries()]);
+		console.log("Response Headers:", [...response.headers.entries()]);
 
-		  if (!response.ok) {
+		if (!response.ok) {
 			console.log("Full response:", response);
 			throw new Error("Network response was not ok");
-		  }
-
-				return response.json();
-			})
-			.then(async (data) => {
-				console.log("Cookies after signin response:", document.cookie);
-				console.log("Login successful. Server response data:", data);
-				console.log("data : ", data.data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
-				localStorage.setItem("userIsConnected", "true");
-				userIsConnected = true;
-				let user = data.data;
-				console.log("user before ret : ", user);
-				// updateProfile(user);
-				// addGame();
-				let stats = await getStats();
-				// console.log("stats : ", stats);
-				user.stats = stats;
-				let match_history = await getMatchHistory();
-				// console.log("match_history : ", match_history);
-				user.match_history = match_history;
-				// console.log("user before ret : ", user);
-				localStorage.setItem("user", JSON.stringify(user));
-				localStorage.setItem("username", data.data.username);
-				return;
-			})
-			.catch((error) => {
-				console.error("Fetch error:", error);
-			});
+		}
+			return response.json();
+		})
+		.then(async (data) => {
+			console.log("Cookies after signin response:", document.cookie);
+			console.log("Login successful. Server response data:", data);
+			let user = data.data;
+			console.log("data : ", user);
+			console.log("token received : ", data.crsfToken);
+			updateProfile(user, true, data.crsfToken);
+			// await addGame(); // à supprimer
+			return user;
+		})
+		.catch((error) => {
+			console.error("Fetch error:", error);
+		});
 	}
 
 	////////////////////// LOGOUT ////////////////////////////
 
 	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
 
-	function logoutButton() {
-		fetch(logoutUrl, {
+	async function logoutButton() {
+		await fetch(logoutUrl, {
 			method: "POST",
 			headers: {
 			  "Content-Type": "application/json",
@@ -410,12 +496,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 		.then((data) => {
 			console.log("data: ", data);
-			let user = {
-				username: "guest",
-			};
-			updateProfile(user);
-			localStorage.setItem("userIsConnected", false);
-			userIsConnected = false;
+			updateProfile(null, false, null);
 		})
 		.catch((error) => {
 			console.error("Fetch error:", error);
@@ -586,9 +667,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	////////////////////// ACCEPT INVITATION TO PLAY PONG ////////////////////////////
 
-	function invite_accept() {
+	async function invite_accept() {
 		let ws
-		fetch("https://" + window.location.host + "/room/invite", {
+		await fetch("https://" + window.location.host + "/room/invite", {
 			method: "POST",
 			body: JSON.stringify({
 				chat_name: chat_room_name,
@@ -628,10 +709,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	var chatSocket = null;
 
-	function handleChatLinkClick(username) {
+	async function handleChatLinkClick(username) {
 		const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
 
-		fetch(chatUrl, {
+		await fetch(chatUrl, {
 			method: "POST",
 			headers: {
 				"X-CSRFToken": token,
@@ -721,7 +802,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				document.querySelector("#id_invit_button").onclick = async function (e) {
 					let ws;
-					fetch("https://" + window.location.host + "/room/invite", {
+					await fetch("https://" + window.location.host + "/room/invite", {
 						method: "POST",
 						body: JSON.stringify({
 							chat_name: data.room_name,
@@ -740,7 +821,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						if (code == 500)
 							console.log("error: " + data.error);
 						else {
-							usersListBox.classList.remove('show');
+							// usersListBox.classList.remove('show');
 							chatSocket.send(JSON.stringify({ message: "A pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
 							ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
 							online_game(ws);
@@ -832,69 +913,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
-	async function getStats() {
-		let getStatsUrl = "https://" + window.location.host + "/stat/stats/";
-
-		fetch(getStatsUrl, {
-			method: "GET",
-			headers: {
-				"X-CSRFToken": token,
-				"Content-Type": "application/json",
-			},
-			credentials: "include",
-		})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error("Network response was not ok");
-			}
-			return response.json();
-		})
-		.then((data) => {
-			console.log(data)
-			const stats = {
-			stats: data,
-			};
-			let user = JSON.parse(localStorage.getItem("user"));
-			user.stats = stats.stats;
-			localStorage.setItem("user", JSON.stringify(user));
-			updateUserInfoDisplay(stats);
-		})
-		.catch((error) => {
-			console.error("Fetch error: ", error);
-		});
-	}
-
-	async function getMatchHistory() {
-		let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/";
-
-		fetch(getMatchHistoryUrl, {
-			method: "GET",
-			headers: {
-				"X-CSRFToken": token,
-				"Content-Type": "application/json",
-			},
-			credentials: "include",
-		})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error("Network response was not ok");
-			}
-			return response.json();
-		})
-		.then((data) => {
-			console.log(data)
-			const match_history = {
-				match_history: data,
-			};
-			let user = JSON.parse(localStorage.getItem("user"));
-			user.match_history = match_history.match_history;
-			localStorage.setItem("user", JSON.stringify(user));
-			updateUserInfoDisplay(match_history);
-		})
-		.catch((error) => {
-			console.error("Fetch error: ", error);
-		});
-	}
 });
 
 export { usersClick }

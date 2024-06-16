@@ -30,7 +30,7 @@ RUN apt-get update && apt-get install -y postgresql-client
 RUN mkdir -p logs
 
 # copy and execute the initialization script
-COPY /tools/init.sh /home/transcendance/init.sh
+COPY ./tools/init.sh /home/transcendance/init.sh
 RUN chmod +x /home/transcendance/init.sh
 
 # set the final working directory

@@ -1,5 +1,5 @@
 import { userIsConnected } from "./users.js";
-import { updateProfile } from "./users.js";
+import { displayProfile } from "./users.js";
 import { usersClick } from "./users.js";
 
 // document.addEventListener('DOMContentLoaded', () => {
@@ -28,7 +28,7 @@ import { usersClick } from "./users.js";
             template: "/templates/online.html",
             title: "Online",
         },
-        "/tournament/": {
+        "/tourney/": {
             template: "/templates/tournament.html",
             title: "Tournament",
         },
@@ -40,7 +40,7 @@ import { usersClick } from "./users.js";
 
     document.addEventListener("click", (e) => {
         const { target } = e;
-        if (!target.matches("#profile_tab a, #user-name a, #online-mode a, #signup-switch a, #signin-switch a, #tabs-list a, #tourney-mode a, #b-signin-ok")) {
+        if (!target.matches("#profile_tab a, #user-name a, #online-mode a, #signup-switch a, #signin-switch a, #tabs-list a, #tourney-mode a")) {
             return;
         }
         e.preventDefault();
@@ -74,18 +74,15 @@ import { usersClick } from "./users.js";
             .then((response) => {return response.text();})
             .then((data) => {
                 document.getElementById("content").innerHTML = data;
-                let storedUser = localStorage.getItem("user");
-                if (storedUser)
-                {
-                    let user = JSON.parse(storedUser);
-                    updateProfile(user);
-                }
+                displayProfile();
             })
         }
         else {
             const html = await fetch(route.template).then((response) => response.text());
             document.getElementById("content").innerHTML = html;
         }
+        // const html = await fetch(route.template).then((response) => response.text());
+        // document.getElementById("content").innerHTML = html;
         if (location == "/online/") {
             const scriptContent = `
                 document.getElementById("online-box").style.display = "block";
@@ -93,16 +90,15 @@ import { usersClick } from "./users.js";
             `;
             const scriptElement = document.createElement('script');
             scriptElement.text = scriptContent;
-            document.body.appendChild(scriptElement);
-        }
-        if (location == "/tournament/") {
+            document.getElementById("content").appendChild(scriptElement);        }
+        if (location == "/tourney/") {
             const scriptContent = `
                 document.getElementById("tourney_settings-box").style.display = "block";
                 document.getElementById("tourney_settings-box").classList.add("shown");
             `;
             const scriptElement = document.createElement('script');
             scriptElement.text = scriptContent;
-            document.body.appendChild(scriptElement);
+            document.getElementById("content").appendChild(scriptElement);
         }
         if (location == "/users/") {
             usersClick();
