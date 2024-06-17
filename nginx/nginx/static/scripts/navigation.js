@@ -97,6 +97,10 @@ document.getElementById("profile_tab").addEventListener("click", async function 
 });
 
 ////////// USERS_LIST ///////////
+document.getElementById("home-button").addEventListener("click", async function (event) {
+	route("/");
+});
+
 document.getElementById("users-full-list-button").addEventListener("click", async function (event) {					//// frontend
     event.preventDefault();
     if (window.location.pathname === "/users/") {

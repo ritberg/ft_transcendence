@@ -39,19 +39,19 @@ export async function GameMode(n) {
 				"X-CSRFToken": token,
 			}
 		})
-		.then((response) => {
-			return response.json();
-		})
-		.then((data) => {
-			let code = data.status;
-			if (code == 500)
-				console.log("error: " + data.error);
-			else {
-				ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
-				online_game(ws);
-				// ws.close();
-			}
-		})
+			.then((response) => {
+				return response.json();
+			})
+			.then((data) => {
+				let code = data.status;
+				if (code == 500)
+					console.log("error: " + data.error);
+				else {
+					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+					online_game(ws);
+					// ws.close();
+				}
+			})
 	}
 }
 

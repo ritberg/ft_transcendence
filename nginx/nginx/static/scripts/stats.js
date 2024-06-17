@@ -6,10 +6,11 @@ function updateUserStats(stats) {
 		document.getElementById("stat-wins").textContent = `Wins: ${stats.wins}`;
 		document.getElementById("stat-losses").textContent = `Losses: ${stats.losses}`;
 		document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate.toFixed(2)}%`;
-		document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
-		document.getElementById("stat-total-hours").textContent = `Total Hours Played: ${stats.total_hours_played.toFixed(2)}`;
+		document.getElementById("stat-goals-avg").textContent = `Score Avg: ${stats.goal_scored / stats.goal_conceded}%`;
 		document.getElementById("stat-goals-scored").textContent = `Goals Scored: ${stats.goal_scored}`;
 		document.getElementById("stat-goals-conceded").textContent = `Goals Conceded: ${stats.goal_conceded}`;
+		document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
+		document.getElementById("stat-total-hours").textContent = `Total Hours Played: ${stats.total_hours_played.toFixed(2)}`;
 	}
 }
 
@@ -27,7 +28,7 @@ function updateMatchHistory(matchHistory) {
 			let player_2_score = match.player_2.score;
 			let time = (match.duration / 60).toFixed(2);
 
-			listItem.textContent = `${data_played}: ${opponent} - ${status} (${player_1_score} - ${player_2_score}) - ${time}min`;
+			listItem.textContent = `${data_played}: ${opponent} • ${status} [${player_1_score} - ${player_2_score}] • ${time}min`;
 			listItem.classList.add(status === winStatus ? "win" : "loss");
 			historyList.appendChild(listItem);
 		});
@@ -87,9 +88,9 @@ function createChartGames(stats) {
 				{
 					label: 'Win Rate',
 					data: [stats.wins, stats.losses],
-					backgroundColor: ['#008000', '#FF0000'],
-					borderColor: ['#388e3c', '#d32f2f'],
-					borderWidth: 1,
+					backgroundColor: ['transparent', 'transparent'],
+					borderColor: ['#00ff00', '#ff0000'],
+					borderWidth: 3,
 				},
 			],
 		},
@@ -135,7 +136,7 @@ function createGoalsChart(stats) {
 	new Chart(ctx, {
 		type: 'bar',
 		data: {
-			labels: ['Goals Scored', 'Goals Conceded', 'Total Goals'],
+			labels: ['Scored', 'Conceded', 'Total'],
 			datasets: [
 				{
 					data: [
@@ -143,9 +144,9 @@ function createGoalsChart(stats) {
 						stats.goal_conceded,
 						stats.goal_scored + stats.goal_conceded,
 					],
-					backgroundColor: ['#008000', '#FF0000', '#FF8000'],
-					borderColor: ['#388e3c', '#d32f2f', '#fbc02d'],
-					borderWidth: 1,
+					backgroundColor: ['transparent', 'transparent', 'transparent'],
+					borderColor: ['#00ff00', '#ff0000', '#fff000'],
+					borderWidth: 3,
 				},
 			],
 		},
@@ -185,19 +186,19 @@ async function getStats() {
 		},
 		credentials: "include",
 	})
-	.then((response) => {
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		return response.json();
-	})
-	.then((data) => {
-		console.log(data)
-		return data
-	})
-	.catch((error) => {
-		console.error("Fetch error: ", error);
-	});
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data)
+			return data
+		})
+		.catch((error) => {
+			console.error("Fetch error: ", error);
+		});
 }
 
 async function getMatchHistory() {
@@ -211,17 +212,17 @@ async function getMatchHistory() {
 		},
 		credentials: "include",
 	})
-	.then((response) => {
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		return response.json();
-	})
-	.then((data) => {
-		console.log(data)
-		return data;
-	})
-	.catch((error) => {
-		console.error("Fetch error: ", error);
-	});
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok");
+			}
+			return response.json();
+		})
+		.then((data) => {
+			console.log(data)
+			return data;
+		})
+		.catch((error) => {
+			console.error("Fetch error: ", error);
+		});
 }
