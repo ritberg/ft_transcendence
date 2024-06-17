@@ -440,6 +440,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	////////////////////// LOGIN ////////////////////////////
 
+	//let loginForm = document.getElementById("b-signin-ok");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
 	async function loginButton(event) {
@@ -615,7 +616,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////
 
 	let usrsLst = document.getElementById("tabs-list");
-	let usersListBox = document.getElementById("users-list-box");
+	let usersListBox = document.getElementById("users_list-box");
 	var chat_room_name;
 
 	usrsLst.addEventListener("click", async function (event) {					//// frontend
@@ -637,40 +638,58 @@ document.addEventListener("DOMContentLoaded", function () {
 		let usersUrl = "https://" + window.location.host + "/users_list/";
 
 		await fetch(usersUrl, {
-		method: "POST",
-		headers: {
-			"X-CSRFToken": token,
-			"Content-Type": "application/json",
-		},
-		credentials: "include",
+			method: "POST",
+			headers: {
+				"X-CSRFToken": token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
 		})
 			.then(response => response.json())
 			.then(data => {
-				const usersList = document.getElementById('users-list-container');
+				const usersList = document.getElementById('users_list-container');
 				usersList.innerHTML = '';
 				console.log("data: ", data);
 
-			if (data.users.length !== 0) {
-				data.users.forEach((user) => {
-					const li = document.createElement("li"); ////
-					li.textContent = user.username + " "; //// dynamically creating users list with
-					//// buttons "start chat"
-					const button = document.createElement("button"); ////
-					button.textContent = "Start Chat"; ////
+				if (data.users.length !== 0) {
+					data.users.forEach((user) => {
+						const li = document.createElement('li');     		////
+						//li.textContent = user.username;        		//// dinamically creating users list with
+						const user_button = document.createElement('span');	////
+						user_button.style.flexGrow = "1";
+						user_button.style.cursor = "pointer";
+						user_button.textContent = user.username;
+						li.appendChild(user_button);
 
-					button.addEventListener("click", (e) => {
-					e.preventDefault();
-					if (!document.getElementById("chat-box").classList.item("active"))
-						document.getElementById("chat-box").classList.toggle("active");
-					handleChatLinkClick(user.username); //// opening chat
+						const add_button = document.createElement('button');	////
+						add_button.classList.add("bi", "bi-person-plus");
+						li.appendChild(add_button);
+																			//// buttons "start chat" 
+						const chat_button = document.createElement('button');	////
+						chat_button.classList.add("bi", "bi-chat-left-text");
+
+						chat_button.addEventListener('click', (e) => {
+							e.preventDefault();
+							if (!(document.getElementById("chat-box").classList.item("active")))
+								document.getElementById("chat-box").classList.toggle("active");
+							handleChatLinkClick(user.username);				//// opening chat
+						});
+
+						li.appendChild(chat_button);
+						const block_button = document.createElement('button');	////
+						block_button.classList.add("bi", "bi-slash-circle");
+						li.appendChild(block_button);
+						usersList.appendChild(li);
 					});
-
-					li.appendChild(button);
-					usersList.appendChild(li);
-				});
-			}
-		})
-		.catch((error) => console.error("Error fetching user data:", error));
+				}
+			})
+			.catch(error => {
+				const error_msg = document.createElement("h3");
+				error_msg.classList.add("ulist-error");
+				error_msg.textContent = "login to access";
+				document.getElementById("users_list-box").appendChild(error_msg);
+			});
+		//.catch((error) => console.error("Error fetching user data:", error));
 	}
 
 
@@ -697,7 +716,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				if (code == 500)
 					console.log("error: " + data.error);
 				else {
-					usersListBox.classList.remove('show');
+					//usersListBox.classList.remove('show');
+					usersListBox.style.display = "none";
 					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
 					online_game(ws);			//// launching the online pong game
 					close(ws);
@@ -705,7 +725,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			})
 	}
 
-	const chatContainer = document.getElementById("chat-container");
+	const chatContainer = document.getElementById("chat-box");
 
 	chatContainer.addEventListener("click", function (event) {			//// invitation to play pong online
 		if (event.target && event.target.id === "invite-link") {		//// clicking on a dynamically added button
@@ -743,36 +763,29 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				chat_room_name = data.room_name;
 
-				const chatContainer = document.createElement('div');
-				chatContainer.classList.add('chat__container');
-				document.getElementById("chat-container").innerHTML = "";
+				//const chatContainer = document.createElement('div');
+				//chatContainer.classList.add('chat__container');
+				//document.getElementById("chat-container").innerHTML = "";
 				if (data && data.other_user && Array.isArray(data.messages)) {		//// adding messages into the chat container dinamically
-					chatContainer.innerHTML = `
-		  <center><h1>Chat with ${data.other_user}</h1></center>
-		  <div class="chat__item__container" id="id_chat_item_container">
-			${data.messages.map(message => `
-			  <div class="chat__message ${message.fields.username === data.username ? 'chat__message--self' : 'chat__message--other'}">
-				<img src="https://via.placeholder.com/40" alt="User Photo">
-				<div class="chat__message__content">
-				  <div class="chat__message__username">${message.fields.username}</div>
-				  <div class="chat__message__text">${message.fields.message}</div>
-				</div>
-			  </div>
-			`).join('')}
-		  </div>
-		  <div class="chat__input__container">
-			<input type="text" id="id_message_send_input" placeholder="Type a message..." />
-			<button type="submit" id="id_message_send_button">Send Message</button>
-			<button type="submit" id="id_invit_button">Invite to Pong</button>
-		  </div>
-		`;
+					document.getElementById("chat-box").innerHTML = `
+          <div id="msg_container">
+            ${data.messages.map(message => `
+              <p class="msg_text"><span class="msg_username">${message.fields.username}</span>: ${message.fields.message}</p>
+            `).join('')}
+          </div>
+          <div id="input_container">
+            <input type="text" id="i-msg" placeholder="Type a message to @${data.other_user}" />
+            <button type="submit" id="b-msg" class=" bi bi-arrow-right-circle"></button>
+						<button type="submit" id="id_invit_button" class="bi bi-joystick"></button>
+          </div>
+        `;
 				}
 				else {
 					console.error('data is missing or is not an array', data);
 				}
 
-				const listItemElement = document.getElementById('chat-container');
-				listItemElement.appendChild(chatContainer);
+				//const listItemElement = document.getElementById('chat-container');
+				//listItemElement.appendChild(chatContainer);
 
 				const roomName = data.room_name;
 				if (chatSocket !== null) {
@@ -788,14 +801,14 @@ document.addEventListener("DOMContentLoaded", function () {
 					console.log("The connection was closed successfully!");
 				};
 
-				document.querySelector("#id_message_send_input").focus();
-				document.querySelector("#id_message_send_input").onkeyup = function (e) {
+				document.querySelector("#i-msg").focus();
+				document.querySelector("#i-msg").onkeyup = function (e) {
 					if (e.keyCode === 13) {
-						document.querySelector("#id_message_send_button").click();
+						document.querySelector("#b-msg").click();
 					}
 				};
 
-				document.querySelector("#id_message_send_button").onclick = async function (e) {
+				document.querySelector("#b-msg").onclick = async function (e) {
 					await fetchBlockedUsers();
 					let ok = 0;
 					console.log("blocking situation ", blocked_users.length);
@@ -804,7 +817,7 @@ document.addEventListener("DOMContentLoaded", function () {
 							ok = 1;
 					}
 					if (ok == 0) {
-						const messageInput = document.querySelector("#id_message_send_input").value;
+						const messageInput = document.querySelector("#i-msg").value;
 						chatSocket.send(JSON.stringify({ message: messageInput, username: data.username}));
 					}
 				};
@@ -830,11 +843,11 @@ document.addEventListener("DOMContentLoaded", function () {
 						if (code == 500)
 							console.log("error: " + data.error);
 						else {
-							// usersListBox.classList.remove('show');
-							chatSocket.send(JSON.stringify({ message: "A pong game has been requested <button type=\"submit\" id=\"invite-link\">accept</button>", username: username_global}));
-							ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
-							online_game(ws);
-							close(ws);
+								usersListBox.style.display = "none";
+								chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global}));
+								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+								online_game(ws);
+								close(ws);
 						}
 					})
 				};
@@ -853,23 +866,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 					const currentUser = data.username;
 					const div = document.createElement("div");
-					div.classList.add("chat__message");
-					if (data.username === currentUser) {
-						div.classList.add("chat__message--self");
-					} else {
-						div.classList.add("chat__message--other");
-					}
+					div.classList.add("msg_text");
+					//if (data.username === currentUser) {
+					//	div.classList.add("chat__message--self");
+					//} else {
+					//	div.classList.add("chat__message--other");
+					//}
 
 					div.innerHTML = `
-			<img src="https://via.placeholder.com/40" alt="User Photo">
-			<div class="chat__message__content">
-			  <div class="chat__message__username">${data.username}</div>
-			  <div class="chat__message__text">${data.message}</div>
-			</div>
-		  `;
-					document.querySelector("#id_message_send_input").value = "";
-					document.querySelector("#id_chat_item_container").appendChild(div);
-					document.querySelector("#id_chat_item_container").scrollTop = document.querySelector("#id_chat_item_container").scrollHeight;
+            <div class="msg_content">
+              <div class="msg_username">${data.username}</div>
+              <div class="msg_text">: ${data.message}</div>
+            </div>
+          `;
+					document.querySelector("#i-msg").value = "";
+					document.querySelector("#msg_container").appendChild(div);
+					document.querySelector("#msg_container").scrollTop = document.querySelector("#msg_container").scrollHeight;
 				}
 			})
 			.catch(error => console.error('Error fetching chat data:', error));

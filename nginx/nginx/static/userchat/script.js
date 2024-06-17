@@ -768,7 +768,7 @@ const unblockUser = async () => {
     })
       .then(response => response.json())
       .then(data => {
-        const usersList = document.getElementById('users-list-container');
+        const usersList = document.getElementById('users_list-container');
         usersList.innerHTML = '';
 
         data.users.forEach(user => {

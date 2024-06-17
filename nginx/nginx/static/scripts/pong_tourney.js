@@ -3,137 +3,125 @@ import { stars, starWars, modifyDelta } from './stars.js';
 import { game, drawBrackets } from './brackets.js';
 import { route } from './router.js';
 
+/********** PONG INIT *************/
+
 export var loop_exec = false;
-let paddle_y1 = game_canvas.height / 2 - 100;
-let paddle_y2 = paddle_y1;
-let paddle_speed_y1 = 0;
-let paddle_speed_y2 = 0;
-const ball_length = 30;
-let ball_x = game_canvas.width / 2 - ball_length / 2;
-let ball_y = game_canvas.height / 2 - ball_length / 2;
-let ball_speed = 400;
-let ball_angle = ((Math.random() < 0.5 ? 1 : -1) == true) ? (Math.PI - ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180)) : ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180);
-let score = [0, 0];
-let paddle_bounces = 0;
-let last_frame;
-let wait_frames = 0;
-let speed_acc = 3;
-let n = 0;
-let mouse_posX;
-let mouse_posY;
+const canvas = document.getElementById("game_canvas");
+const context = canvas.getContext('2d');
 
-function bounceAngle(ball_angle, ball_x, ball_y, ball_length, paddle_y1, paddle_y2) {
-	let paddle;
-	paddle_bounces++;
-	if (ball_angle > Math.PI / 2 && ball_angle < Math.PI + Math.PI / 2)
-		paddle = paddle_y1;
-	else if (ball_angle < Math.PI / 2 || ball_angle > Math.PI + Math.PI / 2)
-		paddle = paddle_y2;
-	let relative_position = (ball_y + ball_length / 2) - (paddle + 100);
+//board
+const board_height = 800;
+const board_width = 1000;
 
-	if (paddle == paddle_y1)
-		return (2 * Math.PI - ((360 - relative_position * 45 / 100) * Math.PI / 180));
-	else if (paddle == paddle_y2)
-		return (2 * Math.PI - ((180 + relative_position * 45 / 100) * Math.PI / 180));
+//player
+const player_width = 30;
+const player_height = 200;
+const playerVelocity = 0;
+const player_speed = 15;
+
+//balling
+const ball_width = 30;
+const ball_height = 30;
+let ball_velocity = 5;
+
+let first_bounce = true;
+
+let ball = {
+	width: ball_width,
+	height: ball_height,
+	xPos: (board_width / 2) - (ball_width / 2),
+	yPos: (board_height / 2) - (ball_height / 2),
+	velocityY: 0,
+	velocityX: 0,
+	velocityXTmp: 0,
+	velocityYTmp: 0,
 }
 
-function updatePos(time_diff) {
-	wait_frames--;
-	frames++;
-	if (wait_frames == 1) {
-		paddle_speed_y1 = 0;
-		paddle_speed_y2 = 0;
-		ball_x = game_canvas.width / 2 - ball_length / 2;
-		ball_y = game_canvas.height / 2 - ball_length / 2;
-		ball_speed = 400;
-		ball_angle = ((Math.random() < 0.5 ? 1 : -1) == true) ? (Math.PI - ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180)) : ((Math.random() * (225 * Math.PI / 180 - 135 * Math.PI / 180)) + 135 * Math.PI / 180);
-		paddle_bounces = 0;
-		speed_acc = 3;
-		frames = 0;
-	}
-
-  paddle_y1 += paddle_speed_y1 * time_diff;
-  paddle_y2 += paddle_speed_y2 * time_diff;
-	if (paddle_y1 < 10 || paddle_y1 > game_canvas.height - 200 - 10)
-		paddle_y1 -= paddle_speed_y1 * time_diff;
-	if (paddle_y2 < 10 || paddle_y2 > game_canvas.height - 200 - 10)
-		paddle_y2 -= paddle_speed_y2 * time_diff;
-
-	ball_x += ball_speed * Math.cos(ball_angle) * time_diff;
-	ball_y += ball_speed * Math.sin(ball_angle) * time_diff;
-	// if ((ball_y < 0 && ball_angle > Math.PI || ball_angle < 0) || (ball_y + ball_length > game_canvas.height && ball_angle < Math.PI && ball_angle > 0))
-	if (ball_y < 0 || ball_y > game_canvas.height - ball_length)
-		ball_angle = 2 * Math.PI - ball_angle;
-	if ((ball_y >= paddle_y1 - ball_length && ball_y <= paddle_y1 + 200 && ball_x <= 50 && ball_x >= 20 && ball_angle > Math.PI / 2 && ball_angle < Math.PI * 1.5) || (ball_y >= paddle_y2 - 25 && ball_y <= paddle_y2 + 200 && ball_x + ball_length >= 950 && ball_x <= 980 && (ball_angle < Math.PI / 2 || ball_angle > Math.PI * 1.5))) {
-		ball_angle = bounceAngle(ball_angle, ball_x, ball_y, ball_length, paddle_y1, paddle_y2);
-		if (Math.floor(Math.random() * speed_acc) == 1)
-			ball_speed *= 1.1;
-		if (ball_speed > 1500)
-			speed_acc = 10;
-		if (ball_speed > 2000)
-			ball_speed = 2000;
-		if (paddle_bounces == 1)
-			ball_speed *= 2;
-	}
-	if (ball_x < -ball_length && wait_frames < 0) {
-		score[1]++;
-		wait_frames = 25;
-	}
-	else if (ball_x > game_canvas.width && wait_frames < 0) {
-		score[0]++;
-		wait_frames = 25;
-	}
+let player1 = {
+	xPos: 20,
+	yPos: board_height / 2 - player_height / 2,
+	width: player_width,
+	height: player_height,
+	velocityY: playerVelocity,
+	score: 0,
 }
 
-function draw() {
-	if (!n) {
-		paddle_y2 += 2;
-		paddle_y2--;
-	}
-	n++;
-  const game_canvas = document.getElementById("game_canvas");
-  const ctx = game_canvas.getContext("2d");
-  ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
-  ctx.fillStyle = "rgb(70, 70, 70)";
-	for (let i = 10; i < game_canvas.height - 30; i += 50) {
-		ctx.fillRect(game_canvas.width / 2, i, 10, 30);
-	}
-	ctx.font = "100px Arial";
-	ctx.textAlign = "center";
-	ctx.fillText(score[0].toString(), game_canvas.width / 3, 100);
-	ctx.fillText(score[1].toString(), game_canvas.width - game_canvas.width / 3, 100);
-  ctx.fillStyle = "rgb(255, 255, 255)";
-  ctx.fillRect(20, paddle_y1, 30, 200);
-  ctx.fillRect(950, paddle_y2, 30, 200);
-	ctx.beginPath();
-	ctx.fillRect(ball_x, ball_y, ball_length, ball_length);
-	ctx.fill();
-  ctx.fillStyle = "rgb(0, 0, 0)";
-	//console.log(game.index. game.player);
-	writeVerticalText(ctx, game.score[game.index][0], 22.5, paddle_y1 + 100, "35px Arial", 0);
-	writeVerticalText(ctx, game.score[game.index + 1][0], 977.5, paddle_y2 + 100, "35px Arial", 1);
+let player2 = {
+	xPos: board_width - player_width - 20,
+	yPos: board_height / 2 - player_height / 2,
+	width: player_width,
+	height: player_height,
+	velocityY: playerVelocity,
+	score: 0,
 }
 
-export async function loop(current_frame) {
-	const game_canvas = document.getElementById("game_canvas");
-	const ctx = game_canvas.getContext("2d");
+var stop = true;
+var animation_id = -1;
+
+function reset_board() {
+	player2.xPos = board_width - player_width - 20;
+	player2.yPos = board_height / 2 - player_height / 2;
+	player2.width = player_width;
+	player2.height = player_height;
+	player2.velocityY = playerVelocity;
+	player2.score = 0;
+	player2.prediction = -1;
+	player1.xPos = 20;
+	player1.yPos = board_height / 2 - player_height / 2;
+	player1.width = player_width;
+	player1.height = player_height;
+	player1.velocityY = playerVelocity;
+	player1.score = 0;
+	player1.prediction = -1;
+	ball.width = ball_width;
+	ball.height = ball_height;
+	ball.xPos = (board_width / 2) - (ball_width / 2);
+	ball.yPos = (board_height / 2) - (ball_height / 2);
+	ball.velocityY = 0;
+	ball.velocityX = 0;
+	ball.velocityXTmp = 0;
+	ball.velocityYTmp = 0;
+}
+
+export function loop()
+{
 	loop_exec = true;
-	//if (game.index == 8 && (score[0] == 1 || score[1] == 1))
-	//	return;
-	if (score[0] == game.max_points || score [1] == game.max_points) {
+	canvas.width = board_width;
+	canvas.height = board_height;
+	let ran = Math.floor(Math.random() * 2);
+	let tmp = ball_velocity;
+	let tmp2 = 0;
+	while (tmp2 == 0)
+		tmp2 = Math.floor(Math.random() * 11) - 5;
+	ball.velocityY = tmp2;
+	if (ran == 0) {
+		tmp *= -1;
+	}
+	ball.velocityX = tmp;
+	ball.velocityX = 0;
+	ball.velocityY = 0;
+	setTimeout(() => { ball.velocityY = tmp2; }, 500);
+	setTimeout(() => { ball.velocityX = tmp; }, 500);
+	document.addEventListener("keydown", movePlayer);
+	document.addEventListener("keyup", stopPlayer);
+	gameLoop();
+}
+
+async function gameLoop() {
+	if (player1.score == game.max_points || player2.score == game.max_points) {
 		//console.log(game.index, game.score[0][0].name);
-		game.score[game.index][1] = score[0];
-		game.score[game.index + 1][1] = score[1];
-		if (score[0] > score[1])
+		game.score[game.index][1] = player1.score;
+		game.score[game.index + 1][1] = player2.score;
+		if (player1.score > player2.score)
 			game.score.push([game.score[game.index][0], 172]);
 		else
 			game.score.push([game.score[game.index + 1][0], 172]);
 		game.index += 2;
-		score[0] = 0;
-		score[1] = 0;
-		paddle_y1 = game_canvas.height / 2 - 100;
-		paddle_y2 = paddle_y1;
-		ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
+		player1.score = 0;
+		player2.score = 0;
+		player1.yPos = board_height / 2 - 100;
+		player2.yPos = player1.yPos;
+		context.clearRect(0, 0, board_width, board_height);
 		loop_exec = false;
 		modifyDelta(1.5);
 		stars(document.getElementById("game_canvas"));
@@ -147,55 +135,181 @@ export async function loop(current_frame) {
 			await starWars();
 		else {
 			modifyDelta(1.5);
-			// document.getElementById("main-menu").style.display = "flex";
-			// document.getElementById("main-menu").style.opacity = "0";
-			// await sleep(100);
-			// document.getElementById("main-menu").classList.remove("hidden");
-			// document.getElementById("main-menu").classList.add("shown");
-			// await sleep(200);
-			// document.getElementById("main-menu").style.opacity = "1";
+			//document.getElementById("main-menu").style.display = "flex";
+			//document.getElementById("main-menu").style.opacity = "0";
+			//await sleep(100);
+			//document.getElementById("main-menu").classList.remove("hidden");
+			//document.getElementById("main-menu").classList.add("shown");
+			//await sleep(200);
+			//document.getElementById("main-menu").style.opacity = "1";
 			route("/");
 			return;
 		}
-			// loop_exec = true;
-		// requestAnimationFrame(loop);
-		// console.log(1);
-		// return;
-	} else {
-		const time_diff = (current_frame - last_frame) / 1000 || 0;
-		last_frame = current_frame;
-
-		// console.log(ball_y, game_canvas.height, ball_length);
-		updatePos(time_diff);
-		draw();
 	}
-  requestAnimationFrame(loop);
+	else {
+		//move players
+		move_players();
+
+		//ball
+		changeBallVelocity();
+
+		//draw
+		draw_board();
+	}
+	animation_id = window.requestAnimationFrame(gameLoop);
+
 }
 
-document.onmousemove = (event) => {
-	const {
-		clientX,
-		clientY
-	} = event
-	mouse_posX = clientX;
-	mouse_posY = clientY;
+function fill_middle_lines() {
+	for (let i = 10; i < board_height - 30; i += 50) {
+		context.fillRect(board_width / 2 - 5, i, 10, 30);
+	}
 }
 
-document.addEventListener("keydown", (event) => {
-  if (event.key === "w")
-    paddle_speed_y1 = -1000;
-  else if (event.key === "s")
-    paddle_speed_y1 = 1000;
-  else if (event.key === "ArrowUp")
-    paddle_speed_y2 = -1000;
-  else if (event.key === "ArrowDown")
-    paddle_speed_y2 = 1000;
-});
+function draw_board() {
+	context.clearRect(0, 0, board_width, board_height);
 
-document.addEventListener("keyup", (event) => {
-	if (event.key === "w" || event.key === "s") {
-		paddle_speed_y1 = 0;
+	context.fillStyle = "rgb(70, 70, 70)";
+	//middle_line
+	fill_middle_lines();
+
+	//score
+	context.font = "100px Arial";
+	context.textAlign = "center";
+	context.fillText(player1.score.toString(), board_width / 3, 100);
+	context.fillText(player2.score.toString(), board_width - board_width / 3, 100);
+
+	context.fillStyle = "white";
+
+	//players
+	context.fillRect(player1.xPos, player1.yPos, player1.width, player1.height);
+	context.fillRect(player2.xPos, player2.yPos, player2.width, player2.height);
+	context.fillStyle = "black";
+	writeVerticalText(context, game.score[game.index][0], 22.5, player1.yPos + 100, "35px Arial", 0);
+	writeVerticalText(context, game.score[game.index + 1][0], 977.5, player2.yPos + 100, "35px Arial", 1);
+	context.fillStyle = "white";
+
+	//ball
+	context.fillRect(ball.xPos, ball.yPos, ball.width, ball.height);
+}
+
+function move_players() {
+	//player 1
+	if (player1.yPos + player1.velocityY > 20 && player1.yPos + player1.velocityY + player1.height < board_height - 20)
+		player1.yPos += player1.velocityY;
+	else if (!(player1.yPos + player1.velocityY > 20))
+		player1.yPos = 20;
+	else if (!(player1.yPos + player1.velocityY + player1.height < board_height - 20))
+		player1.yPos = board_height - player1.height - 20;
+
+	//player 2
+	if (player2.yPos + player2.velocityY > 20 && player2.yPos + player2.velocityY + player2.height < board_height - 20)
+		player2.yPos += player2.velocityY;
+	else if (!(player2.yPos + player2.velocityY > 20))
+		player2.yPos = 20;
+	else if (!(player2.yPos + player2.velocityY + player2.height < board_height - 20))
+		player2.yPos = board_height - player2.height - 20;
+}
+
+function changeBallVelocity() {
+	if (!(ball.yPos + ball.velocityY > 0 && ball.yPos + ball.velocityY + ball.height < board_height)) {
+		ball.velocityY *= -1;
 	}
-  else if (event.key === "ArrowUp" || event.key === "ArrowDown")
-    paddle_speed_y2 = 0;
-});
+	if (ball.xPos + ball.width >= board_width - player1.xPos - player2.width) {
+		if (ball.yPos + ball.velocityY + ball.height + 2 >= player2.yPos && ball.yPos + ball.velocityY - 2 <= player2.yPos + player2.height && ball.velocityX > 0) {
+			ball.velocityY = ((ball.yPos + ball.height / 2) - (player2.yPos + player2.height / 2)) / 15;
+			ball.velocityX *= -1;
+			if (ball.velocityX < 0)
+				ball.velocityX -= 0.5;
+			else
+				ball.velocityX += 0.5;
+		}
+		if (first_bounce == true) {
+			ball.velocityX *= -1;
+			if (ball.velocityX < 0)
+				ball.velocityX -= 5;
+			else
+				ball.velocityX += 5;
+			first_bounce = false;
+		}
+	}
+	if (ball.xPos <= player1.xPos + player1.width) {
+		if (ball.yPos + ball.velocityY + ball.height + 2 >= player1.yPos && ball.yPos + ball.velocityY - 2 <= player1.yPos + player1.height && ball.velocityX < 0) {
+			ball.velocityY = ((ball.yPos + ball.height / 2) - (player1.yPos + player1.height / 2)) / 15;
+			ball.velocityX *= -1;
+			if (ball.velocityX < 0)
+				ball.velocityX -= 0.5;
+			else
+				ball.velocityX += 0.5;
+		}
+		if (first_bounce == true) {
+			ball.velocityX *= -1;
+			if (ball.velocityX < 0)
+				ball.velocityX -= 5;
+			else
+				ball.velocityX += 5;
+			first_bounce = false;
+		}
+	}
+	if (!(ball.xPos + ball.velocityX > 0 && ball.xPos + ball.velocityX + ball.width < board_width)) {
+		context.fillStyle = "white";
+		if (!(ball.xPos + ball.velocityX > 0))
+			player2.score++;
+		else
+			player1.score++;
+
+		// if (player1.score == 5) {
+		//     stop_playing();
+		//     context.font = "100px serif";
+		//     context.fillText("Player 1 won !", 325, 400);
+		//     stop = true;
+		//     return;
+		// }
+		// if (player2.score == 5) {
+		//     stop_playing();
+		//     context.font = "100px serif";
+		//     context.fillText("Player 2 won !", 330, 400);
+		//     stop = true;
+		//     return;
+		// }
+		ball.xPos = (board_width / 2) - (ball_width / 2);
+		ball.yPos = (board_height / 2) - (ball_height / 2);
+		let ran = Math.floor(Math.random() * 2);
+		ball.velocityX = ball_velocity;
+		ball.velocityY = 0;
+		while (ball.velocityY == 0)
+			ball.velocityY = Math.floor(Math.random() * 11) - 5;
+		if (ran == 0)
+			ball.velocityX *= -1;
+		ball.velocityXTmp = ball.velocityX;
+		ball.velocityYTmp = ball.velocityY;
+		ball.velocityX = 0;
+		ball.velocityY = 0;
+		setTimeout(() => { ball.velocityY = ball.velocityYTmp; }, 500);
+		setTimeout(() => { ball.velocityX = ball.velocityXTmp; }, 500);
+	}
+	ball.xPos += ball.velocityX;
+	ball.yPos += ball.velocityY;
+}
+
+function movePlayer(e) {
+	if (e.key == 'w') {
+		player1.velocityY = -player_speed;
+	}
+	if (e.key == 's') {
+		player1.velocityY = player_speed;
+	}
+	if (e.key == 'ArrowUp') {
+		player2.velocityY = -player_speed;
+	}
+	if (e.key == 'ArrowDown') {
+		player2.velocityY = player_speed;
+	}
+}
+
+function stopPlayer(e) {
+	if (e.key == 'w' || e.key == 's')
+		player1.velocityY = 0;
+	else if (e.key == 'ArrowUp' || e.key == 'ArrowDown')
+		player2.velocityY = 0
+}
