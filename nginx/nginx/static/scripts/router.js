@@ -1,5 +1,5 @@
 import { userIsConnected } from "./users.js";
-import { displayProfile } from "./users.js";
+import { displayProfile } from './stats.js';
 import { usersClick } from "./users.js";
 
 export var game = null;

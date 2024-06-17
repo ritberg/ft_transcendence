@@ -62,232 +62,7 @@ const updateCSRFToken = (newToken) => {
 	document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 };
 
-function updateUserStats(stats) {
-	if (stats) {
-		document.getElementById("stat-wins").textContent = `Wins: ${stats.wins}`;
-		document.getElementById("stat-losses").textContent = `Losses: ${stats.losses}`;
-		document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate.toFixed(2)}%`;
-		document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
-		document.getElementById("stat-total-hours").textContent = `Total Hours Played: ${stats.total_hours_played.toFixed(2)}`;
-		document.getElementById("stat-goals-scored").textContent = `Goals Scored: ${stats.goal_scored}`;
-		document.getElementById("stat-goals-conceded").textContent = `Goals Conceded: ${stats.goal_conceded}`;
-	}
-}
-
-function updateMatchHistory(matchHistory) {
-	if (matchHistory) {
-		const historyList = document.getElementById("history-list");
-		historyList.innerHTML = ""; // Clear previous history
-		matchHistory.forEach((match) => {
-			const listItem = document.createElement("li");
-			let data_played = new Date(match.date_played).toLocaleDateString('fr-FR');
-			let opponent = (username_global === match.player_1.username) ? match.player_2.username : match.player_1.username;
-			const winStatus = "WIN"
-			let status = (username_global === match.winner.username) ? winStatus : "LOSS";
-			let player_1_score = match.player_1.score;
-			let player_2_score = match.player_2.score;
-			let time = (match.duration / 60).toFixed(2);
-
-			listItem.textContent = `${data_played}: ${opponent} - ${status} (${player_1_score} - ${player_2_score}) - ${time}min`;
-			listItem.classList.add(status === winStatus ? "win" : "loss");
-			historyList.appendChild(listItem);
-		});
-	}
-}
-
-export async function displayProfile() {
-	let user = JSON.parse(localStorage.getItem("user")) || null;
-
-	console.log("userIsConnected in var : ", userIsConnected);
-	console.log("userIsConnected in localStorage : ", localStorage.getItem("userIsConnected"));
-
-	if (user === null) {
-		console.log("No user found for displayUserInfo");
-		return;
-	}
-
-	user.stats = await getStats();
-	user.match_history = await getMatchHistory();
-	localStorage.setItem("user", JSON.stringify(user));
-
-	console.log("updateUserInfo called with userInfo =", user);
-	if (user) {
-		const username = user.username;
-		if (username) {
-			console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
-			document.getElementById("info-username").textContent = `${username}`;
-			document.getElementById("user-name").textContent = `${username}`;
-		}
-		if (user.stats) {
-			console.log("PUT STAT IN USERINFO DISPLAY: ", user.stats);
-			updateUserStats(user.stats);
-			createChartGames(user.stats);
-			createGoalsChart(user.stats);
-		}
-		if (user.match_history) {
-			console.log("PUT MATCH HISTORY IN USERINFO DISPLAY: ", user.match_history);
-			updateMatchHistory(user.match_history);
-		}
-	}
-}
-
-function createChartGames(stats) {
-	const canvas = document.getElementById('playerGamesChart');
-	const ctx = canvas.getContext('2d');
-
-	const existingChart = Chart.getChart(canvas);
-	if (existingChart) {
-		existingChart.destroy();
-	}
-
-	new Chart(ctx, {
-		type: 'doughnut',
-		data: {
-			labels: ['Wins', 'Losses'],
-			datasets: [
-				{
-					label: 'Win Rate',
-					data: [stats.wins, stats.losses],
-					backgroundColor: ['#008000', '#FF0000'],
-					borderColor: ['#388e3c', '#d32f2f'],
-					borderWidth: 1,
-				},
-			],
-		},
-		options: {
-			responsive: true,
-			plugins: {
-				legend: {
-					position: 'top',
-				},
-				title: {
-					display: true,
-					text: 'Win Rate',
-					font: {
-						size: 18
-					},
-					color: '#FFFFFF',
-				},
-				tooltip: {
-					callbacks: {
-						label: function(tooltipItem) {
-							const label = tooltipItem.label || '';
-							const value = tooltipItem.raw;
-							const total = tooltipItem.chart._metasets[0].total;
-							const percentage = ((value / total) * 100).toFixed(2);
-							return `${label}: ${value} (${percentage}%)`;
-						}
-					}
-				}
-			}
-		},
-	});
-}
-
-function createGoalsChart(stats) {
-	const canvas = document.getElementById('playerGoalsChart');
-	const ctx = canvas.getContext('2d');
-
-	const existingChart = Chart.getChart(canvas);
-	if (existingChart) {
-		existingChart.destroy();
-	}
-
-	new Chart(ctx, {
-		type: 'bar',
-		data: {
-			labels: ['Goals Scored', 'Goals Conceded', 'Total Goals'],
-			datasets: [
-				{
-					data: [
-						stats.goal_scored,
-						stats.goal_conceded,
-						stats.goal_scored + stats.goal_conceded,
-					],
-					backgroundColor: ['#008000', '#FF0000', '#FF8000'],
-					borderColor: ['#388e3c', '#d32f2f', '#fbc02d'],
-					borderWidth: 1,
-				},
-			],
-		},
-		options: {
-			responsive: true,
-			plugins: {
-				legend: {
-					display: false,
-				},
-				title: {
-					display: true,
-					text: 'Goals',
-					color: '#FFFFFF',
-					font: {
-						size: 18,
-					},
-					position: 'top',
-				},
-			},
-			scales: {
-				y: {
-					beginAtZero: true,
-				},
-			},
-		},
-	});
-}
-
-async function getStats() {
-	let getStatsUrl = "https://" + window.location.host + "/stat/stats/";
-
-	return await fetch(getStatsUrl, {
-		method: "GET",
-		headers: {
-			"X-CSRFToken": token,
-			"Content-Type": "application/json",
-		},
-		credentials: "include",
-	})
-	.then((response) => {
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		return response.json();
-	})
-	.then((data) => {
-		console.log(data)
-		return data
-	})
-	.catch((error) => {
-		console.error("Fetch error: ", error);
-	});
-}
-
-async function getMatchHistory() {
-	let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/";
-
-	return await fetch(getMatchHistoryUrl, {
-		method: "GET",
-		headers: {
-			"X-CSRFToken": token,
-			"Content-Type": "application/json",
-		},
-		credentials: "include",
-	})
-	.then((response) => {
-		if (!response.ok) {
-			throw new Error("Network response was not ok");
-		}
-		return response.json();
-	})
-	.then((data) => {
-		console.log(data)
-		return data;
-	})
-	.catch((error) => {
-		console.error("Fetch error: ", error);
-	});
-}
-
-let usersClick;
+let usersClick, signupButton, logoutButton, loginButton;
 document.addEventListener("DOMContentLoaded", function () {
 
 	let storedUser = localStorage.getItem("user");
@@ -307,103 +82,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		return;
 	}
 
-
-	/////////// NAVIGATION //////////////
-	const contentContainer = document.getElementById("content");
-	contentContainer.addEventListener("click", async function (event) {
-		let url = window.location.pathname;
-		if (event.target && event.target.id === "b-signin-ok") {
-			await loginButton(event);
-			if (userIsConnected == true)
-				route('/');
-		}
-		else if (event.target && event.target.id === "b-signup-ok") {
-			signupButton(event);
-		}
-		else if (event.target && event.target.id === "pvp-mode") {
-			if (url == "/") {
-				document.getElementById("main-menu").classList.remove("shown");
-				document.getElementById("main-menu").classList.add("hidden");
-				await sleep(500);
-			}
-			route("/pvp/");
-		}
-		else if (event.target && event.target.id === "tourney-mode") {
-			if (url == "/") {
-				document.getElementById("main-menu").classList.remove("shown");
-				document.getElementById("main-menu").classList.add("hidden");
-				await sleep(500);
-			}
-			route("/tourney/");
-		}
-		else if (event.target && event.target.id === "online-mode") {
-			if (url == "/") {
-				document.getElementById("main-menu").classList.remove("shown");
-				document.getElementById("main-menu").classList.add("hidden");
-				await sleep(500);
-			}
-			route("/online/");
-		}
-		else if (event.target && event.target.id === "cpu-mode") {
-			document.getElementById("main-menu").classList.add("hidden");
-			GameMode(1);
-		}
-		else if (event.target && event.target.id === "b-tourney_settings") {
-			tournamentSettings();
-		}
-		else if (event.target && event.target.id === "b-online-go"){
-			GameMode(3);
-		}
-		else if (event.target && event.target.id === "refresh-stats") {
-			// addGame();
-			displayProfile();
-		}
-		else if (event.target && event.target.id === "logout") {
-			logoutButton();
-			route("/");
-		}
-		else if (event.target && event.target.id === "profile") {
-			displayProfile();
-		}
-	});
-
-	document.getElementById("profile_tab").addEventListener("click", async function (event){
-		event.preventDefault();
-		let url = window.location.pathname;
-		if (url === "/profile/" || url === "/signin/" || url === "/signup/")
-		{	
-			route('/');
-		}
-		else if (userIsConnected == true)
-		{
-			if (url == "/") {
-				document.getElementById("main-menu").classList.remove("shown");
-				document.getElementById("main-menu").classList.add("hidden");
-				await sleep(500);
-			}
-			route('/profile/');
-			// await sleep(100);
-			// document.getElementById("user-info-box").style.opacity = "0";
-			// document.getElementById("user-info-box").classList.remove("hidden");
-			// document.getElementById("user-info-box").classList.add("shown");
-		}
-		else if (userIsConnected == false)
-		{
-			if (url == "/") {
-				document.getElementById("main-menu").classList.remove("shown");
-				document.getElementById("main-menu").classList.add("hidden");
-				await sleep(500);
-			}
-			route('/signin/');
-		}
-		console.log("fdsafdsa", userIsConnected);
-	});
-
 	////////////////////// SIGNUP ////////////////////////////
 
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
 
-	async function signupButton(event) {
+	signupButton = async function (event) {
 		event.preventDefault();
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
@@ -443,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	//let loginForm = document.getElementById("b-signin-ok");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
-	async function loginButton(event) {
+	loginButton = async function (event) {
 		event.preventDefault();
   
 		let username = document.getElementById("username1").value;
@@ -489,7 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
 
-	async function logoutButton() {
+	logoutButton = async function () {
 		await fetch(logoutUrl, {
 			method: "POST",
 			headers: {
@@ -544,12 +227,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	////////////////////// BLOCK A USER (not used yet) ////////////////////////////
 
-	const blockUser = async () => {
-		const username = document.getElementById("user-username-to-block").value;
+	const blockUser = async (username) => {
+		// const username = document.getElementById("user-username-to-block").value;
 		console.log("user username: ", username);
-		const messageContainer = document.getElementById("block-user-message");
+		// const messageContainer = document.getElementById("block-user-message");
 		if (!username) {
-			messageContainer.textContent = "Please enter a username";
+			// messageContainer.textContent = "Please enter a username";
 			return;
 		}
 
@@ -566,26 +249,25 @@ document.addEventListener("DOMContentLoaded", function () {
 				body: JSON.stringify({ to_user: userId }),
 			});
 			const data = await response.json();
-			messageContainer.textContent = data.message;
+			// messageContainer.textContent = data.message;
 			if (response.ok) {
-				document.getElementById("user-username-to-block").value = "";
+				// document.getElementById("user-username-to-block").value = "";
 				fetchBlockedUsers();
 			}
 		} catch (error) {
 			console.error("Error blocking user:", error);
-			messageContainer.textContent = "Error blocking user";
+			// messageContainer.textContent = "Error blocking user";
 		}
 	};
 
 
 	////////////////////// UNBLOCK A USER (not used yet) ////////////////////////////
 
-	const unblockUser = async () => {
-		const username = document.getElementById("user-username-to-unblock").value;
+	const unblockUser = async (username) => {
+		// const username = document.getElementById("user-username-to-unblock").value;
 		console.log("User username: ", username);
-		const messageContainer = document.getElementById("unblock-user-message");
+		// const messageContainer = document.getElementById("unblock-user-message");
 		if (!username) {
-			messageContainer.textContent = "Please enter a username";
 			return;
 		}
 		try {
@@ -601,38 +283,18 @@ document.addEventListener("DOMContentLoaded", function () {
 				body: JSON.stringify({ user_to_unblock_id: userId }),
 			});
 			const data = await response.json();
-			messageContainer.textContent = data.message;
+			// messageContainer.textContent = data.message;
 			if (response.ok) {
-				document.getElementById("user-username-to-unblock").value = "";
+				// document.getElementById("user-username-to-unblock").value = "";
 				fetchBlockedUsers();
 			}
 		} catch (error) {
 			console.error("Error unblocking user:", error);
-			messageContainer.textContent = "Error unblocking user";
+			// messageContainer.textContent = "Error unblocking user";
 		}
 	};
 
-
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////
-
-	let usrsLst = document.getElementById("tabs-list");
-	let usersListBox = document.getElementById("users_list-box");
-	var chat_room_name;
-
-	usrsLst.addEventListener("click", async function (event) {					//// frontend
-		event.preventDefault();
-		if (window.location.pathname === "/users/") {
-			route("/");
-		}
-		else {
-			if (window.location.pathname === "/") {
-				document.getElementById("main-menu").classList.remove("shown");
-				document.getElementById("main-menu").classList.add("hidden");
-				await sleep(500);
-			}
-			route("/users/");
-		}
-	});
 
 	usersClick = async function () {
 		let usersUrl = "https://" + window.location.host + "/users_list/";
@@ -646,7 +308,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			credentials: "include",
 		})
 			.then(response => response.json())
-			.then(data => {
+			.then(async data => {
+				await fetchBlockedUsers();
 				const usersList = document.getElementById('users_list-container');
 				usersList.innerHTML = '';
 				console.log("data: ", data);
@@ -678,6 +341,15 @@ document.addEventListener("DOMContentLoaded", function () {
 						li.appendChild(chat_button);
 						const block_button = document.createElement('button');	////
 						block_button.classList.add("bi", "bi-slash-circle");
+						block_button.addEventListener('click', (e) => {
+							e.preventDefault();
+							console.log(blocked_users);
+							console.log(user.username);
+							if (blocked_users.includes(user.username))
+								unblockUser(user.username);
+							else
+								blockUser(user.username);
+						});
 						li.appendChild(block_button);
 						usersList.appendChild(li);
 					});
@@ -737,6 +409,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	////////////////////// CHAT ////////////////////////////
 
 	var chatSocket = null;
+	var chat_room_name;
 
 	async function handleChatLinkClick(username) {
 		const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
@@ -751,18 +424,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 			.then((response) => {
 				if (!response.ok) {
-					throw new Error("Network response was not ok");
+					document.getElementById("chat-box").innerHTML = `<div><center><h1>USER IS BLOCKED</h1></center></div>`;
 				}
 				return response.json();
 			})
 			.then((data) => {
-				console.log("++ room_name : ", data.room_name);
-				console.log("++ other_user : ", data.other_user);
-				console.log("++ username : ", data.username);
-				console.log("++ messages : ", data.messages);
-
-				chat_room_name = data.room_name;
-
 				//const chatContainer = document.createElement('div');
 				//chatContainer.classList.add('chat__container');
 				//document.getElementById("chat-container").innerHTML = "";
@@ -781,8 +447,15 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
 				}
 				else {
-					console.error('data is missing or is not an array', data);
+					return;
 				}
+
+				console.log("++ room_name : ", data.room_name);
+				console.log("++ other_user : ", data.other_user);
+				console.log("++ username : ", data.username);
+				console.log("++ messages : ", data.messages);
+
+				chat_room_name = data.room_name;
 
 				//const listItemElement = document.getElementById('chat-container');
 				//listItemElement.appendChild(chatContainer);
@@ -810,19 +483,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				document.querySelector("#b-msg").onclick = async function (e) {
 					await fetchBlockedUsers();
-					let ok = 0;
 					console.log("blocking situation ", blocked_users.length);
-					for (let i = 0; i < blocked_users.length; i++) {
-						if (blocked_users[i] == data.other_user)
-							ok = 1;
-					}
-					if (ok == 0) {
+					if (!(blocked_users.includes(data.other_user))) {
 						const messageInput = document.querySelector("#i-msg").value;
 						chatSocket.send(JSON.stringify({ message: messageInput, username: data.username}));
 					}
 				};
 
 				document.querySelector("#id_invit_button").onclick = async function (e) {
+					await fetchBlockedUsers();
+					if (blocked_users.includes(data.other_user)) {
+						return;
+					}
 					let ws;
 					await fetch("https://" + window.location.host + "/room/invite", {
 						method: "POST",
@@ -843,7 +515,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						if (code == 500)
 							console.log("error: " + data.error);
 						else {
-								usersListBox.style.display = "none";
+								// usersListBox.style.display = "none";
 								chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global}));
 								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
 								online_game(ws);
@@ -936,4 +608,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-export { usersClick }
+export { usersClick, signupButton, loginButton, logoutButton,  }
