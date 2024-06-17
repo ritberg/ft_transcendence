@@ -2,6 +2,8 @@ import { userIsConnected } from "./users.js";
 import { displayProfile } from "./users.js";
 import { usersClick } from "./users.js";
 
+export var game = null;
+
 // document.addEventListener('DOMContentLoaded', () => {
     const routes = {
         404: {
@@ -107,11 +109,12 @@ import { usersClick } from "./users.js";
         if (location == "/users/") {
             usersClick();
         }
-        // if (location == "/pvp/") {
-        //     const scriptElement = document.createElement('script');
-        //     scriptElement.setAttribute("src", "/static/scripts/pong_pvp.js");
-        //     document.getElementById("content").appendChild(scriptElement);
-        // }
+        console.log(location);
+        if (location == "/pvp/") {
+            const scriptElement = document.createElement('script');
+            scriptElement.setAttribute("src", "/static/scripts/pong_pvp.js");
+            document.getElementById("content").appendChild(scriptElement);
+        }
         // set the title of the document to the title of the route
         document.title = route.title;
     };
