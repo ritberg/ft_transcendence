@@ -1,4 +1,4 @@
-import { sleep } from './utils.js';
+import { sleep, errorMsg } from './utils.js';
 import { GameMode } from './main.js';
 import { drawBrackets, enterNicknames } from './brackets.js';
 import { online_game } from '../online/pong_online.js';
@@ -302,15 +302,21 @@ document.addEventListener("DOMContentLoaded", function () {
 		const friendRequestsContainer = document.getElementById("friend-requests");
 		friendRequestsContainer.innerHTML = "";
 		requests.forEach((request) => {
-			const requestElement = document.createElement("div");
-			requestElement.classList.add("friend-request");
-			requestElement.innerHTML = `
-			<span>${request.from_user.username}</span>
-			<div class="buttons">
-			  <button onclick="handleFriendRequest(${request.id}, true)">Accept</button>
-			  <button onclick="handleFriendRequest(${request.id}, false)">Reject</button>
-			</div>
-		  `;
+			const requestElement = document.createElement("li");
+			//requestElement.classList.add("friend-request");
+			const user_button = document.createElement('span');
+			user_button.style.flexGrow = "1";
+			user_button.style.cursor = "pointer";
+			user_button.textContent = request.from_user.username;
+			requestElement.appendChild(user_button);
+			const accept_button = document.createElement('button');
+			accept_button.classList.add("bi", "bi-check-circle");
+			accept_button.setAttribute('onclick', `handleFriendRequest(${request.id}, true)`);
+			requestElement.appendChild(accept_button);
+			const reject_button = document.createElement('button');
+			reject_button.classList.add("bi", "bi-x-circle");
+			reject_button.setAttribute('onclick', `handleFriendRequest(${request.id}, false)`);
+			requestElement.appendChild(reject_button);
 			friendRequestsContainer.appendChild(requestElement);
 		});
 	};
@@ -382,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			// });
 			// li.appendChild(add_button);
 			const del_button = document.createElement('button');
-			del_button.classList.add("bi", "bi-person-plus"); // TODO
+			del_button.classList.add("bi", "bi-person-dash"); // TODO
 			del_button.addEventListener('click', (e) => {
 				e.preventDefault();
 				delFriend(friend.username);
@@ -652,7 +658,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 			.then((response) => {
 				if (!response.ok) {
-					document.getElementById("chat-box").innerHTML = `<div><center><h1>USER IS BLOCKED</h1></center></div>`;
+					errorMsg("chat: user is blocked");
+					//document.getElementById("chat-box").innerHTML = `<div><center><h1>USER IS BLOCKED</h1></center></div>`;
 				}
 				return response.json();
 			})
