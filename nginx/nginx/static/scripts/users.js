@@ -785,6 +785,8 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			})
 			.catch(error => console.error('Error fetching chat data:', error));
+		document.getElementById("chat-box").classList.add("chat-active");
+		document.getElementById("b-close-chat").classList.add("chat-active");
 	}
 
 

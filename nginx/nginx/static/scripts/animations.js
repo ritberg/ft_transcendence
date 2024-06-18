@@ -6,6 +6,11 @@ document.getElementById("tabs-icon").addEventListener("hover", function() {
 	document.getElementById("tabs-list").classList.toggle("active");
 });
 
+document.getElementById("b-close-chat").addEventListener("click", function() {
+	document.getElementById("chat-box").classList.toggle("chat-hidden");
+	document.getElementById("b-close-chat").classList.toggle("chat-hidden");
+});
+
 //document.getElementById("tl-profile").addEventListener("click", function () {
 //	if (window.getComputedStyle(document.getElementById("profile-box_main")).display === "none") {
 //		document.getElementById("profile-box_main").style.display = "block";

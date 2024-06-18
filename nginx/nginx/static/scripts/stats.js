@@ -6,7 +6,7 @@ function updateUserStats(stats) {
 		document.getElementById("stat-wins").textContent = `Wins: ${stats.wins}`;
 		document.getElementById("stat-losses").textContent = `Losses: ${stats.losses}`;
 		document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate.toFixed(2)}%`;
-		document.getElementById("stat-goals-avg").textContent = `Score Avg: ${stats.goal_scored / stats.goal_conceded}%`;
+		document.getElementById("stat-goals-avg").textContent = `Score Avg: ${(stats.goal_scored / stats.goal_conceded).toFixed(2)}%`;
 		document.getElementById("stat-goals-scored").textContent = `Goals Scored: ${stats.goal_scored}`;
 		document.getElementById("stat-goals-conceded").textContent = `Goals Conceded: ${stats.goal_conceded}`;
 		document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
@@ -83,7 +83,7 @@ function createChartGames(stats) {
 	new Chart(ctx, {
 		type: 'doughnut',
 		data: {
-			labels: ['Wins', 'Losses'],
+			//labels: ['Wins', 'Losses'],
 			datasets: [
 				{
 					label: 'Win Rate',
@@ -95,16 +95,19 @@ function createChartGames(stats) {
 			],
 		},
 		options: {
-			responsive: true,
+			responsive: false,
 			plugins: {
 				legend: {
 					position: 'top',
+					font: {
+						size: 18
+					},
 				},
 				title: {
 					display: true,
 					text: 'Win Rate',
 					font: {
-						size: 18
+						size: 36
 					},
 					color: '#FFFFFF',
 				},
@@ -122,6 +125,9 @@ function createChartGames(stats) {
 			}
 		},
 	});
+	//Chart.defaults.font.size = 16; // Set global font size
+	canvas.style.width = '50%';
+	canvas.style.height = '100%';
 }
 
 function createGoalsChart(stats) {
@@ -151,7 +157,7 @@ function createGoalsChart(stats) {
 			],
 		},
 		options: {
-			responsive: true,
+			responsive: false,
 			plugins: {
 				legend: {
 					display: false,
@@ -173,6 +179,8 @@ function createGoalsChart(stats) {
 			},
 		},
 	});
+	canvas.style.width = '100%';
+	canvas.style.height = '100%';
 }
 
 async function getStats() {

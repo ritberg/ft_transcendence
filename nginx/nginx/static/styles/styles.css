@@ -846,6 +846,21 @@ body {
 	color: white;
 	text-shadow: 0 0 10px white;
 }
+#b-close-chat {
+	position: absolute;
+	opacity: 0;
+	background: rgba(0, 0, 0, .8);
+	border: 2px solid rgba(255, 255, 255, .8);
+	border-left: none;
+	border-top-right-radius: 10px;
+	border-bottom-right-radius: 10px;
+	bottom: 67.5px;
+	width: 20px;
+	height: 80px;
+	left: 420px;
+	z-index: 2;
+	transition: all ease-out .3s;
+}
 #chat-box {
 	position: absolute;
 	opacity: 0;
@@ -856,15 +871,27 @@ body {
 	left: 20px;
 	height: 175px;
 	width: 400px;
-	z-index: 1;
+	z-index: 3;
 	cursor: auto;
-	transition: all ease-out .1s;
+	transition: all ease-out .3s;
 	color: white;
 	font-family: "Arial";
 	overflow: hidden;
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: column;
+}
+#chat-box.chat-active {
+	opacity: 1;
+}
+#b-close-chat.chat-active {
+	opacity: 1;
+}
+#chat-box.chat-hidden {
+	left: -405px;
+}
+#b-close-chat.chat-hidden {
+	left: -5px;
 }
 #msg_container {
 	overflow-y: scroll;
@@ -951,30 +978,35 @@ body {
 #chat-box ul {
 	color: white;
 }
-#chat-box.active {
-	opacity: 1;
-}
 #chat-box h6 {
 	position: absolute;
 	font-size: 20px;
 	font-family: "Arial";
 	color: white;
-	opacity: 0;
+	opacity: 1;
 	margin: 10px 10px;
 	font-weight: normal;
 	transition: all ease-out .1s;
 }
-#chat-box.active h6 {
-	opacity: 1;
-}
-#users_list-box {
-	font-family: "Arial";
+/*#chat-box.active h6 {*/
+/*	opacity: 1;*/
+/*}*/
+#ulists-div {
+	display: flex;
+	flex-direction: row;
 	position: absolute;
-	width: 300px;
-	height: 500px;
-	left: 35%;
+	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
+}
+.users_list-box {
+	font-family: "Arial";
+	/*position: absolute;*/
+	width: 300px;
+	height: 500px;
+	/*left: 35%;*/
+	/*top: 50%;*/
+	/*transform: translate(-50%, -50%);*/
 	background: rgba(0, 0, 0, 0.8);
 	border: 4px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
@@ -982,7 +1014,7 @@ body {
 	flex-direction: column;
 	align-items: center;
 }
-#users_list-box h1 {
+.users_list-box h1 {
 	font-family: "Arial";
 	font-size: 40px;
 	margin: 20px 0 10px 0;
@@ -993,7 +1025,7 @@ body {
 	width: 90%;
 	text-align: center;
 }
-#users_list-box h3 {
+.users_list-box h3 {
 	font-family: "Arial";
 	font-size: 30px;
 	margin: 20px 0 10px 0;
@@ -1005,33 +1037,31 @@ body {
 	width: 90%;
 	text-align: center;
 }
-#users_list-box ol {
+.users_list-box ol {
 	overflow-y: scroll;
   -ms-overflow-style: none;  /* IE and Edge */
   scrollbar-width: none;  /* Firefox */
 	width: 80%;
-	/*align-items: left;*/
 	list-style-type: none;
 	padding: 0;
 	margin: 0;
 }
-#users_list-box ol::after {
+.users_list-box ol::after {
 	content: '';
 	position: absolute;
 	left: 0;
 	right: 0;
 	height: 50px;
 	z-index: 1;
-	width: 95%;
-	left: 50%;
-	transform: translateX(-50%);
-	bottom: 0;
+	width: 45%;
+	left: 2%;
+	bottom: 4px;
 	background: linear-gradient(to top, black, transparent);
 }
-#users_list-box ol::-webkit-scrollbar {
+.users_list-box ol::-webkit-scrollbar {
 	display: none;
 }
-#users_list-box li {
+.users_list-box li {
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: row;
@@ -1043,13 +1073,13 @@ body {
 	margin: 5px 0 5px 0;
 	padding-bottom: 2px;
 }
-#users_list-box li::last-child {
+.users_list-box li::last-child {
 	border: none;
 }
-#users_list-box li span:hover {
+.users_list-box li span:hover {
 	text-shadow: 0 0 5px white;
 }
-#users_list-box li button {
+.users_list-box li button {
 	color: rgb(255, 255, 255, .8);
 	background-color: rgb(0, 0, 0, 0.85);
 	border: none;
@@ -1061,7 +1091,7 @@ body {
 	font-size: 20px;
 	cursor: pointer;
 }
-#users_list-box li button:hover {
+.users_list-box li button:hover {
 	text-shadow: 0 0 10px white;
 }
 
@@ -1069,12 +1099,12 @@ body {
 
 #friends_list-box {
 	font-family: "Arial";
-	position: absolute;
+	/*position: absolute;*/
 	width: 300px;
 	height: 500px;
-	left: 65%;
-	top: 50%;
-	transform: translate(-50%, -50%);
+	/*left: 65%;*/
+	/*top: 50%;*/
+	/*transform: translate(-50%, -50%);*/
 	background: rgba(0, 0, 0, 0.8);
 	border: 4px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
@@ -1115,19 +1145,19 @@ body {
 	padding: 0;
 	margin: 0;
 }
-#friends_list-box ol::after {
-	content: '';
-	position: absolute;
-	left: 0;
-	right: 0;
-	height: 50px;
-	z-index: 1;
-	width: 95%;
-	left: 50%;
-	transform: translateX(-50%);
-	bottom: 0;
-	background: linear-gradient(to top, black, transparent);
-}
+/*#friends_list-box ol::after {*/
+/*	content: '';*/
+/*	position: absolute;*/
+/*	left: 0;*/
+/*	right: 0;*/
+/*	height: 50px;*/
+/*	z-index: 1;*/
+/*	width: 95%;*/
+/*	left: 50%;*/
+/*	transform: translateX(-50%);*/
+/*	bottom: 0;*/
+/*	background: linear-gradient(to top, black, transparent);*/
+/*}*/
 #friends_list-box ol::-webkit-scrollbar {
 	display: none;
 }
@@ -1164,12 +1194,8 @@ body {
 #friends_list-box li button:hover {
 	text-shadow: 0 0 10px white;
 }
-
-
-
-
 #user-info-box {
-	display: flex; 
+	display: flex;
 	flex-direction: column;
 	align-items: center;
   position: absolute;
@@ -1272,12 +1298,10 @@ body {
 #match-history li.loss::before {
   background: red;
 }
-#graphs {
+.graphs-div {
 	display: flex;
 	flex-direction: row;
-}
-#playerGoalsChart {
-	bottom: 0;
+	justify-content: center;
 }
 #game-pvp {
   background-color: black;
