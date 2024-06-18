@@ -11,7 +11,7 @@ export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected"))
 
 export const getUserId = async (username) => {
 	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
-	const response = await fetch( getIdUrl,
+	const response = await fetch(getIdUrl,
 		{
 			method: "GET",
 			headers: {
@@ -97,8 +97,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		await fetch(signupUrl, {
 			method: "POST",
 			headers: {
-			"Content-Type": "application/json",
-			"X-CSRFToken": token,
+				"Content-Type": "application/json",
+				"X-CSRFToken": token,
 			},
 			body: JSON.stringify({ username, email, password }),
 		})
@@ -128,44 +128,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	loginButton = async function (event) {
 		event.preventDefault();
-  
+
 		let username = document.getElementById("username1").value;
 		let password = document.getElementById("password1").value;
-  
+
 		console.log("Sending signin request...");
 		console.log("username : ", username);
-  
+
 		return await fetch(loginUrl, {
 			method: "POST",
 			headers: {
-			"Content-Type": "application/json",
-			"X-CSRFToken": token,
+				"Content-Type": "application/json",
+				"X-CSRFToken": token,
 			},
 			body: JSON.stringify({ username, password }),
 			credentials: "include",
 		})
-		.then((response) => {
-		console.log("Response Headers:", [...response.headers.entries()]);
+			.then((response) => {
+				console.log("Response Headers:", [...response.headers.entries()]);
 
-		if (!response.ok) {
-			console.log("Full response:", response);
-			throw new Error("Network response was not ok");
-		}
-			return response.json();
-		})
-		.then(async (data) => {
-			console.log("Cookies after signin response:", document.cookie);
-			console.log("Login successful. Server response data:", data);
-			let user = data.data;
-			console.log("data : ", user);
-			console.log("token received : ", data.crsfToken);
-			updateProfile(user, true, data.crsfToken);
-			// await addGame(); // à supprimer
-			return user;
-		})
-		.catch((error) => {
-			console.error("Fetch error:", error);
-		});
+				if (!response.ok) {
+					console.log("Full response:", response);
+					throw new Error("Network response was not ok");
+				}
+				return response.json();
+			})
+			.then(async (data) => {
+				console.log("Cookies after signin response:", document.cookie);
+				console.log("Login successful. Server response data:", data);
+				let user = data.data;
+				console.log("data : ", user);
+				console.log("token received : ", data.crsfToken);
+				updateProfile(user, true, data.crsfToken);
+				// await addGame(); // à supprimer
+				return user;
+			})
+			.catch((error) => {
+				console.error("Fetch error:", error);
+			});
 	}
 
 	////////////////////// LOGOUT ////////////////////////////
@@ -176,25 +176,247 @@ document.addEventListener("DOMContentLoaded", function () {
 		await fetch(logoutUrl, {
 			method: "POST",
 			headers: {
-			  "Content-Type": "application/json",
-			  "X-CSRFToken": token,
+				"Content-Type": "application/json",
+				"X-CSRFToken": token,
 			},
 			credentials: "include",
 		})
-		.then((response) => {
-			if (!response.ok) {
-				throw new Error("Network response was not ok");
-			}
-			return response.json();
-		})
-		.then((data) => {
-			console.log("data: ", data);
-			updateProfile(null, false, null);
-		})
-		.catch((error) => {
-			console.error("Fetch error:", error);
-		});
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network response was not ok");
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log("data: ", data);
+				updateProfile(null, false, null);
+			})
+			.catch((error) => {
+				console.error("Fetch error:", error);
+			});
 	}
+
+
+	////////////////////// ADD FRIENDS ////////////////////////////
+
+	let friendRequestUrl = "https://" + window.location.host + "/auth/send-friend-request/";
+	let delFriendUrl = "https://" + window.location.host + "/auth/delete-friend/";
+
+	const addFriend = async (username) => {
+		// const username = document.getElementById("friend-username-to-add").value;
+		console.log("friend username : ", username);
+		// const messageContainer = document.getElementById("add-friend-message");
+		if (!username) {
+			return;
+		}
+
+		try {
+			const userId = await getUserId(username);
+			console.log("user id : ", userId);
+			const response = await fetch(friendRequestUrl, {
+				method: "POST",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+				body: JSON.stringify({ to_user: userId }),
+			});
+			const data = await response.json();
+			// messageContainer.textContent = data.message;
+			if (response.ok) {
+				console.log("ok");
+				// document.getElementById("friend-username-to-add").value = "";
+			}
+		} catch (error) {
+			console.error("Error sending friend request:", error);
+			// messageContainer.textContent = "Error sending friend request";
+		}
+	};
+
+	////////////////////// DELETE FRIENDS ////////////////////////////
+
+	const delFriend = async (username) => {
+		// const username = document.getElementById("friend-username-to-del").value;
+		console.log("friend username : ", username);
+		// const messageContainer = document.getElementById("del-friend-message");
+		if (!username) {
+			return;
+		}
+		try {
+			const userId = await getUserId(username);
+			console.log("user id : ", userId);
+			const response = await fetch(delFriendUrl, {
+				method: "DELETE",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+				body: JSON.stringify({ to_user: userId }),
+			});
+			const data = await response.json();
+			// messageContainer.textContent = data.message;
+			if (response.ok) {
+				// document.getElementById("friend-username-to-del").value = "";
+				fetchFriends();
+			}
+		} catch (error) {
+			console.error("Error sending friend request:", error);
+			// messageContainer.textContent = "Error sending friend request";
+		}
+	};
+
+	/////////// FRIENDS - OTHER /////////
+
+	let friendRequestListUrl = "https://" + window.location.host + "/auth/list-friend-requests/";
+	let acceptFriendRequestUrl = "https://" + window.location.host + "/auth/accept-friend-request/";
+	let rejectFriendRequestUrl = "https://" + window.location.host + "/auth/reject-friend-request/";
+	var friends;
+
+	const fetchFriendRequests = async () => {
+		try {
+			const response = await fetch(friendRequestListUrl, {
+				method: "GET",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+			});
+			const data = await response.json();
+			console.log(data.friends);
+			friends = data.friends;
+			console.log("Friend requests data:", data); // Debug: log data
+			if (data && Array.isArray(data.data)) {
+				displayFriendRequests(data.data);
+			} else {
+				console.error("Expected an array but got:", data);
+			}
+		} catch (error) {
+			console.error("Error fetching friend requests:", error);
+		}
+	};
+
+	const displayFriendRequests = (requests) => {
+		const friendRequestsContainer = document.getElementById("friend-requests");
+		friendRequestsContainer.innerHTML = "";
+		requests.forEach((request) => {
+			const requestElement = document.createElement("div");
+			requestElement.classList.add("friend-request");
+			requestElement.innerHTML = `
+			<span>${request.from_user.username}</span>
+			<div class="buttons">
+			  <button onclick="handleFriendRequest(${request.id}, true)">Accept</button>
+			  <button onclick="handleFriendRequest(${request.id}, false)">Reject</button>
+			</div>
+		  `;
+			friendRequestsContainer.appendChild(requestElement);
+		});
+	};
+
+	window.handleFriendRequest = async (requestId, accept) => {
+		const url = accept ? acceptFriendRequestUrl : rejectFriendRequestUrl;
+		try {
+			const response = await fetch(url, {
+				method: "POST",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+				body: JSON.stringify({ friend_request_id: requestId }),
+			});
+			const data = await response.json();
+			fetchFriendRequests(); // Reload the list of friend requests
+			fetchFriends(); // Reload the list of friends
+		} catch (error) {
+			console.error("Error handling friend request:", error);
+		}
+	};
+
+	// Function to fetch and display friends
+
+	let friendListUrl = "https://" + window.location.host + "/auth/list-friends/";
+
+	const fetchFriends = async () => {
+		try {
+			const response = await fetch(friendListUrl, {
+				method: "GET",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+			});
+			const data = await response.json();
+			console.log("Friends data:", data); // Debug: log data
+			if (data && Array.isArray(data.data)) {
+				displayFriends(data.data);
+			} else {
+				console.error("Expected an array but got:", data);
+			}
+		} catch (error) {
+			console.error("Error fetching friends:", error);
+		}
+	};
+
+	const displayFriends = (friends) => {
+		const friendsContainer = document.getElementById("friends_list-container");
+		friendsContainer.innerHTML = "";
+
+		friends.forEach((friend) => {
+			const li = document.createElement('li');
+			//li.textContent = user.username;  
+			const user_button = document.createElement('span');
+			user_button.style.flexGrow = "1";
+			user_button.style.cursor = "pointer";
+			user_button.textContent = friend.username;
+			li.appendChild(user_button);
+
+			// const add_button = document.createElement('button');
+			// add_button.classList.add("bi", "bi-person-plus");
+			// add_button.addEventListener('click', (e) => {
+			// 	e.preventDefault();
+			// 	addFriend(friend.username);
+			// });
+			// li.appendChild(add_button);
+			const del_button = document.createElement('button');
+			del_button.classList.add("bi", "bi-person-plus"); // TODO
+			del_button.addEventListener('click', (e) => {
+				e.preventDefault();
+				delFriend(friend.username);
+			});
+			li.appendChild(del_button);
+			//// buttons "start chat" 
+			const chat_button = document.createElement('button');
+			chat_button.classList.add("bi", "bi-chat-left-text");
+
+			chat_button.addEventListener('click', (e) => {
+				e.preventDefault();
+				if (!(document.getElementById("chat-box").classList.item("active")))
+					document.getElementById("chat-box").classList.toggle("active");
+				handleChatLinkClick(friend.username);
+			});
+
+			li.appendChild(chat_button);
+			const block_button = document.createElement('button');
+			block_button.classList.add("bi", "bi-slash-circle");
+			block_button.addEventListener('click', (e) => {
+				e.preventDefault();
+				console.log(blocked_users);
+				console.log(friend.username);
+				if (blocked_users.includes(friend.username))
+					unblockUser(friend.username);
+				else
+					blockUser(friend.username);
+			});
+			li.appendChild(block_button);
+			friendsContainer.appendChild(li);
+		});
+	};
+
+
 
 
 	////////////////////// UPDATE THE BLOCKED USERS LIST ////////////////////////////
@@ -202,7 +424,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	var blocked_users;
 	let blockUserUrl = "https://" + window.location.host + "/auth/block-user/";
 	let unblockUserUrl = "https://" + window.location.host + "/auth/unblock-user/";
-	let ListBlockedUsersUrl = "https://"  + window.location.host + "/auth/list-blocked-users/";
+	let ListBlockedUsersUrl = "https://" + window.location.host + "/auth/list-blocked-users/";
 
 	const fetchBlockedUsers = async () => {
 		try {
@@ -310,6 +532,8 @@ document.addEventListener("DOMContentLoaded", function () {
 			.then(response => response.json())
 			.then(async data => {
 				await fetchBlockedUsers();
+				await fetchFriendRequests();
+				await fetchFriends();
 				const usersList = document.getElementById('users_list-container');
 				usersList.innerHTML = '';
 				console.log("data: ", data);
@@ -326,8 +550,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 						const add_button = document.createElement('button');	////
 						add_button.classList.add("bi", "bi-person-plus");
+						add_button.addEventListener('click', (e) => {
+							e.preventDefault();
+							addFriend(user.username);
+						});
 						li.appendChild(add_button);
-																			//// buttons "start chat" 
+						//// buttons "start chat" 
 						const chat_button = document.createElement('button');	////
 						chat_button.classList.add("bi", "bi-chat-left-text");
 
@@ -486,7 +714,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					console.log("blocking situation ", blocked_users.length);
 					if (!(blocked_users.includes(data.other_user))) {
 						const messageInput = document.querySelector("#i-msg").value;
-						chatSocket.send(JSON.stringify({ message: messageInput, username: data.username}));
+						chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
 					}
 				};
 
@@ -507,21 +735,21 @@ document.addEventListener("DOMContentLoaded", function () {
 							"X-CSRFToken": token,
 						}
 					})
-					.then((response) => {
-						return response.json();
-					})
-					.then((data) => {
-						let code = data.status;
-						if (code == 500)
-							console.log("error: " + data.error);
-						else {
+						.then((response) => {
+							return response.json();
+						})
+						.then((data) => {
+							let code = data.status;
+							if (code == 500)
+								console.log("error: " + data.error);
+							else {
 								// usersListBox.style.display = "none";
-								chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global}));
+								chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
 								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
 								online_game(ws);
 								close(ws);
-						}
-					})
+							}
+						})
 				};
 
 				chatSocket.onmessage = async function (e) {
@@ -608,4 +836,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-export { usersClick, signupButton, loginButton, logoutButton,  }
+export { usersClick, signupButton, loginButton, logoutButton, }
