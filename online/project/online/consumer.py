@@ -102,6 +102,8 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
         else:
             print("both sides taken ?")
             return
+        
+        await self.add_user()
 
         #sends the player his ID
         await self.send_json({"type": "playerId", "objects": {"id": self.user_name, "side": room_vars[self.room]["players"][self.user_name]["side"]}})
@@ -135,7 +137,14 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             Room.objects.filter(room_name=self.room).update(full=True)
         else:
             Room.objects.filter(room_name=self.room).update(full=False)
-    
+
+    @database_sync_to_async
+    def add_user(self):
+        get_room = Room.objects.get(room_name=self.room)
+        get_room.players.append(self.user_name)
+        get_room.save()
+        
+
     @database_sync_to_async
     def remove_user(self):
         get_room = Room.objects.get(room_name=self.room)

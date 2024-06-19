@@ -626,7 +626,7 @@ body {
 	margin: 0 10px 0 0;
 	height: 70%;
 }
-#game_canvas {
+#main_canvas {
 	background-color: black;
 	position: fixed;
 	border-radius: 10px;
@@ -1332,7 +1332,7 @@ body {
 	opacity: 1;
 	bottom: 20px;
 }
-#game-pvp {
+#game_canvas {
   background-color: black;
   position: fixed;
   border-radius: 10px;
@@ -1342,4 +1342,5 @@ body {
   box-shadow: white 0px 0px 15px 5px;
   width: 1000px;
   height: 800px;
+  display: none;
 }

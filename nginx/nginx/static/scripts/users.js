@@ -1,8 +1,4 @@
 import { sleep, errorMsg } from './utils.js';
-import { GameMode } from './main.js';
-import { drawBrackets, enterNicknames } from './brackets.js';
-import { online_game } from '../online/pong_online.js';
-import { tournamentSettings } from './animations.js';
 import { route } from './router.js';
 
 export var username_global = "guest";

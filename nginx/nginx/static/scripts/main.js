@@ -1,34 +1,54 @@
 import { sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
-// import { loop as loopPvp } from './pong_pvp.js';
-import { loop as loopTourney, loop_exec } from './pong_tourney.js';
-import { drawBrackets, enterNicknames, createPlayers } from './brackets.js';
-import { online_game } from '../online/pong_online.js';
-import { gameLoop_bot } from '../bot/pong_bot.js';
 import { username_global, token } from './users.js';
-
-// import { loop_t } from './pong_tournoi.js';
+import { game } from './router.js';
+import { online } from '../online/pong_online.js';
+import { pvp } from './pong_pvp.js';
+import { bot } from '../bot/pong_bot.js';
+import { tourney, change_loop_exec } from './pong_tourney.js';
 
 export let ai_activated = false;
 
 export async function GameMode(n) {
-	await starWars();
-
 	if (n == 0) {
-		requestAnimationFrame(loopPvp);
+		await starWars();
+		if (window.location.pathname !== '/pvp/') {
+			modifyDelta(1.5);
+			return;
+		}
+		document.getElementById("game_canvas").style.display = "block";
+		game.game_type = 'pvp';
+		game.game_class = new pvp();
+		game.game_class.loop();
 	}
 	else if (n == 1) {
-		let ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
-		gameLoop_bot(ws);
-		// ws.close();
+		await starWars();
+		if (window.location.pathname !== '/bot/') {
+			modifyDelta(1.5);
+			return;
+		}
+		document.getElementById("game_canvas").style.display = "block";
+		game.game_type = 'bot';
+		game.game_class = new bot();
+		game.game_class.gameLoop_bot();
 	}
 	else if (n == 2)
-		requestAnimationFrame(loopTourney);
+	{
+		await starWars();
+		if (window.location.pathname !== "/tourney/") {
+			change_loop_exec(false);
+			modifyDelta(1.5);
+			stars(document.getElementById("main_canvas"));
+			return;
+		}
+		document.getElementById("game_canvas").style.display = "block";
+		game.game_type = 'tourney';
+		game.game_class = new tourney();
+        game.game_class.loopTourney();
+	}
 	else if (n == 3) {
-		document.getElementById("online-box").style.display = "none";
 		let room_selected = document.querySelector("#i-room_name").value;
-		let ws;
-		fetch("https://" + window.location.host + "/room/", {
+		await fetch("https://" + window.location.host + "/room/", {
 			method: "POST",
 			body: JSON.stringify({
 				room: room_selected,
@@ -42,17 +62,25 @@ export async function GameMode(n) {
 			.then((response) => {
 				return response.json();
 			})
-			.then((data) => {
+			.then(async (data) => {
 				let code = data.status;
 				if (code == 500)
-					console.log("error: " + data.error);
+					console.error("error: " + data.error);
 				else {
-					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
-					online_game(ws);
-					// ws.close();
+					await starWars();
+					if (window.location.pathname !== '/online/') {
+						modifyDelta(1.5);
+						return;
+					}
+					document.getElementById("online-box").style.display = "none";
+					document.getElementById("game_canvas").style.display = "block";
+					game.ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+					game.game_type = 'online';
+					game.game_class = new online();
+					game.game_class.online_game();
 				}
 			})
 	}
 }
 
-stars(document.getElementById("game_canvas"));
+stars(document.getElementById("main_canvas"));
