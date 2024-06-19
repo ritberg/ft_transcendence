@@ -1,300 +1,290 @@
 import { route } from '../scripts/router.js';
 import { getUserId } from '../scripts/users.js'
 import { token } from '../scripts/users.js';
+import { game } from '../scripts/router.js';
+import { modifyDelta } from '../scripts/stars.js';
 
-var ws;
-var username;
+export class online {
+    username;
 
-var p1 = "";
-var p2 = "";
-var p1Id = "";
-var p2Id = "";
-var side = 0;
-
-const audio = new Audio("static/online/utils/1.mp3");
-
-var context;
-var board;
-//board
-let board_height = 800;
-let board_width = 1000;
-
-//player
-let player_width = 30;
-let player_height = 200;
-
-//balling
-let ball_width = 30;
-let ball_height = 30;
-
-let ball = {
-    width: ball_width,
-    height: ball_height,
-    xPos: (board_width / 2) - (ball_width / 2),
-    yPos: (board_height / 2) - (ball_height / 2),
-}
-
-let player1 = {
-    xPos: 20,
-    yPos: board_height / 2 - player_height / 2,
-    score: 0,
-    velocity: 0,
-}
-
-let player2 = {
-    xPos: board_width - player_width - 10,
-    yPos: board_height / 2 - player_height / 2,
-    score: 0,
-    velocity: 0,
-}
-
-var sound = false;
-var isalone = true;
-var disconnect = false;
-var start_time;
-
-// var fpsInterval;
-// var then;
-
-// function startAnimating(fps) {
-//     fpsInterval = 1000 / fps;
-//     then = performance.now();
-//     gameLoop();
-// }
-
-export function online_game(new_ws) {
-    ws = new_ws;
-    ws.addEventListener("message", async (event) => {
-        let messageData = JSON.parse(event.data);
-        // console.log(messageData);
-        if (messageData.type === "stateUpdate") {
-            player1.yPos = messageData.objects.player1Pos;
-            player2.yPos = messageData.objects.player2Pos;
-            ball.xPos = messageData.objects.ball_xPos;
-            ball.yPos = messageData.objects.ball_yPos;
-            player1.score = messageData.objects.player1Score;
-            player2.score = messageData.objects.player2Score;
-            if (messageData.objects.sound == true)
-                play();
-        }
-        else if (messageData.type === "playerNum") {
-            if (messageData.objects.num === 2)
-            {
-                isalone = false;
-                start_time = new Date();
-                p1Id = await getUserId(messageData.objects.p1Name);
-                p2Id = await getUserId(messageData.objects.p2Name);
-                console.log("p1Id: ", p1Id);
-                console.log("p2Id: ", p2Id);
-            }
-            else if (messageData.objects.num === 1)
-            {
-                disconnect = true;
-                let end_time = new Date();
-                let duration = (end_time - start_time) / 1000;
-                ws.close();
-                let winner;
-                if (side == "left")
-                    winner = p1Id;
-                else
-                    winner = p2Id;
-                const game = {
-                    player_1_id: p1Id,
-                    player_2_id: p2Id,
-                    player_1_score: player1.score,
-                    player_2_score: player2.score,
-                    winner_id: winner,
-                    data_played: new Date().toISOString(),
-                    duration: duration,
-                };
-                console.log("gamehere: ", game);
-                sendStats(game);
-                setTimeout(() => { route("/"); }, 5000);
-            }
-            
-            p1 = messageData.objects.p1Name;
-            p2 = messageData.objects.p2Name;
-
-        }
-        else if (messageData.type === "playerId") {
-            username = messageData.objects.id;
-            side = messageData.objects.side;
-        }
-    });
+    p1 = "";
+    p2 = "";
+    p1Id = "";
+    p2Id = "";
+    side = 0;
 
     board = document.getElementById("game_canvas");
-    board.width = board_width;
-    board.height = board_height;
-    context = board.getContext("2d");
+    context = this.board.getContext("2d");
+    //board
+    board_height = 800;
+    board_width = 1000;
 
-    document.addEventListener("keydown", movePlayer);
-    document.addEventListener("keyup", stopPlayer);
-    draw_board();
-    gameLoop();
-    // startAnimating(60);
-}
+    //player
+    player_width = 30;
+    player_height = 200;
 
-function fill_middle_lines() {
-	for (let i = 10; i < board_height - 30; i += 50) {
-		context.fillRect(board_width / 2 - 5, i, 10, 30);
+    //balling
+    ball_width = 30;
+    ball_height = 30;
+
+    ball = {
+        width: this.ball_width,
+        height: this.ball_height,
+        xPos: (this.board_width / 2) - (this.ball_width / 2),
+        yPos: (this.board_height / 2) - (this.ball_height / 2),
+    }
+
+    player1 = {
+        xPos: 20,
+        yPos: this.board_height / 2 - this.player_height / 2,
+        score: 0,
+        velocity: 0,
+    }
+
+    player2 = {
+        xPos: this.board_width - this.player_width - 10,
+        yPos: this.board_height / 2 - this.player_height / 2,
+        score: 0,
+        velocity: 0,
+    }
+
+    isalone = true;
+    disconnect = false;
+    start_time;
+
+    constructor() {
+        modifyDelta(1.5);
+		// this.animation_id = null;
+		this.gameLoop = this.gameLoop.bind(this);
+		this.movePlayer = this.movePlayer.bind(this);
+		this.stopPlayer = this.stopPlayer.bind(this);
 	}
-}
 
-function draw_board() {
-    context.clearRect(0, 0, board_width, board_height);
+    online_game() {
+        game.ws.addEventListener("message", async (event) => {
+            let messageData = JSON.parse(event.data);
+            // console.log(messageData);
+            if (messageData.type === "stateUpdate") {
+                this.player1.yPos = messageData.objects.player1Pos;
+                this.player2.yPos = messageData.objects.player2Pos;
+                this.ball.xPos = messageData.objects.ball_xPos;
+                this.ball.yPos = messageData.objects.ball_yPos;
+                this.player1.score = messageData.objects.player1Score;
+                this.player2.score = messageData.objects.player2Score;
+            }
+            else if (messageData.type === "playerNum") {
+                if (messageData.objects.num === 2)
+                {
+                    this.isalone = false;
+                    this.start_time = new Date();
+                    this.p1Id = await getUserId(messageData.objects.p1Name);
+                    this.p2Id = await getUserId(messageData.objects.p2Name);
+                    console.log("this.p1Id: ", this.p1Id);
+                    console.log("this.p2Id: ", this.p2Id);
+                }
+                else if (messageData.objects.num === 1)
+                {
+                    this.disconnect = true;
+                    let end_time = new Date();
+                    let duration = (end_time - this.start_time) / 1000;
+                    game.ws.close();
+                    game.ws = null;
+                    let winner;
+                    if (this.side == "left")
+                        winner = this.p1Id;
+                    else
+                        winner = this.p2Id;
+                    const game_stat = {
+                        player_1_id: this.p1Id,
+                        player_2_id: this.p2Id,
+                        player_1_score: this.player1.score,
+                        player_2_score: this.player2.score,
+                        winner_id: winner,
+                        data_played: new Date().toISOString(),
+                        duration: duration,
+                    };
+                    console.log("gamehere: ", game_stat);
+                    this.sendStats(game_stat);
+                    setTimeout(() => { route("/"); }, 5000);
+                }
+                
+                this.p1 = messageData.objects.p1Name;
+                this.p2 = messageData.objects.p2Name;
 
-    context.fillStyle = "rgb(70, 70, 70)";
-    //middle_line
-    fill_middle_lines();
-
-    //score
-    context.font = "100px Arial";
-	context.textAlign = "center";
-	context.fillText(player1.score.toString(), board_width / 3, 100);
-	context.fillText(player2.score.toString(), board_width - board_width / 3, 100);
-
-    context.font = "30px Comic Sans MS";
-    let textWidth = context.measureText(p1).width;
-    context.fillText(p1, (board_width / 8) - (textWidth / 10), 50);
-    textWidth = context.measureText(p2).width;
-    context.fillText(p2, (board_width / (1)) - (textWidth / (1)), 50);
-
-    context.textAlign = "left";
-    context.fillStyle = "white";
-
-    //players
-    context.fillRect(player1.xPos, player1.yPos, player_width, player_height);
-    context.fillRect(player2.xPos, player2.yPos, player_width, player_height);
-
-    //ball
-    context.fillRect(ball.xPos, ball.yPos, ball.width, ball.height);
-}
-
-var trigger = true;
-
-async function sendStats(game) {
-    try {
-        const response = await fetch("https://localhost/stat/game-history/", {
-            method: "POST",
-            headers: {
-            "X-CSRFToken": token,
-            "Content-Type": "application/json",
-            },
-            body: JSON.stringify(game),
-            credentials: "include",
+            }
+            else if (messageData.type === "playerId") {
+                this.username = messageData.objects.id;
+                this.side = messageData.objects.side;
+            }
         });
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.log(response);
-            throw new Error(
-            `Network response was not ok: ${JSON.stringify(errorData)}`
-            );
-        }
-        const data = await response.json();
-        console.log(data);
-    } catch (error) {
-        console.error("Fetch error: ", error);
-    }
-}
 
-function gameLoop() {
-    window.requestAnimationFrame(gameLoop);
-    draw_board();
-    if (isalone == true)
-    {
-        context.font = "48px serif";
-        context.fillStyle = "white";
-        context.fillText("waiting for a second player", 250, 315);
+        document.addEventListener("keydown", this.movePlayer);
+        document.addEventListener("keyup", this.stopPlayer);
+        this.draw_board();
+        this.gameLoop();
+        // startAnimating(60);
     }
-    else if (disconnect == true)
-    {
-        context.font = "48px serif";
-        context.fillStyle = "white";
-        context.fillText("a player has disconnected", 250, 315);
+
+    fill_middle_lines() {
+        for (let i = 10; i < this.board_height - 30; i += 50) {
+            this.context.fillRect(this.board_width / 2 - 5, i, 10, 30);
+        }
     }
-    if (player1.score == 5)
-    {
-        if (trigger == true)
-        {
-            if (side == "left")
-            {
-                let end_time = new Date();
-                let duration = (end_time - start_time) / 1000;
-                const game = {
-                    player_1_id: p1Id,
-                    player_2_id: p2Id,
-                    player_1_score: player1.score,
-                    player_2_score: player2.score,
-                    winner_id: p1Id,
-                    data_played: new Date().toISOString(),
-                    duration: duration,
-                };
-                console.log("gamehere: ", game);
-                sendStats(game);
+
+    draw_board() {
+        this.context.clearRect(0, 0, this.board_width, this.board_height);
+
+        this.context.fillStyle = "rgb(70, 70, 70)";
+        //middle_line
+        this.fill_middle_lines();
+
+        //score
+        this.context.font = "100px Arial";
+        this.context.textAlign = "center";
+        this.context.fillText(this.player1.score.toString(), this.board_width / 3, 100);
+        this.context.fillText(this.player2.score.toString(), this.board_width - this.board_width / 3, 100);
+
+        this.context.font = "30px Comic Sans MS";
+        let textWidth = this.context.measureText(this.p1).width;
+        this.context.fillText(this.p1, (this.board_width / 8) - (textWidth / 10), 50);
+        textWidth = this.context.measureText(this.p2).width;
+        this.context.fillText(this.p2, (this.board_width / (1)) - (textWidth / (1)), 50);
+
+        this.context.textAlign = "left";
+        this.context.fillStyle = "white";
+
+        //players
+        this.context.fillRect(this.player1.xPos, this.player1.yPos, this.player_width, this.player_height);
+        this.context.fillRect(this.player2.xPos, this.player2.yPos, this.player_width, this.player_height);
+
+        //ball
+        this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
+    }
+
+    trigger = true;
+
+    async sendStats(game_stat) {
+        let statsUrl = 'https://' + window.location.host + "/stat/game-history/";
+        try {
+            const response = await fetch(statsUrl, {
+                method: "POST",
+                headers: {
+                "X-CSRFToken": token,
+                "Content-Type": "application/json",
+                },
+                body: JSON.stringify(game_stat),
+                credentials: "include",
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log(response);
+                throw new Error(
+                `Network response was not ok: ${JSON.stringify(errorData)}`
+                );
             }
-            ws.close();
-            setTimeout(() => { route("/"); }, 5000);
-            trigger = false;
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error("Fetch error: ", error);
         }
-        context.font = "100px serif";
-        context.fillText("Player 1 won !", 250, 400);
     }
-    else if (player2.score == 5)
-    {
-        if (trigger == true)
+
+    gameLoop() {
+        game.animation_id = window.requestAnimationFrame(this.gameLoop);
+        this.draw_board();
+        if (this.isalone == true)
         {
-            if (side == "right")
-            {
-                let end_time = new Date();
-                let duration = (end_time - start_time) / 1000;
-                const game = {
-                    player_1_id: p1Id,
-                    player_2_id: p2Id,
-                    player_1_score: player1.score,
-                    player_2_score: player2.score,
-                    winner_id: p2Id,
-                    data_played: new Date().toISOString(),
-                    duration: duration,
-                };
-                console.log("gamehere: ", game);
-                sendStats(game);
-            }
-            ws.close();
-            setTimeout(() => { route("/"); }, 5000);
-            trigger = false;
+            this.context.font = "48px serif";
+            this.context.fillStyle = "white";
+            this.context.fillText("waiting for a second player", 250, 315);
         }
-        context.font = "100px serif";
-        context.fillText("Player 2 won !", 250, 400);
+        else if (this.disconnect == true)
+        {
+            this.context.font = "48px serif";
+            this.context.fillStyle = "white";
+            this.context.fillText("a player has disconnected", 250, 315);
+        }
+        if (this.player1.score == 5)
+        {
+            if (this.trigger == true)
+            {
+                if (this.side == "left")
+                {
+                    let end_time = new Date();
+                    let duration = (end_time - this.start_time) / 1000;
+                    const game_stat = {
+                        player_1_id: this.p1Id,
+                        player_2_id: this.p2Id,
+                        player_1_score: this.player1.score,
+                        player_2_score: this.player2.score,
+                        winner_id: this.p1Id,
+                        data_played: new Date().toISOString(),
+                        duration: duration,
+                    };
+                    console.log("gamehere: ", game_stat);
+                    this.sendStats(game_stat);
+                }
+                game.ws.close();
+                game.ws = null;
+                setTimeout(() => { route("/"); }, 5000);
+                this.trigger = false;
+            }
+            this.context.font = "100px serif";
+            this.context.fillText("Player 1 won !", 250, 400);
+        }
+        else if (this.player2.score == 5)
+        {
+            if (this.trigger == true)
+            {
+                if (this.side == "right")
+                {
+                    let end_time = new Date();
+                    let duration = (end_time - this.start_time) / 1000;
+                    const game_stat = {
+                        player_1_id: this.p1Id,
+                        player_2_id: this.p2Id,
+                        player_1_score: this.player1.score,
+                        player_2_score: this.player2.score,
+                        winner_id: this.p2Id,
+                        data_played: new Date().toISOString(),
+                        duration: duration,
+                    };
+                    console.log("gamehere: ", game_stat);
+                    this.sendStats(game_stat);
+                }
+                game.ws.close();
+                game.ws = null;
+                setTimeout(() => { route("/"); }, 5000);
+                this.trigger = false;
+            }
+            this.context.font = "100px serif";
+            this.context.fillText("Player 2 won !", 250, 400);
+        }
     }
-}
 
-function play() {
-    if (sound == true)
-        audio.play();
-}
+    lastSent = "none";
 
-var lastSent = "none";
-
-function movePlayer(e) {
-    if (e.key == 'w' && lastSent != "keyW") {
-        ws.send(JSON.stringify({ type: "keyW", username: username }));
-        lastSent = "keyW";
+    movePlayer(e) {
+        if (e.key == 'w' && this.lastSent != "keyW") {
+            game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
+            this.lastSent = "keyW";
+        }
+        if (e.key == 's' && this.lastSent != "keyS") {
+            game.ws.send(JSON.stringify({ type: "keyS", username: this.username }));
+            this.lastSent = "keyS"
+        }
     }
-    if (e.key == 's' && lastSent != "keyS") {
-        ws.send(JSON.stringify({ type: "keyS", username: username }));
-        lastSent = "keyS"
-    }
-}
 
-//allows the player to stop if key is released
-function stopPlayer(e) {
-    if (e.key == 'w' && lastSent != "keyStop") {
-        ws.send(JSON.stringify({ type: "keyStop", username: username }));
+    //allows the player to stop if key is released
+    stopPlayer(e) {
+        if (e.key == 'w' && this.lastSent != "keyStop") {
+            game.ws.send(JSON.stringify({ type: "keyStop", username: this.username }));
 
-        lastSent = "keyStop"
-    }
-    if (e.key == 's' && lastSent != "keyStop") {
-        ws.send(JSON.stringify({ type: "keyStop", username: username }));
-        lastSent = "keyStop"  
+            this.lastSent = "keyStop"
+        }
+        if (e.key == 's' && this.lastSent != "keyStop") {
+            game.ws.send(JSON.stringify({ type: "keyStop", username: this.username }));
+            this.lastSent = "keyStop"  
+        }
     }
 }

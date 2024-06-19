@@ -5,7 +5,6 @@ export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
 export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected")) || false;
 
-
 export const getUserId = async (username) => {
 	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
 	const response = await fetch(getIdUrl,
@@ -34,15 +33,12 @@ const updateProfile = (user, isConnected, token) => {
 		username_global = user.username;
 		localStorage.setItem("user", JSON.stringify(user));
 		document.getElementById("user-name").textContent = user.username;
-		document.getElementById("profile-pic").src = user.profile_picture;
-		// document.getElementById("user-avatar").src
 	}
 	else {
 		console.log("user is null")
-		username_global = "Guest";
-		document.getElementById("profile-pic").src = "/media/profile_pics/default.jpg"
+		username_global = "guest";
 		localStorage.removeItem("user");
-		document.getElementById("user-name").textContent = "Guest";
+		document.getElementById("user-name").textContent = "guest";
 	}
 	localStorage.setItem("userIsConnected", isConnected);
 	userIsConnected = isConnected;
@@ -62,14 +58,13 @@ const updateCSRFToken = (newToken) => {
 	document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 };
 
-let usersClick, signupButton, logoutButton, loginButton, settingsClick;
+let usersClick, signupButton, logoutButton, loginButton;
 document.addEventListener("DOMContentLoaded", function () {
 
 	let storedUser = localStorage.getItem("user");
 	if (storedUser) {
 		let user = JSON.parse(storedUser);
 		username_global = user.username;
-		document.getElementById("profile-pic").src = user.profile_picture;
 		document.getElementById("user-name").textContent = user.username;
 	}
 
@@ -93,8 +88,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
 
-		console.log({ username, email, password });
-
 		await fetch(signupUrl, {
 			method: "POST",
 			headers: {
@@ -103,28 +96,28 @@ document.addEventListener("DOMContentLoaded", function () {
 			},
 			body: JSON.stringify({ username, email, password }),
 		})
-		.then( async (response) => {
-			if (!response.ok) {
-				const error = await response.json();
-				console.log(error);
-				if (error.email)
-					errorMsg(error.email);
-				else if (error.password)
-					errorMsg(error.password);
-				else if (error.username)
-					errorMsg(error.username);
-				return null;
-			}
-			return response.json();
-		})
-		.then((data) => {
-			if (data !== null) {
-				console.log(data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
-				route("/signin/");
-			}
-		})
+			.then( async (response) => {
+				if (!response.ok) {
+					const error = await response.json();
+					console.log(error);
+					if (error.email)
+						errorMsg(error.email);
+					else if (error.password)
+						errorMsg(error.password);
+					else if (error.username)
+						errorMsg(error.username);
+					return null;
+				}
+				return response.json();
+			})
+			.then((data) => {
+				if (data !== null) {
+					console.log(data);
+					console.log("token received : ", data.crsfToken);
+					updateCSRFToken(data.crsfToken);
+					route("/signin/");
+				}
+			})
 			.catch((error) => {
 				console.error("Fetch error: ", error);
 			});
@@ -154,31 +147,59 @@ document.addEventListener("DOMContentLoaded", function () {
 			body: JSON.stringify({ username, password }),
 			credentials: "include",
 		})
-		.then(async (response) => {
-			if (!response.ok) {
-				const error = await response.json();
-				errorMsg(error.message.split(": ")[1]);
-				return null;
-			}
-			return response.json();
-		})
-		.then(async (data) => {
-			if (data !== null) {
-				console.log("Cookies after signin response:", document.cookie);
-				console.log("Login successful. Server response data:", data);
-				let user = data.data;
-				console.log("data : ", user);
-				console.log("token received : ", data.crsfToken);
-				updateProfile(user, true, data.crsfToken);
-				// await addGame(); // à supprimer
-				return user;
-			}
-		})
+			.then(async (response) => {
+				if (!response.ok) {
+					const error = await response.json();
+					errorMsg(error.message.split(": ")[1]);
+					return null;
+				}
+				return response.json();
+			})
+			.then(async (data) => {
+				if (data !== null) {
+					console.log("Cookies after signin response:", document.cookie);
+					console.log("Login successful. Server response data:", data);
+					let user = data.data;
+					console.log("data : ", user);
+					console.log("token received : ", data.crsfToken);
+					updateProfile(user, true, data.crsfToken);
+					// await addGame(); // à supprimer
+					return user;
+				}
+			})
 			.catch((error) => {
 				console.error("Fetch error:", error);
 			});
 	}
 
+	////////////////////// LOGOUT ////////////////////////////
+
+	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
+
+	logoutButton = async function () {
+		await fetch(logoutUrl, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRFToken": token,
+			},
+			credentials: "include",
+		})
+			.then(async (response) => {
+				const error = await response.json();
+				errorMsg(error.message);
+				return null;
+			})
+			.then((data) => {
+				if (data !== null) {
+					console.log("data: ", data);
+					updateProfile(null, false, null);
+				}
+			})
+			.catch((error) => {
+				console.error("Fetch error:", error);
+			});
+	}
 
 
 	////////////////////// ADD FRIENDS ////////////////////////////
@@ -188,15 +209,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	const addFriend = async (username) => {
 		// const username = document.getElementById("friend-username-to-add").value;
-		console.log("friend username : ", username);
 		// const messageContainer = document.getElementById("add-friend-message");
 		if (!username) {
 			return;
 		}
-
 		try {
 			const userId = await getUserId(username);
-			console.log("user id : ", userId);
 			const response = await fetch(friendRequestUrl, {
 				method: "POST",
 				headers: {
@@ -848,171 +866,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-
-
-////// UPDATE PROFILE /////
-
-
-// var usernameLabel = document.getElementById("user-name");
-// var emailLabel = document.getElementById("user-email");
-// var profile_picture = document.getElementById("user-avatar");
-
-
-settingsClick = async function () {
-
-	let updateUrl = "https://" + window.location.host + "/auth/update/";
-
-
-	let btnUpdateProfile = document.getElementById("update-profile");
-	btnUpdateProfile.addEventListener("click", function () {
-		let formData = new FormData();
-		let hasChanges = false;
-
-		console.log("update clicked");
-		console.log("all cookies : ", document.cookie);
-
-		let usernameInput = document.getElementById("new-username");
-		if (usernameInput.value) {
-			formData.append("username", usernameInput.value);
-			hasChanges = true;
-		}
-
-		let emailInput = document.getElementById("new-email");
-		if (emailInput.value) {
-			formData.append("email", emailInput.value);
-			hasChanges = true;
-		}
-
-		let passwordInput = document.getElementById("new-password");
-		if (passwordInput.value) {
-			formData.append("password", passwordInput.value);
-			hasChanges = true;
-		}
-
-		let avatarInput = document.getElementById("input-avatar");
-		if (avatarInput.files.length > 0) {
-			formData.append("avatar", avatarInput.files[0]);
-			hasChanges = true;
-		}
-
-		if (hasChanges) {
-			fetch(updateUrl, {
-				method: "PUT",
-				headers: {
-					"X-CSRFToken": token,
-				},
-				body: formData,
-				credentials: "include",
-			})
-				.then(async(response) => {
-					if (!response.ok) {
-						console.log(response);
-						return response.json().then((error) => {
-							throw new Error(JSON.stringify(error));
-						});
-					}
-					return response.json();
-				})
-				.then(async (data) => {
-					console.log("Update success: ", data);
-					let user = data.data;
-					// console.log("432984329: ", data.crsfToken);
-					updateProfile(user, true, data.crsfToken);
-					if (user) {
-						if (data.data.username) {
-							console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
-							document.getElementById("info-username").textContent = `${data.data.username}`;
-						}
-					}
-				})
-				.catch((error) => {
-					console.error("Fetch error: ", error.message);
-				});
-		} else {
-			console.log("No changes detected, no update performed.");
-		}
-	});
-
-	let btnUploadProfilePicture = document.getElementById("upload-avatar");
-	btnUploadProfilePicture.addEventListener("click", function () {
-		let file = document.getElementById("input-avatar").files[0];
-		let formData = new FormData();
-
-		formData.append("profile_picture", file);
-
-		console.log("update clicked");
-		// console.log("all cookies : ", document.cookie);
-		console.log("file : ", file);
-		for (let [key, value] of formData.entries()) {
-			console.log(key, value);
-		}
-
-		fetch(updateUrl, {
-			method: "PUT",
-			headers: {
-				"X-CSRFToken": token,
-			},
-			body: formData,
-			credentials: "include",
-		})
-			.then(async(response) => {
-				if (!response.ok) {
-					const error = await response.json();
-					errorMsg(error.message);
-					return null;
-				}
-				return response.json();
-			})
-			.then((data) => {
-				if (data !== null) {
-					console.log("sucess: ", data);
-					console.log("profile picture : ", data.data.profile_picture);
-					let user = JSON.parse(localStorage.getItem("user"));
-					user.profile_picture = data.data.profile_picture;
-					updateProfile(user);
-					console.log(user);
-				}
-			})
-			.catch((error) => {
-				console.error("Fetch error: ", error.detail);
-			});
-	});
-
-	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
-
-	function logoutFunc() {
-		fetch(logoutUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			credentials: "include",
-		})
-		.then(async (response) => {
-			if (!response.ok) {
-				const error = await response.json();
-				errorMsg(error.message);
-				return null;
-			}
-			return response.json();
-		})
-		.then((data) => {
-			if (data !== null) {
-				console.log("data: ", data);
-				updateProfile(null, false, null);
-			}
-		})
-			.catch((error) => {
-				console.error("Fetch error:", error);
-			});	
-	}
-
-	let logoutButton = document.getElementById("user-logout");
-	logoutButton.addEventListener("click", function () {
-		logoutFunc();
-		route("/");
-	});
-}
-
-export { usersClick, signupButton, loginButton, logoutButton, settingsClick }
+export { usersClick, signupButton, loginButton, logoutButton, }

@@ -1,8 +1,16 @@
-import { userIsConnected } from "./users.js";
 import { displayProfile } from "./stats.js";
-import { usersClick } from "./users.js";
+import { usersClick, settingsClick } from "./users.js";
+import { GameMode } from "./main.js";
+import { modifyDelta,stars } from './stars.js';
+import { change_loop_exec } from "./pong_tourney.js";
 
-export var game = null;
+
+export const game = {
+    game_type : null,
+    game_class: null,
+    animation_id : null,
+    ws : null,
+};
 
 // document.addEventListener('DOMContentLoaded', () => {
 const routes = {
@@ -31,7 +39,7 @@ const routes = {
 		title: "Online",
 	},
 	"/tourney/": {
-		template: "/templates/tournament.html",
+		template: "/templates/tourney.html",
 		title: "Tournament",
 	},
 	"/profile/": {
@@ -41,6 +49,14 @@ const routes = {
 	"/pvp/": {
 		template: "/templates/pvp.html",
 		title: "PVP",
+	},
+	"/bot/": {
+		template: "/templates/bot.html",
+		title: "bot",
+	},
+	"/settings/": {
+		template: "/templates/settings.html",
+		title: "Settings",
 	},
 }
 
@@ -54,7 +70,6 @@ document.addEventListener("click", (e) => {
 });
 
 export const route = (url) => {
-	console.log("route: ", url);
 	if (typeof url !== 'string') {
 		let event = url || window.event; // get window.event if event argument not provided
 		event.preventDefault();
@@ -68,13 +83,13 @@ export const route = (url) => {
 const locationHandler = async () => {
 	let location = window.location.pathname; // get the url path
 	// if the path length is 0, set it to primary page route
+    resetGameState();
 	if (location.length == 0) {
 		location = "/";
 	}
 	// get the route object from the urlRoutes object
 	const route = routes[location] || routes["404"];
 	// get the html from the template
-	console.log("LOCATION: ", location);
 	if (location == "/profile/") {
 		await fetch(route.template)
 			.then((response) => {return response.text();})
@@ -89,63 +104,75 @@ const locationHandler = async () => {
 	}
 	// const html = await fetch(route.template).then((response) => response.text());
 	// document.getElementById("content").innerHTML = html;
-	if (location == "/online/") {
-		const scriptContent = `
-	const inputElement = document.getElementById('i-room_name');
-	const textElement = document.getElementById('t-empty_room');
-
-	textElement.style.opacity = '0';
-	inputElement.addEventListener('focus', () => {
-		if (inputElement.value.length === 0) {
-			textElement.style.opacity = '1';
-		}
-	});
-	inputElement.addEventListener('blur', () => {
-		textElement.style.opacity = '0';
-	});
-	inputElement.addEventListener('input', () => {
-		if (inputElement.value.length === 0) {
-			textElement.style.transition = 'none';
-			textElement.style.opacity = '1';
-			setTimeout(() => {
-				textElement.style.transition = '.5s';
-			}, 1000);
-		} else {
-			textElement.style.transition = 'none';
-			textElement.style.opacity = '0';
-			setTimeout(() => {
-				textElement.style.transition = '.5s';
-			}, 1000);
-		}
-	});
-								document.getElementById("online-box").style.display = "block";
-								document.getElementById("online-box").classList.add("shown");
-						`;
-		const scriptElement = document.createElement('script');
-		scriptElement.text = scriptContent;
-		document.getElementById("content").appendChild(scriptElement);        }
-	if (location == "/tourney/") {
-		const scriptContent = `
-								document.getElementById("tourney_settings-box").style.display = "block";
-								document.getElementById("tourney_settings-box").classList.add("shown");
-						`;
-		const scriptElement = document.createElement('script');
-		scriptElement.text = scriptContent;
-		document.getElementById("content").appendChild(scriptElement);
-	}
-	if (location == "/users/") {
-		usersClick();
-	}
-	console.log(location);
-	if (location == "/pvp/") {
-		const scriptElement = document.createElement('script');
-		scriptElement.setAttribute("src", "/static/scripts/pong_pvp.js");
-		document.getElementById("content").appendChild(scriptElement);
-	}
+	addJS(location);
 	// set the title of the document to the title of the route
 	document.title = route.title;
 };
 
+function addJS(location) {
+    if (location == "/online/") {
+		const scriptContent = `
+        document.getElementById("online-box").style.display = "block";
+        document.getElementById("online-box").classList.add("shown");
+    `;
+		const scriptElement = document.createElement('script');
+		scriptElement.text = scriptContent;
+		document.getElementById("content").appendChild(scriptElement);        }
+	else if (location == "/tourney/") {
+		const scriptContent = `
+            document.getElementById("tourney_settings-box").style.display = "block";
+            document.getElementById("tourney_settings-box").classList.add("shown");
+        `;
+		const scriptElement = document.createElement('script');
+		scriptElement.text = scriptContent;
+		document.getElementById("content").appendChild(scriptElement);
+	}
+	else if (location == "/users/") {
+		usersClick();
+	}
+	else if (location == "/pvp/") {
+        GameMode(0);
+	}
+	else if (location == "/bot/") {
+        GameMode(1);
+	}
+	else if (location == "/settings/") {
+		settingsClick();
+	}
+}
+
+function resetGameState() {
+    if (game.game_class !== null) {
+        window.cancelAnimationFrame(game.animation_id);
+        game.animation_id = null;
+        // findEventListeners(game.game_type);
+		removeMovementEventListener(game.game_class.stopPlayer, game.game_class.movePlayer);
+		if (game.game_type == 'tourney')
+		{
+			change_loop_exec(false);
+			modifyDelta(1.5);
+			stars(document.getElementById("main_canvas"));
+		}
+        game.game_type = null;
+        game.game_class = null;
+        if (game.ws !== null) {
+            game.ws.close();
+            game.ws = null;
+        }
+    }
+}
+
+// function findEventListeners(type) {
+//     if (type === 'pvp')
+//         removeMovementEventListener(game.game_class.stopPlayer, game.game_class.movePlayer);
+// }
+
+export function removeMovementEventListener(functionKeyUp, functionKeyDown) {
+	if (functionKeyUp !== null)
+    	document.removeEventListener("keyup", functionKeyUp);
+	if (functionKeyDown !== null)
+    	document.removeEventListener("keydown", functionKeyDown);
+}
 // add an event listener to the window that watches for url changes
 window.onpopstate = locationHandler;
 // call the urlLocationHandler function to handle the initial url

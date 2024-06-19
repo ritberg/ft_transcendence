@@ -38,7 +38,9 @@ class StatsView(APIView):
 	def get(self, request):
 		try:
 			user = request.user
-			stats = get_object_or_404(Stats, player_id=user)
+			stats = Stats.objects.filter(player_id=user).first()
+			if stats is None:
+				return Response([], status=status.HTTP_200_OK)
 			serializer = StatsSerializer(stats)
 			return Response(serializer.data, status=status.HTTP_200_OK)
 		except Exception as e:

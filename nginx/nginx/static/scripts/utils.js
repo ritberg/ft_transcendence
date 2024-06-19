@@ -1,13 +1,12 @@
-export function sleep(ms) {
-	return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 export async function errorMsg(msg) {
 	const error_box = document.getElementById("error-box");
 	error_box.textContent = msg;
 	error_box.classList.toggle("error_active");
 	await sleep(2000);
 	error_box.classList.toggle("error_active");
+}
+export function sleep(ms) {
+	return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export function randomNumber(numberList) {
@@ -29,7 +28,7 @@ export function writeVerticalText(context, text, x, y, font, rotation) {
 	context.restore(); // Restore the original state
 }
 
-export class Game {
+export class tourneyGame {
 	constructor(player, index, scores, max_points, max_phases) {
 		this.player = [];
 		this.index = index;
@@ -37,4 +36,12 @@ export class Game {
 		this.max_points;
 		this.max_phases;
 	}
+}
+
+export function resetTourneyGame(tourney_game) {
+	tourney_game.player = [];
+	tourney_game.score = [];
+	tourney_game.index = "";
+	tourney_game.max_points = 0;
+	tourney_game.max_phases = 0;
 }

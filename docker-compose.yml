@@ -96,26 +96,26 @@ services:
     init: true
     restart: on-failure
 
-  # bot:
-  #   container_name: bot
-  #   depends_on:
-  #     - db_online
-  #   build:
-  #     context: ./bot/docker
-  #     dockerfile: Dockerfile
-  #     args:
-  #       SERVICE_NAME: ${BOT_SERVICE_NAME}
-  #   env_file:
-  #     - .env
-  #   expose:
-  #     - "8002"
-  #   volumes:
-  #     - bot:/home/transcendance/${BOT_SERVICE_NAME}
-  #   tty: true
-  #   networks:
-  #     - transcendance
-  #   init: true
-  #   restart: on-failure
+  bot:
+    container_name: bot
+    depends_on:
+      - db_online
+    build:
+      context: ./bot/docker
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: ${BOT_SERVICE_NAME}
+    env_file:
+      - .env
+    expose:
+      - "8002"
+    volumes:
+      - bot:/home/transcendance/${BOT_SERVICE_NAME}
+    tty: true
+    networks:
+      - transcendance
+    init: true
+    restart: on-failure
 
   db_online:
     container_name: db_online
@@ -138,7 +138,7 @@ services:
     container_name: nginx
     depends_on:
       - online
-      # - bot
+      - bot
       - user
       - chat
     build:

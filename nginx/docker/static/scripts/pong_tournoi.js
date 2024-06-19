@@ -135,7 +135,7 @@ export async function loop(current_frame) {
 		ctx.clearRect(0, 0, game_canvas.width, game_canvas.height);
 		loop_exec = false;
 		modifyDelta(1.5);
-		stars(document.getElementById("game_canvas"));
+		stars(document.getElementById("main_canvas"));
 		await sleep(500);
 		await drawBrackets();
 		//await starWars();

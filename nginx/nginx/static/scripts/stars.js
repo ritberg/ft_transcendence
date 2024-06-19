@@ -1,9 +1,11 @@
 import { sleep } from './utils.js';
-import { loop as loopTourney, loop_exec } from './pong_tourney.js';
+import { loop_exec } from './pong_tourney.js';
 
 export let delta = 1.5;
 
 export function stars(stars_effect) {
+	if (stars_effect == null)
+		return;
 	const ctx_stars = stars_effect.getContext("2d");
 
 	const InitCanvas = () => {
@@ -86,10 +88,27 @@ export async function starWars() {
 	for (let i = 0; i < 20; i++) {
 		delta /= 1.05;
 		const brightness = i * 4; //18
-		document.getElementById("game_canvas").style.background = "rgba(" + brightness + ", " + brightness + ", " + brightness + ", 1)";
+		document.getElementById("main_canvas").style.background = "rgba(" + brightness + ", " + brightness + ", " + brightness + ", 1)";
 		await sleep(20);
 	}
-	document.getElementById("game_canvas").style.background = "black";
+	document.getElementById("main_canvas").style.background = "black";
+	// document.getElementById("main-menu").style.display = "none";
+}
+
+export async function starWarsTourney() {
+	for (let i = 0; i < 40; i++) {
+		delta /= 1.05;
+		await sleep(20);
+	}
+	for (let i = 0; i < 20; i++) {
+		delta /= 1.05;
+		const brightness = i * 4; //18
+		if (window.location.pathname == '/tourney/')
+			document.getElementById("game_canvas").style.background = "rgba(" + brightness + ", " + brightness + ", " + brightness + ", 1)";
+		await sleep(20);
+	}
+	if (window.location.pathname == '/tourney/')
+		document.getElementById("game_canvas").style.background = "black";
 	// document.getElementById("main-menu").style.display = "none";
 }
 

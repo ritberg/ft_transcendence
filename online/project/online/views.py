@@ -11,7 +11,6 @@ def CreateRoom(request):
         text_data_json = json.loads(request.body)
         room = text_data_json["room"]
         username = text_data_json["username"]
-        print("usernames test:", username)
         if (room != ""):
             if (room.strip() == ""):
                 context = {
@@ -36,9 +35,6 @@ def CreateRoom(request):
                         "error": "user already in room",
                     }
                     return JsonResponse(context)
-                else:
-                    get_room.players.append(username)
-                    get_room.save()
                 context = {
                     "status": 200,
                     "room_name": room,
@@ -47,8 +43,6 @@ def CreateRoom(request):
                 return JsonResponse(context)
             except Room.DoesNotExist:
                 new_room = Room(room_name = room)
-                new_room.save()
-                new_room.players.append(username)
                 new_room.save()
                 context = {
                     "status": 200,
@@ -66,9 +60,6 @@ def CreateRoom(request):
                         "error": "user already in room",
                     }
                     return JsonResponse(context)
-                else:
-                    get_room.players.append(username)
-                    get_room.save()
                 context = {
                     "status": 200,
                     "room_name": get_room.room_name,
@@ -78,8 +69,6 @@ def CreateRoom(request):
             except:
                 room = str(uuid.uuid4())
                 new_room = Room(room_name = room, quickmatch=True)
-                new_room.save()
-                new_room.players.append(username)
                 new_room.save()
                 context = {
                     "status": 200,
@@ -116,9 +105,6 @@ def CreateInvite(request):
                     "error": "user already in room",
                 }
                 return JsonResponse(context)
-            else:
-                get_room.players.append(username)
-                get_room.save()
             context = {
                 "status": 200,
                 "room_name": get_room.room_name,
@@ -128,8 +114,6 @@ def CreateInvite(request):
         except Room.DoesNotExist:
             new_room_name = str(uuid.uuid4())
             new_room = Room(room_name = new_room_name, invite_name = chat_name)
-            new_room.save()
-            new_room.players.append(username)
             new_room.save()
             context = {
                 "status": 200,

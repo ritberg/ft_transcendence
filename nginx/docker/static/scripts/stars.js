@@ -86,10 +86,10 @@ export async function starWars() {
 	for (let i = 0; i < 20; i++) {
 		delta /= 1.05;
 		const brightness = i * 4; //18
-		document.getElementById("game_canvas").style.background = "rgba(" + brightness + ", " + brightness + ", " + brightness + ", 1)";
+		document.getElementById("main_canvas").style.background = "rgba(" + brightness + ", " + brightness + ", " + brightness + ", 1)";
 		await sleep(20);
 	}
-	document.getElementById("game_canvas").style.background = "black";
+	document.getElementById("main_canvas").style.background = "black";
 	document.getElementById("main-menu").style.display = "none";
 }
 

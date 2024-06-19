@@ -1,5 +1,6 @@
 import { userIsConnected } from "./users.js";
 import { token, username_global } from "./users.js";
+import { errorMsg } from "./utils.js";
 
 function updateUserStats(stats) {
 	if (stats) {
@@ -58,7 +59,7 @@ export async function displayProfile() {
 			document.getElementById("info-username").textContent = `${username}`;
 			document.getElementById("user-name").textContent = `${username}`;
 		}
-		if (user.stats) {
+		if (user.stats && user.stats.length != 0) {
 			console.log("PUT STAT IN USERINFO DISPLAY: ", user.stats);
 			updateUserStats(user.stats);
 			createChartGames(user.stats);
@@ -194,15 +195,19 @@ async function getStats() {
 		},
 		credentials: "include",
 	})
-		.then((response) => {
+		.then(async (response) => {
 			if (!response.ok) {
-				throw new Error("Network response was not ok");
+				const error = await response.json();
+				errorMsg(error.message);
+				return null;
 			}
 			return response.json();
 		})
 		.then((data) => {
-			console.log(data)
-			return data
+			if (data !== null) {
+				console.log(data)
+				return data
+			}
 		})
 		.catch((error) => {
 			console.error("Fetch error: ", error);
@@ -220,15 +225,19 @@ async function getMatchHistory() {
 		},
 		credentials: "include",
 	})
-		.then((response) => {
+		.then(async (response) => {
 			if (!response.ok) {
-				throw new Error("Network response was not ok");
+				const error = await response.json();
+				errorMsg(error.message);
+				return null;
 			}
 			return response.json();
 		})
 		.then((data) => {
-			console.log(data)
-			return data;
+			if (data !== null) {
+				console.log(data)
+				return data;
+			}
 		})
 		.catch((error) => {
 			console.error("Fetch error: ", error);
