@@ -17,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
     ///////////// EVENT LISTENERS //////////////
 
     contentContainer.addEventListener("input", async function (event) {
-        console.log(event.target);
         if (event.target && event.target.id === "s-players") {
             document.getElementById("t-players").textContent = document.getElementById("s-players").value;
         }

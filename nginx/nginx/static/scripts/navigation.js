@@ -126,3 +126,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+document.getElementById("settings-button").addEventListener("click", async function (event) {					//// frontend
+    event.preventDefault();
+    if (window.location.pathname === "/settings/") {
+        route("/");
+    }
+    else {
+        if (window.location.pathname === "/") {
+            document.getElementById("main-menu").classList.remove("shown");
+            document.getElementById("main-menu").classList.add("hidden");
+            await sleep(500);
+        }
+        route("/settings/");
+    }
+});

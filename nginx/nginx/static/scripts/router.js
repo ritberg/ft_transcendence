@@ -1,5 +1,5 @@
 import { displayProfile } from "./stats.js";
-import { usersClick } from "./users.js";
+import { usersClick, settingsClick } from "./users.js";
 import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
@@ -53,6 +53,10 @@ const routes = {
 	"/bot/": {
 		template: "/templates/bot.html",
 		title: "bot",
+	},
+	"/settings/": {
+		template: "/templates/settings.html",
+		title: "Settings",
 	},
 }
 
@@ -131,6 +135,9 @@ function addJS(location) {
 	}
 	else if (location == "/bot/") {
         GameMode(1);
+	}
+	else if (location == "/settings/") {
+		settingsClick();
 	}
 }
 
