@@ -1,16 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
 from rest_framework import serializers
-from .models import DEFAULT_PROFILE_PICTURE
-from .models import FriendRequest
+from .models import DEFAULT_PROFILE_PICTURE, CustomUser, FriendRequest
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
-		model = User
-		fields = ['id', 'username', 'email', 'password', 'profile_picture', 'friends', 'status']
+		model = CustomUser
+        fields = ['id', 'username', 'email', 'is_2fa_enabled', 'otp_secret']
+        read_only_fields = ['otp_secret']
 		extra_kwargs = {'password': {'write_only': True}}
+		# model = User
+		# fields = ['id', 'username', 'email', 'password', 'profile_picture', 'friends', 'status']
+		# extra_kwargs = {'password': {'write_only': True}}
 
 	def create(self, validated_data):
 		user = User.objects.create_user(
@@ -90,3 +94,9 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 			'username': obj.to_user.username,
 			'profile_picture': obj.to_user.profile_picture.url if obj.to_user.profile_picture else None,
 		}
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+        data.update({'email': self.user.email})
+        return data

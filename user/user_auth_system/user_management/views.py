@@ -8,19 +8,37 @@ from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404
 from .models import FriendRequest
 from rest_framework.exceptions import NotFound
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
+from rest_framework.decorators import api_view
 
 # Create your views here.
 
 User = get_user_model()
 
 # authentication views
+@api_view(['POST'])
+def enable_2fa(request):
+    user = request.user
+    user.is_2fa_enabled = True
+    user.save()
+    return Response({'otp_secret': user.otp_secret}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def verify_otp(request):
+    user = request.user
+    otp = request.data.get('otp')
+    if user.get_otp() == otp:
+        return Response({'detail': 'OTP verified'}, status=status.HTTP_200_OK)
+    return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
 class IndexView(APIView):
 	permission_classes = [AllowAny]
 
 	def get(self, request):
 		return render(request, 'index.html')
-
 
 class RegisterUserView(APIView):
 	permission_classes = [AllowAny]
@@ -271,3 +289,6 @@ class GetUserID(APIView):
 			return Response({'id': user.id}, status=status.HTTP_200_OK)
 		except Exception as e:
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer

@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from rest_framework import serializers
+import pyotp
 
 
 DEFAULT_PROFILE_PICTURE = 'profile_pics/default.jpg'
@@ -32,4 +33,11 @@ class FriendRequest(models.Model):
 
 	def __str__(self):
 		return f'{self.from_user} sent friend request to {self.to_user}'
+
+class CustomUser(AbstractUser):
+    is_2fa_enabled = models.BooleanField(default=False)
+    otp_secret = models.CharField(max_length=16, default=pyotp.random_base32)
+
+    def get_otp(self):
+        return pyotp.TOTP(self.otp_secret).now()
 	
