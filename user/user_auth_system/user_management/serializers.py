@@ -71,7 +71,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 		if from_user.friends.filter(id=to_user.id).exists():
 			raise serializers.ValidationError('You are already friends with this user.')
 		if FriendRequest.objects.filter(from_user=from_user, to_user=to_user).exists():
-			raise serializers.ValidationError('You have already sent friend request to this user.')
+			raise serializers.ValidationError('You have already sent a friend request to this user.')
 		if FriendRequest.objects.filter(from_user=to_user, to_user=from_user).exists():
 			raise serializers.ValidationError('You have already received friend request from this user.')
 		friend_request = FriendRequest.objects.create(from_user=from_user, to_user=to_user)

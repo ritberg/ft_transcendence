@@ -126,8 +126,9 @@ class SendFriendRequestView(APIView):
 			raise ValueError(serializer.errors)
 		except Exception as e:
 				print(e)
+				error_message = str(e.detail['non_field_errors'][0]) if 'non_field_errors' in e.detail else str(e.detail[0])
 				return Response(
-					{'message': f"{type(e).__name__}: {str(e)}"},
+					{'message': error_message},
 					status=status.HTTP_400_BAD_REQUEST
 				)
 

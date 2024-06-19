@@ -201,6 +201,7 @@ body {
 }
 .avatar_pic {
 	overflow: hidden;
+	object-fit: cover;
 	border-radius: 50%;
 	outline: 2px solid white;
 	outline-offset: 2px;

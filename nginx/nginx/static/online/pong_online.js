@@ -164,8 +164,9 @@ export class online {
     trigger = true;
 
     async sendStats(game_stat) {
+        let statsUrl = 'https://' + window.location.host + "/stat/game-history/";
         try {
-            const response = await fetch("https://localhost/stat/game-history/", {
+            const response = await fetch(statsUrl, {
                 method: "POST",
                 headers: {
                 "X-CSRFToken": token,
