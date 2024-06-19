@@ -10,11 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", async function (event) {
 		let url = window.location.pathname;
-		console.log(url);
 		if (url == "/" && event.target.id !== "content") {
+			document.getElementById("content").style.pointerEvents = "none";
 			document.getElementById("content").classList.remove("shown");
 			document.getElementById("content").classList.add("hidden");
 			await sleep(500);
+			document.getElementById("content").style.pointerEvents = "auto";
 		}
 		if (event.target && event.target.id === "b-signin-ok") {
 			await loginButton(event);
@@ -66,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	document.getElementById("profile_tab").addEventListener("click", async function (event){
 		event.preventDefault();
 		let url = window.location.pathname;
-		console.log(url);
 		document.getElementById("content").classList.remove("shown");
 		document.getElementById("content").classList.add("hidden");
 		await sleep(500);

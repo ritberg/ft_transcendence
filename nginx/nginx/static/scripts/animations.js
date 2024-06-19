@@ -86,6 +86,7 @@ export async function tournamentSettings() {
 	document.getElementById("tourney_settings-box").style.opacity = "1";
 	document.getElementById("tourney_settings-box").classList.remove("shown");
 	document.getElementById("tourney_settings-box").classList.add("hidden");
+	await sleep(500);
 	document.getElementById("nickname_setup-box").style.display = "flex";
 	document.getElementById("nickname_setup-box").classList.add("shown");
 	enterNicknames(document.getElementById("s-players").value);
