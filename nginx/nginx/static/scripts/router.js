@@ -1,5 +1,5 @@
 import { displayProfile } from "./stats.js";
-import { usersClick, displaySettings } from "./users.js";
+import { usersClick, displaySettings, getUserId } from "./users.js";
 import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
@@ -42,7 +42,7 @@ const routes = {
 		template: "/templates/tourney.html",
 		title: "Tournament",
 	},
-	"/profile/": {
+	"/profile/:username/": {
 		template: "/templates/profile.html",
 		title: "Profile",
 	},
@@ -88,15 +88,12 @@ const locationHandler = async () => {
 		location = "/";
 	}
 	// get the route object from the urlRoutes object
-	const route = routes[location] || routes["404"];
+	// const route = routes[location] || routes["404"];
+	const { route, params } = matchRoute(location);
+	let profileCut = location.substring(0, location.indexOf('/', location.indexOf('/') + 1) + 1);
 	// get the html from the template
-	if (location == "/profile/") {
-		await fetch(route.template)
-			.then((response) => {return response.text();})
-			.then((data) => {
-				document.getElementById("content").innerHTML = data;
-				displayProfile();
-			})
+	if (profileCut == "/profile/" && countString(location, '/') == 3) {
+		await routerProfile(location, route.template);
 	}
 	else {
 		const html = await fetch(route.template).then((response) => response.text());
@@ -162,10 +159,49 @@ function resetGameState() {
     }
 }
 
-// function findEventListeners(type) {
-//     if (type === 'pvp')
-//         removeMovementEventListener(game.game_class.stopPlayer, game.game_class.movePlayer);
-// }
+const matchRoute = (location) => {
+	for (const path in routes) {
+		const regexPath = path.replace(/:\w+/g, '([^/]+)'); // Replace :param with regex capture group
+		const match = location.match(new RegExp(`^${regexPath}$`));
+		if (match) {
+			const params = {};
+			const paramNames = (path.match(/:\w+/g) || []).map(name => name.substring(1));
+			paramNames.forEach((name, index) => {
+				params[name] = match[index + 1];
+			});
+			return { route: routes[path], params };
+		}
+	}
+	return { route: routes["404"], params: {} };
+};
+
+async function routerProfile(location, template) {
+	let username = location.substring(location.indexOf('/', location.indexOf('/') + 1) + 1, location.length - 1);
+	let user_id = await getUserId(username);
+	if (user_id == null) {
+		const html = await fetch("/templates/404.html").then((response) => response.text());
+		document.getElementById("content").innerHTML = html;
+	}
+	else {
+		await fetch(template)
+			.then((response) => {return response.text();})
+			.then((data) => {
+				document.getElementById("content").innerHTML = data;
+				displayProfile(username);
+			})
+	}
+}
+
+function countString(str, letter) {
+
+    // creating regex 
+    const re = new RegExp(letter, 'g');
+
+    // matching the pattern
+    const count = str.match(re).length;
+
+    return count;
+}
 
 export function removeMovementEventListener(functionKeyUp, functionKeyDown) {
 	if (functionKeyUp !== null)

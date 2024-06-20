@@ -1,8 +1,8 @@
 import { GameMode } from './main.js';
 import { route } from './router.js';
 import { sleep } from './utils.js';
-import { signupButton, loginButton, logoutFunc, userIsConnected, uploadPicture, updateUser } from './users.js';
-import { displayProfile } from './stats.js';
+import { signupButton, loginButton, logoutFunc, userIsConnected, uploadPicture, updateUser, username_global } from './users.js';
+import { displayProfile} from './stats.js';
 import { tournamentSettings } from './animations.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", async function (event) {
 		let url = window.location.pathname;
+		console.log(event.target);
 		if (url == "/" && event.target.id !== "content") {
 			document.getElementById("content").style.pointerEvents = "none";
 			document.getElementById("content").classList.remove("shown");
@@ -47,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		else if (event.target && event.target.id === "b-online-go"){
 			GameMode(3);
 		}
-		else if (event.target && event.target.id === "refresh-stats") {
-			// addGame();
-			displayProfile();
-		}
+		// else if (event.target && event.target.id === "refresh-stats") {
+		// 	// addGame();
+		// 	displayProfile();
+		// }
 		// else if (event.target && event.target.id === "logout") {
 		// 	logoutButton();
 		// 	route("/");
@@ -65,7 +66,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			updateUser();
 		}
 		else if (event.target && event.target.id === "profile") {
-			displayProfile();
+			displayProfile(username_global);
+		}
+		else if (event.target && event.target.id === "user_profile" || event.target && event.target.id === "friend_profile") {
+			let username = event.target.innerText;
+			if (username)
+				route("/profile/" + username + "/");
 		}
 		document.getElementById("content").classList.remove("hidden");
 		document.getElementById("content").classList.add("shown");
@@ -79,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		document.getElementById("content").classList.remove("shown");
 		document.getElementById("content").classList.add("hidden");
 		await sleep(500);
-		if (url === "/profile/")
+		if (url === "/profile/" + username_global + "/")
 			route('/');
 		else if (url === "/signin/")
 			route('/');
@@ -91,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				document.getElementById("content").classList.remove("shown");
 				document.getElementById("content").classList.add("hidden");
 			}
-			route('/profile/');
+			route('/profile/' + username_global + "/");
 		}
 		else if (userIsConnected == false)
 			route('/signin/');

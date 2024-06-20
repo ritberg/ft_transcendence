@@ -3,7 +3,7 @@ from user_management.views import (LoginUserView, LogoutUserView, RegisterUserVi
 								   UpdateUserView, IndexView, SendFriendRequestView,
 								   AcceptFriendRequestView, RejectFriendRequestView,
 								   ListFriendsRequestsView, ListFriendsView, DeleteFriendView,
-                                   BlockUserView, UnblockUserView, ListBlockedUsers, GetUserID)
+                                   BlockUserView, UnblockUserView, ListBlockedUsers, GetUserID, GetUserPicture)
 
 urlpatterns = [
 	path('index/', IndexView.as_view(), name='index'),
@@ -21,4 +21,5 @@ urlpatterns = [
     path('unblock-user/', UnblockUserView.as_view(), name='unblock_user'),
     path('list-blocked-users/', ListBlockedUsers.as_view(), name='list_blocked_users'),
 	path('get-user-id/', GetUserID.as_view(), name='get_user_id'),
+    path('get-user-picture/<str:username>/', GetUserPicture.as_view(), name='get_user_picture')
 ]

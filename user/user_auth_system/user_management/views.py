@@ -278,3 +278,16 @@ class GetUserID(APIView):
 			return Response({'id': user.id}, status=status.HTTP_200_OK)
 		except Exception as e:
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+class GetUserPicture(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request, username):
+		try:
+			if not username:
+				raise NotFound('A username query parameter is required.')
+			user = User.objects.get(username=username)
+			profile_picture_url = user.profile_picture.url if user.profile_picture else None
+			return Response({'pfp': profile_picture_url}, status=status.HTTP_200_OK)
+		except Exception as e:
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)

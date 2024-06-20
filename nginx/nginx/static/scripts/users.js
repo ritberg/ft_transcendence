@@ -21,6 +21,7 @@ export const getUserId = async (username) => {
 	const data = await response.json();
 	if (!response.ok) {
 		errorMsg(data.message);
+		return null;
 	}
 	console.log("data : ", data);
 	return data.id;
@@ -374,6 +375,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			const user_button = document.createElement('span');
 			user_button.style.flexGrow = "1";
 			user_button.style.cursor = "pointer";
+			user_button.id = "friend_profile";
 			user_button.textContent = friend.username;
 			li.appendChild(user_button);
 
@@ -561,6 +563,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						user_button.style.flexGrow = "1";
 						user_button.style.cursor = "pointer";
 						user_button.textContent = user.username;
+						user_button.id = "user_profile";
 						li.appendChild(user_button);
 
 						const add_button = document.createElement('button');	////
@@ -673,6 +676,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				return response.json();
 			})
 			.then((data) => {
+				console.log(data); 
 				//const chatContainer = document.createElement('div');
 				//chatContainer.classList.add('chat__container');
 				//document.getElementById("chat-container").innerHTML = "";
@@ -692,6 +696,24 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 				else {
 					return;
+				}
+
+				// let userLink = document.getElementById('chat_profile');
+				let userLink = document.getElementsByClassName("msg_username");
+
+				for (var i = 0; i < userLink.length; i++) {
+					let username = userLink[i].textContent;
+					userLink[i].addEventListener('click', (function(username) {
+						return function() {
+							chat_profile(username);
+						}
+					})(username), false);
+				}
+
+				async function chat_profile(username) {
+					console.log(username);
+					if (username)
+						route("/profile/" + username + "/");
 				}
 
 				console.log("++ room_name : ", data.room_name);

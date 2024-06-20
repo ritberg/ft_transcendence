@@ -19,9 +19,9 @@ class GameHistoryView(APIView):
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-	def get(self, request):
+	def get(self, request, username):
 		try:
-			user = request.user
+			user = username
 			games = GameHistory.objects.filter(Q(player_1_id=user) | Q(player_2_id=user)).order_by('-date_played')[:10]
 			serializer = GameHistorySerializer(games, many=True)
 			print("serilizer get: ",serializer.data)
@@ -35,9 +35,9 @@ class GameHistoryView(APIView):
 class StatsView(APIView):
 	permission_classes = [IsAuthenticated]
 
-	def get(self, request):
+	def get(self, request, username):
 		try:
-			user = request.user
+			user = username
 			stats = Stats.objects.filter(player_id=user).first()
 			if stats is None:
 				return Response([], status=status.HTTP_200_OK)

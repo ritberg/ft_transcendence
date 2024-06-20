@@ -1,4 +1,4 @@
-import { userIsConnected } from "./users.js";
+import { getUserId, userIsConnected } from "./users.js";
 import { token, username_global } from "./users.js";
 import { errorMsg } from "./utils.js";
 
@@ -15,62 +15,60 @@ function updateUserStats(stats) {
 	}
 }
 
-function updateMatchHistory(matchHistory) {
+function updateMatchHistory(matchHistory, username) {
+	if (username == null)
+		username = username_global;
 	if (matchHistory) {
 		const historyList = document.getElementById("history-list");
 		historyList.innerHTML = ""; // Clear previous history
 		matchHistory.forEach((match) => {
 			const listItem = document.createElement("li");
-			let data_played = new Date(match.date_played).toLocaleDateString('fr-FR');
-			let opponent = (username_global === match.player_1.username) ? match.player_2.username : match.player_1.username;
+			let date_played = new Date(match.date_played).toLocaleDateString('fr-FR');
+			let opponent = (username === match.player_1.username) ? match.player_2.username : match.player_1.username;
 			const winStatus = "WIN"
-			let status = (username_global === match.winner.username) ? winStatus : "LOSS";
+			let status = (username === match.winner.username) ? winStatus : "LOSS";
 			let player_1_score = match.player_1.score;
 			let player_2_score = match.player_2.score;
 			let time = (match.duration / 60).toFixed(2);
 
-			listItem.textContent = `${data_played}: ${opponent} • ${status} [${player_1_score} - ${player_2_score}] • ${time}min`;
+			listItem.textContent = `${date_played}: ${opponent} • ${status} [${player_1_score} - ${player_2_score}] • ${time}min`;
 			listItem.classList.add(status === winStatus ? "win" : "loss");
 			historyList.appendChild(listItem);
 		});
 	}
 }
 
-export async function displayProfile() {
-	let user = JSON.parse(localStorage.getItem("user")) || null;
+export async function displayProfile(username) {
 
-	console.log("userIsConnected in var : ", userIsConnected);
-	console.log("userIsConnected in localStorage : ", localStorage.getItem("userIsConnected"));
-
-	if (user === null) {
+	if (username === null) {
 		console.log("No user found for displayUserInfo");
 		return;
 	}
+	let player_id = await getUserId(username);
 
-	user.stats = await getStats();
-	user.match_history = await getMatchHistory();
-	localStorage.setItem("user", JSON.stringify(user));
+	let stats = await getStats(player_id);
+	let match_history = await getMatchHistory(player_id);
 
-	console.log("updateUserInfo called with userInfo =", user);
-	if (user) {
-		const username = user.username;
+	let profile_pic = await getProfilePicture(username);
+	
+	if (username) {
 		if (username) {
 			console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
 			document.getElementById("info-username").textContent = `${username}`;
-			document.getElementById("user-name").textContent = `${username}`;
+			// document.getElementById("user-name").textContent = `${username}`;
 		}
-		if (user.profile_picture) {
-			document.getElementById("display_picture").src = user.profile_picture;
+		if (profile_pic) {
+			document.getElementById("display_picture").src = profile_pic;
 		}
-		if (user.stats && user.stats.length != 0) {
-			console.log("PUT STAT IN USERINFO DISPLAY: ", user.stats);
-			updateUserStats(user.stats);
-			createChartGames(user.stats);
-			createGoalsChart(user.stats);
+		if (stats && stats.length != 0) {
+			console.log("PUT STAT IN USERINFO DISPLAY: ", stats);
+			updateUserStats(stats);
+			createChartGames(stats);
+			createGoalsChart(stats);
 		}
-		if (user.match_history) {
-			console.log("PUT MATCH HISTORY IN USERINFO DISPLAY: ", user.match_history);
-			updateMatchHistory(user.match_history);
+		if (match_history) {
+			console.log("PUT MATCH HISTORY IN USERINFO DISPLAY: ", match_history);
+			updateMatchHistory(match_history, username);
 		}
 	}
 }
@@ -187,8 +185,8 @@ function createGoalsChart(stats) {
 	canvas.style.height = '100%';
 }
 
-async function getStats() {
-	let getStatsUrl = "https://" + window.location.host + "/stat/stats/";
+async function getStats(player_id) {
+	let getStatsUrl = "https://" + window.location.host + "/stat/stats/" + player_id + "/";
 
 	return await fetch(getStatsUrl, {
 		method: "GET",
@@ -196,7 +194,7 @@ async function getStats() {
 			"X-CSRFToken": token,
 			"Content-Type": "application/json",
 		},
-		credentials: "include",
+		// credentials: "include",
 	})
 		.then(async (response) => {
 			if (!response.ok) {
@@ -217,8 +215,38 @@ async function getStats() {
 		});
 }
 
-async function getMatchHistory() {
-	let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/";
+async function getMatchHistory(player_id) {
+	let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/" + player_id + "/";
+
+	return await fetch(getMatchHistoryUrl, {
+		method: "GET",
+		headers: {
+			"X-CSRFToken": token,
+			"Content-Type": "application/json",
+		},
+		// credentials: "include",
+	})
+		.then(async (response) => {
+			if (!response.ok) {
+				const error = await response.json();
+				errorMsg(error.message);
+				return null;
+			}
+			return response.json();
+		})
+		.then((data) => {
+			if (data !== null) {
+				console.log(data)
+				return data;
+			}
+		})
+		.catch((error) => {
+			console.error("Fetch error: ", error);
+		});
+}
+
+async function getProfilePicture(username) {
+	let getMatchHistoryUrl = "https://" + window.location.host + "/auth/get-user-picture/" + username + "/";
 
 	return await fetch(getMatchHistoryUrl, {
 		method: "GET",
@@ -239,7 +267,7 @@ async function getMatchHistory() {
 		.then((data) => {
 			if (data !== null) {
 				console.log(data)
-				return data;
+				return data.pfp;
 			}
 		})
 		.catch((error) => {
