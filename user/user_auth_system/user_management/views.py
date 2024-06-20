@@ -84,31 +84,36 @@ class LogoutUserView(APIView):
 			)
 
 class UpdateUserView(APIView):
-	permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-	def put(self, request, *args, **kwargs):
-			try:
-				serializer = UserSerializer(request.user, data=request.data, partial=True)
-				if serializer.is_valid():
-					serializer.save()
-					return Response(
-						{
-							'data': serializer.data,
-							'message': 'User updated successfully'
-						},
-						status=status.HTTP_200_OK
-					)
-				raise ValueError(serializer.errors)
-			except Exception as e:
-				error_message = f"{type(e).__name__}: {str(e)}"
-				start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
-				end_index = error_message.find("', code='invalid")
-				extracted_string = error_message[start_index:end_index]
+    def put(self, request, *args, **kwargs):
+        try:
+            serializer = UserSerializer(request.user, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
 
-				return Response(
-					{'message': extracted_string},
-					status=status.HTTP_400_BAD_REQUEST
-				)
+                csrf_token = get_token(request)
+                print("csrf_token : ", csrf_token)
+                return Response(
+                    {
+                        'data': serializer.data,
+                        'csrfToken': csrf_token,
+                        'message': 'User updated successfully'
+                    },
+                    status=status.HTTP_200_OK
+                )
+            raise ValueError(serializer.errors)
+        except Exception as e:
+            error_message = f"{type(e).__name__}: {str(e)}"
+            start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
+            end_index = error_message.find("', code='invalid")
+            extracted_string = error_message[start_index:end_index]
+
+            return Response(
+                {'message': extracted_string},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
 
 # friend request views
 

@@ -48,6 +48,7 @@ const updateProfile = (user, isConnected, token) => {
 	localStorage.setItem("userIsConnected", isConnected);
 	userIsConnected = isConnected;
 	console.log("userIsConnected : ", localStorage.getItem("userIsConnected"));
+	console.log("print tokennnnn2 ", token);
 	if (token !== null) {
 		updateCSRFToken(token);
 	} else {
@@ -1031,7 +1032,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						if (data !== null) {
 							console.log("Update success: ", data);
 							let user = data.data;
-							updateProfile(user, true, token);
+							updateProfile(user, true, data.csrfToken);
 							if (user) {
 								if (data.data.username) {
 									console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
