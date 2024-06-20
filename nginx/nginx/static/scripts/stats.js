@@ -59,6 +59,9 @@ export async function displayProfile() {
 			document.getElementById("info-username").textContent = `${username}`;
 			document.getElementById("user-name").textContent = `${username}`;
 		}
+		if (user.profile_picture) {
+			document.getElementById("display_picture").src = user.profile_picture;
+		}
 		if (user.stats && user.stats.length != 0) {
 			console.log("PUT STAT IN USERINFO DISPLAY: ", user.stats);
 			updateUserStats(user.stats);

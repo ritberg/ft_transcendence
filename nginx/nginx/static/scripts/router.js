@@ -1,5 +1,5 @@
 import { displayProfile } from "./stats.js";
-import { usersClick, settingsClick } from "./users.js";
+import { usersClick, displaySettings } from "./users.js";
 import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
@@ -137,7 +137,7 @@ function addJS(location) {
         GameMode(1);
 	}
 	else if (location == "/settings/") {
-		settingsClick();
+		displaySettings();
 	}
 }
 

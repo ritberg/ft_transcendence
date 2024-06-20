@@ -62,7 +62,7 @@ const updateCSRFToken = (newToken) => {
 	document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 };
 
-let usersClick, signupButton, logoutButton, loginButton, settingsClick;
+let usersClick, signupButton, loginButton, settingsClick, displaySettings, logoutFunc, uploadPicture, updateUser;
 document.addEventListener("DOMContentLoaded", function () {
 
 	let storedUser = localStorage.getItem("user");
@@ -283,7 +283,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (data && Array.isArray(data.data)) {
 				displayFriendRequests(data.data);
 			} else {
-				console.error("Expected an array but got:", data);
+				errorMsg(data);
 			}
 		} catch (error) {
 			console.error("Error fetching friend requests:", error);
@@ -357,7 +357,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (data && Array.isArray(data.data)) {
 				displayFriends(data.data);
 			} else {
-				console.error("Expected an array but got:", data);
+				errorMsg(data);
 			}
 		} catch (error) {
 			console.error("Error fetching friends:", error);
@@ -439,7 +439,9 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			});
 			if (!response.ok) {
-				throw new Error('Failed to fetch blocked users');
+				const error = await response.json();
+				errorMsg(error.message);
+				return;
 			}
 			const data = await response.json();
 			console.log('Blocked users:', data);
@@ -538,7 +540,11 @@ document.addEventListener("DOMContentLoaded", function () {
 			},
 			credentials: "include",
 		})
-			.then(response => response.json())
+		.then( async (response) => {
+			if (!response.ok)
+				throw new Error("Network response was not ok");
+			return response.json();
+		})
 			.then(async data => {
 				await fetchBlockedUsers();
 				await fetchFriendRequests();
@@ -846,96 +852,43 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
-});
+	////// UPDATE PROFILE /////
 
 
-
-////// UPDATE PROFILE /////
-
-
-// var usernameLabel = document.getElementById("user-name");
-// var emailLabel = document.getElementById("user-email");
-// var profile_picture = document.getElementById("user-avatar");
-
-
-settingsClick = async function () {
-
-	let updateUrl = "https://" + window.location.host + "/auth/update/";
-
-
-	let btnUpdateProfile = document.getElementById("update-profile");
-	btnUpdateProfile.addEventListener("click", function () {
-		let formData = new FormData();
-		let hasChanges = false;
-
-		console.log("update clicked");
-		console.log("all cookies : ", document.cookie);
-
-		let usernameInput = document.getElementById("new-username");
-		if (usernameInput.value) {
-			formData.append("username", usernameInput.value);
-			hasChanges = true;
+	// var usernameLabel = document.getElementById("user-name");
+	// var emailLabel = document.getElementById("user-email");
+	// var profile_picture = document.getElementById("user-avatar");
+	displaySettings = async function () {
+		let user = JSON.parse(localStorage.getItem("user")) || null;
+	
+		console.log("userIsConnected in var : ", userIsConnected);
+		console.log("userIsConnected in localStorage : ", localStorage.getItem("userIsConnected"));
+	
+		if (user === null) {
+			console.log("No user found for displayUserInfo");
+			return;
 		}
-
-		let emailInput = document.getElementById("new-email");
-		if (emailInput.value) {
-			formData.append("email", emailInput.value);
-			hasChanges = true;
+	
+		console.log("updateUserInfo called with userInfo =", user);
+		if (user) {
+			const username = user.username;
+			if (username) {
+				console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
+				document.getElementById("info-username").textContent = `${username}`;
+			}
+			if (user.profile_picture) {
+				document.getElementById("user-avatar").src = user.profile_picture;
+			}
 		}
+	}
 
-		let passwordInput = document.getElementById("new-password");
-		if (passwordInput.value) {
-			formData.append("password", passwordInput.value);
-			hasChanges = true;
-		}
-
-		let avatarInput = document.getElementById("input-avatar");
-		if (avatarInput.files.length > 0) {
-			formData.append("avatar", avatarInput.files[0]);
-			hasChanges = true;
-		}
-
-		if (hasChanges) {
-			fetch(updateUrl, {
-				method: "PUT",
-				headers: {
-					"X-CSRFToken": token,
-				},
-				body: formData,
-				credentials: "include",
-			})
-				.then(async(response) => {
-					if (!response.ok) {
-						console.log(response);
-						return response.json().then((error) => {
-							throw new Error(JSON.stringify(error));
-						});
-					}
-					return response.json();
-				})
-				.then(async (data) => {
-					console.log("Update success: ", data);
-					let user = data.data;
-					// console.log("432984329: ", data.crsfToken);
-					updateProfile(user, true, data.crsfToken);
-					if (user) {
-						if (data.data.username) {
-							console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
-							document.getElementById("info-username").textContent = `${data.data.username}`;
-						}
-					}
-				})
-				.catch((error) => {
-					console.error("Fetch error: ", error.message);
-				});
-		} else {
-			console.log("No changes detected, no update performed.");
-		}
-	});
-
-	let btnUploadProfilePicture = document.getElementById("upload-avatar");
-	btnUploadProfilePicture.addEventListener("click", function () {
+	uploadPicture = async function () {
 		let file = document.getElementById("input-avatar").files[0];
+
+		if (file == null || file.type == "") {
+			errorMsg("please select a file");
+			return;
+		}
 		let formData = new FormData();
 
 		formData.append("profile_picture", file);
@@ -967,20 +920,19 @@ settingsClick = async function () {
 				if (data !== null) {
 					console.log("sucess: ", data);
 					console.log("profile picture : ", data.data.profile_picture);
-					let user = JSON.parse(localStorage.getItem("user"));
-					user.profile_picture = data.data.profile_picture;
-					updateProfile(user);
-					console.log(user);
+					let user = data.data;
+					document.getElementById("user-avatar").src = data.data.profile_picture;
+					updateProfile(user, true, token);
 				}
 			})
 			.catch((error) => {
 				console.error("Fetch error: ", error.detail);
 			});
-	});
+	}
 
 	let logoutUrl = "https://" + window.location.host + "/auth/logout/";
 
-	function logoutFunc() {
+	logoutFunc = async function () {
 		fetch(logoutUrl, {
 			method: "POST",
 			headers: {
@@ -1001,18 +953,77 @@ settingsClick = async function () {
 			if (data !== null) {
 				console.log("data: ", data);
 				updateProfile(null, false, null);
+				route("/");
 			}
 		})
-			.catch((error) => {
-				console.error("Fetch error:", error);
-			});	
+		.catch((error) => {
+			console.error("Fetch error:", error);
+		});	
 	}
 
-	let logoutButton = document.getElementById("user-logout");
-	logoutButton.addEventListener("click", function () {
-		logoutFunc();
-		route("/");
-	});
-}
+		let updateUrl = "https://" + window.location.host + "/auth/update/";
 
-export { usersClick, signupButton, loginButton, logoutButton, settingsClick }
+		updateUser = async function () {
+			let formData = new FormData();
+			let hasChanges = false;
+
+			console.log("update clicked");
+			console.log("all cookies : ", document.cookie);
+
+			let usernameInput = document.getElementById("new-username");
+			if (usernameInput.value) {
+				formData.append("username", usernameInput.value);
+				hasChanges = true;
+			}
+
+			let emailInput = document.getElementById("new-email");
+			if (emailInput.value) {
+				formData.append("email", emailInput.value);
+				hasChanges = true;
+			}
+
+			let passwordInput = document.getElementById("new-password");
+			if (passwordInput.value) {
+				formData.append("password", passwordInput.value);
+				hasChanges = true;
+			}
+
+			if (hasChanges) {
+				fetch(updateUrl, {
+					method: "PUT",
+					headers: {
+						"X-CSRFToken": token,
+					},
+					body: formData,
+					credentials: "include",
+				})
+					.then(async(response) => {
+						if (!response.ok) {
+							const error = await response.json();
+							errorMsg(error.message);
+							return null;
+						}
+						return response.json();
+					})
+					.then(async (data) => {
+						if (data !== null) {
+							console.log("Update success: ", data);
+							let user = data.data;
+							updateProfile(user, true, token);
+							if (user) {
+								if (data.data.username) {
+									console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
+									document.getElementById("info-username").textContent = `${data.data.username}`;
+								}
+							}
+						}
+					})
+					.catch((error) => {
+						console.error("Fetch error: ", error.message);
+					});
+		} else {
+				errorMsg("There are no changes");
+			}
+	}
+});
+export { usersClick, signupButton, loginButton, settingsClick, displaySettings, logoutFunc, uploadPicture, updateUser }

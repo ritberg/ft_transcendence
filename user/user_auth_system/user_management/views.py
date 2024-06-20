@@ -100,12 +100,18 @@ class UpdateUserView(APIView):
 					)
 				raise ValueError(serializer.errors)
 			except Exception as e:
+				error_message = f"{type(e).__name__}: {str(e)}"
+				start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
+				end_index = error_message.find("', code='invalid")
+				extracted_string = error_message[start_index:end_index]
+
 				return Response(
-					{'message': f"{type(e).__name__}: {str(e)}"},
+					{'message': extracted_string},
 					status=status.HTTP_400_BAD_REQUEST
 				)
 
 # friend request views
+
 
 class SendFriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]

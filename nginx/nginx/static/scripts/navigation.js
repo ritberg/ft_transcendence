@@ -1,7 +1,7 @@
 import { GameMode } from './main.js';
 import { route } from './router.js';
 import { sleep } from './utils.js';
-import { signupButton, loginButton, logoutButton, userIsConnected } from './users.js';
+import { signupButton, loginButton, logoutFunc, userIsConnected, uploadPicture, updateUser } from './users.js';
 import { displayProfile } from './stats.js';
 import { tournamentSettings } from './animations.js';
 
@@ -51,9 +51,18 @@ document.addEventListener('DOMContentLoaded', () => {
 			// addGame();
 			displayProfile();
 		}
-		else if (event.target && event.target.id === "logout") {
-			logoutButton();
-			route("/");
+		// else if (event.target && event.target.id === "logout") {
+		// 	logoutButton();
+		// 	route("/");
+		// }
+		else if (event.target && event.target.id === "user-logout") {
+			logoutFunc();
+		}
+		else if (event.target && event.target.id === "upload-avatar") {
+			uploadPicture();
+		}
+		else if (event.target && event.target.id === "update-profile") {
+			updateUser();
 		}
 		else if (event.target && event.target.id === "profile") {
 			displayProfile();
