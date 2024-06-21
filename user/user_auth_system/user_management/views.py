@@ -23,20 +23,29 @@ class IndexView(APIView):
 
 
 class RegisterUserView(APIView):
-	permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
 
-	def post(self, request, *args, **kwargs):
-		serializer = UserSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(
-				{
-					'data': serializer.data,
-					'message': 'User registered successfully'
-				},
-				status=status.HTTP_201_CREATED
-			)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        
+        if User.objects.filter(email=email).exists():
+            return Response(
+                {'email': 'Email already exists'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    'data': serializer.data,
+                    'message': 'User registered successfully'
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginUserView(APIView):
 	permission_classes = [AllowAny]
