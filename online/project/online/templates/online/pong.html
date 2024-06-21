@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>js_pong</title>
+    <link rel="stylesheet" href="{% static 'online/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'online/utils/favicon.ico' %}">
+    <style>
+      .chat-logout {
+          display: flex;
+          background-color: #075e54;
+          border: 2px solid black;
+          border-color: black;
+          text-align: left;
+          padding: 10px;
+          border-radius: 8px;
+          cursor: pointer;
+      }
+
+      .chat-logout a {
+          text-decoration: none;
+          color: rgb(199, 199, 199);
+          font-weight: bold;
+      }
+
+      .chat-logout:hover {
+          background-color: rgb(19, 58, 7);
+      }
+  </style>
+</head>
+  </head>
+<body>
+    <div class="chat-logout">
+      <a style="float: left;" href="/">Home</a>
+    </div>
+    <h1>Pong</h1>
+    <canvas id="board"></canvas>
+    <script>
+      const ws = new WebSocket("wss://" + window.location.host + "/ws/notification/{{room_name}}/");
+      const audio = new Audio("{% static 'online/utils/1.mp3' %}");
+      var room_name = "{{room_name}}";
+    </script>
+    <script src="{% static 'online/pong_online.js' %}"></script>
+    <h1 id="fps"></h1>
+    <div class="checkbox-wrapper-65">
+        <label for="cbk1-65">
+          <input type="checkbox" onchange = "sound_change()" id="cbk1-65">
+          <span class="cbx">
+            <svg width="12px" height="11px" viewBox="0 0 12 11">
+              <polyline points="1 6.29411765 4.5 10 11 1"></polyline>
+            </svg>
+          </span>
+          <span>Sound</span>
+        </label>
+      </div>
+</body>
+</html>

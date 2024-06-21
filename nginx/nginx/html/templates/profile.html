@@ -1,0 +1,41 @@
+<div id="user_info-box">
+	<div id="main_info">
+		<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic" id="display_picture">
+		<h1 id="info-username"></h1>
+	</div>
+	<!--<button type="button" id="logout">LOGOUT</button>-->
+	<!--<button type="button" id="refresh-stats">Refresh Stats</button>-->
+	<div id="user-content">
+		<div id="match-history">
+			<h2>MATCH HISTORY</h2>
+			<ul id="history-list">
+				<!-- Match history will be populated here -->
+			</ul>
+		</div>
+		<div id="user-stats">
+			<h2>STATS</h2>
+			<div>
+				<ul id="stats-left">
+					<li id="stat-wins">Wins: 0</li>
+					<li id="stat-losses">Losses: 0</li>
+					<li id="stat-win-rate">Win Rate: 0%</li>
+					<li id="stat-goals-avg">Score Avg: 0%</li>
+				</ul>
+				<ul id="stats-right">
+					<li id="stat-goals-scored">Goals Scored: 0</li>
+					<li id="stat-goals-conceded">Goals Conceded: 0</li>
+					<li id="stat-total-games">Total Games Played: 0</li>
+					<li id="stat-total-hours">Total Hours Played: 0</li>
+				</ul>
+			</div>
+		</div>
+		<div class="graphs-div">
+			<div class="graphs-div">
+				<canvas id="playerGoalsChart"></canvas>
+			</div>
+			<div class="graphs-div">
+				<canvas id="playerGamesChart"></canvas>
+			</div>
+		</div>
+	</div>
+</div>
