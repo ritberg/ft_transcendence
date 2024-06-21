@@ -3,7 +3,9 @@ from user_management.views import (LoginUserView, LogoutUserView, RegisterUserVi
 								   UpdateUserView, IndexView, SendFriendRequestView,
 								   AcceptFriendRequestView, RejectFriendRequestView,
 								   ListFriendsRequestsView, ListFriendsView, DeleteFriendView,
-                                   BlockUserView, UnblockUserView, ListBlockedUsers, GetUserID, GetUserPicture)
+                                   BlockUserView, UnblockUserView, ListBlockedUsers, GetUserID,
+                                   MyTokenObtainPairView, enable_2fa, verify_otp, GetUserPicture)
+from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
 	path('index/', IndexView.as_view(), name='index'),
@@ -22,4 +24,8 @@ urlpatterns = [
     path('list-blocked-users/', ListBlockedUsers.as_view(), name='list_blocked_users'),
 	path('get-user-id/', GetUserID.as_view(), name='get_user_id'),
     path('get-user-picture/<str:username>/', GetUserPicture.as_view(), name='get_user_picture')
+    path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/enable-2fa/', enable_2fa, name='enable_2fa'),
+    path('api/verify-otp/', verify_otp, name='verify_otp'),
 ]
