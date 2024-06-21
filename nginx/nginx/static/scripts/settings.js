@@ -108,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((data) => {
             if (data !== null) {
                 console.log("data: ", data);
+                document.getElementById("chat-box").innerHTML = '';
                 updateProfile(null, false, null);
                 route("/");
             }
@@ -181,6 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                     else {
+                        document.getElementById("chat-box").innerHTML = '';
                         updateProfile(null, false, null);
                         route("/");
                     }

@@ -1,6 +1,6 @@
 import { fetchBlockedUsers } from './block.js';
-import { token, username_global } from './users.js';
-import { errorMsg, sleep } from './utils.js';
+import { token, userIsConnected, username_global } from './users.js';
+import { errorMsg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
 import { online } from '../online/pong_online.js';
 
@@ -152,16 +152,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
 
                 document.querySelector("#b-msg").onclick = async function (e) {
+                    if (userIsConnected !== true) {
+                        errorMsg("you must be connected to access chat functions");
+                        return;
+                    }
                     let blocked_users = await fetchBlockedUsers();
                     console.log("blocking situation ", blocked_users.length);
                     console.log(data.other_user);
                     if (!(blocked_users.includes(data.other_user))) {
-                        const messageInput = document.querySelector("#i-msg").value;
+                        var messageInput = document.querySelector("#i-msg").value;
+                        messageInput = escapeHtml(messageInput);
                         chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
                     }
                 };
 
                 document.querySelector("#id_invit_button").onclick = async function (e) {
+                    if (userIsConnected !== true) {
+                        errorMsg("you must be connected to access chat functions");
+                        return;
+                    }
                     let blocked_users = await fetchBlockedUsers();
                     if (blocked_users.includes(data.other_user)) {
                         return;

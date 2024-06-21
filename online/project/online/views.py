@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from channels.db import database_sync_to_async
 import uuid
 import json
+import re
 
 def CreateRoom(request):
 
@@ -11,6 +12,16 @@ def CreateRoom(request):
         text_data_json = json.loads(request.body)
         room = text_data_json["room"]
         username = text_data_json["username"]
+
+        pattern = "^[A-Za-z0-9_-]*$" 
+        state = bool(re.match(pattern, room))
+        if (state == False):
+            context = {
+                "status": 500,
+                "room_name": "",
+                "error": "invalid characters in room name",
+            }
+            return JsonResponse(context)
         if (room != ""):
             if (room.strip() == ""):
                 context = {
