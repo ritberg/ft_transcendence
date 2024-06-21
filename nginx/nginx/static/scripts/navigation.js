@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", async function (event) {
 		let url = window.location.pathname;
-		console.log(event.target);
 		if (url == "/" && event.target.id !== "content") {
 			document.getElementById("content").style.pointerEvents = "none";
 			document.getElementById("content").classList.remove("shown");
@@ -20,8 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		if (event.target && event.target.id === "b-signin-ok") {
 			await loginButton(event);
-			if (userIsConnected == true)
-				route('/');
 		}
 		else if (event.target && event.target.id === "b-signup-ok") {
 			signupButton(event);

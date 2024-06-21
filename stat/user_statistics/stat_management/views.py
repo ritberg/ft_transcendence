@@ -8,7 +8,8 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 # Create your views here.
-class GameHistoryView(APIView):
+
+class AddGameHistoryView(APIView):
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request):
@@ -18,6 +19,9 @@ class GameHistoryView(APIView):
 			print("serilizer post: ",serializer.data)
 			return Response(serializer.data, status=status.HTTP_201_CREATED)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class GameHistoryView(APIView):
+	permission_classes = [IsAuthenticated]
 
 	def get(self, request, username):
 		try:

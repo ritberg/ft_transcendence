@@ -1,6 +1,6 @@
-import { sleep } from './utils.js';
+import { errorMsg, sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
-import { username_global, token } from './users.js';
+import { username_global, token, userIsConnected } from './users.js';
 import { game } from './router.js';
 import { online } from '../online/pong_online.js';
 import { pvp } from './pong_pvp.js';
@@ -47,6 +47,10 @@ export async function GameMode(n) {
         game.game_class.loopTourney();
 	}
 	else if (n == 3) {
+		if (userIsConnected == false) {
+			errorMsg("user must be logged in to play online");
+			return;
+		}
 		let room_selected = document.querySelector("#i-room_name").value;
 		await fetch("https://" + window.location.host + "/room/", {
 			method: "POST",

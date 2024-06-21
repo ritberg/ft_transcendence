@@ -1,5 +1,7 @@
 import { sleep, errorMsg } from './utils.js';
 import { route } from './router.js';
+import { game } from './router.js';
+import { online } from '../online/pong_online.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
@@ -20,7 +22,11 @@ export const getUserId = async (username) => {
 	);
 	const data = await response.json();
 	if (!response.ok) {
-		errorMsg(data.message);
+		if (response.status == 403)
+			errorMsg("you must be logged in to access profiles");
+		else {
+			errorMsg("this user does not exist");
+		}
 		return null;
 	}
 	console.log("data : ", data);
@@ -91,6 +97,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	signupButton = async function (event) {
 		event.preventDefault();
+
+		if (userIsConnected == true) {
+			errorMsg("cannot signup while logged in");
+			return;
+		}
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
@@ -107,6 +118,10 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 		.then( async (response) => {
 			if (!response.ok) {
+				if (response.status == 403) {
+					errorMsg("error logging in");
+					return null;
+				}
 				const error = await response.json();
 				console.log(error);
 				if (error.email)
@@ -140,6 +155,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	loginButton = async function (event) {
 		event.preventDefault();
+		if (userIsConnected == true) {
+			errorMsg("cannot login while already logged in");
+			return null;
+		}
 
 		let username = document.getElementById("username1").value;
 		let password = document.getElementById("password1").value;
@@ -158,8 +177,12 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 		.then(async (response) => {
 			if (!response.ok) {
-				const error = await response.json();
-				errorMsg(error.message.split(": ")[1]);
+				if (response.status == 403)
+					errorMsg("error logging in");
+				else {
+					const error = await response.json();
+					errorMsg(error.message);
+				}
 				return null;
 			}
 			return response.json();
@@ -172,6 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
 				updateProfile(user, true, data.crsfToken);
+				route('/');
 				// await addGame(); // à supprimer
 				return user;
 			}
@@ -615,33 +639,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	////////////////////// ACCEPT INVITATION TO PLAY PONG ////////////////////////////
 
 	async function invite_accept() {
-		let ws
-		await fetch("https://" + window.location.host + "/room/invite", {
-			method: "POST",
-			body: JSON.stringify({
-				chat_name: chat_room_name,
-				username: username_global,
-			}),
-			headers: {
-				"Content-type": "application/json; charset=UTF-8",
-				"X-CSRFToken": token,
-			}
-		})
-			.then((response) => {
-				return response.json();
-			})
-			.then((data) => {
-				let code = data.status;
-				if (code == 500)
-					console.log("error: " + data.error);
-				else {
-					//usersListBox.classList.remove('show');
-					usersListBox.style.display = "none";
-					ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
-					online_game(ws);			//// launching the online pong game
-					close(ws);
-				}
-			})
+		fetchInvite(chat_room_name, false);
 	}
 
 	const chatContainer = document.getElementById("chat-box");
@@ -657,6 +655,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	var chatSocket = null;
 	var chat_room_name;
+
+	async function fetchInvite(room_name, sender) {
+		await fetch("https://" + window.location.host + "/room/invite", {
+			method: "POST",
+			body: JSON.stringify({
+				chat_name: room_name,
+				username: username_global,
+			}),
+			headers: {
+				"Content-type": "application/json; charset=UTF-8",
+				"X-CSRFToken": token,
+			}
+		})
+			.then((response) => {
+				return response.json();
+			})
+			.then(async (data) => {
+				let code = data.status;
+				if (code == 500)
+					console.log("error: " + data.error);
+				else {
+					route("/online/");
+					await sleep(100);
+					document.getElementById("online-box").style.display = "none";
+					document.getElementById("game_canvas").style.display = "block";
+					if (sender == true)
+						chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
+					game.ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+					game.game_type = 'online';
+					game.game_class = new online();
+					game.game_class.online_game();
+				}
+			})
+	}
 
 	async function handleChatLinkClick(username) {
 		const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
@@ -762,33 +794,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					if (blocked_users.includes(data.other_user)) {
 						return;
 					}
-					let ws;
-					await fetch("https://" + window.location.host + "/room/invite", {
-						method: "POST",
-						body: JSON.stringify({
-							chat_name: data.room_name,
-							username: username_global,
-						}),
-						headers: {
-							"Content-type": "application/json; charset=UTF-8",
-							"X-CSRFToken": token,
-						}
-					})
-						.then((response) => {
-							return response.json();
-						})
-						.then((data) => {
-							let code = data.status;
-							if (code == 500)
-								console.log("error: " + data.error);
-							else {
-								// usersListBox.style.display = "none";
-								chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
-								ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
-								online_game(ws);
-								close(ws);
-							}
-						})
+					fetchInvite(data.room_name, true);
 				};
 
 				chatSocket.onmessage = async function (e) {
@@ -933,8 +939,12 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 			.then(async(response) => {
 				if (!response.ok) {
-					const error = await response.json();
-					errorMsg(error.message);
+					if (response.status == 403)
+						errorMsg("you must be logged in to change picture");
+					else {
+						const error = await response.json();
+						errorMsg(error.message);
+					}
 					return null;
 				}
 				return response.json();
@@ -966,9 +976,13 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 		.then(async (response) => {
 			if (!response.ok) {
-				const error = await response.json();
-				errorMsg(error.message);
-				return null;
+				if (response.status == 403)
+					errorMsg("you must be logged in to log out");
+				else {
+					const error = await response.json();
+					errorMsg(error.message);
+				}
+					return null;
 			}
 			return response.json();
 		})
@@ -989,6 +1003,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		updateUser = async function () {
 			let formData = new FormData();
 			let hasChanges = false;
+			let pwdChange = false;
 
 			console.log("update clicked");
 			console.log("all cookies : ", document.cookie);
@@ -1009,6 +1024,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (passwordInput.value) {
 				formData.append("password", passwordInput.value);
 				hasChanges = true;
+				pwdChange = true;
 			}
 
 			if (hasChanges) {
@@ -1022,22 +1038,32 @@ document.addEventListener("DOMContentLoaded", function () {
 				})
 					.then(async(response) => {
 						if (!response.ok) {
-							const error = await response.json();
-							errorMsg(error.message);
-							return null;
+							if (response.status == 403)
+								errorMsg("you must be logged in to update your infos");
+							else {
+								const error = await response.json();
+								errorMsg(error.message);
+							}
+								return null;
 						}
 						return response.json();
 					})
 					.then(async (data) => {
 						if (data !== null) {
 							console.log("Update success: ", data);
-							let user = data.data;
-							updateProfile(user, true, data.csrfToken);
-							if (user) {
-								if (data.data.username) {
-									console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
-									document.getElementById("info-username").textContent = `${data.data.username}`;
+							if (pwdChange == false) {
+								let user = data.data;
+								updateProfile(user, true, data.csrfToken);
+								if (user) {
+									if (data.data.username) {
+										console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
+										document.getElementById("info-username").textContent = `${data.data.username}`;
+									}
 								}
+							}
+							else {
+								updateProfile(null, false, null);
+								route("/");
 							}
 						}
 					})

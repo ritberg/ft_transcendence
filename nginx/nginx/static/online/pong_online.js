@@ -265,6 +265,8 @@ export class online {
     lastSent = "none";
 
     movePlayer(e) {
+        if (game.ws == null)
+            return;
         if (e.key == 'w' && this.lastSent != "keyW") {
             game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
             this.lastSent = "keyW";
@@ -277,6 +279,8 @@ export class online {
 
     //allows the player to stop if key is released
     stopPlayer(e) {
+        if (game.ws == null)
+            return;
         if (e.key == 'w' && this.lastSent != "keyStop") {
             game.ws.send(JSON.stringify({ type: "keyStop", username: this.username }));
 

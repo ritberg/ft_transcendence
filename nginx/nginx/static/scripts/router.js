@@ -1,8 +1,9 @@
 import { displayProfile } from "./stats.js";
-import { usersClick, displaySettings, getUserId } from "./users.js";
+import { usersClick, displaySettings, getUserId, userIsConnected } from "./users.js";
 import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
+import { errorMsg } from "./utils.js";
 
 
 export const game = {
@@ -176,20 +177,25 @@ const matchRoute = (location) => {
 };
 
 async function routerProfile(location, template) {
+	if (userIsConnected == false) {
+		errorMsg("you must be logged in to access profiles");
+		const html = await fetch("/templates/profile.html").then((response) => response.text());
+		document.getElementById("content").innerHTML = html;
+		return;
+	}
 	let username = location.substring(location.indexOf('/', location.indexOf('/') + 1) + 1, location.length - 1);
 	let user_id = await getUserId(username);
 	if (user_id == null) {
 		const html = await fetch("/templates/404.html").then((response) => response.text());
 		document.getElementById("content").innerHTML = html;
+		return;
 	}
-	else {
-		await fetch(template)
-			.then((response) => {return response.text();})
-			.then((data) => {
-				document.getElementById("content").innerHTML = data;
-				displayProfile(username);
-			})
-	}
+	await fetch(template)
+		.then((response) => {return response.text();})
+		.then((data) => {
+			document.getElementById("content").innerHTML = data;
+			displayProfile(username);
+		})
 }
 
 function countString(str, letter) {
