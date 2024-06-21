@@ -104,6 +104,15 @@ class UpdateUserView(APIView):
 
     def put(self, request, *args, **kwargs):
         try:
+            username = request.data.get('username')
+
+            prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
+            if username in prohibited_usernames:
+                return Response(
+                    {'message': 'Username not allowed'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+		
             serializer = UserSerializer(request.user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
