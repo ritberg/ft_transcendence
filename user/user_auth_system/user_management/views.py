@@ -27,13 +27,20 @@ class RegisterUserView(APIView):
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
+        username= request.data.get('username')
         
         if User.objects.filter(email=email).exists():
             return Response(
                 {'email': 'Email already exists'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
+		
+        prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
+        if username in prohibited_usernames:
+            return Response(
+                {'username': 'Username not allowed'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
