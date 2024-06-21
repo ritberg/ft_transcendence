@@ -1,5 +1,6 @@
 import { displayProfile } from "./stats.js";
-import { usersClick, displaySettings, getUserId, userIsConnected } from "./users.js";
+import { usersClick, getUserId, userIsConnected } from "./users.js";
+import { displaySettings } from "./settings.js";
 import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";

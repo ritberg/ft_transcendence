@@ -1,7 +1,8 @@
 import { GameMode } from './main.js';
 import { route } from './router.js';
 import { sleep } from './utils.js';
-import { signupButton, loginButton, logoutFunc, userIsConnected, uploadPicture, updateUser, username_global } from './users.js';
+import { signupButton, loginButton, userIsConnected, username_global } from './users.js';
+import { updateUser, uploadPicture, logoutFunc } from './settings.js';
 import { displayProfile} from './stats.js';
 import { tournamentSettings } from './animations.js';
 
