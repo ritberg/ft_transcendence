@@ -5,6 +5,7 @@ import { signupButton, loginButton, userIsConnected, username_global } from './u
 import { updateUser, uploadPicture, logoutFunc } from './settings.js';
 import { displayProfile} from './stats.js';
 import { tournamentSettings } from './animations.js';
+import { loadLanguage } from './lang.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	/////////// CONTENT //////////////
@@ -70,6 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
 			let username = event.target.innerText;
 			if (username)
 				route("/profile/" + username + "/");
+		}
+		else if (event.target && event.target.id === "change")
+		{
+			const selectedLang = event.target.value;
+			localStorage.setItem('selectedLang', selectedLang);
+			loadLanguage(selectedLang);
 		}
 		document.getElementById("content").classList.remove("hidden");
 		document.getElementById("content").classList.add("shown");
