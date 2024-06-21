@@ -152,6 +152,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
 
                 document.querySelector("#b-msg").onclick = async function (e) {
+                    var messageInput = document.querySelector("#i-msg").value;
+                    messageInput = escapeHtml(messageInput);
+                    if (messageInput.replace(/\s/g,'') == "")
+                        return;
                     if (userIsConnected !== true) {
                         errorMsg("you must be connected to access chat functions");
                         return;
@@ -160,10 +164,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log("blocking situation ", blocked_users.length);
                     console.log(data.other_user);
                     if (!(blocked_users.includes(data.other_user))) {
-                        var messageInput = document.querySelector("#i-msg").value;
-                        messageInput = escapeHtml(messageInput);
                         chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
                     }
+                    else
+                        errorMsg("This user is blocked");
                 };
 
                 document.querySelector("#id_invit_button").onclick = async function (e) {
@@ -173,6 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                     let blocked_users = await fetchBlockedUsers();
                     if (blocked_users.includes(data.other_user)) {
+                        errorMsg("this user is blocked");
                         return;
                     }
                     fetchInvite(data.room_name, true);

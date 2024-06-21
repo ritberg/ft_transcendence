@@ -20,21 +20,33 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		if (event.target && event.target.id === "b-signin-ok") {
 			await loginButton(event);
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "b-signup-ok") {
 			signupButton(event);
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "pvp-mode") {
 			route("/pvp/");
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "cpu-mode") {
 			route("/bot/");
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "tourney-mode") {
 			route("/tourney/");
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "online-mode") {
 			route("/online/");
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		// else if (event.target && event.target.id === "cpu-mode") {
 		//     document.getElementById("main-menu").classList.add("hidden");
@@ -42,9 +54,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		// }
 		else if (event.target && event.target.id === "b-tourney_settings") {
 			tournamentSettings();
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "b-online-go"){
 			GameMode(3);
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		// else if (event.target && event.target.id === "refresh-stats") {
 		// 	// addGame();
@@ -56,23 +72,33 @@ document.addEventListener('DOMContentLoaded', () => {
 		// }
 		else if (event.target && event.target.id === "user-logout") {
 			logoutFunc();
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "upload-avatar") {
 			uploadPicture();
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "update-profile") {
 			updateUser();
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "profile") {
 			displayProfile(username_global);
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "user_profile" || event.target && event.target.id === "friend_profile") {
 			let username = event.target.innerText;
 			if (username)
 				route("/profile/" + username + "/");
+			document.getElementById("content").classList.remove("hidden");
+			document.getElementById("content").classList.add("shown");
 		}
-		document.getElementById("content").classList.remove("hidden");
-		document.getElementById("content").classList.add("shown");
+		// document.getElementById("content").classList.remove("hidden");
+		// document.getElementById("content").classList.add("shown");
 		//document.getElementById("content").style.opacity = "1";
 	});
 
