@@ -5,6 +5,7 @@ import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
 import { errorMsg } from "./utils.js";
+import { loadLanguage } from "./lang.js";
 
 
 export const game = {
@@ -106,6 +107,8 @@ const locationHandler = async () => {
 	addJS(location);
 	// set the title of the document to the title of the route
 	document.title = route.title;
+
+	loadLanguage('fr');
 };
 
 function addJS(location) {

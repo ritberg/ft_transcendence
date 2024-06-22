@@ -1,54 +1,29 @@
 {
 	"info": {
-		"info": "Veuillez vous connecter pour accéder à votre profil",
 		"default_username": "Invité"
 	},
-	"profile": {
-	  "username_placeholder": "Entrez un nouveau nom d'utilisateur",
-	  "email_placeholder": "Entrez un nouvel email",
-	  "password_placeholder": "Entrez un nouveau mot de passe",
-	  "update_profile_button": "Mettre à jour le profil",
-	  "user_name": "Invité",
-	  "info": "Veuillez vous connecter pour accéder à votre profil",
-	  "user_logout": "Déconnexion",
-	  "upload_avatar": "Télécharger l'avatar"
-	},
-	"add_friend": {
-	  "title": "Ajouter un ami",
-	  "username_placeholder": "Entrez le nom d'utilisateur de l'ami",
-	  "add_button": "Ajouter un ami"
-	},
-	"del_friend": {
-	  "title": "Supprimer un ami",
-	  "username_placeholder": "Entrez le nom d'utilisateur de l'ami",
-	  "del_button": "Supprimer un ami"
-	},
-	"friend_list": {
-	  "title": "Liste d'amis"
-	},
-	"friend_requests": {
-	  "title": "Demandes d'amis"
-	},
-	"refresh_button": "Actualiser les listes",
-	"login": {
-	  "login_title": "Connexion",
-	  "username_placeholder": "Entrez votre nom",
-	  "password_placeholder": "Entrez votre mot de passe",
-	  "login_button": "Se connecter",
-	  "remember_me": "Se souvenir de moi",
-	  "forgot_password": "Mot de passe oublié?",
-	  "signup_prompt": "Pas de compte?",
-	  "signup_link": "Inscrivez-vous"
+	"signin": {
+		"title": "CONNEXION",
+		"username": "NOM D'UTILISATEUR",
+		"password": "MOT DE PASSE",
+		"ok": "OK",
+		"switch": "Vous n'avez pas de compte?",
+		"signup": "S'inscrire"
 	},
 	"signup": {
-	  "signup_title": "Inscription",
-	  "username_placeholder": "Entrez votre nom",
-	  "email_placeholder": "Entrez votre email",
-	  "password_placeholder": "Créez votre mot de passe",
-	  "password_confirmation_placeholder": "Confirmez votre mot de passe",
-	  "signup_button": "S'inscrire",
-	  "login_prompt": "Vous avez déjà un compte?",
-	  "login_link": "Connectez-vous"
+		"title": "INSCRIPTION",
+		"username": "NOM D'UTILISATEUR",
+		"email": "EMAIL",
+		"password": "MOT DE PASSE",
+		"ok": "OK",
+		"switch": "Vous avez déjà un compte?",
+		"signin": "Se connecter"
+	},
+	"main": {
+		"title": "PONG",
+		"pvp_mode": "Joueur contre Joueur",
+		"cpu_mode": "CPU",
+		"tourney_mode": "Tournoi",
+		"online_mode": "En ligne"
 	}
-  }
-  
+}

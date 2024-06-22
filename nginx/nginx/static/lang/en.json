@@ -41,13 +41,14 @@
 		"signup_link": "Signup"
 	},
 	"signup": {
-		"signup_title": "Signup",
-		"username_placeholder": "Enter your name",
-		"email_placeholder": "Enter your email",
-		"password_placeholder": "Create your password",
-		"password_confirmation_placeholder": "Confirm your password",
-		"signup_button": "Signup Now",
-		"login_prompt": "Already have an account?",
-		"login_link": "Login"
+		"signup": {
+			"signup_title": "INSCRIPTION",
+			"username_label": "NOM D'UTILISATEUR",
+			"email_label": "EMAIL",
+			"password_label": "MOT DE PASSE",
+			"ok_button": "OK",
+			"already_have_account": "Vous avez déjà un compte?",
+			"signin_link": "connexion"
+		}
 	}
 }
