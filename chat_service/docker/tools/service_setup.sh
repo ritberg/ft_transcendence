@@ -17,7 +17,7 @@ cd $CHAT_SERVICE_NAME
 # # Create new app
 # python3 manage.py startapp channels_demo
 echo "Waiting for postgres to get up and running..."
-while ! nc -z db_userchat 5434; do
+while ! nc -z db_transcendence 5434; do
   # where the postgres_container is the hos, in my case, it is a Docker container.
   # You can use localhost for example in case your database is running locally.
   echo "waiting for postgress to be listening..."

@@ -10,10 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
+import sys
 from pathlib import Path
 import environ
 
 env = environ.Env()
+sys.path.append('/home/transcendance/user_auth_system')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,11 +25,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@rt_3#t8$+ik*=g_!s4q44ndzr6z3jwfk0q_clrl@85&oy5ze='
+SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 IP_ADDRESS= env('IP_ADDRESS')
+DB_NAME = env('DB_TRANSCENDENCE_NAME')
+DB_USER = env('DB_TRANSCENDENCE_USER')
+DB_PASSWORD = env('DB_TRANSCENDENCE_PASSWORD')
+DB_HOST = env('DB_TRANSCENDENCE_HOST')
+DB_PORT = env('DB_TRANSCENDENCE_PORT')
 
 ALLOWED_HOSTS = ['*']
 
@@ -47,20 +54,19 @@ INSTALLED_APPS = [
     'channels',
     'rapidjson',
     'corsheaders',
+    'user_management',
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'project.urls'
 
@@ -87,13 +93,13 @@ WSGI_APPLICATION = 'project.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "db_online",
-        "USER": "trans_master",
-        "PASSWORD": "1234",
-        "HOST": "db_online",  # set in docker-compose.yml
-        "PORT": 5433,
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 
@@ -150,5 +156,18 @@ CHANNEL_LAYERS = {
 STATIC_URL = "static/"
 
 # SECURE_SSL_REDIRECT = True
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+SESSION_COOKIE_NAME = 'sessionid'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = False
+
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SECURE = False
+
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
+
+AUTH_USER_MODEL = 'user_management.CustomUser'

@@ -9,6 +9,9 @@ import re
 
 def CreateRoom(request):
 
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
     if request.method == 'POST':
         text_data_json = json.loads(request.body)
         room = text_data_json["room"]
@@ -47,6 +50,9 @@ def CreateRoom(request):
         return JsonResponse({"error": "only post is allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
 def CreateInvite(request):
+    if not request.user.is_authenticated:
+        return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+    
     if request.method == 'POST':
         text_data_json = json.loads(request.body)
         chat_name = text_data_json["chat_name"]
