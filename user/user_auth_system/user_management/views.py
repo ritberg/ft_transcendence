@@ -8,6 +8,7 @@ from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404
 from .models import FriendRequest
 from rest_framework.exceptions import NotFound
+import re
 
 # Create your views here.
 
@@ -22,12 +23,36 @@ class IndexView(APIView):
 		return render(request, 'index.html')
 
 
+
+def is_valid_password(password):
+    if len(password) < 6:
+        return False
+    if not re.search(r'\d', password):
+        return False
+    if not re.search(r'[A-Z]', password):
+        return False
+    return True
+
 class RegisterUserView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
         email = request.data.get('email')
         username= request.data.get('username')
+        password = request.data.get('password')
+        password_confirm= request.data.get('password_confirm')
+		
+        if not is_valid_password(password):
+            return Response(
+                {'password': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+		
+        if password != password_confirm:
+            return Response(
+                {'password': 'Passwords do not match'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
         
         if User.objects.filter(email=email).exists():
             return Response(
