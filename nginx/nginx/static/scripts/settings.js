@@ -1,10 +1,12 @@
 import { errorMsg } from "./utils.js";
 import { updateProfile, token, userIsConnected } from "./users.js";
 import { route } from "./router.js";
+import { loadLanguage } from "./lang.js";
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
     ////// UPDATE PROFILE /////
+
 
     displaySettings = async function () {
         let user = JSON.parse(localStorage.getItem("user")) || null;
@@ -28,6 +30,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("user-avatar").src = user.profile_picture;
             }
         }
+        // console.log("Hello");
+        // Load the saved language preference on settings page load
+        const savedLanguage = localStorage.getItem('preferredLanguage');
+        if (savedLanguage) {
+            document.getElementById('language-select').value = savedLanguage;
+            console.log('Loaded saved language preference:', savedLanguage);
+        } else {
+            console.log('No saved language preference found');
+        }
+
+        document.getElementById('language-select').addEventListener('change', function () {
+            const selectedLanguage = this.value;
+            localStorage.setItem('preferredLanguage', selectedLanguage);
+            console.log('Language preference saved:', selectedLanguage);
+            loadLanguage(selectedLanguage);
+        });
     }
 
     uploadPicture = async function () {
@@ -56,30 +74,30 @@ document.addEventListener("DOMContentLoaded", function () {
             body: formData,
             credentials: "include",
         })
-        .then(async(response) => {
-            if (!response.ok) {
-                if (response.status == 403)
-                    errorMsg("you must be logged in to change picture");
-                else {
-                    const error = await response.json();
-                    errorMsg(error.message);
+            .then(async (response) => {
+                if (!response.ok) {
+                    if (response.status == 403)
+                        errorMsg("you must be logged in to change picture");
+                    else {
+                        const error = await response.json();
+                        errorMsg(error.message);
+                    }
+                    return null;
                 }
-                return null;
-            }
-            return response.json();
-        })
-        .then((data) => {
-            if (data !== null) {
-                console.log("sucess: ", data);
-                console.log("profile picture : ", data.data.profile_picture);
-                let user = data.data;
-                document.getElementById("user-avatar").src = data.data.profile_picture;
-                updateProfile(user, true, token);
-            }
-        })
-        .catch((error) => {
-            console.error("Fetch error: ", error.detail);
-        });
+                return response.json();
+            })
+            .then((data) => {
+                if (data !== null) {
+                    console.log("sucess: ", data);
+                    console.log("profile picture : ", data.data.profile_picture);
+                    let user = data.data;
+                    document.getElementById("user-avatar").src = data.data.profile_picture;
+                    updateProfile(user, true, token);
+                }
+            })
+            .catch((error) => {
+                console.error("Fetch error: ", error.detail);
+            });
     }
 
     let logoutUrl = "https://" + window.location.host + "/auth/logout/";
@@ -93,28 +111,28 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             credentials: "include",
         })
-        .then(async (response) => {
-            if (!response.ok) {
-                if (response.status == 403)
-                    errorMsg("you must be logged in to log out");
-                else {
-                    const error = await response.json();
-                    errorMsg(error.message);
-                }
+            .then(async (response) => {
+                if (!response.ok) {
+                    if (response.status == 403)
+                        errorMsg("you must be logged in to log out");
+                    else {
+                        const error = await response.json();
+                        errorMsg(error.message);
+                    }
                     return null;
-            }
-            return response.json();
-        })
-        .then((data) => {
-            if (data !== null) {
-                console.log("data: ", data);
-                updateProfile(null, false, null);
-                route("/");
-            }
-        })
-        .catch((error) => {
-            console.error("Fetch error:", error);
-        });	
+                }
+                return response.json();
+            })
+            .then((data) => {
+                if (data !== null) {
+                    console.log("data: ", data);
+                    updateProfile(null, false, null);
+                    route("/");
+                }
+            })
+            .catch((error) => {
+                console.error("Fetch error:", error);
+            });
     }
 
     let updateUrl = "https://" + window.location.host + "/auth/update/";
@@ -155,43 +173,43 @@ document.addEventListener("DOMContentLoaded", function () {
                 body: formData,
                 credentials: "include",
             })
-            .then(async(response) => {
-                if (!response.ok) {
-                    if (response.status == 403)
-                        errorMsg("you must be logged in to update your infos");
-                    else {
-                        const error = await response.json();
-                        errorMsg(error.message);
-                    }
+                .then(async (response) => {
+                    if (!response.ok) {
+                        if (response.status == 403)
+                            errorMsg("you must be logged in to update your infos");
+                        else {
+                            const error = await response.json();
+                            errorMsg(error.message);
+                        }
                         return null;
-                }
-                return response.json();
-            })
-            .then(async (data) => {
-                if (data !== null) {
-                    console.log("Update success: ", data);
-                    if (pwdChange == false) {
-                        let user = data.data;
-                        updateProfile(user, true, data.csrfToken);
-                        if (user) {
-                            if (data.data.username) {
-                                console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
-                                document.getElementById("info-username").textContent = `${data.data.username}`;
+                    }
+                    return response.json();
+                })
+                .then(async (data) => {
+                    if (data !== null) {
+                        console.log("Update success: ", data);
+                        if (pwdChange == false) {
+                            let user = data.data;
+                            updateProfile(user, true, data.csrfToken);
+                            if (user) {
+                                if (data.data.username) {
+                                    console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
+                                    document.getElementById("info-username").textContent = `${data.data.username}`;
+                                }
                             }
                         }
+                        else {
+                            updateProfile(null, false, null);
+                            route("/");
+                        }
                     }
-                    else {
-                        updateProfile(null, false, null);
-                        route("/");
-                    }
-                }
-            })
-            .catch((error) => {
-                console.error("Fetch error: ", error.message);
-            });
+                })
+                .catch((error) => {
+                    console.error("Fetch error: ", error.message);
+                });
         } else {
-                errorMsg("There are no changes");
-            }
+            errorMsg("There are no changes");
+        }
     }
 });
-export { updateUser, logoutFunc, uploadPicture, displaySettings}
+export { updateUser, logoutFunc, uploadPicture, displaySettings }

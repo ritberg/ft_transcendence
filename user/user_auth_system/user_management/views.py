@@ -3,14 +3,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from .serializers import UserSerializer, FriendRequestSerializer
+from .serializers import UserSerializer, FriendRequestSerializer, MyTokenObtainPairSerializer
 from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404
 from .models import FriendRequest
 from rest_framework.exceptions import NotFound
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-    TokenRefreshView,
+	TokenObtainPairView,
+	TokenRefreshView,
 )
 from rest_framework.decorators import api_view
 
@@ -21,18 +21,18 @@ User = get_user_model()
 # authentication views
 @api_view(['POST'])
 def enable_2fa(request):
-    user = request.user
-    user.is_2fa_enabled = True
-    user.save()
-    return Response({'otp_secret': user.otp_secret}, status=status.HTTP_200_OK)
+	user = request.user
+	user.is_2fa_enabled = True
+	user.save()
+	return Response({'otp_secret': user.otp_secret}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def verify_otp(request):
-    user = request.user
-    otp = request.data.get('otp')
-    if user.get_otp() == otp:
-        return Response({'detail': 'OTP verified'}, status=status.HTTP_200_OK)
-    return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+	user = request.user
+	otp = request.data.get('otp')
+	if user.get_otp() == otp:
+		return Response({'detail': 'OTP verified'}, status=status.HTTP_200_OK)
+	return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
 class IndexView(APIView):
 	permission_classes = [AllowAny]
@@ -102,35 +102,35 @@ class LogoutUserView(APIView):
 			)
 
 class UpdateUserView(APIView):
-    permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticated]
 
-    def put(self, request, *args, **kwargs):
-        try:
-            serializer = UserSerializer(request.user, data=request.data, partial=True)
-            if serializer.is_valid():
-                serializer.save()
+	def put(self, request, *args, **kwargs):
+		try:
+			serializer = UserSerializer(request.user, data=request.data, partial=True)
+			if serializer.is_valid():
+				serializer.save()
 
-                csrf_token = get_token(request)
-                print("csrf_token : ", csrf_token)
-                return Response(
-                    {
-                        'data': serializer.data,
-                        'csrfToken': csrf_token,
-                        'message': 'User updated successfully'
-                    },
-                    status=status.HTTP_200_OK
-                )
-            raise ValueError(serializer.errors)
-        except Exception as e:
-            error_message = f"{type(e).__name__}: {str(e)}"
-            start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
-            end_index = error_message.find("', code='invalid")
-            extracted_string = error_message[start_index:end_index]
+				csrf_token = get_token(request)
+				print("csrf_token : ", csrf_token)
+				return Response(
+					{
+						'data': serializer.data,
+						'csrfToken': csrf_token,
+						'message': 'User updated successfully'
+					},
+					status=status.HTTP_200_OK
+				)
+			raise ValueError(serializer.errors)
+		except Exception as e:
+			error_message = f"{type(e).__name__}: {str(e)}"
+			start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
+			end_index = error_message.find("', code='invalid")
+			extracted_string = error_message[start_index:end_index]
 
-            return Response(
-                {'message': extracted_string},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+			return Response(
+				{'message': extracted_string},
+				status=status.HTTP_400_BAD_REQUEST
+			)
 
 
 # friend request views
@@ -233,8 +233,8 @@ class DeleteFriendView(APIView):
 			{'message': 'User is not in your friends list'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-  
-  
+
+
 class BlockUserView(APIView):
 	permission_classes = [IsAuthenticated]
 	
@@ -314,5 +314,6 @@ class GetUserPicture(APIView):
 			return Response({'pfp': profile_picture_url}, status=status.HTTP_200_OK)
 		except Exception as e:
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
 class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
+	serializer_class = MyTokenObtainPairSerializer

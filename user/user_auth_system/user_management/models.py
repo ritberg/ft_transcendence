@@ -3,7 +3,6 @@ from django.db import models
 from rest_framework import serializers
 import pyotp
 
-
 DEFAULT_PROFILE_PICTURE = 'profile_pics/default.jpg'
 
 class CustomUser(AbstractUser):
@@ -17,12 +16,17 @@ class CustomUser(AbstractUser):
 	friends = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='user_friends')
 	blocked_users = models.ManyToManyField('self', blank=True, symmetrical=False, related_name='blocked_by')
 	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='offline')
+	is_2fa_enabled = models.BooleanField(default=False)
+	otp_secret = models.CharField(max_length=32, default=pyotp.random_base32)
 
 	class Meta:
 		db_table = 'users'
 
 	def __str__(self):
 		return self.username
+
+	def get_otp(self):
+		return pyotp.TOTP(self.otp_secret).now()
 	
 class FriendRequest(models.Model):
 	from_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_requests')
@@ -33,11 +37,3 @@ class FriendRequest(models.Model):
 
 	def __str__(self):
 		return f'{self.from_user} sent friend request to {self.to_user}'
-
-class CustomUser(AbstractUser):
-    is_2fa_enabled = models.BooleanField(default=False)
-    otp_secret = models.CharField(max_length=16, default=pyotp.random_base32)
-
-    def get_otp(self):
-        return pyotp.TOTP(self.otp_secret).now()
-	

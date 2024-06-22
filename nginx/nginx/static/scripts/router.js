@@ -2,17 +2,30 @@ import { displayProfile } from "./stats.js";
 import { usersClick, getUserId, userIsConnected } from "./users.js";
 import { displaySettings } from "./settings.js";
 import { GameMode } from "./main.js";
-import { modifyDelta,stars } from './stars.js';
+import { modifyDelta, stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
 import { errorMsg } from "./utils.js";
 import { loadLanguage } from "./lang.js";
 
+// Function to get the preferred language
+function getPreferredLanguage() {
+    let language = localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'en';
+	console.log('Initial language from localStorage or navigator:', language);
+    const supportedLanguages = ['en', 'fr', 'it', 'de', 'el', 'zh', 'la'];
+
+    if (!supportedLanguages.includes(language)) {
+        language = 'en';
+    }
+
+	console.log('Final selected language:', language);
+    return language;
+}
 
 export const game = {
-    game_type : null,
-    game_class: null,
-    animation_id : null,
-    ws : null,
+	game_type: null,
+	game_class: null,
+	animation_id: null,
+	ws: null,
 };
 
 // document.addEventListener('DOMContentLoaded', () => {
@@ -86,7 +99,7 @@ export const route = (url) => {
 const locationHandler = async () => {
 	let location = window.location.pathname; // get the url path
 	// if the path length is 0, set it to primary page route
-    resetGameState();
+	resetGameState();
 	if (location.length == 0) {
 		location = "/";
 	}
@@ -104,22 +117,28 @@ const locationHandler = async () => {
 	}
 	// const html = await fetch(route.template).then((response) => response.text());
 	// document.getElementById("content").innerHTML = html;
-	addJS(location);
+	// addJS(location);
 	// set the title of the document to the title of the route
 	document.title = route.title;
 
-	loadLanguage('fr');
+	// const savedLang = localStorage.getItem('selectedLang') || (navigator.language.startsWith('fr') ? 'it' : 'it');
+	// loadLanguage(savedLang);
+	const language = getPreferredLanguage();
+
+	loadLanguage(language);
+    addJS(location);
 };
 
 function addJS(location) {
-    if (location == "/online/") {
+	if (location == "/online/") {
 		const scriptContent = `
         document.getElementById("online-box").style.display = "block";
         document.getElementById("online-box").classList.add("shown");
     `;
 		const scriptElement = document.createElement('script');
 		scriptElement.text = scriptContent;
-		document.getElementById("content").appendChild(scriptElement);        }
+		document.getElementById("content").appendChild(scriptElement);
+	}
 	else if (location == "/tourney/") {
 		const scriptContent = `
             document.getElementById("tourney_settings-box").style.display = "block";
@@ -133,10 +152,10 @@ function addJS(location) {
 		usersClick();
 	}
 	else if (location == "/pvp/") {
-        GameMode(0);
+		GameMode(0);
 	}
 	else if (location == "/bot/") {
-        GameMode(1);
+		GameMode(1);
 	}
 	else if (location == "/settings/") {
 		displaySettings();
@@ -144,24 +163,23 @@ function addJS(location) {
 }
 
 function resetGameState() {
-    if (game.game_class !== null) {
-        window.cancelAnimationFrame(game.animation_id);
-        game.animation_id = null;
-        // findEventListeners(game.game_type);
+	if (game.game_class !== null) {
+		window.cancelAnimationFrame(game.animation_id);
+		game.animation_id = null;
+		// findEventListeners(game.game_type);
 		removeMovementEventListener(game.game_class.stopPlayer, game.game_class.movePlayer);
-		if (game.game_type == 'tourney')
-		{
+		if (game.game_type == 'tourney') {
 			change_loop_exec(false);
 			modifyDelta(1.5);
 			stars(document.getElementById("main_canvas"));
 		}
-        game.game_type = null;
-        game.game_class = null;
-        if (game.ws !== null) {
-            game.ws.close();
-            game.ws = null;
-        }
-    }
+		game.game_type = null;
+		game.game_class = null;
+		if (game.ws !== null) {
+			game.ws.close();
+			game.ws = null;
+		}
+	}
 }
 
 const matchRoute = (location) => {
@@ -195,7 +213,7 @@ async function routerProfile(location, template) {
 		return;
 	}
 	await fetch(template)
-		.then((response) => {return response.text();})
+		.then((response) => { return response.text(); })
 		.then((data) => {
 			document.getElementById("content").innerHTML = data;
 			displayProfile(username);
@@ -204,20 +222,20 @@ async function routerProfile(location, template) {
 
 function countString(str, letter) {
 
-    // creating regex 
-    const re = new RegExp(letter, 'g');
+	// creating regex 
+	const re = new RegExp(letter, 'g');
 
-    // matching the pattern
-    const count = str.match(re).length;
+	// matching the pattern
+	const count = str.match(re).length;
 
-    return count;
+	return count;
 }
 
 export function removeMovementEventListener(functionKeyUp, functionKeyDown) {
 	if (functionKeyUp !== null)
-    	document.removeEventListener("keyup", functionKeyUp);
+		document.removeEventListener("keyup", functionKeyUp);
 	if (functionKeyDown !== null)
-    	document.removeEventListener("keydown", functionKeyDown);
+		document.removeEventListener("keydown", functionKeyDown);
 }
 // add an event listener to the window that watches for url changes
 window.onpopstate = locationHandler;

@@ -7,3 +7,4 @@ psycopg[binary]==3.1.12
 django-cors-headers
 django-environ
 pillow
+pyotp

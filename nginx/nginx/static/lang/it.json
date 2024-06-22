@@ -1,0 +1,80 @@
+{
+	"info": {
+		"default_username": "Ospite"
+	},
+	"signin": {
+		"title": "ACCEDI",
+		"username": "NOME UTENTE",
+		"password": "PASSWORD",
+		"ok": "OK",
+		"switch": "Non hai un account?",
+		"signup": "Registrati"
+	},
+	"signup": {
+		"title": "REGISTRAZIONE",
+		"username": "NOME UTENTE",
+		"email": "EMAIL",
+		"password": "PASSWORD",
+		"ok": "OK",
+		"switch": "Hai già un account?",
+		"signin": "Accedi"
+	},
+	"main": {
+		"title": "PONG",
+		"pvp_mode": "Giocatore contro Giocatore",
+		"cpu_mode": "CPU",
+		"tourney_mode": "Torneo",
+		"online_mode": "Online"
+	},
+	"online": {
+		"title": "UNISCITI A UNA PARTITA",
+		"room_name": "NOME DELLA STANZA",
+		"empty_room": "lascia vuoto per una stanza casuale",
+		"go": "VAI"
+	},
+	"user_info": {
+		"match_history": "CRONOLOGIA PARTITE",
+		"stats": "STATISTICHE",
+		"wins": "Vittorie: ",
+		"losses": "Sconfitte: ",
+		"win_rate": "Percentuale di vittorie: ",
+		"goals_avg": "Media punti: ",
+		"goals_scored": "Gol segnati: ",
+		"goals_conceded": "Gol subiti: ",
+		"total_games": "Totale partite giocate: ",
+		"total_hours": "Totale ore giocate: "
+	},
+	"settings": {
+		"logout": "Esci",
+		"new_username": "Inserisci un nuovo nome utente",
+		"new_email": "Inserisci una nuova email",
+		"new_password": "Inserisci una nuova password",
+		"update_profile": "Aggiorna profilo",
+		"upload_avatar": "Carica avatar",
+		"enable_2fa": "Attiva 2FA",
+		"choose_language": "Scegli la tua lingua:"
+	},
+	"game": {
+		"settings_title": "IMPOSTAZIONI",
+		"players": "GIOCATORI",
+		"points": "PUNTI",
+		"ok_button": "OK",
+		"player_names_title": "NOMI DEI GIOCATORI"
+	},
+	"users_lists": {
+		"ulist_title": "LISTA UTENTI",
+		"flist_title": "LISTA AMICI",
+		"requests_title": "RICHIESTE DI AMICIZIA"
+	},
+	"verify_otp": {
+		"enter_otp": "Inserisci OTP",
+		"verify_otp": "Verifica OTP"
+	},
+	"index": {
+		"tabs_title": "SCHEDE",
+		"home_button": "HOME",
+		"users_button": "UTENTI",
+		"settings_button": "IMPOSTAZIONI",
+		"user_name": "Ospite"
+	}
+}

@@ -28,7 +28,6 @@ DB_HOST = env('DB_USERCHAT_HOST')
 DB_PORT = env.int('DB_USERCHAT_PORT')
 IP_ADDRESS= env('IP_ADDRESS')
 
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -57,8 +56,8 @@ INSTALLED_APPS = [
 	'rest_framework',
 	'corsheaders',
     f'{AUTH_APP_NAME}.apps.AuthUserConfig',
-    'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'pyotp'
 ]
 
 MIDDLEWARE = [
