@@ -194,7 +194,7 @@ async function getStats(player_id) {
 			"X-CSRFToken": token,
 			"Content-Type": "application/json",
 		},
-		// credentials: "include",
+		credentials: "include",
 	})
 		.then(async (response) => {
 			if (!response.ok) {
@@ -224,7 +224,7 @@ async function getMatchHistory(player_id) {
 			"X-CSRFToken": token,
 			"Content-Type": "application/json",
 		},
-		// credentials: "include",
+		credentials: "include",
 	})
 		.then(async (response) => {
 			if (!response.ok) {

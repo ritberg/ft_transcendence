@@ -14,23 +14,26 @@ document.addEventListener("DOMContentLoaded", function () {
     fetchInvite = async function (room_name, sender) {
         await fetch("https://" + window.location.host + "/room/invite", {
             method: "POST",
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "X-CSRFToken": token,
+            },
             body: JSON.stringify({
                 chat_name: room_name,
                 username: username_global,
             }),
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                "X-CSRFToken": token,
-            }
+            credentials: "include",
         })
-            .then((response) => {
+            .then(async (response) => {
+                if (!response.ok) {
+                    const error = await response.json();
+                    errorMsg(error.error);
+                    return null;
+                }
                 return response.json();
             })
             .then(async (data) => {
-                let code = data.status;
-                if (code == 500)
-                    console.log("error: " + data.error);
-                else {
+                if (data !== null) {
                     route("/online/");
                     await sleep(100);
                     document.getElementById("online-box").style.display = "none";
