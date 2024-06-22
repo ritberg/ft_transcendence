@@ -3,7 +3,7 @@ import { token, getUserId } from "./users.js";
 import { errorMsg } from "./utils.js";
 import { handleChatLinkClick } from "./chat.js";
 
-let displayFriends, displayFriendRequests, fetchFriends, fetchFriendRequests, addFriend, delFriend, handleFriendRequest;
+let displayFriends, displayFriendRequests, fetchFriends, fetchFriendRequests, addFriend, delFriend;
 document.addEventListener("DOMContentLoaded", function () {
     ////////////////////// ADD FRIENDS ////////////////////////////
 
@@ -11,10 +11,12 @@ document.addEventListener("DOMContentLoaded", function () {
     let delFriendUrl = "https://" + window.location.host + "/auth/delete-friend/";
 
     addFriend = async function (username) {
-        // const username = document.getElementById("friend-username-to-add").value;
-        console.log("friend username : ", username);
-        // const messageContainer = document.getElementById("add-friend-message");
+
         if (!username) {
+            return;
+        }
+
+        if ( await getUserId(username) == null) {
             return;
         }
 
@@ -56,6 +58,11 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!username) {
             return;
         }
+
+        if ( await getUserId(username) == null) {
+            return;
+        }
+
         try {
             const userId = await getUserId(username);
             console.log("user id : ", userId);

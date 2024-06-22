@@ -1,5 +1,5 @@
 import { fetchBlockedUsers } from './block.js';
-import { token, userIsConnected, username_global } from './users.js';
+import { getUserId, token, userIsConnected, username_global } from './users.js';
 import { errorMsg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
 import { online } from '../online/pong_online.js';
@@ -59,7 +59,24 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	});
 
+    async function chat_profile(username) {
+        console.log(username);
+        if (username)
+            route("/profile/" + username + "/");
+    }
+
+    document.getElementById('chat-box').addEventListener('click', function(event) {
+        console.log(event.target);
+        if (event.target && event.target.classList.contains('msg_username')) {
+            let username = event.target.textContent;
+            chat_profile(username);
+        }
+    });
+
     handleChatLinkClick = async function (username) {
+        if ( await getUserId(username) == null) {
+            return;
+        }
         const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
 
         await fetch(chatUrl, {
@@ -72,15 +89,15 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(async (response) => {
                 if (!response.ok) {
-                    let error = await response.json();
-                    console.log(error);
+                    // let error = await response.json();
                     errorMsg("chat: user is blocked");
-                    //document.getElementById("chat-box").innerHTML = `<div><center><h1>USER IS BLOCKED</h1></center></div>`;
+                    return null;
                 }
                 return response.json();
             })
             .then((data) => {
-                console.log("shit isn't working", data); 
+                if (data === null)
+                    return;
                 //const chatContainer = document.createElement('div');
                 //chatContainer.classList.add('chat__container');
                 //document.getElementById("chat-container").innerHTML = "";
@@ -100,24 +117,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 else {
                     return;
-                }
-
-                // let userLink = document.getElementById('chat_profile');
-                let userLink = document.getElementsByClassName("msg_username");
-
-                for (var i = 0; i < userLink.length; i++) {
-                    let username = userLink[i].textContent;
-                    userLink[i].addEventListener('click', (function(username) {
-                        return function() {
-                            chat_profile(username);
-                        }
-                    })(username), false);
-                }
-
-                async function chat_profile(username) {
-                    console.log(username);
-                    if (username)
-                        route("/profile/" + username + "/");
                 }
 
                 console.log("++ room_name : ", data.room_name);
