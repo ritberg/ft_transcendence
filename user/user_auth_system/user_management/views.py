@@ -130,11 +130,18 @@ class UpdateUserView(APIView):
     def put(self, request, *args, **kwargs):
         try:
             username = request.data.get('username')
+            password = request.data.get('password')
 
             prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
             if username in prohibited_usernames:
                 return Response(
                     {'message': 'Username not allowed'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+			
+            if not is_valid_password(password):
+                return Response(
+                    {'message': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 		
