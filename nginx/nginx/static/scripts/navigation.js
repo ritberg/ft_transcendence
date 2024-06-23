@@ -109,6 +109,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		//document.getElementById("content").style.opacity = "1";
 	});
 
+	document.getElementById('language-select').addEventListener('change', function () {
+		const selectedLanguage = this.value;
+		localStorage.setItem('preferredLanguage', selectedLanguage);
+		console.log('Language preference saved:', selectedLanguage);
+		// await changeLanguage(selectedLanguage);
+		loadLanguage(selectedLanguage);
+	});
+
 	////////// PROFILE ///////////
 	document.getElementById("profile_tab").addEventListener("click", async function (event){
 		event.preventDefault();

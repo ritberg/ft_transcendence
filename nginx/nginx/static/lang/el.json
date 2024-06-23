@@ -22,7 +22,7 @@
 	},
 	"main": {
 		"title": "ΠΟΝΓΚ",
-		"pvp_mode": "Παίκτης εναντίον Παίκτη",
+		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
 		"tourney_mode": "Τουρνουά",
 		"online_mode": "Διαδικτυακά"

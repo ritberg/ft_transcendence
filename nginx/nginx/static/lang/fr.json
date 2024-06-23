@@ -22,7 +22,7 @@
 	},
 	"main": {
 		"title": "PONG",
-		"pvp_mode": "Joueur contre Joueur",
+		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
 		"tourney_mode": "Tournoi",
 		"online_mode": "En ligne"
@@ -31,7 +31,7 @@
 		"title": "REJOINDRE UNE PARTIE",
 		"room_name": "NOM DE LA SALLE",
 		"empty_room": "laisser vide pour une salle aléatoire",
-		"go": "ALLER"
+		"go": "GO"
 	},
 	"user_info": {
 		"match_history": "HISTORIQUE DES MATCHS",
@@ -72,7 +72,7 @@
 		"verify_otp": "Vérifier OTP"
 	},
 	"index": {
-		"tabs_title": "ONGLETS",
+		"tabs_title": "MENU",
 		"home_button": "ACCUEIL",
 		"users_button": "UTILISATEURS",
 		"settings_button": "PARAMÈTRES",

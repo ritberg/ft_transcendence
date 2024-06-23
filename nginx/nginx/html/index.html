@@ -18,16 +18,16 @@
 	<body>
 		<div id="tabs-icon">
 			<i class="bi bi-list"></i>
-			<h6>TABS</h6>
+			<h6 id="tabs-title">TABS</h6>
 			<div id="tabs-list-detector">
 			</div>
 			<div id="tabs-list">
 				<!--<button type="button" id="tl-chat">CHAT<i class="bi bi-chat-left-text"></i></button>-->
-				<button type="button" id="home-button">HOME<i class="bi bi-house-door"></i></button>
-				<button type="button" id="users-full-list-button">USERS<i class="bi bi-people"></i></button>
+				<button type="button" id="home-button"><div id="home-id">HOME</div><i class="bi bi-house-door"></i></button>
+				<button type="button" id="users-full-list-button"><div id="users-id">USERS</div><i class="bi bi-people"></i></button>
 				<!--<button type="button" id="tl-profile">PROFILE<i class="bi bi-person"></i></button>-->
 				<!--<button type="button">FRIENDS<i class="bi bi-people"></i></button>-->
-				<button type="button"id="settings-button">SETTINGS<i class="bi bi-gear"></i></button>
+				<button type="button"id="settings-button"><div id="settings-id">SETTINGS</div><i class="bi bi-gear"></i></button>
 			</div>
 		</div>
 		<div id="chat-box">
@@ -36,8 +36,19 @@
 			<!--</section>-->
 		</div>
 		<div id="b-close-chat"></div>
+		<div id="language_tab">
+			<select id="language-select">
+				<option value="en">English</option>
+				<option value="fr">Français</option>
+				<option value="it">Italiano</option>
+				<option value="de">Deutsch</option>
+				<option value="el">Ελληνικά</option>
+				<option value="zh">中文</option>
+				<option value="la">Latina</option>
+			  </select>
+		</div>
 		<div id="profile_tab">
-			<h6 id="user-name">来宾</h6>
+			<h6 id="user-name">Guest</h6>
 			<img src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic" id="profile-pic">
 		</div>
 		<div id="error-box"></div>

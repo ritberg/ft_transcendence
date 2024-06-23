@@ -22,7 +22,7 @@
 	},
 	"main": {
 		"title": "PONG",
-		"pvp_mode": "Spieler gegen Spieler",
+		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
 		"tourney_mode": "Turnier",
 		"online_mode": "Online"

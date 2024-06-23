@@ -1,7 +1,7 @@
 import { errorMsg } from "./utils.js";
 import { updateProfile, token, userIsConnected } from "./users.js";
 import { route } from "./router.js";
-import { loadLanguage } from "./lang.js";
+import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
@@ -31,19 +31,15 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         // Load the saved language preference on settings page load
         const savedLanguage = localStorage.getItem('preferredLanguage');
+        // var savedLanguage = 'en';
+        // if (userIsConnected == true)
+        //     savedLanguage = await fetchLanguage();
+        console.log("language in db:", savedLanguage);
         if (savedLanguage) {
             document.getElementById('language-select').value = savedLanguage;
-            console.log('Loaded saved language preference:', savedLanguage);
         } else {
             console.log('No saved language preference found');
         }
-
-        document.getElementById('language-select').addEventListener('change', function () {
-            const selectedLanguage = this.value;
-            localStorage.setItem('preferredLanguage', selectedLanguage);
-            console.log('Language preference saved:', selectedLanguage);
-            loadLanguage(selectedLanguage);
-        });
     }
 
     uploadPicture = async function () {

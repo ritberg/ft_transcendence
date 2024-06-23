@@ -1,4 +1,6 @@
 import { userIsConnected } from "./users.js";
+import { token } from "./users.js";
+import { errorMsg } from "./utils.js";
 
 export function loadLanguage(lang) {
   fetch(`/static/lang/${lang}.json`)
@@ -23,7 +25,7 @@ export function loadLanguage(lang) {
         document.getElementById('b-signin-ok').textContent = data.signin.ok;
       }
       if (document.getElementById('signup-switch')) {
-        document.getElementById('signup-switch').textContent = data.signup.switch;
+        document.getElementById('signup-switch').textContent = `${data.signup.switch}\u00A0`;
         const link = document.createElement('a');
         link.href = "/signin/";
         link.id = "b-to_signin";
@@ -51,7 +53,7 @@ export function loadLanguage(lang) {
         document.getElementById('b-signup-ok').textContent = data.signup.ok;
       }
       if (document.getElementById('signin-switch')) {
-        document.getElementById('signin-switch').textContent = data.signin.switch;
+        document.getElementById('signin-switch').textContent = `${data.signin.switch}\u00A0`;
         const link = document.createElement('a');
         link.href = "/signup/";
         link.id = "b-to_signup";
@@ -188,14 +190,73 @@ export function loadLanguage(lang) {
       if (document.getElementById('tabs-title')) {
         document.getElementById('tabs-title').textContent = data.index.tabs_title;
       }
-      if (document.getElementById('home-button')) {
-        document.getElementById('home-button').textContent = data.index.home_button;
+      if (document.getElementById('home-id')) {
+        document.getElementById('home-id').textContent = data.index.home_button;
       }
-      if (document.getElementById('users-full-list-button')) {
-        document.getElementById('users-full-list-button').textContent = data.index.users_button;
+      if (document.getElementById('users-id')) {
+        document.getElementById('users-id').textContent = data.index.users_button;
       }
-      if (document.getElementById('settings-button')) {
-        document.getElementById('settings-button').textContent = data.index.settings_button;
+      if (document.getElementById('settings-id')) {
+        document.getElementById('settings-id').textContent = data.index.settings_button;
       }
     });
+}
+
+let fetchLanguageUrl = "https://" + window.location.host + "/auth/get-language/";
+export async function fetchLanguage() {
+
+  return await fetch(fetchLanguageUrl, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    },
+    credentials: "include",
+  })
+  .then( async (response) => {
+    if (!response.ok) {
+        const error = await response.json();
+        errorMsg(error.message);
+        return null;
+    }
+    return response.json();
+  })
+  .then((data) => {
+    if (data !== null) {
+      console.log(data);
+      return data.language;
+    }
+  })
+}
+
+let changeLanguageUrl = "https://" + window.location.host + "/auth/get-language/";
+
+export async function changeLanguage(language) {
+  if (userIsConnected == false) {
+    errorMsg("You need an account to set a profile language");
+    return;
+  }
+
+  await fetch(changeLanguageUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": token,
+    },
+    body: JSON.stringify({ language: language }),
+    credentials: "include",
+  })
+  .then( async (response) => {
+    if (!response.ok) {
+        const error = await response.json();
+        errorMsg(error.message);
+        return null;
+    }
+    return response.json();
+  })
+  .then((data) => {
+    if (data !== null) {
+      console.log(data);
+    }
+  })
 }

@@ -1385,3 +1385,19 @@ body {
   height: 800px;
   display: none;
 }
+#language_tab {
+	position: absolute;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	align-items: center;
+	background: rgba(0, 0, 0, .8);
+	border: 2px solid rgba(255, 255, 255, .8);
+	border-radius: 10px;
+	top: 20px;
+	right: 200px;
+	height: 60px;
+	box-sizing: border-box;
+	cursor: pointer;
+	z-index: 1;
+}
