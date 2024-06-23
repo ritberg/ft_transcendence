@@ -7,7 +7,6 @@ let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
     ////// UPDATE PROFILE /////
 
-
     displaySettings = async function () {
         let user = JSON.parse(localStorage.getItem("user")) || null;
 
@@ -30,8 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("user-avatar").src = user.profile_picture;
             }
         }
-        // console.log("Hello");
-        // Load the saved language preference on settings page load
         const savedLanguage = localStorage.getItem('preferredLanguage');
         if (savedLanguage) {
             document.getElementById('language-select').value = savedLanguage;
