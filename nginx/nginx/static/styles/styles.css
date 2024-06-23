@@ -1385,3 +1385,14 @@ body {
   height: 800px;
   display: none;
 }
+
+#qr-code-container img {
+	max-width: 200px;
+	height: auto;
+  }
+
+#qr-code-container {
+	width: 200px;
+	height: 200px;
+	overflow: hidden;
+  }

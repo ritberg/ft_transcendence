@@ -10,7 +10,6 @@ export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
 export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected")) || false;
 
-
 export const getUserId = async (username) => {
 	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
 	const response = await fetch(getIdUrl,

@@ -13,6 +13,11 @@ from rest_framework_simplejwt.views import (
 	TokenRefreshView,
 )
 from rest_framework.decorators import api_view
+from django.conf import settings
+import pyotp
+import qrcode
+import base64
+from io import BytesIO
 import re
 
 # Create your views here.
@@ -22,18 +27,62 @@ User = get_user_model()
 # authentication views
 @api_view(['POST'])
 def enable_2fa(request):
-	user = request.user
-	user.is_2fa_enabled = True
-	user.save()
-	return Response({'otp_secret': user.otp_secret}, status=status.HTTP_200_OK)
+    user = request.user
+    if not user.is_authenticated:
+        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    user.is_2fa_enabled = False
+    if user.is_2fa_enabled:
+        return Response({'detail': '2FA is already enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # Generate a new secret key
+    secret_key = pyotp.random_base32()
+    user.otp_secret = secret_key
+    user.is_2fa_enabled = True
+    user.save()
+
+    # Generate OTP URI
+    totp = pyotp.TOTP(secret_key)
+    uri = totp.provisioning_uri(name=user.email, issuer_name="2FA")
+
+    # Generate QR code
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(uri)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Convert image to base64
+    buffered = BytesIO()
+    img.save(buffered, format="PNG")
+    img_str = base64.b64encode(buffered.getvalue()).decode()
+
+    return Response({
+        'detail': '2FA has been enabled',
+        'otp_secret': secret_key,
+        'qr_code': f"data:image/png;base64,{img_str}"
+    }, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def verify_otp(request):
-	user = request.user
-	otp = request.data.get('otp')
-	if user.get_otp() == otp:
-		return Response({'detail': 'OTP verified'}, status=status.HTTP_200_OK)
-	return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+    user = request.user
+    otp = request.data.get('otp')  # Récupérez l'OTP depuis request.data
+
+    if not user.is_authenticated:
+        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if not otp:
+        return Response({'detail': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not user.is_2fa_enabled:
+        return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+
+    totp = pyotp.TOTP(user.otp_secret)
+    if totp.verify(otp):
+        user.is_2fa_verified = True
+        user.save()
+        return Response({'detail': 'OTP verified successfully'}, status=status.HTTP_200_OK)
+    else:
+        return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
 class IndexView(APIView):
 	permission_classes = [AllowAny]
@@ -189,10 +238,6 @@ class UpdateUserView(APIView):
 				{'message': extracted_string},
 				status=status.HTTP_400_BAD_REQUEST
 			)
-
-
-# friend request views
-
 
 class SendFriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]
