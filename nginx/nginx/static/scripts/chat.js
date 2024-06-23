@@ -4,14 +4,30 @@ import { errorMsg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
 import { online } from '../online/pong_online.js';
 
-let handleChatLinkClick, fetchInvite, invite_accept; 
+let handleChatLinkClick, fetchInvite, invite_accept, closeChatSocket; 
 document.addEventListener("DOMContentLoaded", function () {
     ////////////////////// CHAT ////////////////////////////
 
     var chatSocket = null;
     var chat_room_name;
 
+    closeChatSocket = async function () {
+        if (chatSocket !== null) {
+            chatSocket.close();
+            chatSocket = null;
+        }
+    }
+
     fetchInvite = async function (room_name, sender) {
+        if (userIsConnected == false) {
+			errorMsg("user must be logged in to play online");
+			return;
+		}
+
+		let player_id = await getUserId(username_global);
+		if (player_id == null) 
+			return;
+
         await fetch("https://" + window.location.host + "/room/invite", {
             method: "POST",
             headers: {
@@ -20,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
             },
             body: JSON.stringify({
                 chat_name: room_name,
-                username: username_global,
+                player_id: player_id,
             }),
             credentials: "include",
         })
@@ -40,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("game_canvas").style.display = "block";
                     if (sender == true)
                         chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
-                    game.ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+                    game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
                     game.game_type = 'online';
                     game.game_class = new online();
                     game.game_class.online_game();
@@ -222,4 +238,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-export { handleChatLinkClick, fetchInvite, invite_accept }
+export { handleChatLinkClick, fetchInvite, invite_accept, closeChatSocket }

@@ -52,6 +52,10 @@ export async function GameMode(n) {
 			errorMsg("user must be logged in to play online");
 			return;
 		}
+
+		let player_id = await getUserId(username_global);
+		if (player_id == null) 
+			return;
 		let room_selected = document.querySelector("#i-room_name").value;
 
 		await fetch("https://" + window.location.host + "/room/", {
@@ -62,7 +66,7 @@ export async function GameMode(n) {
 			},
 			body: JSON.stringify({
 				room: room_selected,
-				username: username_global,
+				player_id: player_id,
 			}),
 			credentials: "include",
 		})
@@ -83,7 +87,7 @@ export async function GameMode(n) {
 				}
 				document.getElementById("online-box").style.display = "none";
 				document.getElementById("game_canvas").style.display = "block";
-				game.ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+				game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
 				game.game_type = 'online';
 				game.game_class = new online();
 				game.game_class.online_game();

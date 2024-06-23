@@ -77,8 +77,8 @@ export class online {
                 {
                     this.isalone = false;
                     this.start_time = new Date();
-                    this.p1Id = await getUserId(messageData.objects.p1Name);
-                    this.p2Id = await getUserId(messageData.objects.p2Name);
+                    this.p1Id = messageData.objects.p1Id;
+                    this.p2Id = messageData.objects.p2Id;
                     console.log("this.p1Id: ", this.p1Id);
                     console.log("this.p2Id: ", this.p2Id);
                 }
@@ -90,21 +90,22 @@ export class online {
                     game.ws.close();
                     game.ws = null;
                     let winner;
-                    if (this.side == "left")
-                        winner = this.p1Id;
-                    else
-                        winner = this.p2Id;
-                    const game_stat = {
-                        player_1_id: this.p1Id,
-                        player_2_id: this.p2Id,
-                        player_1_score: this.player1.score,
-                        player_2_score: this.player2.score,
-                        winner_id: winner,
-                        data_played: new Date().toISOString(),
-                        duration: duration,
-                    };
-                    console.log("gamehere: ", game_stat);
-                    this.sendStats(game_stat);
+                    if (this.p1Id && this.p2Id) {
+                        if (this.side == "left")
+                            winner = this.p1Id;
+                        else
+                            winner = this.p2Id;
+                        const game_stat = {
+                            player_1_id: this.p1Id,
+                            player_2_id: this.p2Id,
+                            player_1_score: this.player1.score,
+                            player_2_score: this.player2.score,
+                            winner_id: winner,
+                            data_played: new Date().toISOString(),
+                            duration: duration,
+                        };
+                        this.sendStats(game_stat);
+                    }
                     setTimeout(() => { route("/"); }, 5000);
                 }
                 
@@ -208,7 +209,7 @@ export class online {
         {
             if (this.trigger == true)
             {
-                if (this.side == "left")
+                if (this.side == "left" && this.p1Id && this.p2Id)
                 {
                     let end_time = new Date();
                     let duration = (end_time - this.start_time) / 1000;
@@ -236,7 +237,7 @@ export class online {
         {
             if (this.trigger == true)
             {
-                if (this.side == "right")
+                if (this.side == "right" && this.p1Id && this.p2Id)
                 {
                     let end_time = new Date();
                     let duration = (end_time - this.start_time) / 1000;

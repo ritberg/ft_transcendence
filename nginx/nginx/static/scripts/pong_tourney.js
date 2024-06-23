@@ -2,6 +2,7 @@ import { sleep, writeVerticalText } from './utils.js';
 import { stars, modifyDelta, starWarsTourney } from './stars.js';
 import { tourney_game, drawBrackets } from './brackets.js';
 import { route, game } from './router.js';
+import { tournamentMessages } from './animations.js';
 
 /********** PONG INIT *************/
 
@@ -127,10 +128,14 @@ export class tourney {
 			//console.log(tourney_game.index, tourney_game.score[0][0].name);
 			tourney_game.score[tourney_game.index][1] = this.player1.score;
 			tourney_game.score[tourney_game.index + 1][1] = this.player2.score;
-			if (this.player1.score > this.player2.score)
+			if (this.player1.score > this.player2.score) {
 				tourney_game.score.push([tourney_game.score[tourney_game.index][0], 172]);
-			else
+				tournamentMessages("tournament", `${tourney_game.score[tourney_game.index][0]} won !`);
+			}
+			else {
 				tourney_game.score.push([tourney_game.score[tourney_game.index + 1][0], 172]);
+				tournamentMessages("tournament", `${tourney_game.score[tourney_game.index + 1][0]} won !`);
+			}
 			tourney_game.index += 2;
 			this.player1.score = 0;
 			this.player2.score = 0;
