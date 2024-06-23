@@ -15,7 +15,7 @@ def CreateRoom(request):
     if request.method == 'POST':
         text_data_json = json.loads(request.body)
         room = text_data_json["room"]
-        username = text_data_json["username"]
+        player_id = text_data_json["player_id"]
 
         pattern = "^[A-Za-z0-9_-]*$" 
         state = bool(re.match(pattern, room))
@@ -28,7 +28,7 @@ def CreateRoom(request):
                 get_room = Room.objects.get(room_name=room)
                 if get_room.full == True:
                     return JsonResponse({"error": "this room is full"}, status=status.HTTP_403_FORBIDDEN)
-                if username in get_room.players:
+                if player_id in get_room.players:
                     return JsonResponse({"error": "you are already in this room"}, status=status.HTTP_403_FORBIDDEN)
                 return JsonResponse({"room_name": room}, status=status.HTTP_200_OK)
             except Room.DoesNotExist:
@@ -38,7 +38,7 @@ def CreateRoom(request):
         else:
             try:
                 get_room = Room.objects.get(full=False, quickmatch=True)
-                if username in get_room.players:
+                if player_id in get_room.players:
                     return JsonResponse({"error": "you are already in this room"}, status=status.HTTP_403_FORBIDDEN)
                 return JsonResponse({"room_name": get_room.room_name}, status=status.HTTP_200_OK)
             except:
@@ -56,12 +56,12 @@ def CreateInvite(request):
     if request.method == 'POST':
         text_data_json = json.loads(request.body)
         chat_name = text_data_json["chat_name"]
-        username = text_data_json["username"]
+        player_id = text_data_json["player_id"]
         try:
             get_room = Room.objects.get(invite_name=chat_name)
             if get_room.full == True:
                 return JsonResponse({"error": "this room is full"}, status=status.HTTP_403_FORBIDDEN)
-            if username in get_room.players:
+            if player_id in get_room.players:
                 return JsonResponse({"error": "you are already in this room"}, status=status.HTTP_403_FORBIDDEN)
             return JsonResponse({"room_name": get_room.room_name}, status=status.HTTP_200_OK)
         except Room.DoesNotExist:

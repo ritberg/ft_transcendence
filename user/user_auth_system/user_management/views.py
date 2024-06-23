@@ -138,13 +138,14 @@ class UpdateUserView(APIView):
                     {'message': 'Username not allowed'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-			
-            if not is_valid_password(password):
-                return Response(
-                    {'message': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
-		
+
+            if password is not None:
+                if not is_valid_password(password):
+                    return Response(
+                        {'message': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
             serializer = UserSerializer(request.user, data=request.data, partial=True)
             if serializer.is_valid():
                 serializer.save()
