@@ -1,6 +1,7 @@
 import { modifyDelta, stars } from './stars.js';
-import { sleep, randomNumber, tourneyGame, resetTourneyGame } from './utils.js';
+import { sleep, randomNumber, tourneyGame, resetTourneyGame, escapeHtml } from './utils.js';
 import { change_loop_exec } from './pong_tourney.js';
+import { tournamentMessages } from './animations.js';
 
 export const tourney_game = new tourneyGame();
 
@@ -8,7 +9,9 @@ export function createPlayers() {
 	resetTourneyGame(tourney_game);
 	for (let i = 0; i < document.getElementById("s-players").value; i++) {
 		//var fighter = false;
-		tourney_game.player.push(document.getElementById(`player_${i + 1}`).value);
+		let player_push = document.getElementById(`player_${i + 1}`).value;
+		player_push = escapeHtml(player_push);
+		tourney_game.player.push(player_push);
 	}
 	tourney_game.player.sort(() => Math.random() - 0.5);
 	//tourney_game.player[0].fighter = true;
@@ -16,7 +19,6 @@ export function createPlayers() {
 	for (let i = 0; i < tourney_game.player.length; i++)
 		tourney_game.score.push([tourney_game.player[i], 172]);
 	tourney_game.index = 0;
-	console.log(tourney_game.index);
 	tourney_game.max_points = document.getElementById("s-points").value;
 	tourney_game.max_phases = 0;
 	if (tourney_game.player.length == 4)
@@ -82,6 +84,9 @@ export async function drawBrackets() {
 			stars(document.getElementById("main_canvas"));
 			return;
 		}
+		let message = `${ tourney_game.score[tourney_game.index][0]} will face off against \
+						${tourney_game.score[tourney_game.index + 1][0]} !`;
+		tournamentMessages("tournament", message);
 		boxes[tourney_game.index].classList.add("fighter");
 		boxes[tourney_game.index + 1].classList.add("fighter");
 	} else {
@@ -92,6 +97,7 @@ export async function drawBrackets() {
 			stars(document.getElementById("main_canvas"));
 			return;
 		}
+		tournamentMessages("tournament", `the winner of the tournament is ${tourney_game.score[tourney_game.index][0]} !`);
 		boxes[tourney_game.index].classList.add("winner");
 		//const crown = document.createElement("i");
 		//crown.classList.add("bi", "bi-trophy");

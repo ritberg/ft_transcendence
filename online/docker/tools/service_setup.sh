@@ -13,7 +13,7 @@ cd $ONLINE_SERVICE_NAME
 # python3 manage.py startapp channels_demo
 # python manage.py makemigrations
 echo "Waiting for postgres to get up and running..."
-while ! nc -z db_online 5433; do
+while ! nc -z db_transcendence 5434; do
   # where the postgres_container is the hos, in my case, it is a Docker container.
   # You can use localhost for example in case your database is running locally.
   echo "waiting for postgress to be listening..."

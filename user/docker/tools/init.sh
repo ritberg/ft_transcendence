@@ -20,7 +20,7 @@ cd /home/transcendance/$USER_SERVICE_NAME
 # echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('$DJANGO_SUPERUSER_USERNAME', '$DJANGO_SUPERUSER_EMAIL', '$DJANGO_SUPERUSER_PASSWORD') | python manage.py shell
 
 echo "Waiting for postgres to get up and running..."
-while ! nc -z db_userchat 5434; do
+while ! nc -z db_transcendence 5434; do
   # where the postgres_container is the hos, in my case, it is a Docker container.
   # You can use localhost for example in case your database is running locally.
   echo "waiting for postgress to be listening..."

@@ -15,6 +15,7 @@
 		"username": "ΟΝΟΜΑ ΧΡΗΣΤΗ",
 		"email": "EMAIL",
 		"password": "ΚΩΔΙΚΟΣ",
+		"password_confirmation": "ΕΠΙΒΕΒΑΙΩΣΗ ΚΩΔΙΚΟΥ",
 		"ok": "OK",
 		"switch": "Έχετε ήδη λογαριασμό;",
 		"signin": "Σύνδεση"

@@ -44,6 +44,9 @@ export function loadLanguage(lang) {
       if (document.getElementById('signup-password')) {
         document.getElementById('signup-password').textContent = data.signup.password;
       }
+      if (document.getElementById('signup-password-confirmation')) {
+        document.getElementById('signup-password-confirmation').textContent = data.signup.password_confirmation;
+      }
       if (document.getElementById('b-signup-ok')) {
         document.getElementById('b-signup-ok').textContent = data.signup.ok;
       }
@@ -193,9 +196,6 @@ export function loadLanguage(lang) {
       }
       if (document.getElementById('settings-button')) {
         document.getElementById('settings-button').textContent = data.index.settings_button;
-      }
-      if (document.getElementById('user-name')) {
-        document.getElementById('user-name').textContent = data.index.user_name;
       }
     });
 }

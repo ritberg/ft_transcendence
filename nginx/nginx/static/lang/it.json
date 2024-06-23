@@ -15,6 +15,7 @@
 		"username": "NOME UTENTE",
 		"email": "EMAIL",
 		"password": "PASSWORD",
+    	"password_confirmation": "CONFERMA PASSWORD",
 		"ok": "OK",
 		"switch": "Hai già un account?",
 		"signin": "Accedi"

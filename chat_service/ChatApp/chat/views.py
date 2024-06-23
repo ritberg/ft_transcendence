@@ -35,7 +35,7 @@ def chatRoom(request, username):
     if request.user.blocked_users.filter(id=other_user.id).exists():
         return JsonResponse({"error": "User is blocked"}, status=status.HTTP_401_UNAUTHORIZED)
     
-    room_name = f"{min(request.user.username, other_user.username)}_{max(request.user.username, other_user.username)}"
+    room_name = f"{min(request.user.id, other_user.id)}_{max(request.user.id, other_user.id)}"
     
     chat_room = ChatRoom.objects.filter(Q(user1=request.user, user2=other_user) | Q(user1=other_user, user2=request.user)).first()
     if not chat_room:

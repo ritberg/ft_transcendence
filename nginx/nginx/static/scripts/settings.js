@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("user-avatar").src = user.profile_picture;
             }
         }
+        // Load the saved language preference on settings page load
         const savedLanguage = localStorage.getItem('preferredLanguage');
         if (savedLanguage) {
             document.getElementById('language-select').value = savedLanguage;
@@ -123,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 if (data !== null) {
                     console.log("data: ", data);
+                    document.getElementById("chat-box").innerHTML = '';
                     updateProfile(null, false, null);
                     route("/");
                 }
@@ -196,6 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             }
                         }
                         else {
+                            document.getElementById("chat-box").innerHTML = '';
                             updateProfile(null, false, null);
                             route("/");
                         }

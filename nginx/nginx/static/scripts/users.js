@@ -108,8 +108,9 @@ document.addEventListener("DOMContentLoaded", function () {
 		let username = document.getElementById("username").value;
 		let email = document.getElementById("email").value;
 		let password = document.getElementById("password").value;
+        let password_confirm = document.getElementById("password_confirm").value;
 
-		console.log({ username, email, password });
+		console.log({ username, email, password, password_confirm });
 
 		await fetch(signupUrl, {
 			method: "POST",
@@ -117,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				"Content-Type": "application/json",
 				"X-CSRFToken": token,
 			},
-			body: JSON.stringify({ username, email, password }),
+			body: JSON.stringify({ username, email, password, password_confirm }),
 		})
 		.then( async (response) => {
 			if (!response.ok) {
@@ -131,6 +132,8 @@ document.addEventListener("DOMContentLoaded", function () {
 					errorMsg(error.email);
 				else if (error.password)
 					errorMsg(error.password);
+                else if (error.password_confirm)
+					errorMsg(error.password_confirm);
 				else if (error.username)
 					errorMsg(error.username);
 				return null;

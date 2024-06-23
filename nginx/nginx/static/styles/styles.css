@@ -1367,6 +1367,7 @@ body {
 	font-size: 25px;
 	font-family: "Arial";
 	transition: all ease-out .5s;
+    z-index: 1;
 }
 #error-box.error_active {
 	opacity: 1;
@@ -1383,8 +1384,4 @@ body {
   width: 1000px;
   height: 800px;
   display: none;
-}
-
-.signin-switch {
-	
 }

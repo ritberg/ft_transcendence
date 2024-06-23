@@ -1,43 +1,62 @@
 import { fetchBlockedUsers } from './block.js';
-import { token, username_global } from './users.js';
-import { errorMsg, sleep } from './utils.js';
+import { getUserId, token, userIsConnected, username_global } from './users.js';
+import { errorMsg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
 import { online } from '../online/pong_online.js';
 
-let handleChatLinkClick, fetchInvite, invite_accept; 
+let handleChatLinkClick, fetchInvite, invite_accept, closeChatSocket; 
 document.addEventListener("DOMContentLoaded", function () {
     ////////////////////// CHAT ////////////////////////////
 
     var chatSocket = null;
     var chat_room_name;
 
+    closeChatSocket = async function () {
+        if (chatSocket !== null) {
+            chatSocket.close();
+            chatSocket = null;
+        }
+    }
+
     fetchInvite = async function (room_name, sender) {
+        if (userIsConnected == false) {
+			errorMsg("user must be logged in to play online");
+			return;
+		}
+
+		let player_id = await getUserId(username_global);
+		if (player_id == null) 
+			return;
+
         await fetch("https://" + window.location.host + "/room/invite", {
             method: "POST",
-            body: JSON.stringify({
-                chat_name: room_name,
-                username: username_global,
-            }),
             headers: {
                 "Content-type": "application/json; charset=UTF-8",
                 "X-CSRFToken": token,
-            }
+            },
+            body: JSON.stringify({
+                chat_name: room_name,
+                player_id: player_id,
+            }),
+            credentials: "include",
         })
-            .then((response) => {
+            .then(async (response) => {
+                if (!response.ok) {
+                    const error = await response.json();
+                    errorMsg(error.error);
+                    return null;
+                }
                 return response.json();
             })
             .then(async (data) => {
-                let code = data.status;
-                if (code == 500)
-                    console.log("error: " + data.error);
-                else {
+                if (data !== null) {
                     route("/online/");
                     await sleep(100);
                     document.getElementById("online-box").style.display = "none";
                     document.getElementById("game_canvas").style.display = "block";
                     if (sender == true)
                         chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
-                    game.ws = new WebSocket("wss://" + window.location.host + "/ws/online/" + data.room_name + "/" + username_global + "/");
+                    game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
                     game.game_type = 'online';
                     game.game_class = new online();
                     game.game_class.online_game();
@@ -59,7 +78,24 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	});
 
+    async function chat_profile(username) {
+        console.log(username);
+        if (username)
+            route("/profile/" + username + "/");
+    }
+
+    document.getElementById('chat-box').addEventListener('click', function(event) {
+        console.log(event.target);
+        if (event.target && event.target.classList.contains('msg_username')) {
+            let username = event.target.textContent;
+            chat_profile(username);
+        }
+    });
+
     handleChatLinkClick = async function (username) {
+        if ( await getUserId(username) == null) {
+            return;
+        }
         const chatUrl = "https://" + window.location.host + "/chat/" + username + "/";
 
         await fetch(chatUrl, {
@@ -72,15 +108,15 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(async (response) => {
                 if (!response.ok) {
-                    let error = await response.json();
-                    console.log(error);
+                    // let error = await response.json();
                     errorMsg("chat: user is blocked");
-                    //document.getElementById("chat-box").innerHTML = `<div><center><h1>USER IS BLOCKED</h1></center></div>`;
+                    return null;
                 }
                 return response.json();
             })
             .then((data) => {
-                console.log("shit isn't working", data); 
+                if (data === null)
+                    return;
                 //const chatContainer = document.createElement('div');
                 //chatContainer.classList.add('chat__container');
                 //document.getElementById("chat-container").innerHTML = "";
@@ -100,24 +136,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 else {
                     return;
-                }
-
-                // let userLink = document.getElementById('chat_profile');
-                let userLink = document.getElementsByClassName("msg_username");
-
-                for (var i = 0; i < userLink.length; i++) {
-                    let username = userLink[i].textContent;
-                    userLink[i].addEventListener('click', (function(username) {
-                        return function() {
-                            chat_profile(username);
-                        }
-                    })(username), false);
-                }
-
-                async function chat_profile(username) {
-                    console.log(username);
-                    if (username)
-                        route("/profile/" + username + "/");
                 }
 
                 console.log("++ room_name : ", data.room_name);
@@ -152,18 +170,32 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
 
                 document.querySelector("#b-msg").onclick = async function (e) {
+                    var messageInput = document.querySelector("#i-msg").value;
+                    messageInput = escapeHtml(messageInput);
+                    if (messageInput.replace(/\s/g,'') == "")
+                        return;
+                    if (userIsConnected !== true) {
+                        errorMsg("you must be connected to access chat functions");
+                        return;
+                    }
                     let blocked_users = await fetchBlockedUsers();
                     console.log("blocking situation ", blocked_users.length);
                     console.log(data.other_user);
                     if (!(blocked_users.includes(data.other_user))) {
-                        const messageInput = document.querySelector("#i-msg").value;
                         chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
                     }
+                    else
+                        errorMsg("This user is blocked");
                 };
 
                 document.querySelector("#id_invit_button").onclick = async function (e) {
+                    if (userIsConnected !== true) {
+                        errorMsg("you must be connected to access chat functions");
+                        return;
+                    }
                     let blocked_users = await fetchBlockedUsers();
                     if (blocked_users.includes(data.other_user)) {
+                        errorMsg("this user is blocked");
                         return;
                     }
                     fetchInvite(data.room_name, true);
@@ -206,4 +238,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-export { handleChatLinkClick, fetchInvite, invite_accept }
+export { handleChatLinkClick, fetchInvite, invite_accept, closeChatSocket }

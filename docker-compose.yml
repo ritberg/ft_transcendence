@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   user:
     container_name: user
@@ -22,7 +20,7 @@ services:
       - transcendance
     init: true
     depends_on:
-      - db_userchat
+      - db_transcendence
       - redis
     restart: on-failure
 
@@ -71,14 +69,14 @@ services:
     init: true
     depends_on:
       - user
-      - db_userchat
+      - db_transcendence
       - redis
     restart: on-failure
 
   online:
     container_name: online
     depends_on:
-      - db_online
+      - db_transcendence
     build:
       context: ./online/docker
       dockerfile: Dockerfile
@@ -90,6 +88,7 @@ services:
       - "8001"
     volumes:
       - online:/home/transcendance/${ONLINE_SERVICE_NAME}
+      - user:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
@@ -98,8 +97,6 @@ services:
 
   bot:
     container_name: bot
-    depends_on:
-      - db_online
     build:
       context: ./bot/docker
       dockerfile: Dockerfile
@@ -115,23 +112,6 @@ services:
     networks:
       - transcendance
     init: true
-    restart: on-failure
-
-  db_online:
-    container_name: db_online
-    image: postgres:16.2
-    volumes:
-      - db_online:/var/lib/postgresql/data/
-    environment:
-      # POSTGRES_HOST_AUTH_METHOD: trust
-      POSTGRES_DB: ${DB_ONLINE_NAME}
-      POSTGRES_USER: ${DB_ONLINE_USER}
-      POSTGRES_PASSWORD: ${DB_ONLINE_PASSWORD}
-      PGPORT: ${DB_ONLINE_PORT}
-    expose:
-      - "5433"
-    networks:
-      - transcendance
     restart: on-failure
 
   nginx:
@@ -155,18 +135,18 @@ services:
     # tty: true
     restart: on-failure
 
-  db_userchat:
-    container_name: db_userchat
+  db_transcendence:
+    container_name: db_transcendence
     image: postgres:16.2
     env_file:
       - .env
     environment:
-      POSTGRES_DB: ${DB_USERCHAT_NAME}
-      POSTGRES_USER: ${DB_USERCHAT_USER}
-      POSTGRES_PASSWORD: ${DB_USERCHAT_PASSWORD}
-      PGPORT: ${DB_USERCHAT_PORT}
+      POSTGRES_DB: ${DB_TRANSCENDENCE_NAME}
+      POSTGRES_USER: ${DB_TRANSCENDENCE_USER}
+      POSTGRES_PASSWORD: ${DB_TRANSCENDENCE_PASSWORD}
+      PGPORT: ${DB_TRANSCENDENCE_PORT}
     volumes:
-      - db_userchat:/var/lib/postgresql/data
+      - db_transcendence:/var/lib/postgresql/data
     expose:
       - "5434"
     tty: true
@@ -185,12 +165,6 @@ services:
     restart: on-failure
 
 volumes:
-  db_online:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/databases/db_online"
   nginx:
     driver: local
     driver_opts:
@@ -227,12 +201,12 @@ volumes:
       type: "none"
       o: "bind"
       device: "${PWD}/chat_service/${CHAT_SERVICE_NAME}"
-  db_userchat:
+  db_transcendence:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${PWD}/databases/db_userchat"
+      device: "${PWD}/database"
 
 networks:
   transcendance:

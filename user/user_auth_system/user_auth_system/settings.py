@@ -21,11 +21,11 @@ env = environ.Env()
 
 USER_SERVICE_NAME = env('USER_SERVICE_NAME')
 AUTH_APP_NAME = env('USER_APP_NAME')
-DB_NAME = env('DB_USERCHAT_NAME')
-DB_USER = env('DB_USERCHAT_USER')
-DB_PASSWORD = env('DB_USERCHAT_PASSWORD')
-DB_HOST = env('DB_USERCHAT_HOST')
-DB_PORT = env.int('DB_USERCHAT_PORT')
+DB_NAME = env('DB_TRANSCENDENCE_NAME')
+DB_USER = env('DB_TRANSCENDENCE_USER')
+DB_PASSWORD = env('DB_TRANSCENDENCE_PASSWORD')
+DB_HOST = env('DB_TRANSCENDENCE_HOST')
+DB_PORT = env.int('DB_TRANSCENDENCE_PORT')
 IP_ADDRESS= env('IP_ADDRESS')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -104,12 +104,12 @@ WSGI_APPLICATION = f'{USER_SERVICE_NAME}.wsgi.application'
 
 DATABASES = {
     'default': {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "db_userchat",
-        "USER": "trans_master",
-        "PASSWORD": "1234",
-        "HOST": "db_userchat",  # set in docker-compose.yml
-        "PORT": 5434,  # default postgres port
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 

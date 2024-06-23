@@ -6,4 +6,4 @@ user_service/user_auth_system/__pycache__/
 user_service/user_auth_system/migrations/
 user_service/user_auth_system/__pycache__/
 user_service/media/
-databases
+database/

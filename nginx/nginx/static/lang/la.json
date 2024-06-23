@@ -6,6 +6,7 @@
 		"title": "INIRE",
 		"username": "NOMEN UTENTIS",
 		"password": "TESSERA",
+		"password_confirmation": "CONFIRMA TESSERAM",
 		"ok": "BENE",
 		"switch": "Nondum rationem habes?",
 		"signup": "Conscribere"

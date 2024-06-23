@@ -15,6 +15,7 @@
 		"username": "用户名",
 		"email": "电子邮箱",
 		"password": "密码",
+		"password_confirmation": "确认密码",
 		"ok": "确定",
 		"switch": "已有账户？",
 		"signin": "登录"

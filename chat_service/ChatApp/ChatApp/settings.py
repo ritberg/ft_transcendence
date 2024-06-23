@@ -29,8 +29,12 @@ SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
 IP_ADDRESS= env('IP_ADDRESS')
+DB_NAME = env('DB_TRANSCENDENCE_NAME')
+DB_USER = env('DB_TRANSCENDENCE_USER')
+DB_PASSWORD = env('DB_TRANSCENDENCE_PASSWORD')
+DB_HOST = env('DB_TRANSCENDENCE_HOST')
+DB_PORT = env('DB_TRANSCENDENCE_PORT')
 
 ALLOWED_HOSTS = ['*']
 
@@ -86,15 +90,14 @@ ASGI_APPLICATION = 'ChatApp.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "db_userchat",
-        "USER": "trans_master",
-        "PASSWORD": "1234",
-        "HOST": "db_userchat",  # set in docker-compose.yml
-        "PORT": 5434,  # default postgres port
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': DB_NAME,
+        'USER': DB_USER,
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': DB_PORT,
     }
 }
 

@@ -13,6 +13,7 @@ from rest_framework_simplejwt.views import (
 	TokenRefreshView,
 )
 from rest_framework.decorators import api_view
+import re
 
 # Create your views here.
 
@@ -40,10 +41,49 @@ class IndexView(APIView):
 	def get(self, request):
 		return render(request, 'index.html')
 
+
+def is_valid_password(password):
+	if len(password) < 6:
+		return False
+	if not re.search(r'\d', password):
+		return False
+	if not re.search(r'[A-Z]', password):
+		return False
+	return True
+
 class RegisterUserView(APIView):
 	permission_classes = [AllowAny]
 
 	def post(self, request, *args, **kwargs):
+		email = request.data.get('email')
+		username= request.data.get('username')
+		password = request.data.get('password')
+		password_confirm= request.data.get('password_confirm')
+		
+		if not is_valid_password(password):
+			return Response(
+				{'password': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
+				status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		if password != password_confirm:
+			return Response(
+				{'password': 'Passwords do not match'},
+				status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		if User.objects.filter(email=email).exists():
+			return Response(
+				{'email': 'Email already exists'},
+				status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
+		if username in prohibited_usernames:
+			return Response(
+				{'username': 'Username not allowed'},
+				status=status.HTTP_400_BAD_REQUEST
+			)
 		serializer = UserSerializer(data=request.data)
 		if serializer.is_valid():
 			serializer.save()
@@ -55,6 +95,7 @@ class RegisterUserView(APIView):
 				status=status.HTTP_201_CREATED
 			)
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class LoginUserView(APIView):
 	permission_classes = [AllowAny]
@@ -106,6 +147,23 @@ class UpdateUserView(APIView):
 
 	def put(self, request, *args, **kwargs):
 		try:
+			username = request.data.get('username')
+			password = request.data.get('password')
+
+			prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
+			if username in prohibited_usernames:
+				return Response(
+					{'message': 'Username not allowed'},
+					status=status.HTTP_400_BAD_REQUEST
+				)
+
+			if password is not None:
+				if not is_valid_password(password):
+					return Response(
+						{'message': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
+						status=status.HTTP_400_BAD_REQUEST
+					)
+
 			serializer = UserSerializer(request.user, data=request.data, partial=True)
 			if serializer.is_valid():
 				serializer.save()

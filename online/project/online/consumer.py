@@ -44,6 +44,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
     update_lock = asyncio.Lock()
     async def connect(self):
         self.room = f"{self.scope['url_route']['kwargs']['room_name']}"
+        self.player_id = int(f"{self.scope['url_route']['kwargs']['player_id']}")
         self.room_name = f"room_{self.scope['url_route']['kwargs']['room_name']}"
         self.user_name = f"{self.scope['url_route']['kwargs']['user_name']}"
         self.game = GameLoop()
@@ -81,7 +82,8 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             player_side = self.assign_player_side()
         if player_side == 0:
             async with self.update_lock:
-                room_vars[self.room]["players"][self.user_name] = {
+                room_vars[self.room]["players"][self.player_id] = {
+                    "player_id": self.player_id,
                     "username": self.user_name,
                     "side": "left",
                     "yPos": self.board_height / 2 - self.player_height / 2,
@@ -91,7 +93,8 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
                 }
         elif player_side == 1:
             async with self.update_lock:
-                room_vars[self.room]["players"][self.user_name] = {
+                room_vars[self.room]["players"][self.player_id] = {
+                    "player_id": self.player_id,
                     "username": self.user_name,
                     "side": "right",
                     "yPos": self.board_height / 2 - self.player_height / 2,
@@ -106,7 +109,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
         await self.add_user()
 
         #sends the player his ID
-        await self.send_json({"type": "playerId", "objects": {"id": self.user_name, "side": room_vars[self.room]["players"][self.user_name]["side"]}})
+        await self.send_json({"type": "playerId", "objects": {"id": self.player_id, "side": room_vars[self.room]["players"][self.player_id]["side"]}})
 
         #updates the database to determine wether another player can enter or not
         async with self.update_lock:
@@ -116,17 +119,18 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
         if not room_vars[self.room]["running"]:
             init = asyncio.create_task(self.game.game_loop(self.room))
         if len(room_vars[self.room]["players"]) == 2:
-            name1 = ""
-            name2 = ""
+            name1 = name2 = name1Id = name2Id = ""
             player1 = self.game.find_player("left", self.room)
             if player1:
                 name1 = player1["username"]
+                name1Id = player1["player_id"]
             player2 = self.game.find_player("right", self.room)
             if player2:
                 name2 = player2["username"]
+                name2Id = player2["player_id"]
             await self.channel_layer.group_send(
                 self.room_name,
-                {"type": "player_num", "objects": {"num": 2, "p1Name": name1, "p2Name": name2}},
+                {"type": "player_num", "objects": {"num": 2, "p1Name": name1, "p2Name": name2, "p1Id": name1Id, "p2Id": name2Id}},
             )
             messages = asyncio.create_task(self.send_messages())
 
@@ -141,15 +145,15 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
     @database_sync_to_async
     def add_user(self):
         get_room = Room.objects.get(room_name=self.room)
-        get_room.players.append(self.user_name)
+        get_room.players.append(self.player_id)
         get_room.save()
         
 
     @database_sync_to_async
     def remove_user(self):
         get_room = Room.objects.get(room_name=self.room)
-        if self.user_name in get_room.players:
-            get_room.players.remove(self.user_name)
+        if self.player_id in get_room.players:
+            get_room.players.remove(self.player_id)
             get_room.save()
 
     #checks which sides are occupied and if any are free
@@ -176,8 +180,8 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
 
         #removes the player from the dict
         async with self.update_lock:
-            if self.user_name in room_vars[self.room]["players"]:
-                del room_vars[self.room]["players"][self.user_name]
+            if self.player_id in room_vars[self.room]["players"]:
+                del room_vars[self.room]["players"][self.player_id]
         async with self.update_lock:
             await self.check_full()
             await self.remove_user()

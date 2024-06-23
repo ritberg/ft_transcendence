@@ -38,11 +38,13 @@ document.addEventListener("DOMContentLoaded", function () {
     ////////////////////// BLOCK A USER (not used yet) ////////////////////////////
 
     blockUser = async function (username) {
-        // const username = document.getElementById("user-username-to-block").value;
-        console.log("user username: ", username);
-        // const messageContainer = document.getElementById("block-user-message");
+
         if (!username) {
             // messageContainer.textContent = "Please enter a username";
+            return;
+        }
+
+        if ( await getUserId(username) == null) {
             return;
         }
 
@@ -71,6 +73,10 @@ document.addEventListener("DOMContentLoaded", function () {
         // const username = document.getElementById("user-username-to-unblock").value;
         // const messageContainer = document.getElementById("unblock-user-message");
         if (!username) {
+            return;
+        }
+
+        if ( await getUserId(username) == null) {
             return;
         }
 

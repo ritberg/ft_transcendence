@@ -1,7 +1,9 @@
-import { drawBrackets, enterNicknames, createPlayers } from './brackets.js';
+import { drawBrackets, enterNicknames, createPlayers, tourney_game } from './brackets.js';
+import { change_loop_exec } from './pong_tourney.js';
 import { GameMode } from './main.js';
 import { sleep } from './utils.js';
 import { modifyDelta, stars } from './stars.js';
+import { closeChatSocket } from './chat.js';
 
 document.getElementById("tabs-icon").addEventListener("hover", function() {
 	document.getElementById("tabs-list").classList.toggle("active");
@@ -79,6 +81,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }, true);
 });
 
+export async function tournamentMessages(sender, message) {
+    const div = document.createElement("div");
+    div.classList.add("msg_text");
+    div.innerHTML = `
+        <div class="msg_content">
+        <div class="msg_username" style="color: #F1DB52">${sender}</div>
+        <div class="msg_text">: ${message}</div>
+        </div>
+    `;
+    document.querySelector("#msg_container").appendChild(div);
+    document.querySelector("#msg_container").scrollTop = document.querySelector("#msg_container").scrollHeight;
+}
+
 export async function tournamentSettings() {
 	if (window.location.pathname !== "/tourney/") {
 		return;
@@ -109,6 +124,14 @@ export async function tournamentSettings() {
 	document.getElementById("nicknames_form").addEventListener("submit", async function(event) {
 		event.preventDefault();
 		createPlayers();
+        // closeChatSocket();
+        // document.getElementById("chat-box").innerHTML = '';
+        document.getElementById("chat-box").classList.add("chat-active");
+        document.getElementById("b-close-chat").classList.add("chat-active");
+        if (document.getElementById("msg_container") == null)
+            document.getElementById("chat-box").innerHTML = `<div id="msg_container"></div>`;
+        await tournamentMessages("tournament", "The tournament has started !");
+
 		if (window.location.pathname !== "/tourney/") {
 			change_loop_exec(false);
 			modifyDelta(1.5);
