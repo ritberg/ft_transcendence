@@ -5,6 +5,7 @@ import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
 import { errorMsg } from "./utils.js";
+import { loadLanguage } from './lang.js';
 
 
 export const game = {
@@ -104,6 +105,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		// const html = await fetch(route.template).then((response) => response.text());
 		// document.getElementById("content").innerHTML = html;
+		const language = getPreferredLanguage();
+
+		loadLanguage(language);
 		addJS(location);
 		// set the title of the document to the title of the route
 		document.title = route.title;
@@ -139,6 +143,20 @@ document.addEventListener('DOMContentLoaded', () => {
 		else if (location == "/settings/") {
 			displaySettings();
 		}
+	}
+
+	// Function to get the preferred language
+	function getPreferredLanguage() {
+		let language = localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'en';
+		console.log('Initial language from localStorage or navigator:', language);
+		const supportedLanguages = ['en', 'fr', 'it', 'de', 'el', 'zh', 'la'];
+
+		if (!supportedLanguages.includes(language)) {
+			language = 'en';
+		}
+
+		console.log('Final selected language:', language);
+		return language;
 	}
 
 	function resetGameState() {

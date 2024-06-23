@@ -1,20 +1,35 @@
 <div class="settings-box">
-    <section class="profile">
-        <div class="profile-nav">
-        <div id="main_info">
-            <img id="user-avatar" src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
-            <h1 id="info-username"></h1>
-        </div>
-          <button id="user-logout">Logout</button>
-          <div class="profile-modify">
-            <input type="text" id="new-username" placeholder="Enter new username" />
-            <input type="text" id="new-email" placeholder="Enter new email" />
-            <input type="password" id="new-password" placeholder="Enter new password" />
-            <button id="update-profile">Update Profile</button>
-          </div>
-        </div>
-        <form id="uploadForm" enctype="multipart/form-data">
-          <input type="file" id="input-avatar" name="image" accept="image/*" />
-          <button type="button" id="upload-avatar">Upload a photo</button>
-        </form>
+  <section class="profile">
+    <div class="profile-nav">
+      <div id="main_info">
+        <img id="user-avatar" src="https://tinyurl.com/dkxknyfv" alt="A black, brown, and white dog" class="avatar_pic">
+        <h1 id="info-username"></h1>
+      </div>
+      <button id="user-logout">Logout</button>
+      <div class="profile-modify">
+        <input type="text" id="new-username" placeholder="Enter new username" />
+        <input type="text" id="new-email" placeholder="Enter new email" />
+        <input type="password" id="new-password" placeholder="Enter new password" />
+        <button id="update-profile">Update Profile</button>
+      </div>
+    </div>
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" id="input-avatar" name="image" accept="image/*" />
+      <button type="button" id="upload-avatar">Upload a photo</button>
+    </form>
+    <form id="enable-2fa-form">
+      <button type="button" id="enable-2fa">Enable 2FA</button>
+    </form>
+    <div class="language-switch">
+      <label for="language-select" id="language-select-label">Choose your language:</label>
+      <select id="language-select">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="it">Italiano</option>
+        <option value="de">Deutsch</option>
+        <option value="el">Ελληνικά</option>
+        <option value="zh">中文</option>
+        <option value="la">Latina</option>
+      </select>
+    </div>
 </div>

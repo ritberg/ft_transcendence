@@ -1,0 +1,80 @@
+{
+	"info": {
+		"default_username": "Hospes"
+	},
+	"signin": {
+		"title": "INIRE",
+		"username": "NOMEN UTENTIS",
+		"password": "TESSERA",
+		"ok": "BENE",
+		"switch": "Nondum rationem habes?",
+		"signup": "Conscribere"
+	},
+	"signup": {
+		"title": "CONSCRIPTIO",
+		"username": "NOMEN UTENTIS",
+		"email": "INSCRIPTIO ELECTRONICA",
+		"password": "TESSERA",
+		"ok": "BENE",
+		"switch": "Iam rationem habes?",
+		"signin": "Inire"
+	},
+	"main": {
+		"title": "PILA",
+		"pvp_mode": "Lusor contra Lusorem",
+		"cpu_mode": "Computatrum",
+		"tourney_mode": "Certamen",
+		"online_mode": "In Rete"
+	},
+	"online": {
+		"title": "LUDO ADIUNGI",
+		"room_name": "NOMEN CONCLAVIS",
+		"empty_room": "vacuum relinque pro conclavi fortuito",
+		"go": "IRE"
+	},
+	"user_info": {
+		"match_history": "HISTORIA CERTAMINUM",
+		"stats": "RATIONES",
+		"wins": "Victoriae: ",
+		"losses": "Clades: ",
+		"win_rate": "Ratio victoriarum: ",
+		"goals_avg": "Media punctorum: ",
+		"goals_scored": "Puncta facta: ",
+		"goals_conceded": "Puncta concessa: ",
+		"total_games": "Summa ludorum: ",
+		"total_hours": "Summa horarum: "
+	},
+	"settings": {
+		"logout": "Exire",
+		"new_username": "Novum nomen utentis inducere",
+		"new_email": "Novam inscriptionem electronicam inducere",
+		"new_password": "Novam tesseram inducere",
+		"update_profile": "Indicem renovare",
+		"upload_avatar": "Imaginem personae submittere",
+		"enable_2fa": "2FA activare",
+		"choose_language": "Linguam eligere:"
+	},
+	"game": {
+		"settings_title": "CONSTITUTIONES",
+		"players": "LUSORES",
+		"points": "PUNCTA",
+		"ok_button": "BENE",
+		"player_names_title": "NOMINA LUSORUM"
+	},
+	"users_lists": {
+		"ulist_title": "INDEX UTENTIUM",
+		"flist_title": "INDEX AMICORUM",
+		"requests_title": "PETITIONES AMICITIAE"
+	},
+	"verify_otp": {
+		"enter_otp": "OTP inducere",
+		"verify_otp": "OTP verificare"
+	},
+	"index": {
+		"tabs_title": "TABULAE",
+		"home_button": "DOMUS",
+		"users_button": "UTENTES",
+		"settings_button": "CONSTITUTIONES",
+		"user_name": "Hospes"
+	}
+}

@@ -4,14 +4,14 @@ import { errorMsg } from "./utils.js";
 
 function updateUserStats(stats) {
 	if (stats) {
-		document.getElementById("stat-wins").textContent = `Wins: ${stats.wins}`;
-		document.getElementById("stat-losses").textContent = `Losses: ${stats.losses}`;
-		document.getElementById("stat-win-rate").textContent = `Win Rate: ${stats.win_rate.toFixed(2)}%`;
-		document.getElementById("stat-goals-avg").textContent = `Score Avg: ${(stats.goal_scored / stats.goal_conceded).toFixed(2)}%`;
-		document.getElementById("stat-goals-scored").textContent = `Goals Scored: ${stats.goal_scored}`;
-		document.getElementById("stat-goals-conceded").textContent = `Goals Conceded: ${stats.goal_conceded}`;
-		document.getElementById("stat-total-games").textContent = `Total Games Played: ${stats.total_games_played}`;
-		document.getElementById("stat-total-hours").textContent = `Total Hours Played: ${stats.total_hours_played.toFixed(2)}`;
+		document.getElementById("wins-value").textContent = stats.wins;
+		document.getElementById("losses-value").textContent = stats.losses;
+		document.getElementById("win-rate-value").textContent = stats.win_rate.toFixed(2);
+		document.getElementById("goals-avg-value").textContent = (stats.goal_scored / stats.goal_conceded).toFixed(2);
+		document.getElementById("goals-scored-value").textContent = stats.goal_scored;
+		document.getElementById("goals-conceded-value").textContent = stats.goal_conceded;
+		document.getElementById("total-games-value").textContent = stats.total_games_played;
+		document.getElementById("total-hours-value").textContent = stats.total_hours_played.toFixed(2);
 	}
 }
 

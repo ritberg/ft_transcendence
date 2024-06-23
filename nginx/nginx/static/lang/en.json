@@ -1,0 +1,80 @@
+{
+	"info": {
+		"default_username": "Guest"
+	},
+	"signin": {
+		"title": "SIGN IN",
+		"username": "USERNAME",
+		"password": "PASSWORD",
+		"ok": "OK",
+		"switch": "Don't have an account?",
+		"signup": "Sign up"
+	},
+	"signup": {
+		"title": "SIGN UP",
+		"username": "USERNAME",
+		"email": "EMAIL",
+		"password": "PASSWORD",
+		"ok": "OK",
+		"switch": "Already have an account?",
+		"signin": "Sign in"
+	},
+	"main": {
+		"title": "PONG",
+		"pvp_mode": "Player vs Player",
+		"cpu_mode": "CPU",
+		"tourney_mode": "Tournament",
+		"online_mode": "Online"
+	},
+	"online": {
+		"title": "JOIN A GAME",
+		"room_name": "ROOM NAME",
+		"empty_room": "leave empty for a random room",
+		"go": "GO"
+	},
+	"user_info": {
+		"match_history": "MATCH HISTORY",
+		"stats": "STATISTICS",
+		"wins": "Wins: ",
+		"losses": "Losses: ",
+		"win_rate": "Win rate: ",
+		"goals_avg": "Average points: ",
+		"goals_scored": "Goals scored: ",
+		"goals_conceded": "Goals conceded: ",
+		"total_games": "Total games played: ",
+		"total_hours": "Total hours played: "
+	},
+	"settings": {
+		"logout": "Logout",
+		"new_username": "Enter a new username",
+		"new_email": "Enter a new email",
+		"new_password": "Enter a new password",
+		"update_profile": "Update profile",
+		"upload_avatar": "Upload avatar",
+		"enable_2fa": "Enable 2FA",
+		"choose_language": "Choose your language:"
+	},
+	"game": {
+		"settings_title": "SETTINGS",
+		"players": "PLAYERS",
+		"points": "POINTS",
+		"ok_button": "OK",
+		"player_names_title": "PLAYER NAMES"
+	},
+	"users_lists": {
+		"ulist_title": "USERS LIST",
+		"flist_title": "FRIENDS LIST",
+		"requests_title": "FRIEND REQUESTS"
+	},
+	"verify_otp": {
+		"enter_otp": "Enter OTP",
+		"verify_otp": "Verify OTP"
+	},
+	"index": {
+		"tabs_title": "TABS",
+		"home_button": "HOME",
+		"users_button": "USERS",
+		"settings_button": "SETTINGS",
+		"user_name": "Guest"
+	}
+}

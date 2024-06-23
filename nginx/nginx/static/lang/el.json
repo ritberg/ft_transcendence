@@ -1,0 +1,80 @@
+{
+	"info": {
+		"default_username": "Επισκέπτης"
+	},
+	"signin": {
+		"title": "ΣΥΝΔΕΣΗ",
+		"username": "ΟΝΟΜΑ ΧΡΗΣΤΗ",
+		"password": "ΚΩΔΙΚΟΣ",
+		"ok": "OK",
+		"switch": "Δεν έχετε λογαριασμό;",
+		"signup": "Εγγραφή"
+	},
+	"signup": {
+		"title": "ΕΓΓΡΑΦΗ",
+		"username": "ΟΝΟΜΑ ΧΡΗΣΤΗ",
+		"email": "EMAIL",
+		"password": "ΚΩΔΙΚΟΣ",
+		"ok": "OK",
+		"switch": "Έχετε ήδη λογαριασμό;",
+		"signin": "Σύνδεση"
+	},
+	"main": {
+		"title": "ΠΟΝΓΚ",
+		"pvp_mode": "Παίκτης εναντίον Παίκτη",
+		"cpu_mode": "CPU",
+		"tourney_mode": "Τουρνουά",
+		"online_mode": "Διαδικτυακά"
+	},
+	"online": {
+		"title": "ΣΥΜΜΕΤΟΧΗ ΣΕ ΠΑΙΧΝΙΔΙ",
+		"room_name": "ΟΝΟΜΑ ΔΩΜΑΤΙΟΥ",
+		"empty_room": "αφήστε κενό για τυχαίο δωμάτιο",
+		"go": "ΠΑΜΕ"
+	},
+	"user_info": {
+		"match_history": "ΙΣΤΟΡΙΚΟ ΑΓΩΝΩΝ",
+		"stats": "ΣΤΑΤΙΣΤΙΚΑ",
+		"wins": "Νίκες: ",
+		"losses": "Ήττες: ",
+		"win_rate": "Ποσοστό νικών: ",
+		"goals_avg": "Μέσος όρος πόντων: ",
+		"goals_scored": "Γκολ που σημειώθηκαν: ",
+		"goals_conceded": "Γκολ που δέχτηκε: ",
+		"total_games": "Σύνολο παιχνιδιών: ",
+		"total_hours": "Σύνολο ωρών παιχνιδιού: "
+	},
+	"settings": {
+		"logout": "Αποσύνδεση",
+		"new_username": "Εισάγετε νέο όνομα χρήστη",
+		"new_email": "Εισάγετε νέο email",
+		"new_password": "Εισάγετε νέο κωδικό",
+		"update_profile": "Ενημέρωση προφίλ",
+		"upload_avatar": "Ανέβασμα άβαταρ",
+		"enable_2fa": "Ενεργοποίηση 2FA",
+		"choose_language": "Επιλέξτε τη γλώσσα σας:"
+	},
+	"game": {
+		"settings_title": "ΡΥΘΜΙΣΕΙΣ",
+		"players": "ΠΑΙΚΤΕΣ",
+		"points": "ΠΟΝΤΟΙ",
+		"ok_button": "OK",
+		"player_names_title": "ΟΝΟΜΑΤΑ ΠΑΙΚΤΩΝ"
+	},
+	"users_lists": {
+		"ulist_title": "ΛΙΣΤΑ ΧΡΗΣΤΩΝ",
+		"flist_title": "ΛΙΣΤΑ ΦΙΛΩΝ",
+		"requests_title": "ΑΙΤΗΜΑΤΑ ΦΙΛΙΑΣ"
+	},
+	"verify_otp": {
+		"enter_otp": "Εισάγετε OTP",
+		"verify_otp": "Επαλήθευση OTP"
+	},
+	"index": {
+		"tabs_title": "ΚΑΡΤΕΛΕΣ",
+		"home_button": "ΑΡΧΙΚΗ",
+		"users_button": "ΧΡΗΣΤΕΣ",
+		"settings_button": "ΡΥΘΜΙΣΕΙΣ",
+		"user_name": "Επισκέπτης"
+	}
+}

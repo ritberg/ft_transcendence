@@ -1,0 +1,80 @@
+{
+	"info": {
+		"default_username": "Gast"
+	},
+	"signin": {
+		"title": "ANMELDEN",
+		"username": "BENUTZERNAME",
+		"password": "PASSWORT",
+		"ok": "OK",
+		"switch": "Noch kein Konto?",
+		"signup": "Registrieren"
+	},
+	"signup": {
+		"title": "REGISTRIERUNG",
+		"username": "BENUTZERNAME",
+		"email": "E-MAIL",
+		"password": "PASSWORT",
+		"ok": "OK",
+		"switch": "Bereits ein Konto?",
+		"signin": "Anmelden"
+	},
+	"main": {
+		"title": "PONG",
+		"pvp_mode": "Spieler gegen Spieler",
+		"cpu_mode": "CPU",
+		"tourney_mode": "Turnier",
+		"online_mode": "Online"
+	},
+	"online": {
+		"title": "EINEM SPIEL BEITRETEN",
+		"room_name": "RAUMNAME",
+		"empty_room": "leer lassen für einen zufälligen Raum",
+		"go": "LOS"
+	},
+	"user_info": {
+		"match_history": "SPIELVERLAUF",
+		"stats": "STATISTIKEN",
+		"wins": "Siege: ",
+		"losses": "Niederlagen: ",
+		"win_rate": "Siegesquote: ",
+		"goals_avg": "Durchschnittliche Punkte: ",
+		"goals_scored": "Erzielte Tore: ",
+		"goals_conceded": "Kassierte Tore: ",
+		"total_games": "Gespielte Spiele insgesamt: ",
+		"total_hours": "Gespielte Stunden insgesamt: "
+	},
+	"settings": {
+		"logout": "Abmelden",
+		"new_username": "Neuen Benutzernamen eingeben",
+		"new_email": "Neue E-Mail-Adresse eingeben",
+		"new_password": "Neues Passwort eingeben",
+		"update_profile": "Profil aktualisieren",
+		"upload_avatar": "Avatar hochladen",
+		"enable_2fa": "2FA aktivieren",
+		"choose_language": "Wähle deine Sprache:"
+	},
+	"game": {
+		"settings_title": "EINSTELLUNGEN",
+		"players": "SPIELER",
+		"points": "PUNKTE",
+		"ok_button": "OK",
+		"player_names_title": "SPIELERNAMEN"
+	},
+	"users_lists": {
+		"ulist_title": "BENUTZERLISTE",
+		"flist_title": "FREUNDESLISTE",
+		"requests_title": "FREUNDSCHAFTSANFRAGEN"
+	},
+	"verify_otp": {
+		"enter_otp": "OTP eingeben",
+		"verify_otp": "OTP verifizieren"
+	},
+	"index": {
+		"tabs_title": "TABS",
+		"home_button": "STARTSEITE",
+		"users_button": "BENUTZER",
+		"settings_button": "EINSTELLUNGEN",
+		"user_name": "Gast"
+	}
+}
