@@ -65,7 +65,8 @@
 	"users_lists": {
 		"ulist_title": "用户列表",
 		"flist_title": "好友列表",
-		"requests_title": "好友请求"
+		"requests_title": "好友请求",
+		"not_allowed": "登录访问"
 	},
 	"verify_otp": {
 		"enter_otp": "输入一次性密码",

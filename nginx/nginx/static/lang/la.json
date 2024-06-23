@@ -65,7 +65,8 @@
 	"users_lists": {
 		"ulist_title": "INDEX UTENTIUM",
 		"flist_title": "INDEX AMICORUM",
-		"requests_title": "PETITIONES AMICITIAE"
+		"requests_title": "PETITIONES AMICITIAE",
+		"not_allowed": "login ut obvius"
 	},
 	"verify_otp": {
 		"enter_otp": "OTP inducere",

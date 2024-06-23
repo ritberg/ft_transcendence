@@ -65,7 +65,8 @@
 	"users_lists": {
 		"ulist_title": "BENUTZERLISTE",
 		"flist_title": "FREUNDESLISTE",
-		"requests_title": "FREUNDSCHAFTSANFRAGEN"
+		"requests_title": "FREUNDSCHAFTSANFRAGEN",
+		"not_allowed": "Anmeldung für den Zugang"
 	},
 	"verify_otp": {
 		"enter_otp": "OTP eingeben",

@@ -65,7 +65,8 @@
 	"users_lists": {
 		"ulist_title": "LISTE DES UTILISATEURS",
 		"flist_title": "LISTE D'AMIS",
-		"requests_title": "DEMANDES D'AMIS"
+		"requests_title": "DEMANDES D'AMIS",
+		"not_allowed": "connectez vous pour accéder"
 	},
 	"verify_otp": {
 		"enter_otp": "Entrez le OTP",

@@ -65,7 +65,8 @@
 	"users_lists": {
 		"ulist_title": "USERS LIST",
 		"flist_title": "FRIENDS LIST",
-		"requests_title": "FRIEND REQUESTS"
+		"requests_title": "FRIEND REQUESTS",
+		"not_allowed": "login to access"
 	},
 	"verify_otp": {
 		"enter_otp": "Enter OTP",

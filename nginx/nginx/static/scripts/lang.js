@@ -177,6 +177,9 @@ export function loadLanguage(lang) {
       if (document.getElementById('requests-title')) {
         document.getElementById('requests-title').textContent = data.users_lists.requests_title;
       }
+      if (document.getElementById('users-not-allowed')) {
+        document.getElementById('users-not-allowed').textContent = data.users_lists.not_allowed;
+      }
 
       // verify otp
       if (document.getElementById('otp-input')) {

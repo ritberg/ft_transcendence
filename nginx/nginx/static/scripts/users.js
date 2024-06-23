@@ -5,6 +5,7 @@ import { blockUser, unblockUser, fetchBlockedUsers } from './block.js';
 import { fetchFriends, fetchFriendRequests } from './friends.js';
 import { handleChatLinkClick } from './chat.js';
 import { addFriend } from './friends.js';
+import { loadLanguage } from './lang.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
@@ -287,8 +288,14 @@ document.addEventListener("DOMContentLoaded", function () {
 			.catch(error => {
 				const error_msg = document.createElement("h3");
 				error_msg.classList.add("ulist-error");
+				error_msg.id = ("users-not-allowed");
 				error_msg.textContent = "login to access";
 				document.getElementById("ulist-users").appendChild(error_msg);
+				var savedLanguage = localStorage.getItem('preferredLanguage');
+				if (!savedLanguage)
+					savedLanguage = 'en';
+				document.getElementById('language-select').value = savedLanguage;
+				loadLanguage(savedLanguage);
 			});
 		//.catch((error) => console.error("Error fetching user data:", error));
 	}
