@@ -97,3 +97,7 @@ export async function GameMode(n) {
 }
 
 stars(document.getElementById("main_canvas"));
+const savedLanguage = localStorage.getItem('preferredLanguage');
+if (!savedLanguage)
+	savedLanguage = 'en';
+document.getElementById('language-select').value = savedLanguage;
