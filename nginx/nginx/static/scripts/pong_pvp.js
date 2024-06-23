@@ -1,4 +1,4 @@
-import { game } from '../scripts/router.js'
+import { game, route } from '../scripts/router.js'
 import { modifyDelta } from './stars.js';
 
 export class pvp {
@@ -53,7 +53,7 @@ export class pvp {
 		score: 0,
 	}
 
-	stop = true;
+	stop = false;
 
 	constructor() {
 		modifyDelta(1.5);
@@ -70,23 +70,19 @@ export class pvp {
 		this.player2.width = this.player_width;
 		this.player2.height = this.player_height;
 		this.player2.velocityY = this.playerVelocity;
-		this.player2.score = 0;
-		this.player2.prediction = -1;
+		// this.player2.score = 0;
 		this.player1.xPos = 20;
 		this.player1.yPos = this.board_height / 2 - this.player_height / 2;
 		this.player1.width = this.player_width;
 		this.player1.height = this.player_height;
 		this.player1.velocityY = this.playerVelocity;
-		this.player1.score = 0;
-		this.player1.prediction = -1;
+		// this.player1.score = 0;
 		this.ball.width = this.ball_width;
 		this.ball.height = this.ball_height;
 		this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
 		this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
 		this.ball.velocityY = 0;
 		this.ball.velocityX = 0;
-		this.ball.velocityXTmp = 0;
-		this.ball.velocityYTmp = 0;
 	}
 
 	loop()
@@ -115,14 +111,26 @@ export class pvp {
 	gameLoop() {
 		game.animation_id = window.requestAnimationFrame(this.gameLoop);
 
-		//move players
-		this.move_players();
+		if (this.stop == false) {
+			//move players
+			this.move_players();
 
-		//this.ball
-		this.changeBallVelocity();
+			//this.ball
+			this.changeBallVelocity();
 
-		//draw
-		this.draw_board();
+			//draw
+			this.draw_board();
+		}
+		else if (this.player1.score == 5) {
+			this.context.textAlign = "left";
+			this.context.font = "100px serif";
+			this.context.fillText("Player 2 won !", 250, 300);
+		}
+		else if (this.player2.score == 5) {
+			this.context.textAlign = "left";
+			this.context.font = "100px serif";
+			this.context.fillText("Player 2 won !", 250, 300);
+		}
 	}
 
 	fill_middle_lines() {
@@ -219,20 +227,18 @@ export class pvp {
 			else
 				this.player1.score++;
 
-			// if (this.player1.score == 5) {
-			//     stop_playing();
-			//     this.context.font = "100px serif";
-			//     this.context.fillText("Player 1 won !", 325, 400);
-			//     this.stop = true;
-			//     return;
-			// }
-			// if (this.player2.score == 5) {
-			//     stop_playing();
-			//     this.context.font = "100px serif";
-			//     this.context.fillText("Player 2 won !", 330, 400);
-			//     this.stop = true;
-			//     return;
-			// }
+			if (this.player1.score == 5) {
+			    this.reset_board();
+			    this.stop = true;
+				setTimeout(() => { route("/"); }, 5000);
+			    return;
+			}
+			if (this.player2.score == 5) {
+			    this.reset_board();
+			    this.stop = true;
+				setTimeout(() => { route("/"); }, 5000);
+			    return;
+			}
 			this.first_bounce = true;
 			this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
 			this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
