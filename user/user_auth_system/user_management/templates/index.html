@@ -106,7 +106,7 @@
       <script>
         document.getElementById('enable-2fa-form').onsubmit = async function (event) {
           event.preventDefault();
-          const response = await fetch('/api/enable-2fa/', {
+          const response = await fetch('/enable-2fa/', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -120,7 +120,7 @@
         document.getElementById('verify-otp-form').onsubmit = async function (event) {
           event.preventDefault();
           const otp = document.querySelector('input[name="otp"]').value;
-          const response = await fetch('/api/verify-otp/', {
+          const response = await fetch('/verify-otp/', {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${localStorage.getItem('access_token')}`,

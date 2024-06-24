@@ -8,6 +8,7 @@ from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404
 from .models import FriendRequest
 from rest_framework.exceptions import NotFound
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
 	TokenRefreshView,
@@ -84,6 +85,38 @@ def verify_otp(request):
     else:
         return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class VerifyOTPLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        user_id = request.data.get('user_id')
+        otp = request.data.get('otp')
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not user.is_2fa_enabled:
+            return Response({'message': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+
+        totp = pyotp.TOTP(user.otp_secret)
+        if totp.verify(otp):
+            login(request, user)
+            refresh = RefreshToken.for_user(user)
+            return Response(
+                {
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                    'user': UserSerializer(user).data,
+                    'message': 'User logged in successfully',
+                },
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+			
 class IndexView(APIView):
 	permission_classes = [AllowAny]
 
@@ -146,6 +179,35 @@ class RegisterUserView(APIView):
 		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# class LoginUserView(APIView):
+# 	permission_classes = [AllowAny]
+
+# 	def post(self, request , *args, **kwargs):
+# 		try:
+# 			user = authenticate(
+# 				request,
+# 				username=request.data['username'],
+# 				password=request.data['password'],
+# 			)
+# 			if user is not None:
+# 				login(request, user)
+# 				csrf_token = get_token(request)
+# 				print("csrf_token : ", csrf_token)
+# 				return Response(
+# 					{
+# 						'data': UserSerializer(user).data,
+# 						'crsfToken': csrf_token,
+# 						'message': 'User logged in successfully',
+# 					},
+# 					status=status.HTTP_200_OK
+# 				)
+# 			raise ValueError('Invalid credentials')
+# 		except Exception as e:
+# 			return Response(
+# 				{'message': f"{type(e).__name__}: {str(e)}"},
+# 				status=status.HTTP_400_BAD_REQUEST
+# 			)
+
 class LoginUserView(APIView):
 	permission_classes = [AllowAny]
 
@@ -157,23 +219,76 @@ class LoginUserView(APIView):
 				password=request.data['password'],
 			)
 			if user is not None:
-				login(request, user)
-				csrf_token = get_token(request)
-				print("csrf_token : ", csrf_token)
-				return Response(
-					{
-						'data': UserSerializer(user).data,
-						'crsfToken': csrf_token,
-						'message': 'User logged in successfully',
-					},
-					status=status.HTTP_200_OK
-				)
+				if user.is_2fa_enabled:
+                    # Si 2FA est activé, ne pas connecter l'utilisateur immédiatement
+					return Response(
+						{
+							'message': '2FA is enabled. Please provide OTP.',
+							'require_2fa': True,
+							'user_id': user.id
+						},
+						status=status.HTTP_200_OK
+					)
+				else:
+                    # Si 2FA n'est pas activé, connecter l'utilisateur normalement
+					login(request, user)
+					csrf_token = get_token(request)
+					print("csrf_token : ", csrf_token)
+					return Response(
+						{
+							'data': UserSerializer(user).data,
+							'crsfToken': csrf_token,
+							'message': 'User logged in successfully',
+						},
+						status=status.HTTP_200_OK
+					)
 			raise ValueError('Invalid credentials')
 		except Exception as e:
 			return Response(
 				{'message': f"{type(e).__name__}: {str(e)}"},
 				status=status.HTTP_400_BAD_REQUEST
 			)
+
+# class LoginUserView(APIView):
+#     permission_classes = [AllowAny]
+
+#     def post(self, request , *args, **kwargs):
+#         try:
+#             user = authenticate(
+#                 request,
+#                 username=request.data['username'],
+#                 password=request.data['password'],
+#             )
+#             if user is not None:
+#                 if user.is_2fa_enabled:
+#                     # Si 2FA est activé, ne pas connecter l'utilisateur immédiatement
+#                     return Response(
+#                         {
+#                             'message': '2FA is enabled. Please provide OTP.',
+#                             'require_2fa': True,
+#                             'user_id': user.id  # Pour identifier l'utilisateur lors de la vérification OTP
+#                         },
+#                         status=status.HTTP_200_OK
+#                     )
+#                 else:
+#                     # Si 2FA n'est pas activé, connecter l'utilisateur normalement
+#                     login(request, user)
+#                     refresh = RefreshToken.for_user(user)
+#                     return Response(
+#                         {
+#                             'refresh': str(refresh),
+#                             'access': str(refresh.access_token),
+#                             'user': UserSerializer(user).data,
+#                             'message': 'User logged in successfully',
+#                         },
+#                         status=status.HTTP_200_OK
+#                     )
+#             raise ValueError('Invalid credentials')
+#         except Exception as e:
+#             return Response(
+#                 {'message': f"{type(e).__name__}: {str(e)}"},
+#                 status=status.HTTP_400_BAD_REQUEST
+#             )
 
 class LogoutUserView(APIView):
 	permission_classes = [IsAuthenticated]
@@ -418,5 +533,5 @@ class GetUserPicture(APIView):
 		except Exception as e:
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
-class MyTokenObtainPairView(TokenObtainPairView):
+class TokenObtainPairView(TokenObtainPairView):
 	serializer_class = MyTokenObtainPairSerializer

@@ -29,7 +29,7 @@ async function updateUI() {
 
 async function check2FAStatus() {
     try {
-        const response = await fetch('/auth/api/2fa-status/', {
+        const response = await fetch('/auth/verify-otp-login/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -50,7 +50,7 @@ async function refreshToken() {
         throw new Error('No refresh token available');
     }
 
-    const response = await fetch('/auth/api/token/refresh/', {
+    const response = await fetch('/auth/token/refresh/', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 const csrfToken = getCSRFToken();
         
                 const makeRequest = async (token) => {
-                    const response = await fetch('/auth/api/enable-2fa/', {
+                    const response = await fetch('/auth/enable-2fa/', {
                         method: 'POST',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         
             try {
-                const response = await fetch('/auth/api/verify-otp/', {
+                const response = await fetch('/auth/verify-otp/', {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('access_token')}`,

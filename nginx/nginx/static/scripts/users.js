@@ -158,56 +158,157 @@ document.addEventListener("DOMContentLoaded", function () {
 	//let loginForm = document.getElementById("b-signin-ok");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
+	// loginButton = async function (event) {
+	// 	event.preventDefault();
+	// 	if (userIsConnected == true) {
+	// 		errorMsg("cannot login while already logged in");
+	// 		return null;
+	// 	}
+
+	// 	let username = document.getElementById("username1").value;
+	// 	let password = document.getElementById("password1").value;
+
+	// 	console.log("Sending signin request...");
+	// 	console.log("username : ", username);
+
+	// 	return await fetch(loginUrl, {
+	// 		method: "POST",
+	// 		headers: {
+	// 			"Content-Type": "application/json",
+	// 			"X-CSRFToken": token,
+	// 		},
+	// 		body: JSON.stringify({ username, password }),
+	// 		credentials: "include",
+	// 	})
+	// 	.then(async (response) => {
+	// 		if (!response.ok) {
+	// 			if (response.status == 403)
+	// 				errorMsg("error logging in");
+	// 			else {
+	// 				const error = await response.json();
+	// 				errorMsg(error.message);
+	// 			}
+	// 			return null;
+	// 		}
+	// 		return response.json();
+	// 	})
+	// 	.then(async (data) => {
+	// 		if (data !== null) {
+	// 			console.log("Cookies after signin response:", document.cookie);
+	// 			console.log("Login successful. Server response data:", data);
+	// 			let user = data.data;
+	// 			console.log("data : ", user);
+	// 			console.log("token received : ", data.crsfToken);
+	// 			updateProfile(user, true, data.crsfToken);
+	// 			route('/');
+	// 			// await addGame(); // à supprimer
+	// 			return user;
+	// 		}
+	// 	})
+	// 		.catch((error) => {
+	// 			console.error("Fetch error:", error);
+	// 		});
+	// }
+
 	loginButton = async function (event) {
 		event.preventDefault();
 		if (userIsConnected == true) {
 			errorMsg("cannot login while already logged in");
 			return null;
 		}
-
+	
 		let username = document.getElementById("username1").value;
 		let password = document.getElementById("password1").value;
-
+	
 		console.log("Sending signin request...");
 		console.log("username : ", username);
-
-		return await fetch(loginUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			body: JSON.stringify({ username, password }),
-			credentials: "include",
-		})
-		.then(async (response) => {
+	
+		try {
+			const response = await fetch(loginUrl, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					"X-CSRFToken": token,
+				},
+				body: JSON.stringify({ username, password }),
+				credentials: "include",
+			});
+	
+			const data = await response.json();
+	
 			if (!response.ok) {
 				if (response.status == 403)
 					errorMsg("error logging in");
 				else {
-					const error = await response.json();
-					errorMsg(error.message);
+					errorMsg(data.message);
 				}
 				return null;
 			}
-			return response.json();
-		})
-		.then(async (data) => {
-			if (data !== null) {
-				console.log("Cookies after signin response:", document.cookie);
-				console.log("Login successful. Server response data:", data);
-				let user = data.data;
-				console.log("data : ", user);
-				console.log("token received : ", data.crsfToken);
-				updateProfile(user, true, data.crsfToken);
-				route('/');
-				// await addGame(); // à supprimer
-				return user;
+	
+			if (data.require_2fa) {
+				// Afficher le formulaire OTP
+				showOTPForm(data.user_id);
+			} else {
+				// Connexion réussie sans 2FA
+				handleSuccessfulLogin(data);
 			}
-		})
-			.catch((error) => {
-				console.error("Fetch error:", error);
+		} catch (error) {
+			console.error("Fetch error:", error);
+		}
+	}
+	
+	function showOTPForm(userId) {
+		// Créer et afficher le formulaire OTP
+		const otpForm = document.createElement('form');
+		otpForm.innerHTML = `
+			<input type="hidden" id="user_id" value="${userId}">
+			<input type="text" id="otp" placeholder="Enter OTP" required>
+			<button type="submit">Verify OTP</button>
+		`;
+		otpForm.addEventListener('submit', verifyOTP);
+		
+		// Remplacer le formulaire de connexion par le formulaire OTP
+		const loginForm = document.getElementById('login-form'); // Assurez-vous que votre formulaire de connexion a cet ID
+		loginForm.parentNode.replaceChild(otpForm, loginForm);
+	}
+	
+	async function verifyOTP(event) {
+		event.preventDefault();
+		const userId = document.getElementById('user_id').value;
+		const otp = document.getElementById('otp').value;
+	
+		try {
+			const response = await fetch('/auth/api/verify-otp-login/', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': token,
+				},
+				body: JSON.stringify({ user_id: userId, otp }),
+				credentials: 'include',
 			});
+	
+			const data = await response.json();
+	
+			if (!response.ok) {
+				errorMsg(data.message || 'Error verifying OTP');
+				return;
+			}
+	
+			handleSuccessfulLogin(data);
+		} catch (error) {
+			console.error('Error:', error);
+			errorMsg('An error occurred while verifying OTP');
+		}
+	}
+	
+	function handleSuccessfulLogin(data) {
+		console.log("Login successful. Server response data:", data);
+		let user = data.user || data.data;
+		console.log("user data : ", user);
+		console.log("token received : ", data.csrfToken);
+		updateProfile(user, true, data.csrfToken);
+		route('/');
 	}
 
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////

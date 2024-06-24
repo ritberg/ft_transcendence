@@ -8,7 +8,6 @@ import json
 import re
 
 def CreateRoom(request):
-
     if not request.user.is_authenticated:
         return JsonResponse({"error": "User not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
 
