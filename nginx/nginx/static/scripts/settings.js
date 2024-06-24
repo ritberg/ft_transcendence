@@ -1,7 +1,8 @@
 import { errorMsg } from "./utils.js";
 import { updateProfile, token, userIsConnected } from "./users.js";
 import { route } from "./router.js";
-import { loadLanguage } from "./lang.js";
+import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
+import { closeWebSocket } from "./userStatus.js";
 
 function getCSRFToken() {
     const name = 'csrftoken';
@@ -19,30 +20,30 @@ function getCSRFToken() {
     return cookieValue;
 }
 
-async function updateUI() {
-    const is2FAEnabled = await check2FAStatus();
-    toggle2FAButton.textContent = is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA';
-    qrCodeContainer.style.display = 'none';
-    otpSecretSpan.textContent = '';
-    verifyOTPForm.style.display = 'none';
-}
+// async function updateUI() {
+//     const is2FAEnabled = await check2FAStatus();
+//     toggle2FAButton.textContent = is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA';
+//     qrCodeContainer.style.display = 'none';
+//     otpSecretSpan.textContent = '';
+//     verifyOTPForm.style.display = 'none';
+// }
 
-async function check2FAStatus() {
-    try {
-        const response = await fetch('/auth/verify-otp-login/', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                'Content-Type': 'application/json'
-            }
-        });
-        const data = await response.json();
-        return data.is_2fa_enabled;
-    } catch (error) {
-        console.error('Error checking 2FA status:', error);
-        return false;
-    }
-}
+// async function check2FAStatus() {
+//     try {
+//         const response = await fetch('/auth/verify-otp-login/', {
+//             method: 'GET',
+//             headers: {
+//                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+//                 'Content-Type': 'application/json'
+//             }
+//         });
+//         const data = await response.json();
+//         return data.is_2fa_enabled;
+//     } catch (error) {
+//         console.error('Error checking 2FA status:', error);
+//         return false;
+//     }
+// }
 
 async function refreshToken() {
     const refreshToken = localStorage.getItem('refresh_token');
@@ -67,13 +68,18 @@ async function refreshToken() {
     return data.access;
 }
 
-updateUI();
+// updateUI();
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
     ////// UPDATE PROFILE /////
 
     displaySettings = async function () {
+        if (userIsConnected == false) {
+            document.getElementById("settings-content").textContent = '';
+            document.getElementById("settings-content").innerHTML = '<h3 class="ulist-error">login to access</h3>';
+        }
+
         let user = JSON.parse(localStorage.getItem("user")) || null;
 
         console.log("userIsConnected in var : ", userIsConnected);
@@ -96,10 +102,12 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         // Load the saved language preference on settings page load
-        const savedLanguage = localStorage.getItem('preferredLanguage');
+        var savedLanguage = 'en';
+        if (userIsConnected == true)
+            savedLanguage = await fetchLanguage();
+        console.log("language in db:", savedLanguage);
         if (savedLanguage) {
-            document.getElementById('language-select').value = savedLanguage;
-            console.log('Loaded saved language preference:', savedLanguage);
+            document.getElementById('language-select-settings').value = savedLanguage;
         } else {
             console.log('No saved language preference found');
         }
@@ -218,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     uploadPicture = async function () {
-        let file = document.getElementById("input-avatar").files[0];
+        let file = document.getElementById("avatar-input").files[0];
 
         if (file == null || file.type == "") {
             errorMsg("please select a file");
@@ -247,6 +255,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!response.ok) {
                     if (response.status == 403)
                         errorMsg("you must be logged in to change picture");
+                    else if (response.status == 413) {
+                        errorMsg("Image max size is 10mb")
+                    }
                     else {
                         const error = await response.json();
                         errorMsg(error.message);
@@ -295,6 +306,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 if (data !== null) {
                     console.log("data: ", data);
+                    closeWebSocket();
+                    document.getElementById('user-name').style.color = 'white';
                     document.getElementById("chat-box").innerHTML = '';
                     updateProfile(null, false, null);
                     route("/");
@@ -332,6 +345,14 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("password", passwordInput.value);
             hasChanges = true;
             pwdChange = true;
+        }
+
+        let PictureInput = document.getElementById("avatar-input");
+        if (PictureInput.value) {
+            console.log("fdsafdsadspic");
+            uploadPicture();
+            if (hasChanges == false)
+                return;
         }
 
         if (hasChanges) {

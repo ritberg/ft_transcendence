@@ -22,10 +22,10 @@
 	},
 	"main": {
 		"title": "PONG",
-		"pvp_mode": "Player vs Player",
+		"pvp_mode": "PvP",
 		"cpu_mode": "CPU",
-		"tourney_mode": "Tournament",
-		"online_mode": "Online"
+		"tourney_mode": "TOURNEY",
+		"online_mode": "ONLINE"
 	},
 	"online": {
 		"title": "JOIN A GAME",
@@ -38,21 +38,20 @@
 		"stats": "STATISTICS",
 		"wins": "Wins: ",
 		"losses": "Losses: ",
-		"win_rate": "Win rate: ",
-		"goals_avg": "Average points: ",
-		"goals_scored": "Goals scored: ",
-		"goals_conceded": "Goals conceded: ",
-		"total_games": "Total games played: ",
-		"total_hours": "Total hours played: "
+		"win_rate": "Win Rate: ",
+		"goals_avg": "Score Avg: ",
+		"goals_scored": "Goals Scored: ",
+		"goals_conceded": "Goals Conceded: ",
+		"total_games": "Games Played: ",
+		"total_hours": "Hours Played: "
 	},
 	"settings": {
-		"logout": "Logout",
-		"new_username": "Enter a new username",
-		"new_email": "Enter a new email",
-		"new_password": "Enter a new password",
-		"update_profile": "Update profile",
-		"upload_avatar": "Upload avatar",
-		"enable_2fa": "Enable 2FA",
+		"logout": "LOGOUT",
+		"new_username": "USERNAME",
+		"new_email": "EMAIL",
+		"new_password": "PASSWORD",
+		"update_profile": "SAVE",
+		"enable_2fa": "ENABLE 2FA",
 		"choose_language": "Choose your language:"
 	},
 	"game": {
@@ -63,16 +62,18 @@
 		"player_names_title": "PLAYER NAMES"
 	},
 	"users_lists": {
-		"ulist_title": "USERS LIST",
-		"flist_title": "FRIENDS LIST",
-		"requests_title": "FRIEND REQUESTS"
+		"ulist_title": "USERS",
+		"flist_title": "FRIENDS",
+		"requests_title": "FRIEND REQUESTS",
+		"not_allowed": "login to access"
 	},
 	"verify_otp": {
 		"enter_otp": "Enter OTP",
 		"verify_otp": "Verify OTP"
 	},
 	"index": {
-		"tabs_title": "TABS",
+
+		"tabs_title": "MENU",
 		"home_button": "HOME",
 		"users_button": "USERS",
 		"settings_button": "SETTINGS",

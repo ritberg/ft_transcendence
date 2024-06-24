@@ -6,6 +6,7 @@ import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "./pong_tourney.js";
 import { errorMsg } from "./utils.js";
 import { loadLanguage } from './lang.js';
+import { updateStatus } from "./userStatus.js";
 
 
 export const game = {
@@ -91,6 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (location.length == 0) {
 			location = "/";
 		}
+		
+		updateStatus("online");
 		// get the route object from the urlRoutes object
 		// const route = routes[location] || routes["404"];
 		const { route, params } = matchRoute(location);
@@ -114,15 +117,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 
 	function addJS(location) {
-		if (location == "/online/") {
-			const scriptContent = `
-			document.getElementById("online-box").style.display = "block";
-			document.getElementById("online-box").classList.add("shown");
-		`;
-			const scriptElement = document.createElement('script');
-			scriptElement.text = scriptContent;
-			document.getElementById("content").appendChild(scriptElement);        }
-		else if (location == "/tourney/") {
+		// if (location == "/online/") {
+		// 	const scriptContent = `
+		// 	document.getElementById("online-box").style.display = "block";
+		// 	document.getElementById("online-box").classList.add("shown");
+		// `;
+		// 	const scriptElement = document.createElement('script');
+		// 	scriptElement.text = scriptContent;
+		// 	document.getElementById("content").appendChild(scriptElement);        }
+		if (location == "/tourney/") {
 			const scriptContent = `
 				document.getElementById("tourney_settings-box").style.display = "block";
 				document.getElementById("tourney_settings-box").classList.add("shown");
@@ -204,6 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			return;
 		}
 		let username = location.substring(location.indexOf('/', location.indexOf('/') + 1) + 1, location.length - 1);
+		username = decodeURIComponent(username);
 		let user_id = await getUserId(username);
 		if (user_id == null) {
 			const html = await fetch("/templates/404.html").then((response) => response.text());

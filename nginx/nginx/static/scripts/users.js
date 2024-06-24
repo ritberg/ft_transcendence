@@ -5,37 +5,14 @@ import { blockUser, unblockUser, fetchBlockedUsers } from './block.js';
 import { fetchFriends, fetchFriendRequests } from './friends.js';
 import { handleChatLinkClick } from './chat.js';
 import { addFriend } from './friends.js';
+import { loadLanguage, fetchLanguage } from './lang.js';
+import { openWebSocket } from './userStatus.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
 export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected")) || false;
 
-export const getUserId = async (username) => {
-	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
-	const response = await fetch(getIdUrl,
-		{
-			method: "GET",
-			headers: {
-				"X-CSRFToken": token,
-				"Content-Type": "application/json",
-			},
-			credentials: "include",
-		}
-	);
-	const data = await response.json();
-	if (!response.ok) {
-		if (response.status == 403)
-			errorMsg("you must be logged in to access profiles");
-		else {
-			errorMsg("this user does not exist");
-		}
-		return null;
-	}
-	console.log("data : ", data);
-	return data.id;
-};
-
-export const updateProfile = (user, isConnected, token) => {
+export const updateProfile = async (user, isConnected, token) => {
 	console.log("updateProfile called with =", user, isConnected, token);
 
 	if (user !== null) {
@@ -44,7 +21,6 @@ export const updateProfile = (user, isConnected, token) => {
 		localStorage.setItem("user", JSON.stringify(user));
 		document.getElementById("user-name").textContent = user.username;
 		document.getElementById("profile-pic").src = user.profile_picture;
-		// document.getElementById("user-avatar").src
 	}
 	else {
 		console.log("user is null")
@@ -72,7 +48,7 @@ const updateCSRFToken = (newToken) => {
 	document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 };
 
-let usersClick, signupButton, loginButton;
+let usersClick, signupButton, loginButton, getUserId;
 document.addEventListener("DOMContentLoaded", function () {
 
 	let storedUser = localStorage.getItem("user");
@@ -93,64 +69,100 @@ document.addEventListener("DOMContentLoaded", function () {
 		return;
 	}
 
+	getUserId = async (username) => {
+		let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
+		const response = await fetch(getIdUrl,
+			{
+				method: "GET",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+			}
+		);
+		const data = await response.json();
+		if (!response.ok) {
+			if (response.status == 403)
+				errorMsg("you must be logged in to access profiles");
+			else {
+				errorMsg("this user does not exist");
+			}
+			return null;
+		}
+		console.log("data : ", data);
+		return data.id;
+	};
+	
+
 	////////////////////// SIGNUP ////////////////////////////
 
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
 
 	signupButton = async function (event) {
-		event.preventDefault();
+        event.preventDefault();
 
-		if (userIsConnected == true) {
-			errorMsg("cannot signup while logged in");
-			return;
-		}
-		let username = document.getElementById("username").value;
-		let email = document.getElementById("email").value;
-		let password = document.getElementById("password").value;
+        if (userIsConnected == true) {
+            errorMsg("cannot signup while logged in");
+            return;
+        }
+        let username = document.getElementById("username").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
         let password_confirm = document.getElementById("password_confirm").value;
 
-		console.log({ username, email, password, password_confirm });
+        if (password !== password_confirm) {
+            errorMsg("Passwords don't match");
+            return;
+        }
 
-		await fetch(signupUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			body: JSON.stringify({ username, email, password, password_confirm }),
-		})
-		.then( async (response) => {
-			if (!response.ok) {
-				if (response.status == 403) {
-					errorMsg("error logging in");
-					return null;
-				}
-				const error = await response.json();
-				console.log(error);
-				if (error.email)
-					errorMsg(error.email);
-				else if (error.password)
-					errorMsg(error.password);
+        console.log({ username, email, password, password_confirm });
+
+        await fetch(signupUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": token,
+            },
+            body: JSON.stringify({ username, email, password, password_confirm }),
+        })
+        .then( async (response) => {
+            if (!response.ok) {
+                if (response.status == 403) {
+                    errorMsg("error logging in");
+                    return null;
+                }
+                const error = await response.json();
+                console.log(error);
+                if (error.email) {
+                    if (typeof(error.email) == 'string')
+                        errorMsg(error.email);
+                    else
+                        errorMsg(error.email[0]);
+                }
+                else if (error.password)
+                    errorMsg(error.password[0]);
                 else if (error.password_confirm)
-					errorMsg(error.password_confirm);
-				else if (error.username)
-					errorMsg(error.username);
-				return null;
-			}
-			return response.json();
-		})
-		.then((data) => {
-			if (data !== null) {
-				console.log(data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
-				route("/signin/");
-			}
-		})
-			.catch((error) => {
-				console.error("Fetch error: ", error);
-			});
-	}
+                    errorMsg(error.password_confirm[0]);
+                else if (error.username)
+                    errorMsg(error.username[0]);
+                return null;
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data !== null) {
+                console.log(data);
+                console.log("token received : ", data.crsfToken);
+                updateCSRFToken(data.crsfToken);
+                route("/signin/");
+            }
+        })
+            .catch((error) => {
+                console.error("Fetch error: ", error);
+            });
+    }
+
 
 
 	////////////////////// LOGIN ////////////////////////////
@@ -158,157 +170,67 @@ document.addEventListener("DOMContentLoaded", function () {
 	//let loginForm = document.getElementById("b-signin-ok");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
 
-	// loginButton = async function (event) {
-	// 	event.preventDefault();
-	// 	if (userIsConnected == true) {
-	// 		errorMsg("cannot login while already logged in");
-	// 		return null;
-	// 	}
-
-	// 	let username = document.getElementById("username1").value;
-	// 	let password = document.getElementById("password1").value;
-
-	// 	console.log("Sending signin request...");
-	// 	console.log("username : ", username);
-
-	// 	return await fetch(loginUrl, {
-	// 		method: "POST",
-	// 		headers: {
-	// 			"Content-Type": "application/json",
-	// 			"X-CSRFToken": token,
-	// 		},
-	// 		body: JSON.stringify({ username, password }),
-	// 		credentials: "include",
-	// 	})
-	// 	.then(async (response) => {
-	// 		if (!response.ok) {
-	// 			if (response.status == 403)
-	// 				errorMsg("error logging in");
-	// 			else {
-	// 				const error = await response.json();
-	// 				errorMsg(error.message);
-	// 			}
-	// 			return null;
-	// 		}
-	// 		return response.json();
-	// 	})
-	// 	.then(async (data) => {
-	// 		if (data !== null) {
-	// 			console.log("Cookies after signin response:", document.cookie);
-	// 			console.log("Login successful. Server response data:", data);
-	// 			let user = data.data;
-	// 			console.log("data : ", user);
-	// 			console.log("token received : ", data.crsfToken);
-	// 			updateProfile(user, true, data.crsfToken);
-	// 			route('/');
-	// 			// await addGame(); // à supprimer
-	// 			return user;
-	// 		}
-	// 	})
-	// 		.catch((error) => {
-	// 			console.error("Fetch error:", error);
-	// 		});
-	// }
-
 	loginButton = async function (event) {
 		event.preventDefault();
 		if (userIsConnected == true) {
 			errorMsg("cannot login while already logged in");
 			return null;
 		}
-	
+
 		let username = document.getElementById("username1").value;
 		let password = document.getElementById("password1").value;
-	
+
 		console.log("Sending signin request...");
 		console.log("username : ", username);
-	
-		try {
-			const response = await fetch(loginUrl, {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-					"X-CSRFToken": token,
-				},
-				body: JSON.stringify({ username, password }),
-				credentials: "include",
-			});
-	
-			const data = await response.json();
-	
+
+		return await fetch(loginUrl, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"X-CSRFToken": token,
+			},
+			body: JSON.stringify({ username, password }),
+			credentials: "include",
+		})
+		.then(async (response) => {
 			if (!response.ok) {
 				if (response.status == 403)
 					errorMsg("error logging in");
 				else {
-					errorMsg(data.message);
+					const error = await response.json();
+					console.log(error);
+					let message = error.message.split(": ");
+					if (message.length > 1)
+						errorMsg(message[1]);
+					else
+						errorMsg(error.message);
+					// errorMsg(error.message[1]);
 				}
 				return null;
 			}
-	
-			if (data.require_2fa) {
-				// Afficher le formulaire OTP
-				showOTPForm(data.user_id);
-			} else {
-				// Connexion réussie sans 2FA
-				handleSuccessfulLogin(data);
+			return response.json();
+		})
+		.then(async (data) => {
+			if (data !== null) {
+				console.log("Cookies after signin response:", document.cookie);
+				console.log("Login successful. Server response data:", data);
+				let user = data.data;
+				console.log("data : ", user);
+				console.log("token received : ", data.crsfToken);
+				updateProfile(user, true, data.crsfToken);
+				openWebSocket(user.id);
+				let language = await fetchLanguage();
+				localStorage.setItem('preferredLanguage', language);
+				loadLanguage(language);
+				document.getElementById('language-select-menu').value = language
+				route('/');
+				// await addGame(); // à supprimer
+				return user;
 			}
-		} catch (error) {
-			console.error("Fetch error:", error);
-		}
-	}
-	
-	function showOTPForm(userId) {
-		// Créer et afficher le formulaire OTP
-		const otpForm = document.createElement('form');
-		otpForm.innerHTML = `
-			<input type="hidden" id="user_id" value="${userId}">
-			<input type="text" id="otp" placeholder="Enter OTP" required>
-			<button type="submit">Verify OTP</button>
-		`;
-		otpForm.addEventListener('submit', verifyOTP);
-		
-		// Remplacer le formulaire de connexion par le formulaire OTP
-		const loginForm = document.getElementById('login-form'); // Assurez-vous que votre formulaire de connexion a cet ID
-		loginForm.parentNode.replaceChild(otpForm, loginForm);
-	}
-	
-	async function verifyOTP(event) {
-		event.preventDefault();
-		const userId = document.getElementById('user_id').value;
-		const otp = document.getElementById('otp').value;
-	
-		try {
-			const response = await fetch('/auth/api/verify-otp-login/', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': token,
-				},
-				body: JSON.stringify({ user_id: userId, otp }),
-				credentials: 'include',
+		})
+			.catch((error) => {
+				console.error("Fetch error:", error);
 			});
-	
-			const data = await response.json();
-	
-			if (!response.ok) {
-				errorMsg(data.message || 'Error verifying OTP');
-				return;
-			}
-	
-			handleSuccessfulLogin(data);
-		} catch (error) {
-			console.error('Error:', error);
-			errorMsg('An error occurred while verifying OTP');
-		}
-	}
-	
-	function handleSuccessfulLogin(data) {
-		console.log("Login successful. Server response data:", data);
-		let user = data.user || data.data;
-		console.log("user data : ", user);
-		console.log("token received : ", data.csrfToken);
-		updateProfile(user, true, data.csrfToken);
-		route('/');
 	}
 
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////
@@ -387,8 +309,14 @@ document.addEventListener("DOMContentLoaded", function () {
 			.catch(error => {
 				const error_msg = document.createElement("h3");
 				error_msg.classList.add("ulist-error");
+				error_msg.id = ("users-not-allowed");
 				error_msg.textContent = "login to access";
 				document.getElementById("ulist-users").appendChild(error_msg);
+				var savedLanguage = localStorage.getItem('preferredLanguage');
+				if (!savedLanguage)
+					savedLanguage = 'en';
+				document.getElementById('language-select-menu').value = savedLanguage;
+				loadLanguage(savedLanguage);
 			});
 		//.catch((error) => console.error("Error fetching user data:", error));
 	}
@@ -439,4 +367,4 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 });
-export { usersClick, signupButton, loginButton}
+export { usersClick, signupButton, loginButton, getUserId }

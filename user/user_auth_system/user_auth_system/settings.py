@@ -28,6 +28,7 @@ DB_HOST = env('DB_TRANSCENDENCE_HOST')
 DB_PORT = env.int('DB_TRANSCENDENCE_PORT')
 IP_ADDRESS= env('IP_ADDRESS')
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -36,7 +37,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('JWT_SECRET_KEY')
+SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -52,12 +53,12 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+	'daphne',
     'django.contrib.staticfiles',
 	'rest_framework',
+	'channels',
 	'corsheaders',
     f'{AUTH_APP_NAME}.apps.AuthUserConfig',
-    'rest_framework_simplejwt.token_blacklist',
-    'pyotp'
 ]
 
 MIDDLEWARE = [
@@ -89,6 +90,7 @@ TEMPLATES = [
     },
 ]
 
+ASGI_APPLICATION = f'{USER_SERVICE_NAME}.asgi.application'
 WSGI_APPLICATION = f'{USER_SERVICE_NAME}.wsgi.application'
 
 
@@ -104,12 +106,12 @@ WSGI_APPLICATION = f'{USER_SERVICE_NAME}.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': DB_PORT,
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "db_transcendence",
+        "USER": "trans_master",
+        "PASSWORD": "1234",
+        "HOST": "db_transcendence",  # set in docker-compose.yml
+        "PORT": 5434,  # default postgres port
     }
 }
 
@@ -166,7 +168,6 @@ AUTH_USER_MODEL = f'{AUTH_APP_NAME}.CustomUser'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
@@ -192,28 +193,48 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://' + IP_ADDRESS]
 
-# CHANNELS_ALLOWED_ORIGINS = ["*"]
-
 # define the path to the media folder
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
-# LOGIN_URL = '/auth/login/'
+# Channels settings
 
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=5),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': SECRET_KEY,
-    'VERIFYING_KEY': None,
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'TOKEN_TYPE_CLAIM': 'token_type',
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [('redis', 6379)],
+        },
+    },
 }
+
+# password settings
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'OPTIONS': {
+            'user_attributes': ('username', 'email', 'first_name', 'last_name'),
+            'max_similarity': 0.7,
+        }
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 12,
+        }
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+	{
+		'NAME': 'user_management.validators.SpecialCharacterValidator',
+    },
+	{
+        'NAME': 'user_management.validators.UppercaseValidator',
+    },
+]

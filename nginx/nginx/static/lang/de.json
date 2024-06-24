@@ -22,10 +22,10 @@
 	},
 	"main": {
 		"title": "PONG",
-		"pvp_mode": "Spieler gegen Spieler",
+		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
-		"tourney_mode": "Turnier",
-		"online_mode": "Online"
+		"tourney_mode": "TURNIER",
+		"online_mode": "ONLINE"
 	},
 	"online": {
 		"title": "EINEM SPIEL BEITRETEN",
@@ -65,14 +65,15 @@
 	"users_lists": {
 		"ulist_title": "BENUTZERLISTE",
 		"flist_title": "FREUNDESLISTE",
-		"requests_title": "FREUNDSCHAFTSANFRAGEN"
+		"requests_title": "FREUNDSCHAFTSANFRAGEN",
+		"not_allowed": "Anmeldung für den Zugang"
 	},
 	"verify_otp": {
 		"enter_otp": "OTP eingeben",
 		"verify_otp": "OTP verifizieren"
 	},
 	"index": {
-		"tabs_title": "TABS",
+		"tabs_title": "MENÜ",
 		"home_button": "STARTSEITE",
 		"users_button": "BENUTZER",
 		"settings_button": "EINSTELLUNGEN",

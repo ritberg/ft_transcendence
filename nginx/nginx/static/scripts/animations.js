@@ -4,6 +4,7 @@ import { GameMode } from './main.js';
 import { sleep } from './utils.js';
 import { modifyDelta, stars } from './stars.js';
 import { closeChatSocket } from './chat.js';
+import { loadLanguage } from './lang.js';
 
 document.getElementById("tabs-icon").addEventListener("hover", function() {
 	document.getElementById("tabs-list").classList.toggle("active");
@@ -48,10 +49,20 @@ document.addEventListener('DOMContentLoaded', () => {
         if (event.target && event.target.id === "s-players") {
             document.getElementById("t-players").style.textShadow = `none`;
             document.getElementById("t-players").textContent = `PLAYERS`;
+            var savedLanguage = localStorage.getItem('preferredLanguage');
+            if (!savedLanguage)
+                savedLanguage = 'en';
+            document.getElementById('language-select').value = savedLanguage;
+            loadLanguage(savedLanguage);
         }
         if (event.target && event.target.id === "s-points") {
             document.getElementById("t-points").style.textShadow = `none`;
             document.getElementById("t-points").textContent = `POINTS`;
+            var savedLanguage = localStorage.getItem('preferredLanguage');
+            if (!savedLanguage)
+                savedLanguage = 'en';
+            document.getElementById('language-select').value = savedLanguage;
+            loadLanguage(savedLanguage);
         }
     });
 

@@ -53,7 +53,7 @@ export class bot {
         score: 0,
     }
 
-    stop = true;
+    stop = false;
 
     constructor() {
         modifyDelta(1.5);
@@ -69,45 +69,45 @@ export class bot {
         this.computer.width = this.player_width;
         this.computer.height = this.player_height;
         this.computer.velocityY = this.playerVelocity;
-        this.computer.score = 0;
-        this.computer.prediction = -1;
+        // this.computer.score = 0;
         this.player1.xPos = 20;
         this.player1.yPos = this.board_height / 2 - this.player_height / 2;
         this.player1.width = this.player_width;
         this.player1.height = this.player_height;
         this.player1.velocityY = this.playerVelocity;
-        this.player1.score = 0;
-        this.player1.prediction = -1;
+        // this.player1.score = 0;
         this.ball.width = this.ball_width;
         this.ball.height = this.ball_height;
         this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
         this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
         this.ball.velocityY = 0;
         this.ball.velocityX = 0;
-        this.ball.velocityXTmp = 0;
-        this.ball.velocityYTmp = 0;
     }
 
     gameLoop_bot() {
         game.ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
         game.ws.onopen = (event) => {
-            game.ws.send(JSON.stringify({
-                "player" : this.player1.yPos,
-                "computer" : this.computer.yPos,
-                "ballX" : this.ball.xPos,
-                "ballY" : this.ball.yPos
-            }));
+            if (game.ws !== null) {
+                game.ws.send(JSON.stringify({
+                    "player" : this.player1.yPos,
+                    "computer" : this.computer.yPos,
+                    "ballX" : this.ball.xPos,
+                    "ballY" : this.ball.yPos
+                }));
+            }
         };
         game.ws.addEventListener('message', (event) => {
-            let messageData = JSON.parse(event.data);
-            this.move = messageData.predict;
-            console.log(this.move);
-            game.ws.send(JSON.stringify({
-                "player" : this.player1.yPos,
-                "computer" : this.computer.yPos,
-                "ballX" : this.ball.xPos,
-                "ballY" : this.ball.yPos
-            }));
+            if (game.ws !== null) {
+                let messageData = JSON.parse(event.data);
+                this.move = messageData.predict;
+                console.log(this.move);
+                game.ws.send(JSON.stringify({
+                    "player" : this.player1.yPos,
+                    "computer" : this.computer.yPos,
+                    "ballX" : this.ball.xPos,
+                    "ballY" : this.ball.yPos
+                }));
+            }
         });
         this.canvas.width = this.board_width;
         this.canvas.height = this.board_height;
@@ -133,14 +133,26 @@ export class bot {
     gameLoop() {
         game.animation_id = window.requestAnimationFrame(this.gameLoop);
 
-        //move players
-        this.move_players();
+        if (this.stop == false) {
+			//move players
+			this.move_players();
 
-        //this.ball
-        this.changeBallVelocity();
+			//this.ball
+			this.changeBallVelocity();
 
-        //draw
-        this.draw_board();
+			//draw
+			this.draw_board();
+		}
+		else if (this.player1.score == 5) {
+			this.context.textAlign = "left";
+			this.context.font = "100px serif";
+			this.context.fillText("Player 2 won !", 250, 300);
+		}
+		else if (this.computer.score == 5) {
+			this.context.textAlign = "left";
+			this.context.font = "100px serif";
+			this.context.fillText("Computer won !", 200, 300);
+		}
     }
 
     fill_middle_lines() {
@@ -223,20 +235,22 @@ export class bot {
             else
                 this.player1.score++;
 
-            // if (this.player1.score == 5) {
-            //     stop_playing();
-            //     this.context.font = "100px serif";
-            //     this.context.fillText("Player 1 won !", 325, 400);
-            //     this.stop = true;
-            //     return;
-            // }
-            // if (this.computer.score == 5) {
-            //     stop_playing();
-            //     this.context.font = "100px serif";
-            //     this.context.fillText("Player 2 won !", 330, 400);
-            //     this.stop = true;
-            //     return;
-            // }
+            if (this.player1.score == 5) {
+                this.reset_board();
+                game.ws.close();
+                game.ws = null;
+			    this.stop = true;
+				setTimeout(() => { route("/"); }, 5000);
+			    return;
+            }
+            if (this.computer.score == 5) {
+                this.reset_board();
+			    this.stop = true;
+                game.ws.close();
+                game.ws = null;
+				setTimeout(() => { route("/"); }, 5000);
+			    return;
+            }
             this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
             this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
             let ran = Math.floor(Math.random() * 2);
