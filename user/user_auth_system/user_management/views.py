@@ -8,6 +8,8 @@ from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404
 from .models import FriendRequest
 from rest_framework.exceptions import NotFound
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
 	TokenRefreshView,
@@ -42,59 +44,36 @@ class IndexView(APIView):
 		return render(request, 'index.html')
 
 
-def is_valid_password(password):
-	if len(password) < 6:
-		return False
-	if not re.search(r'\d', password):
-		return False
-	if not re.search(r'[A-Z]', password):
-		return False
-	return True
-
 class RegisterUserView(APIView):
-	permission_classes = [AllowAny]
+    permission_classes = [AllowAny]
 
-	def post(self, request, *args, **kwargs):
-		email = request.data.get('email')
-		username= request.data.get('username')
-		password = request.data.get('password')
-		password_confirm= request.data.get('password_confirm')
+    def post(self, request, *args, **kwargs):
+        email = request.data.get('email')
+        username= request.data.get('username')
+        
+        if User.objects.filter(email=email).exists():
+            return Response(
+                {'email': 'Email already exists'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 		
-		if not is_valid_password(password):
-			return Response(
-				{'password': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
-				status=status.HTTP_400_BAD_REQUEST
-			)
-		
-		if password != password_confirm:
-			return Response(
-				{'password': 'Passwords do not match'},
-				status=status.HTTP_400_BAD_REQUEST
-			)
-		
-		if User.objects.filter(email=email).exists():
-			return Response(
-				{'email': 'Email already exists'},
-				status=status.HTTP_400_BAD_REQUEST
-			)
-		
-		prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
-		if username in prohibited_usernames:
-			return Response(
-				{'username': 'Username not allowed'},
-				status=status.HTTP_400_BAD_REQUEST
-			)
-		serializer = UserSerializer(data=request.data)
-		if serializer.is_valid():
-			serializer.save()
-			return Response(
-				{
-					'data': serializer.data,
-					'message': 'User registered successfully'
-				},
-				status=status.HTTP_201_CREATED
-			)
-		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
+        if username in prohibited_usernames:
+            return Response(
+                {'username': 'Username not allowed'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {
+                    'data': serializer.data,
+                    'message': 'User registered successfully'
+                },
+                status=status.HTTP_201_CREATED
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginUserView(APIView):
@@ -143,56 +122,47 @@ class LogoutUserView(APIView):
 			)
 
 class UpdateUserView(APIView):
-	permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-	def put(self, request, *args, **kwargs):
-		try:
-			username = request.data.get('username')
-			password = request.data.get('password')
+    def put(self, request, *args, **kwargs):
+        try:
+            username = request.data.get('username')
 
-			prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
-			if username in prohibited_usernames:
-				return Response(
-					{'message': 'Username not allowed'},
-					status=status.HTTP_400_BAD_REQUEST
-				)
+            prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
+            if username in prohibited_usernames:
+                return Response(
+                    {'message': 'Username not allowed'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+		
+            serializer = UserSerializer(request.user, data=request.data, partial=True)
+            if serializer.is_valid():
+                user = serializer.save()
+                send_status_update(user)
+                csrf_token = get_token(request)
+                print("csrf_token : ", csrf_token)
+                return Response(
+                    {
+                        'data': serializer.data,
+                        'csrfToken': csrf_token,
+                        'message': 'User updated successfully'
+                    },
+                    status=status.HTTP_200_OK
+                )
+            raise ValueError(serializer.errors)
+        except Exception as e:
+            error_message = f"{type(e).__name__}: {str(e)}"
+            start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
+            end_index = error_message.find("', code='invalid")
+            extracted_string = error_message[start_index:end_index]
 
-			if password is not None:
-				if not is_valid_password(password):
-					return Response(
-						{'message': 'Password must contain at least 6 characters, 1 number and 1 capital letter'},
-						status=status.HTTP_400_BAD_REQUEST
-					)
-
-			serializer = UserSerializer(request.user, data=request.data, partial=True)
-			if serializer.is_valid():
-				serializer.save()
-
-				csrf_token = get_token(request)
-				print("csrf_token : ", csrf_token)
-				return Response(
-					{
-						'data': serializer.data,
-						'csrfToken': csrf_token,
-						'message': 'User updated successfully'
-					},
-					status=status.HTTP_200_OK
-				)
-			raise ValueError(serializer.errors)
-		except Exception as e:
-			error_message = f"{type(e).__name__}: {str(e)}"
-			start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
-			end_index = error_message.find("', code='invalid")
-			extracted_string = error_message[start_index:end_index]
-
-			return Response(
-				{'message': extracted_string},
-				status=status.HTTP_400_BAD_REQUEST
-			)
+            return Response(
+                {'message': extracted_string},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 # friend request views
-
 
 class SendFriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]
@@ -291,8 +261,8 @@ class DeleteFriendView(APIView):
 			{'message': 'User is not in your friends list'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-
-
+  
+  
 class BlockUserView(APIView):
 	permission_classes = [IsAuthenticated]
 	
@@ -375,3 +345,47 @@ class GetUserPicture(APIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
 	serializer_class = MyTokenObtainPairSerializer
+
+class GetUserLanguage(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def get(self, request):
+		username = request.user.username
+		try:
+			if not username:
+				raise NotFound('A username query parameter is required.')
+			user = User.objects.get(username=username)
+			return Response({'language': user.language}, status=status.HTTP_200_OK)
+		except Exception as e:
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+	
+class ChangeUserLanguage(APIView):
+	permission_classes = [IsAuthenticated]
+
+	def post(self, request, *args, **kwargs):
+		print("request data:", request.data)
+		language = request.data.get('language')
+		username = request.user.username
+		try:
+			if not username:
+				raise NotFound('A username query parameter is required.')
+			if not language:
+				raise NotFound('Please select a language')
+			user = User.objects.get(username=username)
+			user.language = language
+			user.save()
+			return Response({'message': "The language has been successfully changed."}, status=status.HTTP_200_OK)
+		except Exception as e:
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+def send_status_update(user):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        "users",
+        {
+            "type": "status_update",
+            "user_id": user.id,
+            "username": user.username,
+            "status": user.status,
+        }
+    )

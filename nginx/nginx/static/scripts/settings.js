@@ -30,20 +30,19 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
         // Load the saved language preference on settings page load
-        const savedLanguage = localStorage.getItem('preferredLanguage');
-        // var savedLanguage = 'en';
-        // if (userIsConnected == true)
-        //     savedLanguage = await fetchLanguage();
+        var savedLanguage = 'en';
+        if (userIsConnected == true)
+            savedLanguage = await fetchLanguage();
         console.log("language in db:", savedLanguage);
         if (savedLanguage) {
-            document.getElementById('language-select').value = savedLanguage;
+            document.getElementById('language-change').value = savedLanguage;
         } else {
             console.log('No saved language preference found');
         }
     }
 
     uploadPicture = async function () {
-        let file = document.getElementById("input-avatar").files[0];
+        let file = document.getElementById("avatar-input").files[0];
 
         if (file == null || file.type == "") {
             errorMsg("please select a file");
@@ -157,6 +156,14 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("password", passwordInput.value);
             hasChanges = true;
             pwdChange = true;
+        }
+
+        let PictureInput = document.getElementById("avatar-input");
+        if (PictureInput.value) {
+            console.log("fdsafdsadspic");
+            uploadPicture();
+            if (hasChanges == false)
+                return;
         }
 
         if (hasChanges) {

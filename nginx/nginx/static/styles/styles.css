@@ -1401,3 +1401,10 @@ body {
 	cursor: pointer;
 	z-index: 1;
 }
+#user-avatar {
+	cursor: pointer;
+}
+
+.hide-input {
+	display: none;
+}

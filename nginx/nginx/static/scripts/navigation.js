@@ -1,11 +1,11 @@
 import { GameMode } from './main.js';
 import { route } from './router.js';
-import { sleep } from './utils.js';
+import { sleep, errorMsg } from './utils.js';
 import { signupButton, loginButton, userIsConnected, username_global } from './users.js';
-import { updateUser, uploadPicture, logoutFunc } from './settings.js';
+import { updateUser, logoutFunc } from './settings.js';
 import { displayProfile} from './stats.js';
 import { tournamentSettings } from './animations.js';
-import { loadLanguage } from './lang.js';
+import { loadLanguage, changeLanguage } from './lang.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	/////////// CONTENT //////////////
@@ -76,11 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
 			document.getElementById("content").classList.remove("hidden");
 			document.getElementById("content").classList.add("shown");
 		}
-		else if (event.target && event.target.id === "upload-avatar") {
-			uploadPicture();
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
-		}
+		// else if (event.target && event.target.id === "upload-avatar") {
+		// 	uploadPicture();
+		// 	document.getElementById("content").classList.remove("hidden");
+		// 	document.getElementById("content").classList.add("shown");
+		// }
 		else if (event.target && event.target.id === "update-profile") {
 			updateUser();
 			document.getElementById("content").classList.remove("hidden");
@@ -98,22 +98,52 @@ document.addEventListener('DOMContentLoaded', () => {
 			document.getElementById("content").classList.remove("hidden");
 			document.getElementById("content").classList.add("shown");
 		}
-		else if (event.target && event.target.id === "change")
-		{
-			const selectedLang = event.target.value;
-			localStorage.setItem('selectedLang', selectedLang);
-			loadLanguage(selectedLang);
-		}
+		// else if (event.target && event.target.id === "change")
+		// {
+		// 	const selectedLang = event.target.value;
+		// 	localStorage.setItem('selectedLang', selectedLang);
+		// 	loadLanguage(selectedLang);
+		// }
 		// document.getElementById("content").classList.remove("hidden");
 		// document.getElementById("content").classList.add("shown");
 		//document.getElementById("content").style.opacity = "1";
 	});
 
+	contentContainer.addEventListener("change", async function (event) {
+		event.preventDefault();
+		if (event.target && event.target.id === "language-change") {
+			const selectedLanguage = event.target.value;
+			let response = await changeLanguage(selectedLanguage);
+			if (response == null)
+				return;
+			document.getElementById('language-select').value = selectedLanguage;
+			localStorage.setItem('preferredLanguage', selectedLanguage);
+			loadLanguage(selectedLanguage);
+		}
+		if (event.target && event.target.id === "avatar-input") {
+			let file = document.getElementById("avatar-input").files[0];
+			if (file == null || file.type == "") {
+				errorMsg("please select a file");
+				return;
+			}
+			const reader = new FileReader();
+			reader.onload = function(e) {
+				document.getElementById("user-avatar").src = e.target.result;
+			};
+			reader.readAsDataURL(file);
+		}
+	});
+
+	// contentContainer.addEventListener("submit", async function (event) {
+	// 	if (event.target && event.target.id === "avatar-input") {
+	// 		console.log("hi");
+	// 	}
+	// });
+
 	document.getElementById('language-select').addEventListener('change', function () {
 		const selectedLanguage = this.value;
 		localStorage.setItem('preferredLanguage', selectedLanguage);
 		console.log('Language preference saved:', selectedLanguage);
-		// await changeLanguage(selectedLanguage);
 		loadLanguage(selectedLanguage);
 	});
 

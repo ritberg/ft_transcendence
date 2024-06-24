@@ -5,7 +5,7 @@ import { blockUser, unblockUser, fetchBlockedUsers } from './block.js';
 import { fetchFriends, fetchFriendRequests } from './friends.js';
 import { handleChatLinkClick } from './chat.js';
 import { addFriend } from './friends.js';
-import { loadLanguage } from './lang.js';
+import { loadLanguage, fetchLanguage } from './lang.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
@@ -37,7 +37,7 @@ export const getUserId = async (username) => {
 	return data.id;
 };
 
-export const updateProfile = (user, isConnected, token) => {
+export const updateProfile = async (user, isConnected, token) => {
 	console.log("updateProfile called with =", user, isConnected, token);
 
 	if (user !== null) {
@@ -46,7 +46,6 @@ export const updateProfile = (user, isConnected, token) => {
 		localStorage.setItem("user", JSON.stringify(user));
 		document.getElementById("user-name").textContent = user.username;
 		document.getElementById("profile-pic").src = user.profile_picture;
-		// document.getElementById("user-avatar").src
 	}
 	else {
 		console.log("user is null")
@@ -111,6 +110,11 @@ document.addEventListener("DOMContentLoaded", function () {
 		let password = document.getElementById("password").value;
         let password_confirm = document.getElementById("password_confirm").value;
 
+		if (password !== password_confirm) {
+			errorMsg("Passwords don't match");
+			return;
+		}
+
 		console.log({ username, email, password, password_confirm });
 
 		await fetch(signupUrl, {
@@ -132,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				if (error.email)
 					errorMsg(error.email);
 				else if (error.password)
-					errorMsg(error.password);
+					errorMsg(error.password[0]);
                 else if (error.password_confirm)
 					errorMsg(error.password_confirm);
 				else if (error.username)
@@ -202,6 +206,10 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
 				updateProfile(user, true, data.crsfToken);
+				let language = await fetchLanguage();
+				localStorage.setItem('preferredLanguage', language);
+				loadLanguage(language);
+				document.getElementById('language-select').value = language
 				route('/');
 				// await addGame(); // à supprimer
 				return user;

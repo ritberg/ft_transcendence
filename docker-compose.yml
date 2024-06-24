@@ -47,6 +47,7 @@ services:
     init: true
     depends_on:
       - user
+      - db_transcendence
     restart: on-failure
 
   chat:
@@ -77,6 +78,7 @@ services:
     container_name: online
     depends_on:
       - db_transcendence
+      - user
     build:
       context: ./online/docker
       dockerfile: Dockerfile

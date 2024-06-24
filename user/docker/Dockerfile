@@ -14,18 +14,17 @@ ARG DJANGO_SUPERUSER_PASSWORD
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-RUN apt-get update && apt-get install -y netcat-openbsd
+RUN apt-get clean \
+    && apt-get update \
+    && apt-get install -y netcat-openbsd \
+    && mkdir -p /home/transcendance
 
-RUN mkdir -p /home/transcendance
 WORKDIR /home/transcendance
 
 # installation of dependencies
 COPY ./conf/requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt \
     && mkdir depedencies && mv requirements.txt depedencies
-
-# installation of postgresql-client
-RUN apt-get update && apt-get install -y postgresql-client
 
 RUN mkdir -p logs
 
@@ -35,10 +34,6 @@ RUN chmod +x /home/transcendance/init.sh
 
 # set the final working directory
 WORKDIR /home/transcendance/${USER_SERVICE_NAME}
-
-# update migrations
-# RUN python3 manage.py makemigrations
-# RUN python3 manage.py migrate
 
 # Command for running the application
 CMD ["/bin/bash", "/home/transcendance/init.sh"]

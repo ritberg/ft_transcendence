@@ -232,7 +232,7 @@ export async function fetchLanguage() {
   })
 }
 
-let changeLanguageUrl = "https://" + window.location.host + "/auth/get-language/";
+let changeLanguageUrl = "https://" + window.location.host + "/auth/change-language/";
 
 export async function changeLanguage(language) {
   if (userIsConnected == false) {
@@ -240,7 +240,12 @@ export async function changeLanguage(language) {
     return;
   }
 
-  await fetch(changeLanguageUrl, {
+  if (!language) {
+    errorMsg("no language selected");
+    return;
+  }
+
+  return await fetch(changeLanguageUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -259,7 +264,9 @@ export async function changeLanguage(language) {
   })
   .then((data) => {
     if (data !== null) {
-      console.log(data);
+      return data;
     }
+    else
+      return null;
   })
 }
