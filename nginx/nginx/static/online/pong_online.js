@@ -163,7 +163,7 @@ export class online {
 
     async sendStats(game_stat) {
         let statsUrl = 'https://' + window.location.host + "/stat/game-history/";
-        const response = await fetch(statsUrl, {
+        await fetch(statsUrl, {
             method: "POST",
             headers: {
             "X-CSRFToken": token,
@@ -182,7 +182,6 @@ export class online {
         })
         .then(async (data) => {
             if (data !== null) {
-                const data = await response.json();
                 console.log(data);
             }
         })
@@ -193,17 +192,17 @@ export class online {
         this.draw_board();
         if (this.isalone == true)
         {
-					this.context.textAlign = "center";
+			this.context.textAlign = "center";
             this.context.font = "48px Arial";
             this.context.fillStyle = "white";
-						this.context.fillText("WAITING FOR A SECOND PLAYER", this.board_width / 2, this.board_height / 3);
+			this.context.fillText("WAITING FOR A SECOND PLAYER", this.board_width / 2, this.board_height / 3);
         }
         else if (this.disconnect == true)
         {
-					this.context.textAlign = "center";
+			this.context.textAlign = "center";
             this.context.font = "48px Arial";
             this.context.fillStyle = "white";
-						this.context.fillText("A PLAYER HAS DISCONNECTED", this.board_width / 2, this.board_height / 3);
+			this.context.fillText("A PLAYER HAS DISCONNECTED", this.board_width / 2, this.board_height / 3);
         }
         if (this.player1.score == 5)
         {
@@ -230,9 +229,9 @@ export class online {
                 setTimeout(() => { route("/"); }, 5000);
                 this.trigger = false;
             }
-					this.context.textAlign = "center";
-					this.context.font = "100px Arial";
-					this.context.fillText("PLAYER 1 WON!", this.board_width / 2, this.board_height / 3);
+            this.context.textAlign = "center";
+            this.context.font = "100px Arial";
+            this.context.fillText("PLAYER 1 WON!", this.board_width / 2, this.board_height / 3);
         }
         else if (this.player2.score == 5)
         {
@@ -259,9 +258,9 @@ export class online {
                 setTimeout(() => { route("/"); }, 5000);
                 this.trigger = false;
             }
-					this.context.textAlign = "center";
-					this.context.font = "100px Arial";
-					this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
+            this.context.textAlign = "center";
+            this.context.font = "100px Arial";
+            this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
         }
     }
 
