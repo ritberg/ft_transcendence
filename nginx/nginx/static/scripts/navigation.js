@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	const contentContainer = document.getElementById("content");
 	contentContainer.addEventListener("click", async function (event) {
 		let url = window.location.pathname;
-		if (url == "/" && event.target.id !== "content") {
+		if (url == "/" && event.target.tagName === "BUTTON") {
 			document.getElementById("content").style.pointerEvents = "none";
 			document.getElementById("content").classList.remove("shown");
 			document.getElementById("content").classList.add("hidden");
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// 	}
 	// });
 
-	document.getElementById('language-select').addEventListener('change', function () {
+	document.getElementById('language-select-menu').addEventListener('change', function () {
 		const selectedLanguage = this.value;
 		localStorage.setItem('preferredLanguage', selectedLanguage);
 		console.log('Language preference saved:', selectedLanguage);

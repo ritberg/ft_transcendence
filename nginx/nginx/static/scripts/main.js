@@ -100,4 +100,4 @@ stars(document.getElementById("main_canvas"));
 var savedLanguage = localStorage.getItem('preferredLanguage');
 if (!savedLanguage)
 	savedLanguage = 'en';
-document.getElementById('language-select').value = savedLanguage;
+document.getElementById('language-select-menu').value = savedLanguage;

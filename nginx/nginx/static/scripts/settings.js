@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
             savedLanguage = await fetchLanguage();
         console.log("language in db:", savedLanguage);
         if (savedLanguage) {
-            document.getElementById('language-change').value = savedLanguage;
+            document.getElementById('language-select-settings').value = savedLanguage;
         } else {
             console.log('No saved language preference found');
         }

@@ -50,8 +50,8 @@
 		"new_username": "Enter new username",
 		"new_email": "Enter new email",
 		"new_password": "Enter new password",
-		"update_profile": "Update profile",
-		"enable_2fa": "Enable 2FA",
+		"update_profile": "SAVE",
+		"enable_2fa": "ENABLE 2FA",
 		"choose_language": "Choose your language:"
 	},
 	"game": {

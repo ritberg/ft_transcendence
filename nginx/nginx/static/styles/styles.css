@@ -1221,7 +1221,6 @@ body {
 	text-shadow: 0 0 10px white;
 }
 
-
 /***** Rita ****/
 
 .settings-box .avatar_pic {
@@ -1233,7 +1232,6 @@ body {
 	color: white;
 	position: absolute;
 	width: 300px;
-	height: 500px;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
@@ -1243,8 +1241,17 @@ body {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	padding: 20px;
 }
-
+#settings-box #main_info {
+	border-left: 2px solid white;
+	border-right: 2px solid white;
+	border-radius: 20px;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row;
+	align-items: center;
+}
 #user_info-box {
 	display: flex;
 	flex-direction: column;
@@ -1385,26 +1392,24 @@ body {
   height: 800px;
   display: none;
 }
-#language_tab {
-	position: absolute;
-	display: flex;
-	flex-direction: row;
-	justify-content: space-between;
-	align-items: center;
+#language-select-menu {
+	color: rgba(255, 255, 255, .8);
 	background: rgba(0, 0, 0, .8);
 	border: 2px solid rgba(255, 255, 255, .8);
-	border-radius: 10px;
-	top: 20px;
-	right: 200px;
-	height: 60px;
-	box-sizing: border-box;
+	border-radius: 5px;
+	padding: 5px;
+	position: absolute;
+	top: 90px;
+	right: 20px;
 	cursor: pointer;
 	z-index: 1;
 }
-#user-avatar {
+#language-select-settings {
+	color: rgba(255, 255, 255, .8);
+	border: none;
+	margin: 2px;
+	background: transparent;
+	position: relative;
 	cursor: pointer;
-}
-
-.hide-input {
-	display: none;
+	z-index: 1;
 }
