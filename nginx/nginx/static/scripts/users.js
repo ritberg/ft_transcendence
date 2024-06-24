@@ -6,36 +6,11 @@ import { fetchFriends, fetchFriendRequests } from './friends.js';
 import { handleChatLinkClick } from './chat.js';
 import { addFriend } from './friends.js';
 import { loadLanguage, fetchLanguage } from './lang.js';
+import { openWebSocket } from './userStatus.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
 export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected")) || false;
-
-
-export const getUserId = async (username) => {
-	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
-	const response = await fetch(getIdUrl,
-		{
-			method: "GET",
-			headers: {
-				"X-CSRFToken": token,
-				"Content-Type": "application/json",
-			},
-			credentials: "include",
-		}
-	);
-	const data = await response.json();
-	if (!response.ok) {
-		if (response.status == 403)
-			errorMsg("you must be logged in to access profiles");
-		else {
-			errorMsg("this user does not exist");
-		}
-		return null;
-	}
-	console.log("data : ", data);
-	return data.id;
-};
 
 export const updateProfile = async (user, isConnected, token) => {
 	console.log("updateProfile called with =", user, isConnected, token);
@@ -73,7 +48,7 @@ const updateCSRFToken = (newToken) => {
 	document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 };
 
-let usersClick, signupButton, loginButton;
+let usersClick, signupButton, loginButton, getUserId;
 document.addEventListener("DOMContentLoaded", function () {
 
 	let storedUser = localStorage.getItem("user");
@@ -93,6 +68,32 @@ document.addEventListener("DOMContentLoaded", function () {
 		console.error("CSRF token not found!");
 		return;
 	}
+
+	getUserId = async (username) => {
+		let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
+		const response = await fetch(getIdUrl,
+			{
+				method: "GET",
+				headers: {
+					"X-CSRFToken": token,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+			}
+		);
+		const data = await response.json();
+		if (!response.ok) {
+			if (response.status == 403)
+				errorMsg("you must be logged in to access profiles");
+			else {
+				errorMsg("this user does not exist");
+			}
+			return null;
+		}
+		console.log("data : ", data);
+		return data.id;
+	};
+	
 
 	////////////////////// SIGNUP ////////////////////////////
 
@@ -217,6 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
 				updateProfile(user, true, data.crsfToken);
+				openWebSocket(user.id);
 				let language = await fetchLanguage();
 				localStorage.setItem('preferredLanguage', language);
 				loadLanguage(language);
@@ -313,7 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				var savedLanguage = localStorage.getItem('preferredLanguage');
 				if (!savedLanguage)
 					savedLanguage = 'en';
-				document.getElementById('language-select').value = savedLanguage;
+				document.getElementById('language-select-menu').value = savedLanguage;
 				loadLanguage(savedLanguage);
 			});
 		//.catch((error) => console.error("Error fetching user data:", error));
@@ -365,4 +367,4 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 });
-export { usersClick, signupButton, loginButton}
+export { usersClick, signupButton, loginButton, getUserId }

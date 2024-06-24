@@ -2,6 +2,7 @@ import { errorMsg } from "./utils.js";
 import { updateProfile, token, userIsConnected } from "./users.js";
 import { route } from "./router.js";
 import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
+import { closeWebSocket } from "./userStatus.js";
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
@@ -127,6 +128,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 if (data !== null) {
                     console.log("data: ", data);
+                    closeWebSocket();
+                    document.getElementById('user-name').style.color = 'white';
                     document.getElementById("chat-box").innerHTML = '';
                     updateProfile(null, false, null);
                     route("/");
