@@ -218,8 +218,8 @@ export class tourney {
 		this.context.fillRect(this.player1.xPos, this.player1.yPos, this.player1.width, this.player1.height);
 		this.context.fillRect(this.player2.xPos, this.player2.yPos, this.player2.width, this.player2.height);
 		this.context.fillStyle = "black";
-		writeVerticalText(this.context, tourney_game.score[tourney_game.index][0], 22.5, this.player1.yPos + 100, "35px Arial", 0);
-		writeVerticalText(this.context, tourney_game.score[tourney_game.index + 1][0], 977.5, this.player2.yPos + 100, "35px Arial", 1);
+		writeVerticalText(this.context, tourney_game.score[tourney_game.index][0], 25, this.player1.yPos + 100, "30px Arial", 0);
+		writeVerticalText(this.context, tourney_game.score[tourney_game.index + 1][0], 975, this.player2.yPos + 100, "30px Arial", 1);
 		this.context.fillStyle = "white";
 
 		//this.ball

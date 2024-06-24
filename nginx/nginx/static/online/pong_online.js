@@ -43,7 +43,7 @@ export class online {
     }
 
     player2 = {
-        xPos: this.board_width - this.player_width - 10,
+        xPos: this.board_width - this.player_width - 20,
         yPos: this.board_height / 2 - this.player_height / 2,
         score: 0,
         velocity: 0,
@@ -143,23 +143,19 @@ export class online {
         //score
         this.context.font = "100px Arial";
         this.context.textAlign = "center";
+        this.context.fillStyle = "white";
         this.context.fillText(this.player1.score.toString(), this.board_width / 3, 100);
         this.context.fillText(this.player2.score.toString(), this.board_width - this.board_width / 3, 100);
-
-			this.context.fillStyle = "black";
-        let textWidth = this.context.measureText(this.p1).width;
-        this.context.fillText(this.p1, (this.board_width / 8) - (textWidth / 10), 50);
-			writeVerticalText(this.context, this.p1, 22.5, this.player1.yPos + 100, "35px Arial", 0);
-			writeVerticalText(this.context, this.p2, 977.5, this.player2.yPos + 100, "35px Arial", 1);
-
-        this.context.textAlign = "left";
-        this.context.fillStyle = "white";
 
         //players
         this.context.fillRect(this.player1.xPos, this.player1.yPos, this.player_width, this.player_height);
         this.context.fillRect(this.player2.xPos, this.player2.yPos, this.player_width, this.player_height);
+        this.context.fillStyle = "black";
+        writeVerticalText(this.context, this.p1, 25, this.player1.yPos + 100, "30px Arial", 0);
+        writeVerticalText(this.context, this.p2, 975, this.player2.yPos + 100, "30px Arial", 1);
 
         //ball
+        this.context.fillStyle = "white";
         this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
     }
 
