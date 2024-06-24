@@ -38,18 +38,18 @@
 		"stats": "STATISTICS",
 		"wins": "Wins: ",
 		"losses": "Losses: ",
-		"win_rate": "Win rate: ",
-		"goals_avg": "Average points: ",
-		"goals_scored": "Goals scored: ",
-		"goals_conceded": "Goals conceded: ",
-		"total_games": "Total games played: ",
-		"total_hours": "Total hours played: "
+		"win_rate": "Win Rate: ",
+		"goals_avg": "Score Avg: ",
+		"goals_scored": "Goals Scored: ",
+		"goals_conceded": "Goals Conceded: ",
+		"total_games": "Games Played: ",
+		"total_hours": "Hours Played: "
 	},
 	"settings": {
-		"logout": "Logout",
-		"new_username": "Enter new username",
-		"new_email": "Enter new email",
-		"new_password": "Enter new password",
+		"logout": "LOGOUT",
+		"new_username": "USERNAME",
+		"new_email": "EMAIL",
+		"new_password": "PASSWORD",
 		"update_profile": "SAVE",
 		"enable_2fa": "ENABLE 2FA",
 		"choose_language": "Choose your language:"
@@ -62,8 +62,8 @@
 		"player_names_title": "PLAYER NAMES"
 	},
 	"users_lists": {
-		"ulist_title": "USERS LIST",
-		"flist_title": "FRIENDS LIST",
+		"ulist_title": "USERS",
+		"flist_title": "FRIENDS",
 		"requests_title": "FRIEND REQUESTS",
 		"not_allowed": "login to access"
 	},

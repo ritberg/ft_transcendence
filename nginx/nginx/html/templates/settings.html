@@ -1,20 +1,25 @@
-<div class="settings-box">
+<div id="settings-box">
 	<div id="settings-content">
 		<div id="main_info">
 			<input type="file" id="avatar-input" style="display: none;">
-			<label for="avatar-input" style="cursor: pointer;">
-				<img id="user-avatar" src="/media/profile_pics/default.jpg" alt="image upload" class="avatar_pic">
+			<label for="avatar-input">
+				<img id="user-avatar" src="/media/profile_pics/default.jpg" alt="image upload" class="avatar_pic" style="cursor: pointer;">
 			</label>
 			<h1 id="info-username"></h1>
 		</div>
-		<button id="user-logout">Logout</button>
-		<div class="profile-modify">
-			<input type="text" id="new-username" placeholder="Enter new username" />
-			<input type="text" id="new-email" placeholder="Enter new email" />
-			<input type="password" id="new-password" placeholder="Enter new password" />
-		</div>
-		<form id="enable-2fa-form">
-			<button type="button" id="enable-2fa">ENABLE 2FA</button>
+		<form>
+			<div class="input-div">
+				<input type="text" id="new-username" required="">
+				<label id="l-new-username">USERNAME</label>
+			</div>
+			<div class="input-div">
+				<input type="text" id="new-email" required="">
+				<label id="l-new-email">EMAIL</label>
+			</div>
+			<div class="input-div">
+				<input type="password" id="new-password" required="">
+				<label id="l-new-password">PASSWORD</label>
+			</div>
 		</form>
 		<select id="language-select-settings">
 			<option value="en">ENGLISH</option>
@@ -25,6 +30,10 @@
 			<option value="zh">中文</option>
 			<option value="la">LATIN</option>
 		</select>
+		<form id="enable-2fa-form">
+			<button type="button" id="enable-2fa">ENABLE 2FA</button>
+		</form>
 		<button id="update-profile">SAVE</button>
+		<button id="user-logout">LOGOUT</button>
 	</div>
 </div>

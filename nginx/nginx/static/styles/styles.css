@@ -557,7 +557,7 @@ body {
 	border-radius: 10px;
 	top: 60px;
 	left: -150px;
-	width: 200px;
+	/*width: 200px;*/
 	padding: 0;
 	z-index: 1;
 	transition: all ease-out .3s;
@@ -1223,25 +1223,23 @@ body {
 
 /***** Rita ****/
 
-.settings-box .avatar_pic {
-	margin: 10px 10px 10px 20px;
-	height: 50px;
-}
-.settings-box {
+#settings-box {
 	font-family: "Arial";
-	color: white;
 	position: absolute;
-	width: 300px;
 	left: 50%;
 	top: 50%;
 	transform: translate(-50%, -50%);
 	background: rgba(0, 0, 0, 0.8);
 	border: 2px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
+	padding: 20px;
+}
+#settings-box #settings-content {
+	color: white;
 	display: flex;
+	flex-wrap: wrap;
 	flex-direction: column;
 	align-items: center;
-	padding: 20px;
 }
 #settings-box #main_info {
 	border-left: 2px solid white;
@@ -1251,6 +1249,94 @@ body {
 	flex-wrap: wrap;
 	flex-direction: row;
 	align-items: center;
+}
+#settings-box .avatar_pic {
+	margin: 10px 10px 10px 20px;
+	height: 50px;
+}
+#settings-box h1 {
+	font-size: 35px;
+	margin: 10px 20px 10px 10px;
+}
+#settings-box select {
+	appearance: none;
+	color: rgba(255, 255, 255, .8);
+	border: none;
+	margin-top: 10px;
+	background: transparent;
+	position: relative;
+	text-align: center;
+	padding: 0;
+	cursor: pointer;
+}
+#settings-box select:hover {
+	text-shadow: 0 0 5px white;
+}
+#settings-box button {
+	font-size: 15px;
+	color: rgba(255, 255, 255, .8);
+	background: transparent;
+	border: none;
+	margin-top: 5px;
+	padding: 0;
+	cursor: pointer;
+}
+#settings-box #update-profile {
+	color: rgba(255, 255, 255, .8);
+	background: rgba(0, 0, 0, 0.8);
+	border: 2px solid rgba(255, 255, 255, .8);
+	border-radius: 5px;
+	padding: 5px 10px 5px 10px;
+	margin: 10px 0 5px 0;
+	cursor: pointer;
+}
+#settings-box #user-logout {
+	color: red;
+}
+#settings-box button:hover {
+	text-shadow: 0 0 5px white;
+}
+#settings-box #user-logout:hover {
+	text-shadow: 0 0 5px red;
+}
+#settings-box #update-profile:hover {
+	text-shadow: none;
+	box-shadow: 0 0 10px white;
+}
+#settings-box form {
+	width: 80%;
+	text-align: center;
+}
+#settings-box .input-div {
+	margin-top: 10px;
+	font-family: "Arial";
+	position: relative;
+}
+#settings-box .input-div input {
+	width: 100%;
+	padding: 10px 0 5px 0;
+	font-size: 16px;
+	color: rgba(255, 255, 255, 0.8);
+	border: none;
+	border-bottom: 1px solid #fff;
+	outline: none;
+	background: transparent;
+}
+#settings-box .input-div label {
+	position: absolute;
+	top:0;
+	left: 0;
+	padding: 10px 0;
+	font-size: 15px;
+	color: rgba(255, 255, 255, 0.8);
+	pointer-events: none;
+	transition: .5s;
+}
+#settings-box .input-div input:focus ~ label,
+#settings-box .input-div input:valid ~ label {
+	top: -15px;
+	text-shadow: white 0 0 8px;
+	font-size: 12px;
 }
 #user_info-box {
 	display: flex;
@@ -1264,7 +1350,6 @@ body {
 	border: 2px solid rgba(255, 255, 255, .8);
   border-radius: 10px;
   padding: 20px;
-  width: 600px; /* Augmenter la largeur pour accueillir les deux sections */
   color: white;
   box-sizing: border-box;
   z-index: 1000; /* S'assurer que l'élément est au-dessus des autres */
@@ -1393,6 +1478,8 @@ body {
   display: none;
 }
 #language-select-menu {
+	appearance: none;
+	text-align: center;
 	color: rgba(255, 255, 255, .8);
 	background: rgba(0, 0, 0, .8);
 	border: 2px solid rgba(255, 255, 255, .8);
@@ -1401,15 +1488,6 @@ body {
 	position: absolute;
 	top: 90px;
 	right: 20px;
-	cursor: pointer;
-	z-index: 1;
-}
-#language-select-settings {
-	color: rgba(255, 255, 255, .8);
-	border: none;
-	margin: 2px;
-	background: transparent;
-	position: relative;
 	cursor: pointer;
 	z-index: 1;
 }
