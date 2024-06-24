@@ -108,15 +108,15 @@ class GameLoop(AsyncWebsocketConsumer):
 
         for player in self.room_var["players"].values():
             if player["moveUp"]:
-                if player["yPos"] - self.playerVelocity > 0:
+                if player["yPos"] - self.playerVelocity > 20:
                     player["yPos"] -= self.playerVelocity
                 else:
-                    player["yPos"] = 0
+                    player["yPos"] = 20
             elif player["moveDown"]:
-                if player["yPos"] + self.playerVelocity + self.player_height < self.board_height:
+                if player["yPos"] + self.playerVelocity + self.player_height < self.board_height - 20:
                     player["yPos"] += self.playerVelocity
                 else:
-                    player["yPos"] = self.board_height - self.player_height
+                    player["yPos"] = self.board_height - self.player_height - 20
 
     #most of the game logic/calculations are here
     async def calculate_ball_changes(self):
@@ -138,9 +138,9 @@ class GameLoop(AsyncWebsocketConsumer):
             ball_velocityY *= -1
 
         #checks if the ball hit the right paddle
-        if (ball_xPos + ball_velocityX + self.ball_width >= self.board_width - 20 - self.paddle_width):
+        if (ball_xPos + self.ball_width >= self.board_width - 20 - self.paddle_width):
             if (ball_yPos + ball_velocityY + self.ball_height + 2 >= self.player2["yPos"] and ball_yPos + ball_velocityY - 2 <= self.player2["yPos"] + self.player_height and ball_velocityX > 0):
-                ball_velocityY = ((ball_yPos + self.ball_height / 2) - (self.player2["yPos"] + self.player_height / 2)) / 15
+                ball_velocityY = ((ball_yPos + self.ball_height / 2) - (self.player2["yPos"] + self.player_height / 2)) / 10
                 ball_velocityX *= -1
                 if ball_velocityX < 0:
                     ball_velocityX -= 0.5
@@ -152,9 +152,9 @@ class GameLoop(AsyncWebsocketConsumer):
                 
 
         #checks if the ball hit the left paddle
-        if (ball_xPos + ball_velocityX <= 20 + self.paddle_width):
+        if (ball_xPos <= 20 + self.paddle_width):
             if (ball_yPos + ball_velocityY + self.ball_height + 2 >= self.player1["yPos"] and ball_yPos + ball_velocityY - 2 <= self.player1["yPos"] + self.player_height and ball_velocityX < 0):
-                ball_velocityY = ((ball_yPos + self.ball_height / 2) - (self.player1["yPos"] + self.player_height / 2)) / 15
+                ball_velocityY = ((ball_yPos + self.ball_height / 2) - (self.player1["yPos"] + self.player_height / 2)) / 10
                 ball_velocityX *= -1
                 if (ball_velocityX < 0):
                     ball_velocityX -= 0.5

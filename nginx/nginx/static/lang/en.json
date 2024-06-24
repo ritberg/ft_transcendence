@@ -72,7 +72,8 @@
 		"verify_otp": "Verify OTP"
 	},
 	"index": {
-		"tabs_title": "TABS",
+
+		"tabs_title": "MENU",
 		"home_button": "HOME",
 		"users_button": "USERS",
 		"settings_button": "SETTINGS",

@@ -226,7 +226,7 @@ export class online {
                 }
                 game.ws.close();
                 game.ws = null;
-                setTimeout(() => { route("/"); }, 5000);
+                setTimeout(() => { route("/"); }, 2000);
                 this.trigger = false;
             }
             this.context.textAlign = "center";

@@ -53,6 +53,8 @@ export async function GameMode(n) {
 			return;
 		}
 
+		document.getElementById("online-box").classList.remove("shown");
+		document.getElementById("online-box").classList.add("hidden");
 		let player_id = await getUserId(username_global);
 		if (player_id == null) 
 			return;

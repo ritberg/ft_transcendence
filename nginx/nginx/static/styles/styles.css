@@ -235,18 +235,6 @@ body {
 	transform: translate(-50%, -50%);
 	transition: 1s;
 }
-/* #tourney_settings-box.shown { */
-/* 	animation: fade-in 1.5s forwards; */
-/* } */
-/* #tourney_settings-box.hidden { */
-/* 	animation: fade-down-tournoi 1s forwards; */
-/* } */
-/* @keyframes fade-down-tournoi { */
-/* 	to { */
-/* 		opacity: 0; */
-/* 		width: 500px; */
-/* 	} */
-/* } */
 #tourney_settings-box h1 {
 	font-family: "Arial";
 	font-size: 40px;
@@ -406,83 +394,6 @@ body {
 	text-shadow: white 0 0 8px;
 	font-size: 12px;
 }
-/*#profile-box_signin {*/
-/*	background-color: rgb(0, 0, 0, 0.85);*/
-/*	border: 4px solid rgba(255, 255, 255, 0.8);*/
-/*	border-radius: 10px;*/
-/*	display: none;*/
-/*	position: absolute;*/
-/*	top: 50%;*/
-/*	left: 50%;*/
-/*	width: 400px;*/
-/*	padding: 30px;*/
-/*	padding-bottom: 10px;*/
-/*	transform: translate(-50%, -50%);*/
-/*	box-sizing: border-box;*/
-/*}*/
-/*#profile-box_signin h1 {*/
-/*	font-family: "Arial";*/
-/*	margin: 0 0 20px;*/
-/*	padding: 0;*/
-/*	color: rgba(255, 255, 255, 0.8);*/
-/*	text-align: center;*/
-/*}*/
-/*#profile-box_signin .input-div {*/
-/*	font-family: "Arial";*/
-/*	position: relative;*/
-/*}*/
-/*#profile-box_signin .input-div input {*/
-/*	width: 100%;*/
-/*	padding: 10px 0;*/
-/*	font-size: 16px;*/
-/*	color: rgba(255, 255, 255, 0.8);*/
-/*	margin-bottom: 30px;*/
-/*	border: none;*/
-/*	border-bottom: 1px solid #fff;*/
-/*	outline: none;*/
-/*	background: transparent;*/
-/*}*/
-/*#profile-box_signin .input-div label {*/
-/*	position: absolute;*/
-/*	top:0;*/
-/*	left: 0;*/
-/*	padding: 10px 0;*/
-/*	font-size: 16px;*/
-/*	color: rgba(255, 255, 255, 0.8);*/
-/*	pointer-events: none;*/
-/*	transition: .5s;*/
-/*}*/
-/*#profile-box_signin button {*/
-/*	position: relative;*/
-/*	left: 50%;*/
-/*	transform: translate(-50%, -40%);*/
-/*	color: rgba(255, 255, 255, 0.8);*/
-/*	background: transparent;*/
-/*	border: 2px solid rgba(255, 255, 255, 0.8);*/
-/*	border-radius: 50px;*/
-/*	font-size: 40px;*/
-/*	padding: 5px 120px;*/
-/*	margin-top: 20px;*/
-/*	transition: .1s;*/
-/*}*/
-/*#profile-box_signin button:hover {*/
-/*	color: white;*/
-/*	box-shadow: white 0 0 10px;*/
-/*}*/
-/*#profile-box_signin .avatar_pic {*/
-/*	position: relative;*/
-/*	height: 100px;*/
-/*	width: 100px;*/
-/*	left: 50%;*/
-/*	transform: translateX(-50%);*/
-/*}*/
-/*#profile-box_signin .input-div input:focus ~ label,*/
-/*#profile-box_signin .input-div input:valid ~ label {*/
-/*	top: -20px;*/
-/*	left: 0;*/
-/*	text-shadow: white 0 0 8px;*/
-/*	font-size: 12px;*/
-/*}*/
 #tabs-icon {
 	display: flex;
 	justify-content: space-between;
@@ -557,8 +468,7 @@ body {
 	border-radius: 10px;
 	top: 60px;
 	left: -150px;
-	/*width: 200px;*/
-	padding: 0;
+	padding: 0 10px 0 10px;
 	z-index: 1;
 	transition: all ease-out .3s;
 }
@@ -571,13 +481,7 @@ body {
 	pointer-events: all;
 	left: 0px;
 }
-/*#tabs-list-detector:hover #tabs-list {*/
-/*	pointer-events: auto;*/
-/*	opacity: 1;*/
-/*	left: 0px;*/
-/*}*/
 #tabs-list button {
-	position: relative;
 	display: flex;
 	justify-content: space-between;
 	border: none;
@@ -585,21 +489,18 @@ body {
 	background: transparent;
 	color: white;
 	opacity: 1;
-	left: 50%;
-	transform: translateX(-50%);
 	font-size: 30px;
-	width: 90%;
+	width: 100%;
 	height: 45px;
 	padding: 5px 0px;
 	cursor: pointer;
 	text-align: left;
 }
 #tabs-list i {
-	/* top: 6px; */
 	font-size: 25px;
+	margin: 0 0 0 10px;
 	height: 25px;
 	line-height: 35px;
-	/* margin: 3px 3px 0 0; */
 }
 #tabs-list button:last-child {
 	border-bottom: none;
@@ -628,7 +529,7 @@ body {
 	font-family: "Arial";
 	color: white;
 	height: 30px;
-	margin: 0 20px 0 20px;
+	margin: 0 20px 0 10px;
 	text-align: center;
 	line-height: 100%;
 	font-weight: normal;
@@ -718,23 +619,19 @@ body {
 	animation: hover-shadows 1.5s ease-out infinite;
 }
 #online-box {
-	opacity: 0;
+	opacity: 1;
 	background-color: rgb(0, 0, 0, 0.85);
 	border: 2px solid rgba(255, 255, 255, 0.8);
 	border-radius: 10px;
-	display: none;
+	display: block;
 	position: absolute;
 	top: 50%;
 	left: 50%;
 	width: 350px;
 	padding: 20px;
-	transform: translate(0%, -50%);
+	transform: translate(-50%, -50%);
 	box-sizing: border-box;
 }
-/*#online-box.shown {*/
-/*	animation: fade-in 1.5s;*/
-/*	animation-fill-mode: forwards;*/
-/*}*/
 #online-box h1 {
 	font-family: "Arial";
 	margin: 10px 0 20px 0;
@@ -819,11 +716,6 @@ body {
 	text-shadow: white 0 0 8px;
 	font-size: 12px;
 }
-/*@keyframes trophy-pulse {*/
-/*	50% {*/
-/*		text-shadow: white 0 0 10px;*/
-/*	}*/
-/*}*/
 @keyframes text-shadow {
 	0% {
 		color: rgba(255, 255, 255, 0.5);
@@ -877,6 +769,7 @@ body {
 	left: 420px;
 	z-index: 2;
 	transition: all ease-out .3s;
+	pointer-events: none;
 }
 #chat-box {
 	position: absolute;
@@ -897,12 +790,15 @@ body {
 	display: flex;
 	flex-wrap: wrap;
 	flex-direction: column;
+	pointer-events: none;
 }
 #chat-box.chat-active {
 	opacity: 1;
+	pointer-events: auto;
 }
 #b-close-chat.chat-active {
 	opacity: 1;
+	pointer-events: auto;
 }
 #chat-box.chat-hidden {
 	left: -405px;
@@ -912,7 +808,6 @@ body {
 }
 #msg_container {
 	overflow-y: scroll;
-	/*display: flex;*/
 	padding: 5px;
 	width: 100%;
 	height: 85%;
@@ -950,14 +845,10 @@ body {
 	background: transparent;
 }
 #input_container button {
-	/*height: 100%;*/
 	color: rgb(255, 255, 255, .8);
 	background-color: rgb(0, 0, 0, 0.85);
 	border: none;
-	/*padding: 15px 0px;*/
 	margin-right: 2px;
-	/*width: 100%;*/
-	/*font-size: 50px;*/
 	font-family: "Arial";
 	font-size: 18px;
 	cursor: pointer;
@@ -974,7 +865,6 @@ body {
 	margin-right: auto;
 	height: 100%;
 	border: none;
-	/*border-top: 1px solid white;*/
 	outline: none;
 }
 #i-msg:not(:focus) {
@@ -1005,9 +895,6 @@ body {
 	font-weight: normal;
 	transition: all ease-out .1s;
 }
-/*#chat-box.active h6 {*/
-/*	opacity: 1;*/
-/*}*/
 #ulists-div {
 	display: flex;
 	flex-direction: row;
@@ -1018,12 +905,8 @@ body {
 }
 .users_list-box {
 	font-family: "Arial";
-	/*position: absolute;*/
 	width: 300px;
 	height: 500px;
-	/*left: 35%;*/
-	/*top: 50%;*/
-	/*transform: translate(-50%, -50%);*/
 	background: rgba(0, 0, 0, 0.8);
 	border: 2px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
@@ -1035,9 +918,6 @@ body {
 	font-family: "Arial";
 	font-size: 35px;
 	margin: 20px 0 10px 0;
-	/*position: absolute;*/
-	/*left: 50%;*/
-	/*transform: translateX(-50%);*/
 	color: rgb(255, 255, 255, .8);
 	width: 90%;
 	text-align: center;
@@ -1046,12 +926,8 @@ body {
 	font-family: "Arial";
 	font-size: 30px;
 	margin: 20px 0 10px 0;
-	/*position: absolute;*/
-	/*left: 50%;*/
-	/*transform: translateX(-50%);*/
 	color: rgb(255, 255, 255, .5);
 	font-weight: 100;
-	/*width: 90%;*/
 	text-align: center;
 }
 .users_list-box #requests-title {
@@ -1111,10 +987,7 @@ body {
 	color: rgb(255, 255, 255, .8);
 	background-color: rgb(0, 0, 0, 0.85);
 	border: none;
-	/*padding: 15px 0px;*/
 	margin-left: 2px;
-	/*width: 100%;*/
-	/*font-size: 50px;*/
 	font-family: "Arial";
 	font-size: 20px;
 	cursor: pointer;
@@ -1125,12 +998,8 @@ body {
 
 #friends_list-box {
 	font-family: "Arial";
-	/*position: absolute;*/
 	width: 300px;
 	height: 500px;
-	/*left: 65%;*/
-	/*top: 50%;*/
-	/*transform: translate(-50%, -50%);*/
 	background: rgba(0, 0, 0, 0.8);
 	border: 2px solid rgba(255, 255, 255, .8);
 	border-radius: 10px;
@@ -1142,9 +1011,6 @@ body {
 	font-family: "Arial";
 	font-size: 40px;
 	margin: 20px 0 10px 0;
-	/*position: absolute;*/
-	/*left: 50%;*/
-	/*transform: translateX(-50%);*/
 	color: rgb(255, 255, 255, .8);
 	width: 90%;
 	text-align: center;
@@ -1153,9 +1019,6 @@ body {
 	font-family: "Arial";
 	font-size: 30px;
 	margin: 20px 0 10px 0;
-	/*position: absolute;*/
-	/*left: 50%;*/
-	/*transform: translateX(-50%);*/
 	color: rgb(255, 255, 255, .5);
 	font-weight: 100;
 	width: 90%;
@@ -1209,10 +1072,7 @@ body {
 	color: rgb(255, 255, 255, .8);
 	background-color: rgb(0, 0, 0, 0.85);
 	border: none;
-	/*padding: 15px 0px;*/
 	margin-left: 2px;
-	/*width: 100%;*/
-	/*font-size: 50px;*/
 	font-family: "Arial";
 	font-size: 20px;
 	cursor: pointer;
@@ -1220,9 +1080,6 @@ body {
 #friends_list-box li button:hover {
 	text-shadow: 0 0 10px white;
 }
-
-/***** Rita ****/
-
 #settings-box {
 	font-family: "Arial";
 	position: absolute;
@@ -1302,6 +1159,7 @@ body {
 #settings-box #update-profile:hover {
 	text-shadow: none;
 	box-shadow: 0 0 10px white;
+	background: rgba(255, 255, 255, 0.1);
 }
 #settings-box form {
 	width: 80%;
@@ -1352,7 +1210,7 @@ body {
   padding: 20px;
   color: white;
   box-sizing: border-box;
-  z-index: 1000; /* S'assurer que l'élément est au-dessus des autres */
+  z-index: 1000;
   opacity: 1;
 	font-family: "Arial";
 }
@@ -1380,7 +1238,6 @@ body {
 #user_info-box h1 {
 	font-size: 35px;
 	margin: 10px 20px 10px 10px;
-	/*text-shadow: 0 0 10px white;*/
 }
 #user_info-box .avatar_pic {
 	margin: 10px 10px 10px 20px;
@@ -1399,7 +1256,6 @@ body {
 }
 #match-history ul {
   list-style-type: none;
-	/*width: 70%;*/
 	padding: 0;
   text-align: center;
 }
@@ -1464,6 +1320,7 @@ body {
 #error-box.error_active {
 	opacity: 1;
 	bottom: 20px;
+	z-index: 10;
 }
 #game_canvas {
   background-color: black;

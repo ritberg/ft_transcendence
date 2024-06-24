@@ -114,15 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 
 	function addJS(location) {
-		if (location == "/online/") {
-			const scriptContent = `
-			document.getElementById("online-box").style.display = "block";
-			document.getElementById("online-box").classList.add("shown");
-		`;
-			const scriptElement = document.createElement('script');
-			scriptElement.text = scriptContent;
-			document.getElementById("content").appendChild(scriptElement);        }
-		else if (location == "/tourney/") {
+		if (location == "/tourney/") {
 			const scriptContent = `
 				document.getElementById("tourney_settings-box").style.display = "block";
 				document.getElementById("tourney_settings-box").classList.add("shown");

@@ -49,38 +49,18 @@ document.addEventListener('DOMContentLoaded', () => {
 			document.getElementById("content").classList.remove("hidden");
 			document.getElementById("content").classList.add("shown");
 		}
-		// else if (event.target && event.target.id === "cpu-mode") {
-		//     document.getElementById("main-menu").classList.add("hidden");
-		//     GameMode(1);
-		// }
 		else if (event.target && event.target.id === "b-tourney_settings") {
 			tournamentSettings();
 			document.getElementById("content").classList.remove("hidden");
 			document.getElementById("content").classList.add("shown");
 		}
-		else if (event.target && event.target.id === "b-online-go"){
+		else if (event.target && event.target.id === "b-online-go")
 			GameMode(3);
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
-		}
-		// else if (event.target && event.target.id === "refresh-stats") {
-		// 	// addGame();
-		// 	displayProfile();
-		// }
-		// else if (event.target && event.target.id === "logout") {
-		// 	logoutButton();
-		// 	route("/");
-		// }
 		else if (event.target && event.target.id === "user-logout") {
 			logoutFunc();
 			document.getElementById("content").classList.remove("hidden");
 			document.getElementById("content").classList.add("shown");
 		}
-		// else if (event.target && event.target.id === "upload-avatar") {
-		// 	uploadPicture();
-		// 	document.getElementById("content").classList.remove("hidden");
-		// 	document.getElementById("content").classList.add("shown");
-		// }
 		else if (event.target && event.target.id === "update-profile") {
 			updateUser();
 			document.getElementById("content").classList.remove("hidden");
@@ -98,15 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			document.getElementById("content").classList.remove("hidden");
 			document.getElementById("content").classList.add("shown");
 		}
-		// else if (event.target && event.target.id === "change")
-		// {
-		// 	const selectedLang = event.target.value;
-		// 	localStorage.setItem('selectedLang', selectedLang);
-		// 	loadLanguage(selectedLang);
-		// }
-		// document.getElementById("content").classList.remove("hidden");
-		// document.getElementById("content").classList.add("shown");
-		//document.getElementById("content").style.opacity = "1";
 	});
 
 	contentContainer.addEventListener("change", async function (event) {
@@ -134,12 +105,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			reader.readAsDataURL(file);
 		}
 	});
-
-	// contentContainer.addEventListener("submit", async function (event) {
-	// 	if (event.target && event.target.id === "avatar-input") {
-	// 		console.log("hi");
-	// 	}
-	// });
 
 	document.getElementById('language-select-menu').addEventListener('change', function () {
 		const selectedLanguage = this.value;
