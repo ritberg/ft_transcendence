@@ -25,7 +25,6 @@ while ! nc -z db_transcendence 5434; do
 done
 sleep 5
 echo "PostgreSQL started"
-
 python3 manage.py makemigrations
 python3 manage.py migrate
 

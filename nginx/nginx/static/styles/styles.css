@@ -1245,6 +1245,19 @@ body {
 	align-items: center;
 }
 
+.settings-box h3 {
+	font-family: "Arial";
+	font-size: 30px;
+	margin: 20px 0 10px 0;
+	/*position: absolute;*/
+	/*left: 50%;*/
+	/*transform: translateX(-50%);*/
+	color: rgb(255, 255, 255, .5);
+	font-weight: 100;
+	/*width: 90%;*/
+	text-align: center;
+}
+
 #user_info-box {
 	display: flex;
 	flex-direction: column;
