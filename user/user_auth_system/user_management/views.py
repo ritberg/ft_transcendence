@@ -15,7 +15,7 @@ from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
 	TokenRefreshView,
 )
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from django.conf import settings
 import pyotp
 import qrcode
@@ -26,6 +26,29 @@ import re
 # Create your views here.
 
 User = get_user_model()
+
+@api_view(['GET'])
+def check_2fa_status(request):
+    user = request.user
+    if not user.is_authenticated:
+        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    return Response({'is_2fa_enabled': user.is_2fa_enabled}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def disable_2fa(request):
+    user = request.user
+    if not user.is_authenticated:
+        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if not user.is_2fa_enabled:
+        return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+
+    user.is_2fa_enabled = False
+    user.otp_secret = None
+    user.save()
+
+    return Response({'message': '2FA has been disabled successfully'}, status=status.HTTP_200_OK)
 
 # authentication views
 @api_view(['POST'])
@@ -76,8 +99,8 @@ def verify_otp(request):
     if not otp:
         return Response({'detail': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if not user.is_2fa_enabled:
-        return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+    if user.is_2fa_enabled:
+        return Response({'detail': '2FA is already enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
     totp = pyotp.TOTP(user.otp_secret)
     if totp.verify(otp):

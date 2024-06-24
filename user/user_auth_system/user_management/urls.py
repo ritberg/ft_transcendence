@@ -5,7 +5,8 @@ from user_management.views import (LoginUserView, LogoutUserView, RegisterUserVi
 								   ListFriendsRequestsView, ListFriendsView, DeleteFriendView,
                                    BlockUserView, UnblockUserView, ListBlockedUsers, GetUserID,
                                    GetUserPicture, TokenObtainPairView, enable_2fa, verify_otp, GetUserPicture,
-                                   GetUserLanguage, ChangeUserLanguage, VerifyOTPLoginView)
+                                   GetUserLanguage, ChangeUserLanguage, VerifyOTPLoginView, disable_2fa,
+                                   check_2fa_status)
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
@@ -28,6 +29,8 @@ urlpatterns = [
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('enable-2fa/', enable_2fa, name='enable_2fa'),
+    path('disable-2fa/', disable_2fa, name='disable_2fa'),
+    path('check-2fa-status/', check_2fa_status, name='check_2fa_status'),
     path('verify-otp/', verify_otp, name='verify_otp'),
     path('verify-otp-login/', VerifyOTPLoginView.as_view(), name='verify_otp_login'),
     path('get-language/', GetUserLanguage.as_view(), name='get_username'),

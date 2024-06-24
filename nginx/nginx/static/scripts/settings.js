@@ -4,6 +4,143 @@ import { route } from "./router.js";
 import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
 import { closeWebSocket } from "./userStatus.js";
 
+let is2FAEnabled = false;
+let is2FAVerified = false;
+
+async function check2FAStatus() {
+    try {
+        const response = await fetch('/auth/check-2fa-status/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const data = await response.json();
+        is2FAEnabled = data.is_2fa_enabled;
+        is2FAVerified = data.is_2fa_verified;
+        console.log('2FA Status:', { enabled: is2FAEnabled, verified: is2FAVerified });
+        updateToggle2FAButton();
+        return { enabled: is2FAEnabled, verified: is2FAVerified };
+    } catch (error) {
+        console.error('Error checking 2FA status:', error);
+        return { enabled: false, verified: false };
+    }
+}
+
+async function enable2FA() {
+    try {
+        console.log("Tentative d'activation de la 2FA");
+        let token = localStorage.getItem('access_token');
+        const csrfToken = getCSRFToken();
+
+        const response = await fetch('/auth/enable-2fa/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to enable 2FA: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('2FA Activation Response:', data);
+
+        // Mise à jour de l'interface utilisateur
+        const qrCodeContainer = document.getElementById('qr-code-container');
+        const img = document.createElement('img');
+        const otpSecretSpan = document.getElementById('otp-secret-span');
+        const otpSecret = document.getElementById('otp-secret');
+        const verifyOTPForm = document.getElementById('verify-otp-form');
+
+        img.src = data.qr_code;
+        img.alt = "2FA QR Code";
+        img.style.maxWidth = "200px";
+        img.style.height = "auto";
+        qrCodeContainer.innerHTML = '';
+        qrCodeContainer.appendChild(img);
+
+        otpSecretSpan.textContent = data.otp_secret;
+
+        qrCodeContainer.style.display = 'block';
+        otpSecret.style.display = 'block';
+        verifyOTPForm.style.display = 'block';
+
+        is2FAEnabled = true;
+        is2FAVerified = false;
+        updateToggle2FAButton();
+
+    } catch (error) {
+        console.error('Error enabling 2FA:', error);
+        alert('Error enabling 2FA. Please try again. Details: ' + error.message);
+    }
+}
+
+async function verify2FA(otp) {
+    try {
+        console.log('Attempting to verify 2FA with OTP:', otp);
+        const response = await fetch('/auth/verify-otp/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            },
+            body: JSON.stringify({ otp })
+        });
+
+        const data = await response.json();
+        console.log('Verify 2FA Response:', data);
+
+        if (response.ok) {
+            is2FAVerified = true;
+            alert('OTP Verified Successfully. 2FA is now fully enabled.');
+            updateToggle2FAButton();
+            hideOTPElements();
+        } else {
+            throw new Error(data.detail || 'Failed to verify OTP');
+        }
+    } catch (error) {
+        console.error('Error verifying OTP:', error);
+        alert(`Error: ${error.message}`);
+    }
+}
+
+function updateToggle2FAButton() {
+    const toggle2FAButton = document.getElementById('toggle-2fa-button');
+    if (is2FAEnabled && is2FAVerified) {
+        toggle2FAButton.textContent = 'Disable 2FA';
+        toggle2FAButton.onclick = disable2FA;
+    } else if (is2FAEnabled && !is2FAVerified) {
+        toggle2FAButton.textContent = 'Cancel 2FA Setup';
+        toggle2FAButton.onclick = cancel2FASetup;
+    } else {
+        toggle2FAButton.textContent = 'Enable 2FA';
+        toggle2FAButton.onclick = enable2FA;
+    }
+    console.log('Button Updated:', toggle2FAButton.textContent);
+}
+
+function cancel2FASetup(event) {
+    event.preventDefault();
+    console.log('Cancelling 2FA Setup');
+    is2FAEnabled = false;
+    is2FAVerified = false;
+    hideOTPElements();
+    updateToggle2FAButton();
+    alert('2FA setup has been cancelled.');
+}
+
+function hideOTPElements() {
+    document.getElementById('qr-code-container').style.display = 'none';
+    document.getElementById('otp-secret').style.display = 'none';
+    document.getElementById('verify-otp-form').style.display = 'none';
+}
+
 function getCSRFToken() {
     const name = 'csrftoken';
     let cookieValue = null;
@@ -45,28 +182,28 @@ function getCSRFToken() {
 //     }
 // }
 
-async function refreshToken() {
-    const refreshToken = localStorage.getItem('refresh_token');
-    if (!refreshToken) {
-        throw new Error('No refresh token available');
-    }
+// async function refreshToken() {
+//     const refreshToken = localStorage.getItem('refresh_token');
+//     if (!refreshToken) {
+//         throw new Error('No refresh token available');
+//     }
 
-    const response = await fetch('/auth/token/refresh/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refresh: refreshToken }),
-    });
+//     const response = await fetch('/auth/token/refresh/', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ refresh: refreshToken }),
+//     });
 
-    if (!response.ok) {
-        throw new Error('Failed to refresh token');
-    }
+//     if (!response.ok) {
+//         throw new Error('Failed to refresh token');
+//     }
 
-    const data = await response.json();
-    localStorage.setItem('access_token', data.access);
-    return data.access;
-}
+//     const data = await response.json();
+//     localStorage.setItem('access_token', data.access);
+//     return data.access;
+// }
 
 // updateUI();
 
@@ -89,6 +226,9 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("No user found for displayUserInfo");
             return;
         }
+        // Ajout de la vérification de l'état de la 2FA
+        await check2FAStatus();
+        updateToggle2FAButton();
 
         console.log("updateUserInfo called with userInfo =", user);
         if (user) {
@@ -112,7 +252,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('No saved language preference found');
         }
 
-        document.getElementById('language-select').addEventListener('change', function () {
+        document.getElementById('language-select-settings').addEventListener('change', function () {
             const selectedLanguage = this.value;
             localStorage.setItem('preferredLanguage', selectedLanguage);
             console.log('Language preference saved:', selectedLanguage);
@@ -121,108 +261,49 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById('enable-2fa-form').onsubmit = async function (event) {
             event.preventDefault();
-            try {
-                console.log("Tentative d'activation de la 2FA");
-                let token = localStorage.getItem('access_token');
-                const csrfToken = getCSRFToken();
-        
-                const makeRequest = async (token) => {
-                    const response = await fetch('/auth/enable-2fa/', {
-                        method: 'POST',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': csrfToken
-                        }
-                    });
-        
-                    console.log("Statut de la réponse:", response.status);
-                    const responseText = await response.text();
-                    console.log("Contenu de la réponse:", responseText);
-        
-                    if (response.status === 403 && responseText.includes('token_not_valid')) {
-                        token = await refreshToken();
-                        return makeRequest(token);
-                    }
-        
-                    if (!response.ok) {
-                        throw new Error(`Failed to enable 2FA: ${response.status} ${responseText}`);
-                    }
-        
-                    return JSON.parse(responseText);
-                };
-        
-                const data = await makeRequest(token);
-        
-                // Affichage du QR code et du secret OTP
-                const qrCodeContainer = document.getElementById('qr-code-container');
-                const img = document.createElement('img');
-                const otpSecretSpan = document.getElementById('otp-secret');
+            if (!is2FAEnabled) {
+                await enable2FA();
                 const verifyOTPForm = document.getElementById('verify-otp-form');
-        
-                // Afficher le QR code
-                img.src = data.qr_code;
-                img.alt = "2FA QR Code";
-                img.style.maxWidth = "200px";
-                img.style.height = "auto";
-                qrCodeContainer.innerHTML = '';
-                qrCodeContainer.appendChild(img);
-                qrCodeContainer.style.display = 'block';
-        
-                // Afficher le secret OTP
-                otpSecretSpan.textContent = data.otp_secret;
-        
-                // Afficher le formulaire de vérification OTP
-                verifyOTPForm.style.display = 'block';
-        
-                // Changer le texte du bouton
-                // document.getElementById('toggle-2fa-button').textContent = 'Disable 2FA';
-        
-            } catch (error) {
-                console.error('Error enabling 2FA:', error);
-                alert('Error enabling 2FA. Please try again. Details: ' + error.message);
+                if (verifyOTPForm) {
+                    verifyOTPForm.onsubmit = async function (event) {
+                        event.preventDefault();
+                        const otpInput = document.querySelector('input[name="otp"]');
+                        if (!otpInput) {
+                            console.error('OTP input field not found');
+                            return;
+                        }
+                        const otp = otpInput.value;
+
+                        if (!otp) {
+                            alert('Please enter an OTP.');
+                            return;
+                        }
+
+                        await verify2FA(otp);
+                    };
+                }
             }
         };
 
-        document.getElementById('verify-otp-form').onsubmit = async function (event) {
-            event.preventDefault();
-            const otp = document.querySelector('input[name="otp"]').value;
-            
-            if (!otp) {
-                alert('Please enter an OTP.');
-                return;
-            }
-        
-            try {
-                const response = await fetch('/auth/verify-otp/', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': getCSRFToken() // Assurez-vous d'avoir une fonction getCSRFToken()
-                    },
-                    body: JSON.stringify({ otp })
-                });
-        
-                const contentType = response.headers.get("content-type");
-                if (contentType && contentType.indexOf("application/json") !== -1) {
-                    const data = await response.json();
-                    if (response.ok) {
-                        alert('OTP Verified Successfully');
-                        // Mettez à jour l'interface utilisateur ici
-                    } else {
-                        throw new Error(data.detail || 'Failed to verify OTP');
-                    }
-                } else {
-                    const text = await response.text();
-                    console.error('Unexpected response:', text);
-                    throw new Error('Server returned an unexpected response');
+        const verifyOTPForm = document.getElementById('verify-otp-form');
+        if (verifyOTPForm) {
+            verifyOTPForm.onsubmit = async function (event) {
+                event.preventDefault();
+                const otpInput = document.querySelector('input[name="otp"]');
+                if (!otpInput) {
+                    console.error('OTP input field not found');
+                    return;
                 }
-            } catch (error) {
-                console.error('Error verifying OTP:', error);
-                alert(`Error: ${error.message}`);
-            }
-        };
+                const otp = otpInput.value;
+
+                if (!otp) {
+                    alert('Please enter an OTP.');
+                    return;
+                }
+
+                await verify2FA(otp);
+            };
+        }
     }
 
     uploadPicture = async function () {
@@ -237,7 +318,6 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("profile_picture", file);
 
         console.log("update clicked");
-        // console.log("all cookies : ", document.cookie);
         console.log("file : ", file);
         for (let [key, value] of formData.entries()) {
             console.log(key, value);
