@@ -36,7 +36,7 @@ services:
         DJANGO_SUPERUSER_PASSWORD: ${DJANGO_SUPERUSER_PASSWORD}
     env_file:
       - .env
-    ports:
+    expose:
       - "8005"
     volumes:
       - stat:/home/transcendance/${STAT_SERVICE_NAME}

@@ -121,12 +121,12 @@ export class pvp {
 			//this.ball
 			this.changeBallVelocity();
 		}
-		else if (this.player1.score == 1) {
+		else if (this.player1.score == 5) {
 			this.context.textAlign = "center";
 			this.context.font = "100px Arial";
 			this.context.fillText("PLAYER 1 WON!", this.board_width / 2, this.board_height / 3);
 		}
-		else if (this.player2.score == 1) {
+		else if (this.player2.score == 5) {
 			this.context.textAlign = "center";
 			this.context.font = "100px Arial";
 			this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
@@ -227,13 +227,13 @@ export class pvp {
 			else
 				this.player1.score++;
 
-			if (this.player1.score == 1) {
+			if (this.player1.score == 5) {
 			    this.reset_board();
 			    this.stop = true;
 				setTimeout(() => { route("/"); }, 5000);
 			    return;
 			}
-			if (this.player2.score == 1) {
+			if (this.player2.score == 5) {
 			    this.reset_board();
 			    this.stop = true;
 				setTimeout(() => { route("/"); }, 5000);

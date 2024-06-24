@@ -99,64 +99,69 @@ document.addEventListener("DOMContentLoaded", function () {
 	let signupUrl = "https://" + window.location.host + "/auth/register/";
 
 	signupButton = async function (event) {
-		event.preventDefault();
+        event.preventDefault();
 
-		if (userIsConnected == true) {
-			errorMsg("cannot signup while logged in");
-			return;
-		}
-		let username = document.getElementById("username").value;
-		let email = document.getElementById("email").value;
-		let password = document.getElementById("password").value;
+        if (userIsConnected == true) {
+            errorMsg("cannot signup while logged in");
+            return;
+        }
+        let username = document.getElementById("username").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
         let password_confirm = document.getElementById("password_confirm").value;
 
-		if (password !== password_confirm) {
-			errorMsg("Passwords don't match");
-			return;
-		}
+        if (password !== password_confirm) {
+            errorMsg("Passwords don't match");
+            return;
+        }
 
-		console.log({ username, email, password, password_confirm });
+        console.log({ username, email, password, password_confirm });
 
-		await fetch(signupUrl, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				"X-CSRFToken": token,
-			},
-			body: JSON.stringify({ username, email, password, password_confirm }),
-		})
-		.then( async (response) => {
-			if (!response.ok) {
-				if (response.status == 403) {
-					errorMsg("error logging in");
-					return null;
-				}
-				const error = await response.json();
-				console.log(error);
-				if (error.email)
-					errorMsg(error.email);
-				else if (error.password)
-					errorMsg(error.password[0]);
+        await fetch(signupUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": token,
+            },
+            body: JSON.stringify({ username, email, password, password_confirm }),
+        })
+        .then( async (response) => {
+            if (!response.ok) {
+                if (response.status == 403) {
+                    errorMsg("error logging in");
+                    return null;
+                }
+                const error = await response.json();
+                console.log(error);
+                if (error.email) {
+                    if (typeof(error.email) == 'string')
+                        errorMsg(error.email);
+                    else
+                        errorMsg(error.email[0]);
+                }
+                else if (error.password)
+                    errorMsg(error.password[0]);
                 else if (error.password_confirm)
-					errorMsg(error.password_confirm);
-				else if (error.username)
-					errorMsg(error.username);
-				return null;
-			}
-			return response.json();
-		})
-		.then((data) => {
-			if (data !== null) {
-				console.log(data);
-				console.log("token received : ", data.crsfToken);
-				updateCSRFToken(data.crsfToken);
-				route("/signin/");
-			}
-		})
-			.catch((error) => {
-				console.error("Fetch error: ", error);
-			});
-	}
+                    errorMsg(error.password_confirm[0]);
+                else if (error.username)
+                    errorMsg(error.username[0]);
+                return null;
+            }
+            return response.json();
+        })
+        .then((data) => {
+            if (data !== null) {
+                console.log(data);
+                console.log("token received : ", data.crsfToken);
+                updateCSRFToken(data.crsfToken);
+                route("/signin/");
+            }
+        })
+            .catch((error) => {
+                console.error("Fetch error: ", error);
+            });
+    }
+
 
 
 	////////////////////// LOGIN ////////////////////////////
@@ -192,7 +197,13 @@ document.addEventListener("DOMContentLoaded", function () {
 					errorMsg("error logging in");
 				else {
 					const error = await response.json();
-					errorMsg(error.message);
+					console.log(error);
+					let message = error.message.split(": ");
+					if (message.length > 1)
+						errorMsg(message[1]);
+					else
+						errorMsg(error.message);
+					// errorMsg(error.message[1]);
 				}
 				return null;
 			}

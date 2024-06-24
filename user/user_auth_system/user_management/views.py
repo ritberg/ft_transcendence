@@ -134,7 +134,7 @@ class UpdateUserView(APIView):
                     {'message': 'Username not allowed'},
                     status=status.HTTP_400_BAD_REQUEST
                 )
-		
+
             serializer = UserSerializer(request.user, data=request.data, partial=True)
             if serializer.is_valid():
                 user = serializer.save()
@@ -152,14 +152,17 @@ class UpdateUserView(APIView):
             raise ValueError(serializer.errors)
         except Exception as e:
             error_message = f"{type(e).__name__}: {str(e)}"
-            start_index = error_message.find("ErrorDetail(string='") + len("ErrorDetail(string='")
-            end_index = error_message.find("', code='invalid")
-            extracted_string = error_message[start_index:end_index]
+            match = re.search(r"ErrorDetail\(string='(.*?)'", error_message)
+            if match:
+                extracted_string = match.group(1)
+            else:
+                extracted_string = str(e)
 
             return Response(
                 {'message': extracted_string},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
 
 
 # friend request views
