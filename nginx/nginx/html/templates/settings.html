@@ -1,28 +1,30 @@
 <div class="settings-box">
-	<div id="main_info">
-		<input type="file" id="avatar-input" style="display: none;">
-		<label for="avatar-input" style="cursor: pointer;">
-			<img id="user-avatar" src="/media/profile_pics/default.jpg" alt="image upload" class="avatar_pic">
-		</label>
-		<h1 id="info-username"></h1>
+	<div id="settings-content">
+		<div id="main_info">
+			<input type="file" id="avatar-input" style="display: none;">
+			<label for="avatar-input" style="cursor: pointer;">
+				<img id="user-avatar" src="/media/profile_pics/default.jpg" alt="image upload" class="avatar_pic">
+			</label>
+			<h1 id="info-username"></h1>
+		</div>
+		<button id="user-logout">Logout</button>
+		<div class="profile-modify">
+			<input type="text" id="new-username" placeholder="Enter new username" />
+			<input type="text" id="new-email" placeholder="Enter new email" />
+			<input type="password" id="new-password" placeholder="Enter new password" />
+		</div>
+		<form id="enable-2fa-form">
+			<button type="button" id="enable-2fa">ENABLE 2FA</button>
+		</form>
+		<select id="language-select-settings">
+			<option value="en">ENGLISH</option>
+			<option value="fr">FRANÇAIS</option>
+			<option value="it">ITALIANO</option>
+			<option value="de">DEUTSCH</option>
+			<option value="el">ΕΛΛΗΝΙΚΆ</option>
+			<option value="zh">中文</option>
+			<option value="la">LATIN</option>
+		</select>
+		<button id="update-profile">SAVE</button>
 	</div>
-	<button id="user-logout">Logout</button>
-	<div class="profile-modify">
-		<input type="text" id="new-username" placeholder="Enter new username" />
-		<input type="text" id="new-email" placeholder="Enter new email" />
-		<input type="password" id="new-password" placeholder="Enter new password" />
-	</div>
-	<form id="enable-2fa-form">
-		<button type="button" id="enable-2fa">ENABLE 2FA</button>
-	</form>
-	<select id="language-select-settings">
-		<option value="en">ENGLISH</option>
-		<option value="fr">FRANÇAIS</option>
-		<option value="it">ITALIANO</option>
-		<option value="de">DEUTSCH</option>
-		<option value="el">ΕΛΛΗΝΙΚΆ</option>
-		<option value="zh">中文</option>
-		<option value="la">LATIN</option>
-	</select>
-	<button id="update-profile">SAVE</button>
 </div>
