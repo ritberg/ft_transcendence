@@ -3,6 +3,7 @@ import { getUserId } from '../scripts/users.js'
 import { token } from '../scripts/users.js';
 import { game } from '../scripts/router.js';
 import { modifyDelta } from '../scripts/stars.js';
+import { writeVerticalText } from '../scripts/utils.js';
 
 export class online {
     username;
@@ -145,11 +146,11 @@ export class online {
         this.context.fillText(this.player1.score.toString(), this.board_width / 3, 100);
         this.context.fillText(this.player2.score.toString(), this.board_width - this.board_width / 3, 100);
 
-        this.context.font = "30px Comic Sans MS";
+			this.context.fillStyle = "black";
         let textWidth = this.context.measureText(this.p1).width;
         this.context.fillText(this.p1, (this.board_width / 8) - (textWidth / 10), 50);
-        textWidth = this.context.measureText(this.p2).width;
-        this.context.fillText(this.p2, (this.board_width / (1)) - (textWidth / (1)), 50);
+			writeVerticalText(this.context, this.p1, 22.5, this.player1.yPos + 100, "35px Arial", 0);
+			writeVerticalText(this.context, this.p2, 977.5, this.player2.yPos + 100, "35px Arial", 1);
 
         this.context.textAlign = "left";
         this.context.fillStyle = "white";
@@ -195,15 +196,17 @@ export class online {
         this.draw_board();
         if (this.isalone == true)
         {
-            this.context.font = "48px serif";
+					this.context.textAlign = "center";
+            this.context.font = "48px Arial";
             this.context.fillStyle = "white";
-            this.context.fillText("waiting for a second player", 250, 315);
+						this.context.fillText("WAITING FOR A SECOND PLAYER", this.board_width / 2, this.board_height / 3);
         }
         else if (this.disconnect == true)
         {
-            this.context.font = "48px serif";
+					this.context.textAlign = "center";
+            this.context.font = "48px Arial";
             this.context.fillStyle = "white";
-            this.context.fillText("a player has disconnected", 250, 315);
+						this.context.fillText("A PLAYER HAS DISCONNECTED", this.board_width / 2, this.board_height / 3);
         }
         if (this.player1.score == 5)
         {
@@ -230,8 +233,9 @@ export class online {
                 setTimeout(() => { route("/"); }, 5000);
                 this.trigger = false;
             }
-            this.context.font = "100px serif";
-            this.context.fillText("Player 1 won !", 250, 400);
+					this.context.textAlign = "center";
+					this.context.font = "100px Arial";
+					this.context.fillText("PLAYER 1 WON!", this.board_width / 2, this.board_height / 3);
         }
         else if (this.player2.score == 5)
         {
@@ -258,8 +262,9 @@ export class online {
                 setTimeout(() => { route("/"); }, 5000);
                 this.trigger = false;
             }
-            this.context.font = "100px serif";
-            this.context.fillText("Player 2 won !", 250, 400);
+					this.context.textAlign = "center";
+					this.context.font = "100px Arial";
+					this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
         }
     }
 

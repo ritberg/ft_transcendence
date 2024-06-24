@@ -21,11 +21,11 @@
 		"signin": "Inire"
 	},
 	"main": {
-		"title": "PILA",
+		"title": "PONG",
 		"pvp_mode": "PVP",
-		"cpu_mode": "Computatrum",
-		"tourney_mode": "Certamen",
-		"online_mode": "In Rete"
+		"cpu_mode": "CPU",
+		"tourney_mode": "CERTAMEN",
+		"online_mode": "IN RETE"
 	},
 	"online": {
 		"title": "LUDO ADIUNGI",

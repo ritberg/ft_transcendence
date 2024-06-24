@@ -24,8 +24,8 @@
 		"title": "PONG",
 		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
-		"tourney_mode": "Turnier",
-		"online_mode": "Online"
+		"tourney_mode": "TURNIER",
+		"online_mode": "ONLINE"
 	},
 	"online": {
 		"title": "EINEM SPIEL BEITRETEN",

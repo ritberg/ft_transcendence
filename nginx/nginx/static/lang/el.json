@@ -21,11 +21,11 @@
 		"signin": "Σύνδεση"
 	},
 	"main": {
-		"title": "ΠΟΝΓΚ",
+		"title": "PONG",
 		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
-		"tourney_mode": "Τουρνουά",
-		"online_mode": "Διαδικτυακά"
+		"tourney_mode": "ΤΟΥΡΝΟΥΆ",
+		"online_mode": "ONLINE"
 	},
 	"online": {
 		"title": "ΣΥΜΜΕΤΟΧΗ ΣΕ ΠΑΙΧΝΙΔΙ",

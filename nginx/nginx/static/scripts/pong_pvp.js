@@ -111,25 +111,25 @@ export class pvp {
 	gameLoop() {
 		game.animation_id = window.requestAnimationFrame(this.gameLoop);
 
+		//draw
+		this.draw_board();
+
 		if (this.stop == false) {
 			//move players
 			this.move_players();
 
 			//this.ball
 			this.changeBallVelocity();
-
-			//draw
-			this.draw_board();
 		}
-		else if (this.player1.score == 5) {
-			this.context.textAlign = "left";
-			this.context.font = "100px serif";
-			this.context.fillText("Player 2 won !", 250, 300);
+		else if (this.player1.score == 1) {
+			this.context.textAlign = "center";
+			this.context.font = "100px Arial";
+			this.context.fillText("PLAYER 1 WON!", this.board_width / 2, this.board_height / 3);
 		}
-		else if (this.player2.score == 5) {
-			this.context.textAlign = "left";
-			this.context.font = "100px serif";
-			this.context.fillText("Player 2 won !", 250, 300);
+		else if (this.player2.score == 1) {
+			this.context.textAlign = "center";
+			this.context.font = "100px Arial";
+			this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
 		}
 	}
 
@@ -227,13 +227,13 @@ export class pvp {
 			else
 				this.player1.score++;
 
-			if (this.player1.score == 5) {
+			if (this.player1.score == 1) {
 			    this.reset_board();
 			    this.stop = true;
 				setTimeout(() => { route("/"); }, 5000);
 			    return;
 			}
-			if (this.player2.score == 5) {
+			if (this.player2.score == 1) {
 			    this.reset_board();
 			    this.stop = true;
 				setTimeout(() => { route("/"); }, 5000);

@@ -22,10 +22,10 @@
 	},
 	"main": {
 		"title": "PONG",
-		"pvp_mode": "PVP",
+		"pvp_mode": "PvP",
 		"cpu_mode": "CPU",
-		"tourney_mode": "Tourney",
-		"online_mode": "Online"
+		"tourney_mode": "TOURNEY",
+		"online_mode": "ONLINE"
 	},
 	"online": {
 		"title": "JOIN A GAME",
@@ -47,11 +47,10 @@
 	},
 	"settings": {
 		"logout": "Logout",
-		"new_username": "Enter a new username",
-		"new_email": "Enter a new email",
-		"new_password": "Enter a new password",
+		"new_username": "Enter new username",
+		"new_email": "Enter new email",
+		"new_password": "Enter new password",
 		"update_profile": "Update profile",
-		"upload_avatar": "Upload avatar",
 		"enable_2fa": "Enable 2FA",
 		"choose_language": "Choose your language:"
 	},
