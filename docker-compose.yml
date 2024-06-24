@@ -72,6 +72,7 @@ services:
       - user
       - db_transcendence
       - redis
+      - stat
     restart: on-failure
 
   online:
@@ -79,6 +80,8 @@ services:
     depends_on:
       - db_transcendence
       - user
+      - stat
+      - chat
     build:
       context: ./online/docker
       dockerfile: Dockerfile

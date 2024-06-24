@@ -8,6 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
     ////// UPDATE PROFILE /////
 
     displaySettings = async function () {
+        if (userIsConnected == false) {
+            document.getElementById("settings-content").textContent = '';
+            document.getElementById("settings-content").innerHTML = '<h3 class="ulist-error">login to access</h3>';
+        }
+
         let user = JSON.parse(localStorage.getItem("user")) || null;
 
         console.log("userIsConnected in var : ", userIsConnected);

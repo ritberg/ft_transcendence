@@ -1,5 +1,6 @@
 export async function errorMsg(msg) {
 	const error_box = document.getElementById("error-box");
+	console.log("error: ", msg);
 	error_box.textContent = msg.toUpperCase();
 	error_box.classList.toggle("error_active");
 	await sleep(2000);
