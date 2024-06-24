@@ -3,7 +3,7 @@ import { getUserId } from '../scripts/users.js'
 import { token } from '../scripts/users.js';
 import { game } from '../scripts/router.js';
 import { modifyDelta } from '../scripts/stars.js';
-import { writeVerticalText } from '../scripts/utils.js';
+import { errorMsg, writeVerticalText } from '../scripts/utils.js';
 
 export class online {
     username;
@@ -163,28 +163,29 @@ export class online {
 
     async sendStats(game_stat) {
         let statsUrl = 'https://' + window.location.host + "/stat/game-history/";
-        try {
-            const response = await fetch(statsUrl, {
-                method: "POST",
-                headers: {
-                "X-CSRFToken": token,
-                "Content-Type": "application/json",
-                },
-                body: JSON.stringify(game_stat),
-                credentials: "include",
-            });
+        const response = await fetch(statsUrl, {
+            method: "POST",
+            headers: {
+            "X-CSRFToken": token,
+            "Content-Type": "application/json",
+            },
+            body: JSON.stringify(game_stat),
+            credentials: "include",
+        })
+        .then( async (response) => {
             if (!response.ok) {
                 const errorData = await response.json();
-                console.log(response);
-                throw new Error(
-                `Network response was not ok: ${JSON.stringify(errorData)}`
-                );
+                errorMsg(errorData.message);
+                return null;
             }
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.error("Fetch error: ", error);
-        }
+            return response.json();
+        })
+        .then(async (data) => {
+            if (data !== null) {
+                const data = await response.json();
+                console.log(data);
+            }
+        })
     }
 
     gameLoop() {

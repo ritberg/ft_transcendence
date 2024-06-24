@@ -111,12 +111,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	contentContainer.addEventListener("change", async function (event) {
 		event.preventDefault();
-		if (event.target && event.target.id === "language-change") {
+		if (event.target && event.target.id === "language-select-settings") {
+			console.log("fdsa");
 			const selectedLanguage = event.target.value;
 			let response = await changeLanguage(selectedLanguage);
 			if (response == null)
 				return;
-			document.getElementById('language-select').value = selectedLanguage;
+			document.getElementById('language-select-menu').value = selectedLanguage;
 			localStorage.setItem('preferredLanguage', selectedLanguage);
 			loadLanguage(selectedLanguage);
 		}

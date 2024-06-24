@@ -76,6 +76,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (!response.ok) {
                     if (response.status == 403)
                         errorMsg("you must be logged in to change picture");
+                    else if (response.status == 413) {
+                        errorMsg("Image max size is 10mb")
+                    }
                     else {
                         const error = await response.json();
                         errorMsg(error.message);

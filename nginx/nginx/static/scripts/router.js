@@ -204,6 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			return;
 		}
 		let username = location.substring(location.indexOf('/', location.indexOf('/') + 1) + 1, location.length - 1);
+		username = decodeURIComponent(username);
 		let user_id = await getUserId(username);
 		if (user_id == null) {
 			const html = await fetch("/templates/404.html").then((response) => response.text());

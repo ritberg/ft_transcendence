@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				let language = await fetchLanguage();
 				localStorage.setItem('preferredLanguage', language);
 				loadLanguage(language);
-				document.getElementById('language-select').value = language
+				document.getElementById('language-select-menu').value = language
 				route('/');
 				// await addGame(); // à supprimer
 				return user;
