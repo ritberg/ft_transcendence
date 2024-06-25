@@ -14,7 +14,7 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = User
-		fields = ['id', 'username', 'email', 'password', 'profile_picture', 'is_2fa_enabled', 'otp_secret', 'friends', 'status']
+		fields = ['id', 'username', 'email', 'password', 'profile_picture', 'is_2fa_enabled', 'otp_secret', 'friends', 'status', 'is_2fa_verified']
 		read_only_fields = ['otp_secret']
 		extra_kwargs = {'password': {'write_only': True}}
 
@@ -133,7 +133,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 	def get_token(cls, user):
 		token = super().get_token(user)
 
-		# Ajouter des informations supplémentaires au token
 		token['username'] = user.username
 		token['email'] = user.email
 
@@ -142,7 +141,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 	def validate(self, attrs):
 		data = super().validate(attrs)
 
-		# Vous pouvez ajouter des informations supplémentaires à la réponse ici
 		data['user'] = {
 			'id': self.user.id,
 			'username': self.user.username,

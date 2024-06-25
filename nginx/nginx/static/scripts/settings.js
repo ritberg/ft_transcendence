@@ -17,7 +17,7 @@ async function check2FAStatus() {
             }
         });
         const data = await response.json();
-        is2FAEnabled = data.is_2fa_enabled;
+        // is2FAEnabled = data.is_2fa_enabled;
         is2FAVerified = data.is_2fa_verified;
         console.log('2FA Status:', { enabled: is2FAEnabled, verified: is2FAVerified });
         updateToggle2FAButton();
@@ -80,6 +80,34 @@ export async function enable2FA() {
     }
 }
 
+async function disable2FA() {
+    try {
+        const response = await fetch('/auth/disable-2fa/', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCSRFToken()
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Failed to disable 2FA: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('2FA Disable Response:', data);
+
+        is2FAEnabled = false;
+        is2FAVerified = false;
+        updateToggle2FAButton();
+        alert('2FA has been disabled successfully.');
+    } catch (error) {
+        console.error('Error disabling 2FA:', error);
+        alert('Error disabling 2FA. Please try again. Details: ' + error.message);
+    }
+}
+
 async function verify2FA(otp) {
     try {
         console.log('Attempting to verify 2FA with OTP:', otp);
@@ -95,8 +123,10 @@ async function verify2FA(otp) {
 
         const data = await response.json();
         console.log('Verify 2FA Response:', data);
+        console.log('Response status:', response.status);
 
         if (response.ok) {
+            is2FAEnabled = false;
             is2FAVerified = true;
             alert('OTP Verified Successfully. 2FA is now fully enabled.');
             updateToggle2FAButton();
@@ -106,15 +136,17 @@ async function verify2FA(otp) {
         }
     } catch (error) {
         console.error('Error verifying OTP:', error);
+        console.error('Error details:', error.message);
         alert(`Error: ${error.message}`);
     }
 }
 
 function updateToggle2FAButton() {
     const toggle2FAButton = document.getElementById('toggle-2fa-button');
-    if (is2FAEnabled && is2FAVerified) {
+    if (is2FAVerified) {
         toggle2FAButton.textContent = 'Disable 2FA';
         toggle2FAButton.onclick = disable2FA;
+        toggle2FAButton.style.color = 'orange';
     } else if (is2FAEnabled && !is2FAVerified) {
         toggle2FAButton.textContent = 'Cancel 2FA Setup';
         toggle2FAButton.style.color = 'orange';
@@ -122,8 +154,8 @@ function updateToggle2FAButton() {
     } else {
         toggle2FAButton.textContent = 'Enable 2FA';
         toggle2FAButton.onclick = enable2FA;
+        toggle2FAButton.style.color = '';
     }
-    console.log('Button Updated:', toggle2FAButton.textContent);
 }
 
 function cancel2FASetup(event) {

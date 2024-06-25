@@ -19,6 +19,7 @@ class CustomUser(AbstractUser):
 	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='offline')
 	language = models.CharField(max_length=2, default='en')
 	is_2fa_enabled = models.BooleanField(default=False)
+	is_2fa_verified = models.BooleanField(default=False)
 	otp_secret = models.CharField(max_length=32, default=pyotp.random_base32)
 
 	class Meta:
