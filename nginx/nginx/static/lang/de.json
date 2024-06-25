@@ -13,7 +13,7 @@
 	"signup": {
 		"title": "REGISTRIERUNG",
 		"username": "BENUTZERNAME",
-		"email": "E-MAIL",
+		"email": "EMAIL",
 		"password": "PASSWORT",
 		"password_confirmation": "PASSWORT BESTÄTIGEN",
 		"ok": "OK",
@@ -28,10 +28,10 @@
 		"online_mode": "ONLINE"
 	},
 	"online": {
-		"title": "EINEM SPIEL BEITRETEN",
+		"title": "SPIEL BEITRETEN",
 		"room_name": "RAUMNAME",
 		"empty_room": "leer lassen für einen zufälligen Raum",
-		"go": "LOS"
+		"go": "GO"
 	},
 	"user_info": {
 		"match_history": "SPIELVERLAUF",
@@ -46,26 +46,26 @@
 		"total_hours": "Gespielte Stunden insgesamt: "
 	},
 	"settings": {
-		"logout": "Abmelden",
-		"new_username": "Neuen Benutzernamen eingeben",
-		"new_email": "Neue E-Mail-Adresse eingeben",
-		"new_password": "Neues Passwort eingeben",
-		"update_profile": "Profil aktualisieren",
-		"upload_avatar": "Avatar hochladen",
-		"enable_2fa": "2FA aktivieren",
+		"logout": "ABMELDEN",
+		"new_username": "BENUTZERNAMEN",
+		"new_email": "EMAIL",
+		"new_password": "PASSWORT",
+		"update_profile": "SPEICHERN",
+		"upload_avatar": "AVATAR HOCHLADEN",
+		"enable_2fa": "2FA AKTIVIEREN",
 		"choose_language": "Wähle deine Sprache:"
 	},
 	"game": {
-		"settings_title": "EINSTELLUNGEN",
+		"settings_title": "AUFSTELLEN",
 		"players": "SPIELER",
 		"points": "PUNKTE",
 		"ok_button": "OK",
 		"player_names_title": "SPIELERNAMEN"
 	},
 	"users_lists": {
-		"ulist_title": "BENUTZERLISTE",
-		"flist_title": "FREUNDESLISTE",
-		"requests_title": "FREUNDSCHAFTSANFRAGEN",
+		"ulist_title": "BENUTZER",
+		"flist_title": "FREUNDES",
+		"requests_title": "OFFENE ANFRAGEN",
 		"not_allowed": "Anmeldung für den Zugang"
 	},
 	"verify_otp": {

@@ -230,13 +230,13 @@ export class pvp {
 			if (this.player1.score == 5) {
 			    this.reset_board();
 			    this.stop = true;
-				setTimeout(() => { route("/"); }, 5000);
+				setTimeout(() => { route("/"); }, 2000);
 			    return;
 			}
 			if (this.player2.score == 5) {
 			    this.reset_board();
 			    this.stop = true;
-				setTimeout(() => { route("/"); }, 5000);
+				setTimeout(() => { route("/"); }, 2000);
 			    return;
 			}
 			this.first_bounce = true;

@@ -30,15 +30,16 @@ class AI:
     paddle_width = 30
     paddle_height = 200
     ball_size = 30
-    paddle_speed = 10
+    paddle_speed = 15
 
     # Paddles are initially centered vertically, ball is initially centered both vertically and horizontally
     player1_y = canvas_height / 2 - paddle_height / 2
     computer_y = canvas_height / 2 - paddle_height / 2
     ball_x = canvas_width / 2 - ball_size / 2
     ball_y = canvas_height / 2 - ball_size / 2
-    ball_speed_x = 7 #random.uniform(4, 5)
-    ball_speed_y = 7
+    ball_speed_x = 5 #random.uniform(4, 5)
+    ball_speed_y = 5
+    first_bounce = True
 
     def __init__(self):
         self.previous_data = None
@@ -98,27 +99,41 @@ class AI:
 
         #checks if the ball hit the right paddle
         # if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 21): #previous collisions params
-        if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):  #current collisions params
+        if (self.ball_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):  #current collisions params
             # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height): #previous collisions params
             if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0): #current collisions params
-                self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.computer_y + self.paddle_height / 2)) / 15
+                self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.computer_y + self.paddle_height / 2)) / 10
                 self.ball_speed_x *= -1
                 if self.ball_speed_x < 0:
                     self.ball_speed_x -= 0.5
                 else:
                     self.ball_speed_x += 0.5
+                if self.first_bounce == True:
+                  self.ball_speed_x *= -1
+                  if self.ball_speed_x < 0:
+                    self.ball_speed_x -= 3
+                  else:
+                    self.ball_speed_x += 3
+                  self.first_bounce = False
 
         #checks if the ball hit the left paddle
         # if (self.ball_x + self.ball_speed_x <= 21): #previous collisions params
-        if (self.ball_x + self.ball_speed_x <= 20 + self.paddle_width): #current collisions params
+        if (self.ball_x <= 20 + self.paddle_width): #current collisions params
             # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height): #previous collisions params
             if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0): #current collisions params
-                self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.player1_y + self.paddle_height / 2)) / 15
+                self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.player1_y + self.paddle_height / 2)) / 10
                 self.ball_speed_x *= -1
                 if (self.ball_speed_x < 0):
                     self.ball_speed_x -= 0.5
                 else:
                     self.ball_speed_x += 0.5
+                if self.first_bounce == True:
+                  self.ball_speed_x *= -1
+                  if self.ball_speed_x < 0:
+                    self.ball_speed_x -= 3
+                  else:
+                    self.ball_speed_x += 3
+                  self.first_bounce = False
 
         #checks if a player has scored
         if (self.ball_x + self.ball_speed_x < 0 or self.ball_x + self.ball_speed_x + self.ball_size > self.canvas_width):

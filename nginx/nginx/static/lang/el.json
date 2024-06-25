@@ -7,7 +7,7 @@
 		"username": "ΟΝΟΜΑ ΧΡΗΣΤΗ",
 		"password": "ΚΩΔΙΚΟΣ",
 		"ok": "OK",
-		"switch": "Δεν έχετε λογαριασμό;",
+		"switch": "Δεν έχετε λογαριασμό?",
 		"signup": "Εγγραφή"
 	},
 	"signup": {
@@ -17,7 +17,7 @@
 		"password": "ΚΩΔΙΚΟΣ",
 		"password_confirmation": "ΕΠΙΒΕΒΑΙΩΣΗ ΚΩΔΙΚΟΥ",
 		"ok": "OK",
-		"switch": "Έχετε ήδη λογαριασμό;",
+		"switch": "Έχετε ήδη λογαριασμό?",
 		"signin": "Σύνδεση"
 	},
 	"main": {
@@ -25,13 +25,13 @@
 		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
 		"tourney_mode": "ΤΟΥΡΝΟΥΆ",
-		"online_mode": "ONLINE"
+		"online_mode": "ΔΙΑΔΊΚΤΥΟ"
 	},
 	"online": {
 		"title": "ΣΥΜΜΕΤΟΧΗ ΣΕ ΠΑΙΧΝΙΔΙ",
 		"room_name": "ΟΝΟΜΑ ΔΩΜΑΤΙΟΥ",
 		"empty_room": "αφήστε κενό για τυχαίο δωμάτιο",
-		"go": "ΠΑΜΕ"
+		"go": "GO"
 	},
 	"user_info": {
 		"match_history": "ΙΣΤΟΡΙΚΟ ΑΓΩΝΩΝ",
@@ -46,13 +46,13 @@
 		"total_hours": "Σύνολο ωρών παιχνιδιού: "
 	},
 	"settings": {
-		"logout": "Αποσύνδεση",
-		"new_username": "Εισάγετε νέο όνομα χρήστη",
-		"new_email": "Εισάγετε νέο email",
-		"new_password": "Εισάγετε νέο κωδικό",
-		"update_profile": "Ενημέρωση προφίλ",
-		"upload_avatar": "Ανέβασμα άβαταρ",
-		"enable_2fa": "Ενεργοποίηση 2FA",
+		"logout": "ΑΠΟΣΎΝΔΕΣΗ",
+		"new_username": "ΧΡΉΣΤΗ",
+		"new_email": "EMAIL",
+		"new_password": "ΚΩΔΙΚΌ",
+		"update_profile": "ΑΠΟΘΗΚΕΎΣΕΤΕ",
+		"upload_avatar": "ΑΝΈΒΑΣΜΑ ΆΒΑΤΑΡ",
+		"enable_2fa": "ΕΝΕΡΓΟΠΟΊΗΣΗ 2FA",
 		"choose_language": "Επιλέξτε τη γλώσσα σας:"
 	},
 	"game": {
@@ -63,17 +63,17 @@
 		"player_names_title": "ΟΝΟΜΑΤΑ ΠΑΙΚΤΩΝ"
 	},
 	"users_lists": {
-		"ulist_title": "ΛΙΣΤΑ ΧΡΗΣΤΩΝ",
-		"flist_title": "ΛΙΣΤΑ ΦΙΛΩΝ",
+		"ulist_title": "ΧΡΗΣΤΩΝ",
+		"flist_title": "ΦΙΛΩΝ",
 		"requests_title": "ΑΙΤΗΜΑΤΑ ΦΙΛΙΑΣ",
-		"not_allowed": "συνδεθείτε για να αποκτήσετε πρόσβαση"
+		"not_allowed": "συνδεθείτε για πρόσβαση"
 	},
 	"verify_otp": {
 		"enter_otp": "Εισάγετε OTP",
 		"verify_otp": "Επαλήθευση OTP"
 	},
 	"index": {
-		"tabs_title": "ΚΑΡΤΕΛΕΣ",
+		"tabs_title": "ΜΕΝΟΎ",
 		"home_button": "ΑΡΧΙΚΗ",
 		"users_button": "ΧΡΗΣΤΕΣ",
 		"settings_button": "ΡΥΘΜΙΣΕΙΣ",

@@ -126,6 +126,8 @@ export async function drawBrackets() {
 	document.getElementById("brackets-container").style.display = "none";
 }
 
+//const isWhitespaceString = str => !str.replace(/\s/g, '').length
+
 export function enterNicknames(n) {
 	//console.log(1);
 	const form = document.createElement("form");
@@ -150,4 +152,6 @@ export function enterNicknames(n) {
 	// button.id = "GO_N";
 	form.appendChild(button);
 	document.querySelector("#nickname_setup-box").appendChild(form);
+	//if (isWhitespaceString(document.getElementById("player_1").value))
+	//	console.log(100);
 }

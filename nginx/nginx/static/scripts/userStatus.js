@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			console.error("User ID is required to open WebSocket connection");
 			return;
 		}
-		
+
 		socket = new WebSocket(`wss://${window.location.host}/ws/status/?user_id=${userId}`);
 
 		socket.onopen = function(e) {
@@ -32,30 +32,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			console.log("in message:", username_global);
 			let own_id = await getUserId(username_global);
-			if (userId == own_id) {
-				let username = document.getElementById("user-name");
+			//if (userId == own_id) {
+			//	let username = document.getElementById("user-name");
+			//	if (data.status == 'offline') {
+			//		username.style.color = 'red';
+			//	}
+			//	else if (data.status == 'online') {
+			//		username.style.color = 'green';
+			//	}
+			//	else if (data.status == 'ingame') {
+			//		username.style.color = 'yellow';
+			//	}
+			//}
+			const statusElement = document.getElementById(`friend_status_${userId}`);
+			if (statusElement) {
 				if (data.status == 'offline') {
-					username.style.color = 'pink';
+					statusElement.style.color = 'red';
 				}
 				else if (data.status == 'online') {
-					username.style.color = 'green';
+					statusElement.style.color = 'green';
 				}
 				else if (data.status == 'ingame') {
-					username.style.color = 'yellow';
-				}
-			}
-			else {
-				const statusElement = document.getElementById(`friend_profile_${userId}`);
-				if (statusElement) {
-					if (data.status == 'offline') {
-						statusElement.style.color = 'pink';
-					}
-					else if (data.status == 'online') {
-						statusElement.style.color = 'green';
-					}
-					else if (data.status == 'ingame') {
-						statusElement.style.color = 'yellow';
-					}
+					statusElement.style.color = 'yellow';
 				}
 			}
 		};

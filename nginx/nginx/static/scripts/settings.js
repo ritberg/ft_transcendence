@@ -117,6 +117,7 @@ function updateToggle2FAButton() {
         toggle2FAButton.onclick = disable2FA;
     } else if (is2FAEnabled && !is2FAVerified) {
         toggle2FAButton.textContent = 'Cancel 2FA Setup';
+        toggle2FAButton.style.color = 'orange';
         toggle2FAButton.onclick = cancel2FASetup;
     } else {
         toggle2FAButton.textContent = 'Enable 2FA';
@@ -132,7 +133,8 @@ function cancel2FASetup(event) {
     is2FAVerified = false;
     hideOTPElements();
     updateToggle2FAButton();
-    alert('2FA setup has been cancelled.');
+    document.getElementById('toggle-2fa-button').style.color = "rgba(255, 255, 255, .8)";
+    errorMsg('2FA setup has been cancelled.');
 }
 
 function hideOTPElements() {
@@ -261,8 +263,10 @@ document.addEventListener("DOMContentLoaded", function () {
             loadLanguage(selectedLanguage);
         });
 
-        document.getElementById('enable-2fa-form').onsubmit = async function (event) {
+        document.getElementById('toggle-2fa-button').onclick = async function (event) {
             event.preventDefault();
+						document.getElementById("qr-code-container").style.display = "block";
+						document.getElementById("otp-secret").style.display = "block";
             if (!is2FAEnabled) {
                 await enable2FA();
                 const verifyOTPForm = document.getElementById('verify-otp-form');

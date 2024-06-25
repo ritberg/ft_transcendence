@@ -13,6 +13,31 @@ export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
 export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected")) || false;
 
+export const getUserId = async (username) => {
+	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
+	const response = await fetch(getIdUrl,
+		{
+			method: "GET",
+			headers: {
+				"X-CSRFToken": token,
+				"Content-Type": "application/json",
+			},
+			credentials: "include",
+		}
+	);
+	const data = await response.json();
+	if (!response.ok) {
+		if (response.status == 403)
+			errorMsg("you must be logged in to access profiles");
+		else {
+			errorMsg("this user does not exist");
+		}
+		return null;
+	}
+	console.log("data : ", data);
+	return data.id;
+};
+
 export const updateProfile = async (user, isConnected, token) => {
 	console.log("updateProfile called with =", user, isConnected, token);
 
@@ -49,7 +74,7 @@ const updateCSRFToken = (newToken) => {
 	document.querySelector('meta[name="csrf-token"]').setAttribute("content", newToken);
 };
 
-let usersClick, signupButton, loginButton, getUserId;
+let usersClick, signupButton, loginButton;
 document.addEventListener("DOMContentLoaded", function () {
 
 	let storedUser = localStorage.getItem("user");
@@ -69,32 +94,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		console.error("CSRF token not found!");
 		return;
 	}
-
-	getUserId = async (username) => {
-		let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
-		const response = await fetch(getIdUrl,
-			{
-				method: "GET",
-				headers: {
-					"X-CSRFToken": token,
-					"Content-Type": "application/json",
-				},
-				credentials: "include",
-			}
-		);
-		const data = await response.json();
-		if (!response.ok) {
-			if (response.status == 403)
-				errorMsg("you must be logged in to access profiles");
-			else {
-				errorMsg("this user does not exist");
-			}
-			return null;
-		}
-		console.log("data : ", data);
-		return data.id;
-	};
-	
 
 	////////////////////// SIGNUP ////////////////////////////
 
@@ -372,4 +371,4 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 });
-export { usersClick, signupButton, loginButton, getUserId }
+export { usersClick, signupButton, loginButton}

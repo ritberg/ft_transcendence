@@ -22,13 +22,13 @@
 	},
 	"main": {
 		"title": "PONG",
-		"pvp_mode": "PvP",
+		"pvp_mode": "PVP",
 		"cpu_mode": "CPU",
 		"tourney_mode": "TOURNEY",
 		"online_mode": "ONLINE"
 	},
 	"online": {
-		"title": "JOIN A GAME",
+		"title": "JOIN GAME",
 		"room_name": "ROOM NAME",
 		"empty_room": "leave empty for a random room",
 		"go": "GO"
@@ -52,10 +52,10 @@
 		"new_password": "PASSWORD",
 		"update_profile": "SAVE",
 		"enable_2fa": "ENABLE 2FA",
-		"choose_language": "Choose your language:"
+		"choose_language": "CHOOSE YOUR LANGUAGE:"
 	},
 	"game": {
-		"settings_title": "SETTINGS",
+		"settings_title": "SETUP",
 		"players": "PLAYERS",
 		"points": "POINTS",
 		"ok_button": "OK",

@@ -4,18 +4,18 @@
 	},
 	"signin": {
 		"title": "INIRE",
-		"username": "NOMEN UTENTIS",
+		"username": "NOMEN",
 		"password": "TESSERA",
-		"password_confirmation": "CONFIRMA TESSERAM",
 		"ok": "BENE",
 		"switch": "Nondum rationem habes?",
 		"signup": "Conscribere"
 	},
 	"signup": {
 		"title": "CONSCRIPTIO",
-		"username": "NOMEN UTENTIS",
+		"username": "NOMEN",
 		"email": "INSCRIPTIO ELECTRONICA",
 		"password": "TESSERA",
+		"password_confirmation": "CONFIRMA TESSERAM",
 		"ok": "BENE",
 		"switch": "Iam rationem habes?",
 		"signin": "Inire"
@@ -47,24 +47,24 @@
 	},
 	"settings": {
 		"logout": "Exire",
-		"new_username": "Novum nomen utentis inducere",
-		"new_email": "Novam inscriptionem electronicam inducere",
-		"new_password": "Novam tesseram inducere",
-		"update_profile": "Indicem renovare",
-		"upload_avatar": "Imaginem personae submittere",
-		"enable_2fa": "2FA activare",
+		"new_username": "NOMEN",
+		"new_email": "EMAIL",
+		"new_password": "TESSERAM",
+		"update_profile": "SALVARE",
+		"upload_avatar": "IMAGINEM PERSONAE SUBMITTERE",
+		"enable_2fa": "2FA ACTIVARE",
 		"choose_language": "Linguam eligere:"
 	},
 	"game": {
-		"settings_title": "CONSTITUTIONES",
+		"settings_title": "OCCASUS",
 		"players": "LUSORES",
 		"points": "PUNCTA",
 		"ok_button": "BENE",
 		"player_names_title": "NOMINA LUSORUM"
 	},
 	"users_lists": {
-		"ulist_title": "INDEX UTENTIUM",
-		"flist_title": "INDEX AMICORUM",
+		"ulist_title": "UTENTIUM",
+		"flist_title": "AMICORUM",
 		"requests_title": "PETITIONES AMICITIAE",
 		"not_allowed": "login ut obvius"
 	},
@@ -76,7 +76,7 @@
 		"tabs_title": "MENU",
 		"home_button": "DOMUS",
 		"users_button": "UTENTES",
-		"settings_button": "CONSTITUTIONES",
+		"settings_button": "OCCASUS",
 		"user_name": "Hospes"
 	}
 }

@@ -4,7 +4,7 @@
 	},
 	"signin": {
 		"title": "ACCEDI",
-		"username": "NOME UTENTE",
+		"username": "NOME",
 		"password": "PASSWORD",
 		"ok": "OK",
 		"switch": "Non hai un account?",
@@ -12,7 +12,7 @@
 	},
 	"signup": {
 		"title": "REGISTRAZIONE",
-		"username": "NOME UTENTE",
+		"username": "NOME",
 		"email": "EMAIL",
 		"password": "PASSWORD",
     	"password_confirmation": "CONFERMA PASSWORD",
@@ -28,10 +28,10 @@
 		"online_mode": "IN LINEA"
 	},
 	"online": {
-		"title": "UNISCITI A UNA PARTITA",
-		"room_name": "NOME DELLA STANZA",
+		"title": "UNISCITI PARTITA",
+		"room_name": "NOME DELLA SALA",
 		"empty_room": "lascia vuoto per una stanza casuale",
-		"go": "VAI"
+		"go": "GO"
 	},
 	"user_info": {
 		"match_history": "CRONOLOGIA PARTITE",
@@ -47,13 +47,13 @@
 	},
 	"settings": {
 		"logout": "Esci",
-		"new_username": "Inserisci un nuovo nome utente",
-		"new_email": "Inserisci una nuova email",
-		"new_password": "Inserisci una nuova password",
-		"update_profile": "Aggiorna profilo",
+		"new_username": "NOME",
+		"new_email": "EMAIL",
+		"new_password": "PASSWORD",
+		"update_profile": "SALVARE",
 		"upload_avatar": "Carica avatar",
-		"enable_2fa": "Attiva 2FA",
-		"choose_language": "Scegli la tua lingua:"
+		"enable_2fa": "ATTIVARE 2FA",
+		"choose_language": "SCEGLI LA TUA LINGUA:"
 	},
 	"game": {
 		"settings_title": "IMPOSTAZIONI",
@@ -63,8 +63,8 @@
 		"player_names_title": "NOMI DEI GIOCATORI"
 	},
 	"users_lists": {
-		"ulist_title": "LISTA UTENTI",
-		"flist_title": "LISTA AMICI",
+		"ulist_title": "UTENTI",
+		"flist_title": "AMICI",
 		"requests_title": "RICHIESTE DI AMICIZIA",
 		"not_allowed": "login per accedere"
 	},

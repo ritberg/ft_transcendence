@@ -29,12 +29,14 @@ class GameLoop(AsyncWebsocketConsumer):
 
     #player
     player_height = 200
-    playerVelocity = 10
+    playerVelocity = 15
 
     #balling
     ball_width = 30
     ball_height = 30
-    ball_velocity = 7
+    ball_velocity = 5
+
+    first_bounce = True
 
     #where all the rooms are stored
 
@@ -146,10 +148,15 @@ class GameLoop(AsyncWebsocketConsumer):
                     ball_velocityX -= 0.5
                 else:
                     ball_velocityX += 0.5
+                if self.first_bounce == True:
+                  ball_velocityX *= -1
+                  if ball_velocityX < 0:
+                    ball_velocityX -= 3
+                  else:
+                    ball_velocityX += 3
+                  self.first_bounce = False
                 
                 state_update[self.room]["sound"] = True
-
-                
 
         #checks if the ball hit the left paddle
         if (ball_xPos <= 20 + self.paddle_width):
@@ -160,6 +167,13 @@ class GameLoop(AsyncWebsocketConsumer):
                     ball_velocityX -= 0.5
                 else:
                     ball_velocityX += 0.5
+                if self.first_bounce == True:
+                  ball_velocityX *= -1
+                  if ball_velocityX < 0:
+                    ball_velocityX -= 3
+                  else:
+                    ball_velocityX += 3
+                  self.first_bounce = False
 
                 state_update[self.room]["sound"] = True
 

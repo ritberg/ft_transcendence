@@ -205,17 +205,25 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             const li = document.createElement('li');
             //li.textContent = user.username;  
+            const user_status = document.createElement('h6');
+						user_status.style.fontFamily = "Arial";
+						user_status.style.fontSize = "20px";
+						user_status.style.color = "white";
+						user_status.style.margin = "0";
+            user_status.textContent = "•\u00A0";
+            user_status.id = `friend_status_${friend_id}`;
+            if (friend.status == 'online')
+                user_status.style.color = 'green';
+            if (friend.status == 'offline')
+                user_status.style.color = 'red';
+            if (friend.status == 'ingame')
+                user_status.style.color = 'yellow';
+            li.appendChild(user_status);
             const user_button = document.createElement('span');
             user_button.style.flexGrow = "1";
             user_button.style.cursor = "pointer";
             user_button.id = `friend_profile_${friend_id}`;
             user_button.textContent = friend.username;
-            if (friend.status == 'online')
-                user_button.style.color = 'green';
-            if (friend.status == 'offline')
-                user_button.style.color = 'pink';
-            if (friend.status == 'ingame')
-                user_button.style.color = 'yellow';
             li.appendChild(user_button);
 
             // const add_button = document.createElement('button');
