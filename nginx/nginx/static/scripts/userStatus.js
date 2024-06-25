@@ -5,7 +5,7 @@ let socket = null;
 
 let openWebSocket, closeWebSocket, updateStatus;
 document.addEventListener('DOMContentLoaded', () => {
-	openWebSocket = function (userId) {
+	openWebSocket = async function (userId) {
 		console.log("id =", userId);
 		if (!userId) {
 			console.error("User ID is required to open WebSocket connection");
@@ -14,9 +14,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		socket = new WebSocket(`wss://${window.location.host}/ws/status/?user_id=${userId}`);
 
-		socket.onopen = function(e) {
+		socket.onopen = async function(e) {
 			console.log("WebSocket connection established.");
-			updateStatus('online');
+			await updateStatus('online');
 		};
 
 		socket.onclose = function(e) {
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const status = data.status;
 
 			console.log("in message:", username_global);
-			let own_id = await getUserId(username_global);
+			// let own_id = await getUserId(username_global);
 			//if (userId == own_id) {
 			//	let username = document.getElementById("user-name");
 			//	if (data.status == 'offline') {
@@ -46,13 +46,13 @@ document.addEventListener('DOMContentLoaded', () => {
 			//}
 			const statusElement = document.getElementById(`friend_status_${userId}`);
 			if (statusElement) {
-				if (data.status == 'offline') {
+				if (status == 'offline') {
 					statusElement.style.color = 'red';
 				}
-				else if (data.status == 'online') {
+				else if (status == 'online') {
 					statusElement.style.color = 'green';
 				}
-				else if (data.status == 'ingame') {
+				else if (status == 'ingame') {
 					statusElement.style.color = 'yellow';
 				}
 			}
@@ -63,15 +63,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		};
 	}
 
-	closeWebSocket = function () {
+	closeWebSocket = async function () {
 		if (socket) {
-			updateStatus('offline');
+			await updateStatus('offline');
 			socket.close();
 			socket = null;
 		}
 	}
 
-	updateStatus = function (newStatus) {
+	updateStatus = async function (newStatus) {
 		// if (!socket) {
 		// 	console.log("WebSocket is not open. Opening new connection...");
 		// 	const userId = localStorage.getItem('user').id;
@@ -89,27 +89,27 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	// Detect when the page gains or loses focus
-	window.addEventListener('focus', () => {
+	window.addEventListener('focus', async () => {
 		if (userIsConnected) {
 			let url = game.game_type;
 			console.log(url);
 			if (url == 'pvp' || url == 'bot' || url == 'tourney' || url == 'online')
-				updateStatus('ingame');
+				await updateStatus('ingame');
 			else
-				updateStatus('online');
+				await updateStatus('online');
 		}
 	});
 
-	window.addEventListener('blur', () => {
+	window.addEventListener('blur', async () => {
 		if (userIsConnected)
-			updateStatus('offline');
+			await updateStatus('offline');
 	});
 
 	// Detect when the user leaves the page
-	window.addEventListener('beforeunload', () => {
+	window.addEventListener('beforeunload', async () => {
 		if (userIsConnected) {
-			updateStatus('offline');
-			closeWebSocket();
+			await updateStatus('offline');
+			await closeWebSocket();
 		}
 	});
 });

@@ -19,7 +19,7 @@ export async function GameMode(n) {
             return;
         }
         document.getElementById("game_canvas").style.display = "block";
-        updateStatus('ingame');
+        await updateStatus('ingame');
         game.game_type = 'pvp';
         game.game_class = new pvp();
         game.game_class.loop();
@@ -31,7 +31,7 @@ export async function GameMode(n) {
             return;
         }
         document.getElementById("game_canvas").style.display = "block";
-        updateStatus('ingame');
+        await updateStatus('ingame');
         game.game_type = 'bot';
         game.game_class = new bot();
         game.game_class.gameLoop_bot();
@@ -46,7 +46,7 @@ export async function GameMode(n) {
             return;
         }
         document.getElementById("game_canvas").style.display = "block";
-        updateStatus('ingame');
+        await updateStatus('ingame');
         game.game_type = 'tourney';
         game.game_class = new tourney();
         game.game_class.loopTourney();
@@ -95,7 +95,7 @@ export async function GameMode(n) {
                 document.getElementById("online-box").style.display = "none";
                 document.getElementById("game_canvas").style.display = "block";
                 game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
-                updateStatus('ingame');
+                await updateStatus('ingame');
                 game.game_type = 'online';
                 game.game_class = new online();
                 game.game_class.online_game();
@@ -112,6 +112,6 @@ window.onload = async function () {
     document.getElementById('language-select-menu').value = savedLanguage;
     if (userIsConnected == true) {
         let user_id = await getUserId(username_global);
-        openWebSocket(user_id);
+        await openWebSocket(user_id);
     }
 }

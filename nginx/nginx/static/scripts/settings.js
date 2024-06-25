@@ -1,4 +1,4 @@
-import { errorMsg } from "./utils.js";
+import { errorMsg, sleep } from "./utils.js";
 import { updateProfile, token, userIsConnected, username_global } from "./users.js";
 import { route } from "./router.js";
 import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
@@ -389,10 +389,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 return response.json();
             })
-            .then((data) => {
+            .then( async (data) => {
                 if (data !== null) {
                     console.log("data: ", data);
-                    closeWebSocket();
+                    await closeWebSocket();
                     document.getElementById('user-name').style.color = 'white';
                     document.getElementById("chat-box").innerHTML = '';
                     updateProfile(null, false, null);
@@ -407,6 +407,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let updateUrl = "https://" + window.location.host + "/auth/update/";
 
     updateUser = async function () {
+        await closeWebSocket();
+        await sleep(100);
         let formData = new FormData();
         let hasChanges = false;
         let pwdChange = false;
@@ -469,8 +471,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             let user = data.data;
                             await updateProfile(user, true, data.csrfToken);
                             console.log("username-global", username_global);
-                            closeWebSocket();
-                            openWebSocket(user.id);
+                            // await closeWebSocket();
+                            console.log("abracadabra", user.id);
+                            await openWebSocket(user.id);
                             if (user) {
                                 if (data.data.username) {
                                     console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);

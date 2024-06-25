@@ -222,7 +222,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
 				updateProfile(user, true, data.crsfToken);
-				openWebSocket(user.id);
+				await openWebSocket(user.id);
 				let language = await fetchLanguage();
 				localStorage.setItem('preferredLanguage', language);
 				loadLanguage(language);
@@ -371,4 +371,4 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 });
-export { usersClick, signupButton, loginButton}
+export { usersClick, signupButton, loginButton }

@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			location = "/";
 		}
 		
-		updateStatus("online");
+		await updateStatus("online");
 		// get the route object from the urlRoutes object
 		// const route = routes[location] || routes["404"];
 		const { route, params } = matchRoute(location);
