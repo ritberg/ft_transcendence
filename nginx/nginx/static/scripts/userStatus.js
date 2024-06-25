@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		socket.onclose = function(e) {
 			console.log("WebSocket connection closed.");
+			socket = null;
 		};
 
 		socket.onmessage = async function(e) {
