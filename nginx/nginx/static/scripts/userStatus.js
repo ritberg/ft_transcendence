@@ -32,18 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 			console.log("in message:", username_global);
 			let own_id = await getUserId(username_global);
-			//if (userId == own_id) {
-			//	let username = document.getElementById("user-name");
-			//	if (data.status == 'offline') {
-			//		username.style.color = 'red';
-			//	}
-			//	else if (data.status == 'online') {
-			//		username.style.color = 'green';
-			//	}
-			//	else if (data.status == 'ingame') {
-			//		username.style.color = 'yellow';
-			//	}
-			//}
 			const statusElement = document.getElementById(`friend_status_${userId}`);
 			if (statusElement) {
 				if (data.status == 'offline') {
@@ -72,11 +60,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	updateStatus = function (newStatus) {
-		// if (!socket) {
-		// 	console.log("WebSocket is not open. Opening new connection...");
-		// 	const userId = localStorage.getItem('user').id;
-		// 	openWebSocket(userId)
-		// }
+		if (!socket) {
+			console.log("WebSocket is not open. Opening new connection...");
+			let user = JSON.parse(localStorage.getItem('user'));
+			if (!user || !user.id) {
+				return;
+			}
+			const userId = user.id;
+			openWebSocket(userId)
+		}
 		if (userIsConnected) {
 			if (socket && socket.readyState === WebSocket.OPEN) {
 				socket.send(JSON.stringify({
