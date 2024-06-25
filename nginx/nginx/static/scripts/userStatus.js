@@ -6,6 +6,7 @@ let socket = null;
 let openWebSocket, closeWebSocket, updateStatus;
 document.addEventListener('DOMContentLoaded', () => {
 	openWebSocket = function (userId) {
+		console.log("id =", userId);
 		if (!userId) {
 			console.error("User ID is required to open WebSocket connection");
 			return;
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			const userId = data.user_id;
 			const status = data.status;
 
+			console.log("in message:", username_global);
 			let own_id = await getUserId(username_global);
 			if (userId == own_id) {
 				let username = document.getElementById("user-name");

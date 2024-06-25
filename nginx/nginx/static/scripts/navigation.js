@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			document.getElementById("content").classList.remove("hidden");
 			document.getElementById("content").classList.add("shown");
 		}
-		else if (event.target && event.target.id === "user_profile" || event.target && event.target.id === "friend_profile") {
+		else if (event.target && event.target.id === "user_profile" || event.target && event.target.id.startsWith("friend_profile_")) {
 			let username = event.target.innerText;
 			if (username)
 				route("/profile/" + username + "/");

@@ -1,8 +1,8 @@
 import { errorMsg } from "./utils.js";
-import { updateProfile, token, userIsConnected } from "./users.js";
+import { updateProfile, token, userIsConnected, username_global } from "./users.js";
 import { route } from "./router.js";
 import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
-import { closeWebSocket } from "./userStatus.js";
+import { closeWebSocket, openWebSocket } from "./userStatus.js";
 
 let is2FAEnabled = false;
 let is2FAVerified = false;
@@ -28,7 +28,7 @@ async function check2FAStatus() {
     }
 }
 
-async function enable2FA() {
+export async function enable2FA() {
     try {
         console.log("Tentative d'activation de la 2FA");
         let token = localStorage.getItem('access_token');
@@ -228,6 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         // Ajout de la vérification de l'état de la 2FA
         await check2FAStatus();
+        console.log("isf2aEnabled ?", is2FAEnabled);
+        console.log("isf2aVerified ?", is2FAVerified);
         updateToggle2FAButton();
 
         console.log("updateUserInfo called with userInfo =", user);
@@ -410,6 +412,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let usernameInput = document.getElementById("new-username");
         if (usernameInput.value) {
+            console.log(usernameInput.value);
             formData.append("username", usernameInput.value);
             hasChanges = true;
         }
@@ -429,7 +432,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let PictureInput = document.getElementById("avatar-input");
         if (PictureInput.value) {
-            console.log("fdsafdsadspic");
             uploadPicture();
             if (hasChanges == false)
                 return;
@@ -461,7 +463,10 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.log("Update success: ", data);
                         if (pwdChange == false) {
                             let user = data.data;
-                            updateProfile(user, true, data.csrfToken);
+                            await updateProfile(user, true, data.csrfToken);
+                            console.log("username-global", username_global);
+                            closeWebSocket();
+                            openWebSocket(user.id);
                             if (user) {
                                 if (data.data.username) {
                                     console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
@@ -476,19 +481,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 })
-                .catch((error) => {
-                    console.error("Fetch error: ", error.message);
-                });
+                // .catch((error) => {
+                //     console.error("Fetch error: ", error.message);
+                // });
         } else {
             errorMsg("There are no changes");
         }
     }
-    // Add event listeners
-    document.getElementById('update-profile').addEventListener('click', updateUser);
-    document.getElementById('user-logout').addEventListener('click', logoutFunc);
-    document.getElementById('upload-avatar').addEventListener('click', uploadPicture);
 
     // Call displaySettings to initialize the page
-    displaySettings();
+    // displaySettings();
 });
 export { updateUser, logoutFunc, uploadPicture, displaySettings }

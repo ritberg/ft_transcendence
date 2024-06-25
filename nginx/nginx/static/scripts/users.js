@@ -7,6 +7,7 @@ import { handleChatLinkClick } from './chat.js';
 import { addFriend } from './friends.js';
 import { loadLanguage, fetchLanguage } from './lang.js';
 import { openWebSocket } from './userStatus.js';
+import { enable2FA } from './settings.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
@@ -214,6 +215,10 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (data !== null) {
 				console.log("Cookies after signin response:", document.cookie);
 				console.log("Login successful. Server response data:", data);
+				if (data.is_2fa_enabled == true) {
+					enable2FA();
+					return;
+				}
 				let user = data.data;
 				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
