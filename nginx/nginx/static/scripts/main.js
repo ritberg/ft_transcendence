@@ -109,8 +109,8 @@ window.onload = async function () {
     if (!savedLanguage)
         savedLanguage = 'en';
     document.getElementById('language-select-menu').value = savedLanguage;
-    if (userIsConnected == true) {
-        let user_id = await getUserId(username_global);
-        await openWebSocket(user_id);
-    }
+    // if (userIsConnected == true) {
+    //     let user_id = await getUserId(username_global);
+    //     await openWebSocket(user_id);
+    // }
 }

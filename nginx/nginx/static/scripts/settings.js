@@ -13,7 +13,7 @@ async function check2FAStatus() {
         console.log('Local Storage 2FA Status:', {
             verified: localUser?.is_2fa_verified 
         });
-        const response = await fetch('/auth/check-2fa-status/', {
+        const response = await fetch("https://" + window.location.host + '/auth/check-2fa-status/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -38,7 +38,7 @@ async function check2FAStatus() {
 
 async function updateLocalStorage() {
     try {
-        const response = await fetch('/auth/user-info/', {
+        const response = await fetch("https://" + window.location.host + '/auth/user-info/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -59,7 +59,7 @@ export async function enable2FA() {
         let token = localStorage.getItem('access_token');
         const csrfToken = getCSRFToken();
 
-        const response = await fetch('/auth/enable-2fa/', {
+        const response = await fetch("https://" + window.location.host + '/auth/enable-2fa/', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -106,7 +106,7 @@ export async function enable2FA() {
 
 async function disable2FA() {
     try {
-        const response = await fetch('/auth/disable-2fa/', {
+        const response = await fetch("https://" + window.location.host + '/auth/disable-2fa/', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -133,9 +133,10 @@ async function disable2FA() {
 }
 
 async function verify2FA(otp) {
+    await closeWebSocket();
     try {
         console.log('Attempting to verify 2FA with OTP:', otp);
-        const response = await fetch('/auth/verify-otp/', {
+        const response = await fetch("https://" + window.location.host + '/auth/verify-otp/', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -155,6 +156,7 @@ async function verify2FA(otp) {
             alert('OTP Verified Successfully. 2FA is now fully enabled.');
             updateToggle2FAButton();
             hideOTPElements();
+            await updateLocalStorage();
         } else {
             throw new Error(data.detail || 'Failed to verify OTP');
         }
@@ -163,6 +165,17 @@ async function verify2FA(otp) {
         console.error('Error details:', error.message);
         alert(`Error: ${error.message}`);
     }
+}
+
+function cancel2FASetup(event) {
+    event.preventDefault();
+    console.log('Cancelling 2FA Setup');
+    is2FAEnabled = false;
+    is2FAVerified = false;
+    hideOTPElements();
+    updateToggle2FAButton();
+    document.getElementById('toggle-2fa-button').style.color = "rgba(255, 255, 255, .8)";
+    errorMsg('2FA setup has been cancelled.');
 }
 
 function updateToggle2FAButton() {
@@ -182,24 +195,13 @@ function updateToggle2FAButton() {
     }
 }
 
-function cancel2FASetup(event) {
-    event.preventDefault();
-    console.log('Cancelling 2FA Setup');
-    is2FAEnabled = false;
-    is2FAVerified = false;
-    hideOTPElements();
-    updateToggle2FAButton();
-    document.getElementById('toggle-2fa-button').style.color = "rgba(255, 255, 255, .8)";
-    errorMsg('2FA setup has been cancelled.');
-}
-
 function hideOTPElements() {
     document.getElementById('qr-code-container').style.display = 'none';
     document.getElementById('otp-secret').style.display = 'none';
     document.getElementById('verify-otp-form').style.display = 'none';
 }
 
-function getCSRFToken() {
+export function getCSRFToken() {
     const name = 'csrftoken';
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -217,6 +219,7 @@ function getCSRFToken() {
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
+    
     ////// UPDATE PROFILE /////
 
     displaySettings = async function () {
@@ -271,8 +274,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.getElementById('toggle-2fa-button').onclick = async function (event) {
             event.preventDefault();
-						document.getElementById("qr-code-container").style.display = "block";
-						document.getElementById("otp-secret").style.display = "block";
+            if (is2FAVerified) {
+                disable2FA();
+                return;
+            }
+            else if (is2FAEnabled && !is2FAVerified) {
+                cancel2FASetup();
+                return;
+            }
+            document.getElementById("qr-code-container").style.display = "block";
+            document.getElementById("otp-secret").style.display = "block";
             if (!is2FAEnabled) {
                 await enable2FA();
                 const verifyOTPForm = document.getElementById('verify-otp-form');
@@ -491,7 +502,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             console.log("username-global", username_global);
                             // await closeWebSocket();
                             console.log("abracadabra", user.id);
-                            await openWebSocket(user.id);
+                            // await openWebSocket(user.id);
                             if (user) {
                                 if (data.data.username) {
                                     console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);

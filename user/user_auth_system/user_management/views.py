@@ -54,7 +54,6 @@ def disable_2fa(request):
 		return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
 	user.is_2fa_verified = False
-	user.otp_secret = None
 	user.save()
 
 	return Response({'message': '2FA has been disabled successfully'}, status=status.HTTP_200_OK)
@@ -133,6 +132,7 @@ class VerifyOTPLoginView(APIView):
 	permission_classes = [AllowAny]
 
 	def post(self, request, *args, **kwargs):
+		print("Fdsafdsafdsafdsafdsfdsa", request.data)
 		user_id = request.data.get('user_id')
 		otp = request.data.get('otp')
 
@@ -149,11 +149,13 @@ class VerifyOTPLoginView(APIView):
 			login(request, user)
 			refresh = RefreshToken.for_user(user)
 			user.is_2fa_verified = True
+			csrf_token = get_token(request)
 			return Response(
 				{
 					'refresh': str(refresh),
 					'access': str(refresh.access_token),
 					'user': UserSerializer(user).data,
+					'csrfToken': csrf_token,
 					'message': 'User logged in successfully',
 				},
 				status=status.HTTP_200_OK

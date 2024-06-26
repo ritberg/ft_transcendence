@@ -7,7 +7,7 @@ import { handleChatLinkClick } from './chat.js';
 import { addFriend } from './friends.js';
 import { loadLanguage, fetchLanguage } from './lang.js';
 import { openWebSocket } from './userStatus.js';
-import { enable2FA } from './settings.js';
+import { enable2FA, getCSRFToken } from './settings.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
@@ -175,6 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	//let loginForm = document.getElementById("b-signin-ok");
 	let loginUrl = "https://" + window.location.host + "/auth/signin/";
+	var otp_id;
 
 	loginButton = async function (event) {
 		event.preventDefault();
@@ -220,15 +221,34 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (data !== null) {
 				console.log("Cookies after signin response:", document.cookie);
 				console.log("Login successful. Server response data:", data);
-				if (data.is_2fa_enabled == true) {
-					enable2FA();
+				if (data.require_2fa == true) {
+					otp_id = data.user_id;
+					const verifyOTPForm = document.getElementById('login-otp-form');
+					if (verifyOTPForm) {
+						verifyOTPForm.onsubmit = async function (event) {
+							event.preventDefault();
+							const otpInput = document.querySelector('input[name="otp"]');
+							if (!otpInput) {
+								console.error('OTP input field not found');
+								return;
+							}
+							const otp = otpInput.value;
+
+							if (!otp) {
+								alert('Please enter an OTP.');
+								return;
+							}
+
+							await VerifyOTPLogin(otp, otp_id);
+						};
+                	}
 					return;
 				}
 				let user = data.data;
 				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
 				updateProfile(user, true, data.crsfToken);
-				await openWebSocket(user.id);
+				// await openWebSocket(user.id);
 				let language = await fetchLanguage();
 				localStorage.setItem('preferredLanguage', language);
 				loadLanguage(language);
@@ -243,6 +263,44 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 	}
 
+
+	async function VerifyOTPLogin(otp, user_id) {
+		console.log("aaaaa", user_id);
+		try {
+			console.log('Attempting to verify 2FA with OTP:', otp);
+			const response = await fetch("https://" + window.location.host + '/auth/verify-otp-login/', {
+				method: 'POST',
+				headers: {
+					'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+					'Content-Type': 'application/json',
+					'X-CSRFToken': getCSRFToken(),
+				},
+				body: JSON.stringify({ otp, user_id }),
+			});
+	
+			const data = await response.json();
+			console.log('Verify 2FA Response:', data);
+			console.log('Response status:', response.status);
+	
+			if (response.ok) {
+				console.log("now logging in");
+				let user = data.user;
+				updateProfile(user, true, data.csrfToken);
+				// await openWebSocket(user.id);
+				let language = await fetchLanguage();
+				localStorage.setItem('preferredLanguage', language);
+				loadLanguage(language);
+				document.getElementById('language-select-menu').value = language
+				route('/');
+			} else {
+				throw new Error(data.detail || 'Failed to verify OTP');
+			}
+		} catch (error) {
+			console.error('Error verifying OTP:', error);
+			console.error('Error details:', error.message);
+			alert(`Error: ${error.message}`);
+		}
+	}
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////
 
 	usersClick = async function () {
