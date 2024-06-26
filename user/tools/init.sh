@@ -32,4 +32,4 @@ pip install -U 'Twisted[tls,http2]'
 python3 manage.py makemigrations
 python3 manage.py migrate
 # python manage.py runserver 0.0.0.0:8003
-daphne -b 0.0.0.0 -p 8003 project.asgi:application
+daphne -b 0.0.0.0 -p 8003 user_auth_system.asgi:application

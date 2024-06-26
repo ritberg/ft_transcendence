@@ -20,5 +20,5 @@ echo "PostgreSQL started"
 pip install -U 'Twisted[tls,http2]'
 python3 manage.py makemigrations
 python3 manage.py migrate
-daphne -b 0.0.0.0 -p 8005 project.asgi:application
+daphne -b 0.0.0.0 -p 8005 user_statistics.asgi:application
 # python manage.py runserver 0.0.0.0:8005
