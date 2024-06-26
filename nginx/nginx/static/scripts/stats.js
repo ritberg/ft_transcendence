@@ -7,7 +7,7 @@ function updateUserStats(stats) {
 		document.getElementById("wins-value").textContent = stats.wins;
 		document.getElementById("losses-value").textContent = stats.losses;
 		document.getElementById("win-rate-value").textContent = stats.win_rate.toFixed(2) + "%";
-		document.getElementById("goals-avg-value").textContent = (stats.goal_scored / stats.goal_conceded).toFixed(2) + "%";
+		document.getElementById("goals-avg-value").textContent = (stats.goal_scored / (stats.wins + stats.losses));
 		document.getElementById("goals-scored-value").textContent = stats.goal_scored;
 		document.getElementById("goals-conceded-value").textContent = stats.goal_conceded;
 		document.getElementById("total-games-value").textContent = stats.total_games_played;
@@ -25,7 +25,7 @@ function updateMatchHistory(matchHistory, username) {
 			const listItem = document.createElement("li");
 			let date_played = new Date(match.date_played).toLocaleDateString('fr-FR');
 			let opponent = (username === match.player_1.username) ? match.player_2.username : match.player_1.username;
-			const winStatus = "WIN"
+			const winStatus = "WIN";
 			let status = (username === match.winner.username) ? winStatus : "LOSS";
 			let player_1_score = match.player_1.score;
 			let player_2_score = match.player_2.score;
@@ -97,7 +97,7 @@ function createChartGames(stats) {
 			],
 		},
 		options: {
-			responsive: false,
+			responsive: true,
 			plugins: {
 				legend: {
 					position: 'top',
@@ -159,7 +159,7 @@ function createGoalsChart(stats) {
 			],
 		},
 		options: {
-			responsive: false,
+			responsive: true,
 			plugins: {
 				legend: {
 					display: false,
