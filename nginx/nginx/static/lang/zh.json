@@ -8,7 +8,9 @@
 		"password": "密码",
 		"ok": "确定",
 		"switch": "没有账户？",
-		"signup": "注册"
+		"signup": "注册",
+		"otp_enter": "输入一次性密码",
+		"otp_verif": "验证一次性密码"
 	},
 	"signup": {
 		"title": "注册",

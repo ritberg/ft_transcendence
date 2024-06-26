@@ -8,7 +8,9 @@
 		"password": "TESSERA",
 		"ok": "BENE",
 		"switch": "Nondum rationem habes?",
-		"signup": "Conscribere"
+		"signup": "Conscribere",
+		"otp_enter": "Inserere OTP",
+		"otp_verif": "Verificare OTP"
 	},
 	"signup": {
 		"title": "CONSCRIPTIO",

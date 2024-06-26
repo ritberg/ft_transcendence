@@ -8,7 +8,9 @@
 		"password": "PASSWORT",
 		"ok": "OK",
 		"switch": "Noch kein Konto?",
-		"signup": "Registrieren"
+		"signup": "Registrieren",
+		"otp_enter": "OTP eingeben",
+		"otp_verif": "OTP überprüfen"
 	},
 	"signup": {
 		"title": "REGISTRIERUNG",

@@ -17,6 +17,10 @@ export function loadLanguage(lang) {
         document.getElementById('signin-username').textContent = data.signin.username;
       if (document.getElementById('signin-password'))
         document.getElementById('signin-password').textContent = data.signin.password;
+      if (document.getElementById('login-otp-input'))
+        document.getElementById('login-otp-input').placeholder = data.signin.otp_enter;
+      if (document.getElementById('verif-button'))
+        document.getElementById('verif-button').textContent = data.signin.otp_verif;
       if (document.getElementById('b-signin-ok'))
         document.getElementById('b-signin-ok').textContent = data.signin.ok;
       if (document.getElementById('signup-switch')) {

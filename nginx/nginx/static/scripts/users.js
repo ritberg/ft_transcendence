@@ -222,10 +222,14 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("Cookies after signin response:", document.cookie);
 				console.log("Login successful. Server response data:", data);
 				if (data.require_2fa == true) {
+					document.getElementById("otp-full").style.display = "block";
+					document.getElementById("signin-form").style.display = "none";
+					document.getElementById("signin-title").style.display = "none";
 					otp_id = data.user_id;
 					const verifyOTPForm = document.getElementById('login-otp-form');
 					if (verifyOTPForm) {
 						verifyOTPForm.onsubmit = async function (event) {
+							console.log("hi");
 							event.preventDefault();
 							const otpInput = document.querySelector('input[name="otp"]');
 							if (!otpInput) {

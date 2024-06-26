@@ -8,7 +8,9 @@
 		"password": "PASSWORD",
 		"ok": "OK",
 		"switch": "Don't have an account?",
-		"signup": "Sign up"
+		"signup": "Sign up",
+		"otp_enter": "Enter OTP",
+		"otp_verif": "Verify OTP"
 	},
 	"signup": {
 		"title": "SIGN UP",

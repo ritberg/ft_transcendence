@@ -8,7 +8,9 @@
 		"password": "MOT DE PASSE",
 		"ok": "OK",
 		"switch": "Vous n'avez pas de compte?",
-		"signup": "S'inscrire"
+		"signup": "S'inscrire",
+		"otp_enter": "Insérer OTP",
+		"otp_verif": "Vérifier OTP"
 	},
 	"signup": {
 		"title": "INSCRIPTION",
