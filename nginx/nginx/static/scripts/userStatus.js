@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 		socket.onclose = function(e) {
 			console.log("WebSocket connection closed.");
+			socket = null;
 		};
 
 		socket.onmessage = async function(e) {
@@ -72,11 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	updateStatus = async function (newStatus) {
-		// if (!socket) {
-		// 	console.log("WebSocket is not open. Opening new connection...");
-		// 	const userId = localStorage.getItem('user').id;
-		// 	openWebSocket(userId)
-		// }
+		if (!socket) {
+			console.log("WebSocket is not open. Opening new connection...");
+			let user = JSON.parse(localStorage.getItem('user'));
+			if (!user || !user.id) {
+				return;
+			}
+			const userId = user.id;
+			openWebSocket(userId)
+		}
 		if (userIsConnected) {
 			if (socket && socket.readyState === WebSocket.OPEN) {
 				socket.send(JSON.stringify({

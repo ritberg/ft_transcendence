@@ -1,7 +1,7 @@
 import { drawBrackets, enterNicknames, createPlayers, tourney_game } from './brackets.js';
 import { change_loop_exec } from './pong_tourney.js';
 import { GameMode } from './main.js';
-import { sleep } from './utils.js';
+import { sleep, errorMsg } from './utils.js';
 import { modifyDelta, stars } from './stars.js';
 import { closeChatSocket } from './chat.js';
 import { loadLanguage } from './lang.js';
@@ -134,15 +134,27 @@ export async function tournamentSettings() {
 	document.getElementById("tourney_settings-box").classList.remove("hidden");
 	document.getElementById("nicknames_form").addEventListener("submit", async function(event) {
 		event.preventDefault();
+		const seen = new Set();
+		for (const element of document.querySelectorAll("[id^='player_']")) {
+			const content = element.value.trim();
+			if (content === '') {
+				errorMsg("Names must contain visible characters");
+				return;
+			}
+			if (seen.has(content)) {
+				errorMsg("Duplicates are not allowed");
+				return;
+			}
+			seen.add(content);
+		}
 		createPlayers();
-        // closeChatSocket();
-        // document.getElementById("chat-box").innerHTML = '';
-        document.getElementById("chat-box").classList.add("chat-active");
-        document.getElementById("b-close-chat").classList.add("chat-active");
-        if (document.getElementById("msg_container") == null)
-            document.getElementById("chat-box").innerHTML = `<div id="msg_container"></div>`;
-        await tournamentMessages("tournament", "The tournament has started !");
-
+		// closeChatSocket();
+		// document.getElementById("chat-box").innerHTML = '';
+		document.getElementById("chat-box").classList.add("chat-active");
+		document.getElementById("b-close-chat").classList.add("chat-active");
+		if (document.getElementById("msg_container") == null)
+			document.getElementById("chat-box").innerHTML = `<div id="msg_container"></div>`;
+		await tournamentMessages("tournament", "The tournament has started !");
 		if (window.location.pathname !== "/tourney/") {
 			change_loop_exec(false);
 			modifyDelta(1.5);

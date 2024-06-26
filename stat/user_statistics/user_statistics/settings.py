@@ -31,6 +31,7 @@ DB_PASSWORD = env('DB_TRANSCENDENCE_PASSWORD')
 DB_HOST = env('DB_TRANSCENDENCE_HOST')
 DB_PORT = env('DB_TRANSCENDENCE_PORT')
 IP_ADDRESS= env('IP_ADDRESS')
+SECRET_KEY_ENV = env('SECRET_KEY_USER')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -41,7 +42,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'tphie*yo87rgi0$$wkmke#b)u)&@kl-r2tmk=z*hrcj^grkl4_'
+SECRET_KEY = SECRET_KEY_ENV
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
