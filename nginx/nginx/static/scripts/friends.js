@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 user_status.style.color = 'green';
             if (friend.status == 'offline')
                 user_status.style.color = 'red';
-            if (friend.status == 'ingame')
+            if (friend.status == 'in_game')
                 user_status.style.color = 'yellow';
             li.appendChild(user_status);
             const user_button = document.createElement('span');

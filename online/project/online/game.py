@@ -57,21 +57,6 @@ class GameLoop(AsyncWebsocketConsumer):
         self.player2 = self.find_player("right", self.room)
         self.room_var = room_vars[self.room]
 
-        #timer which seems to slow down the start of the game
-        # a = time.time()
-        # c = 0
-        # while 1:
-        #     b = time.time()
-        #     b = 3 - math.floor(b - a)
-        #     if b != c:
-        #         await self.send(
-        #             text_data=rapidjson.dumps({"type": "countdown", "left": b})
-        #         )
-        #     c = b
-        #     if b == 0:
-        #         break
-        #     await asyncio.sleep(0.03)
-
         #initializes ball direction/position
         self.init_ball_values(self.room)
         self.ball_direction()

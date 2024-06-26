@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			//	else if (data.status == 'online') {
 			//		username.style.color = 'green';
 			//	}
-			//	else if (data.status == 'ingame') {
+			//	else if (data.status == 'in_game') {
 			//		username.style.color = 'yellow';
 			//	}
 			//}
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 				else if (status == 'online') {
 					statusElement.style.color = 'green';
 				}
-				else if (status == 'ingame') {
+				else if (status == 'in_game') {
 					statusElement.style.color = 'yellow';
 				}
 			}
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			let url = game.game_type;
 			console.log(url);
 			if (url == 'pvp' || url == 'bot' || url == 'tourney' || url == 'online')
-				await updateStatus('ingame');
+				await updateStatus('in_game');
 			else
 				await updateStatus('online');
 		}

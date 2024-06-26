@@ -6,8 +6,8 @@ function updateUserStats(stats) {
 	if (stats) {
 		document.getElementById("wins-value").textContent = stats.wins;
 		document.getElementById("losses-value").textContent = stats.losses;
-		document.getElementById("win-rate-value").textContent = stats.win_rate.toFixed(2);
-		document.getElementById("goals-avg-value").textContent = (stats.goal_scored / stats.goal_conceded).toFixed(2);
+		document.getElementById("win-rate-value").textContent = stats.win_rate.toFixed(2) + "%";
+		document.getElementById("goals-avg-value").textContent = (stats.goal_scored / stats.goal_conceded).toFixed(2) + "%";
 		document.getElementById("goals-scored-value").textContent = stats.goal_scored;
 		document.getElementById("goals-conceded-value").textContent = stats.goal_conceded;
 		document.getElementById("total-games-value").textContent = stats.total_games_played;

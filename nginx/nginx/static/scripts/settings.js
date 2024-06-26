@@ -447,9 +447,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let PictureInput = document.getElementById("avatar-input");
         if (PictureInput.value) {
-            uploadPicture();
-            if (hasChanges == false)
-                return;
+            // await uploadPicture();
+            // console.log("kjkjkjkjkjkjkjkjkjkjkjkjkj", hasChanges);
+            // if (hasChanges == false)
+            //     return;
+            // else
+            //     await sleep(100);
+            console.log(PictureInput.value);
+            let file = document.getElementById("avatar-input").files[0];
+            formData.append("profile_picture", file);
+            hasChanges = true;
         }
 
         if (hasChanges) {
@@ -478,6 +485,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         console.log("Update success: ", data);
                         if (pwdChange == false) {
                             let user = data.data;
+                            document.getElementById("user-avatar").src = user.profile_picture;
+                            document.getElementById("avatar-input").value = null;
                             await updateProfile(user, true, data.csrfToken);
                             console.log("username-global", username_global);
                             // await closeWebSocket();

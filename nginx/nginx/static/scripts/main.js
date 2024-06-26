@@ -19,7 +19,7 @@ export async function GameMode(n) {
             return;
         }
         document.getElementById("game_canvas").style.display = "block";
-        await updateStatus('ingame');
+        await updateStatus('in_game');
         game.game_type = 'pvp';
         game.game_class = new pvp();
         game.game_class.loop();
@@ -31,7 +31,7 @@ export async function GameMode(n) {
             return;
         }
         document.getElementById("game_canvas").style.display = "block";
-        await updateStatus('ingame');
+        await updateStatus('in_game');
         game.game_type = 'bot';
         game.game_class = new bot();
         game.game_class.gameLoop_bot();
@@ -46,7 +46,7 @@ export async function GameMode(n) {
             return;
         }
         document.getElementById("game_canvas").style.display = "block";
-        await updateStatus('ingame');
+        await updateStatus('in_game');
         game.game_type = 'tourney';
         game.game_class = new tourney();
         game.game_class.loopTourney();
@@ -56,9 +56,6 @@ export async function GameMode(n) {
             errorMsg("user must be logged in to play online");
             return;
         }
-
-		document.getElementById("online-box").classList.remove("shown");
-		document.getElementById("online-box").classList.add("hidden");
 
         let player_id = await getUserId(username_global);
         if (player_id == null) 
@@ -87,15 +84,17 @@ export async function GameMode(n) {
         })
         .then(async (data) => {
             if (data !== null) {
+                document.getElementById("online-box").classList.remove("shown");
+		        document.getElementById("online-box").classList.add("hidden");
                 await starWars();
                 if (window.location.pathname !== '/online/') {
                     modifyDelta(1.5);
                     return;
                 }
-                document.getElementById("online-box").style.display = "none";
+                // document.getElementById("online-box").style.display = "none";
                 document.getElementById("game_canvas").style.display = "block";
                 game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
-                await updateStatus('ingame');
+                await updateStatus('in_game');
                 game.game_type = 'online';
                 game.game_class = new online();
                 game.game_class.online_game();
