@@ -9,6 +9,10 @@ let is2FAVerified = false;
 
 async function check2FAStatus() {
     try {
+        const localUser = JSON.parse(localStorage.getItem('user'));
+        console.log('Local Storage 2FA Status:', {
+            verified: localUser?.is_2fa_verified 
+        });
         const response = await fetch('/auth/check-2fa-status/', {
             method: 'GET',
             headers: {
@@ -16,15 +20,36 @@ async function check2FAStatus() {
                 'Content-Type': 'application/json'
             }
         });
-        const data = await response.json();
-        // is2FAEnabled = data.is_2fa_enabled;
-        is2FAVerified = data.is_2fa_verified;
-        console.log('2FA Status:', { enabled: is2FAEnabled, verified: is2FAVerified });
-        updateToggle2FAButton();
-        return { enabled: is2FAEnabled, verified: is2FAVerified };
+        const serverData = await response.json();
+        console.log('Server 2FA Status:', serverData);
+
+        if (localUser?.is_2fa_verified !== serverData.is_2fa_verified) {
+            await updateLocalStorage();
+        }
+
+        is2FAVerified = serverData.is_2fa_verified;
+        
+        return { verified: is2FAVerified };
     } catch (error) {
         console.error('Error checking 2FA status:', error);
         return { enabled: false, verified: false };
+    }
+}
+
+async function updateLocalStorage() {
+    try {
+        const response = await fetch('/auth/user-info/', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+        const userData = await response.json();
+        localStorage.setItem('user', JSON.stringify(userData));
+        console.log('Local Storage Updated:', userData);
+    } catch (error) {
+        console.error('Error updating local storage:', error);
     }
 }
 
@@ -50,7 +75,6 @@ export async function enable2FA() {
         const data = await response.json();
         console.log('2FA Activation Response:', data);
 
-        // Mise à jour de l'interface utilisateur
         const qrCodeContainer = document.getElementById('qr-code-container');
         const img = document.createElement('img');
         const otpSecretSpan = document.getElementById('otp-secret-span');
@@ -190,56 +214,6 @@ function getCSRFToken() {
     }
     return cookieValue;
 }
-
-// async function updateUI() {
-//     const is2FAEnabled = await check2FAStatus();
-//     toggle2FAButton.textContent = is2FAEnabled ? 'Disable 2FA' : 'Enable 2FA';
-//     qrCodeContainer.style.display = 'none';
-//     otpSecretSpan.textContent = '';
-//     verifyOTPForm.style.display = 'none';
-// }
-
-// async function check2FAStatus() {
-//     try {
-//         const response = await fetch('/auth/verify-otp-login/', {
-//             method: 'GET',
-//             headers: {
-//                 'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-//                 'Content-Type': 'application/json'
-//             }
-//         });
-//         const data = await response.json();
-//         return data.is_2fa_enabled;
-//     } catch (error) {
-//         console.error('Error checking 2FA status:', error);
-//         return false;
-//     }
-// }
-
-// async function refreshToken() {
-//     const refreshToken = localStorage.getItem('refresh_token');
-//     if (!refreshToken) {
-//         throw new Error('No refresh token available');
-//     }
-
-//     const response = await fetch('/auth/token/refresh/', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ refresh: refreshToken }),
-//     });
-
-//     if (!response.ok) {
-//         throw new Error('Failed to refresh token');
-//     }
-
-//     const data = await response.json();
-//     localStorage.setItem('access_token', data.access);
-//     return data.access;
-// }
-
-// updateUI();
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
@@ -434,6 +408,9 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch((error) => {
                 console.error("Fetch error:", error);
             });
+
+            localStorage.removeItem('user');
+            localStorage.removeItem('access_token');
     }
 
     let updateUrl = "https://" + window.location.host + "/auth/update/";

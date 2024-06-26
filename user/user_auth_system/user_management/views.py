@@ -26,6 +26,14 @@ import re
 
 User = get_user_model()
 
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 @api_view(['GET'])
 def check_2fa_status(request):
     user = request.user
@@ -33,7 +41,6 @@ def check_2fa_status(request):
         return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
     return Response({
-        'is_2fa_enabled': user.is_2fa_enabled,
         'is_2fa_verified': user.is_2fa_verified
     }, status=status.HTTP_200_OK)
 
@@ -46,7 +53,6 @@ def disable_2fa(request):
 	if not user.is_2fa_verified:
 		return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
-	user.is_2fa_enabled = False
 	user.is_2fa_verified = False
 	user.otp_secret = None
 	user.save()
@@ -66,7 +72,6 @@ def enable_2fa(request):
 	# Generate a new secret key
 	secret_key = pyotp.random_base32()
 	user.otp_secret = secret_key
-	user.is_2fa_enabled = True
 	user.is_2fa_verified = False
 	user.save()
 
@@ -119,7 +124,6 @@ def verify_otp(request):
 	
 	if totp.verify(otp, valid_window=1):
 		user.is_2fa_verified = True
-		user.is_2fa_enabled = False
 		user.save()
 		return Response({'detail': 'OTP verified successfully. 2FA is now fully enabled.'}, status=status.HTTP_200_OK)
 	else:
@@ -137,13 +141,14 @@ class VerifyOTPLoginView(APIView):
 		except User.DoesNotExist:
 			return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-		if not user.is_2fa_enabled:
-			return Response({'message': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+		# if not user.is_2fa_enabled:
+		# 	return Response({'message': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
 		totp = pyotp.TOTP(user.otp_secret)
 		if totp.verify(otp):
 			login(request, user)
 			refresh = RefreshToken.for_user(user)
+			user.is_2fa_verified = True
 			return Response(
 				{
 					'refresh': str(refresh),
@@ -205,7 +210,7 @@ class LoginUserView(APIView):
 				password=request.data['password'],
 			)
 			if user is not None:
-				if user.is_2fa_enabled:
+				if user.is_2fa_verified:
 					# Si 2FA est activé, ne pas connecter l'utilisateur immédiatement
 					return Response(
 						{
