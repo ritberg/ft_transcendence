@@ -142,7 +142,9 @@ services:
 
   db_transcendence:
     container_name: db_transcendence
-    image: postgres:16.2
+    build:
+      context: ./db_transcendence/docker
+      dockerfile: Dockerfile
     env_file:
       - .env
     environment:
@@ -151,7 +153,7 @@ services:
       POSTGRES_PASSWORD: ${DB_TRANSCENDENCE_PASSWORD}
       PGPORT: ${DB_TRANSCENDENCE_PORT}
     volumes:
-      - db_transcendence:/var/lib/postgresql/data
+      - db_transcendence:/var/lib/postgresql/data/
     expose:
       - "5434"
     tty: true
@@ -211,7 +213,7 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${PWD}/database"
+      device: "${PWD}/db_transcendence/db_transcendence"
 
 networks:
   transcendance:

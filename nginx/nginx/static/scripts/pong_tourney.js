@@ -119,11 +119,25 @@ export class tourney {
 		setTimeout(() => { this.ball.velocityX = tmp; }, 500);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
+		// this.gameLoop();
+		this.startAnimating(120);
+	}
+
+	fpsInterval;
+	then;
+
+	startAnimating(fps) {
+		this.fpsInterval = 1000 / fps;
+		this.then = performance.now();
 		this.gameLoop();
 	}
 
 	async gameLoop() {
 		loop_exec = true;
+
+		let now = performance.now();
+    	let elapsed = now - this.then;
+
 		if (this.player1.score == tourney_game.max_points || this.player2.score == tourney_game.max_points) {
 			//console.log(tourney_game.index, tourney_game.score[0][0].name);
 			tourney_game.score[tourney_game.index][1] = this.player1.score;
@@ -179,7 +193,8 @@ export class tourney {
 				return;
 			}
 		}
-		else {
+		else if (elapsed > this.fpsInterval) {
+			this.then = now - (elapsed % this.fpsInterval);
 			//move players
 			this.move_players();
 

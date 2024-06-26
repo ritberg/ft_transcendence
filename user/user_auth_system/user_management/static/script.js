@@ -622,9 +622,6 @@ const unblockUser = async () => {
     fetchFriends();
     fetchBlockedUsers();
   });
-<<<<<<< HEAD:user_service/user_auth_system/user_management/static/script.js
-});
-=======
 
   // btnChat.addEventListener("click", function (event) {
 
@@ -885,4 +882,3 @@ const unblockUser = async () => {
 
 });
   /////////////     Chat end (Rita)  //////////////
->>>>>>> temporary_branch:user/user_auth_system/user_management/static/script.js
