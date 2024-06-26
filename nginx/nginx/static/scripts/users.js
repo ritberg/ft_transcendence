@@ -140,12 +140,18 @@ document.addEventListener("DOMContentLoaded", function () {
                     else
                         errorMsg(error.email[0]);
                 }
-                else if (error.password)
-                    errorMsg(error.password[0]);
-                else if (error.password_confirm)
-                    errorMsg(error.password_confirm[0]);
-                else if (error.username)
-                    errorMsg(error.username[0]);
+				else if (error.username) {
+                    if (typeof(error.username) == 'string')
+                        errorMsg(error.username);
+                    else
+                        errorMsg(error.username[0]);
+                }
+                else if (error.password) {
+                    if (typeof(error.password) == 'string')
+                        errorMsg(error.password);
+                    else
+                        errorMsg(error.password[0]);
+                }
                 return null;
             }
             return response.json();

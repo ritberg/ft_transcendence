@@ -181,8 +181,8 @@ class RegisterUserView(APIView):
 				status=status.HTTP_400_BAD_REQUEST
 			)
 		
-		prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
-		if username in prohibited_usernames:
+		prohibited_usernames = ["guest", "system", "admin"]
+		if username.lower() in prohibited_usernames:
 			return Response(
 				{'username': 'Username not allowed'},
 				status=status.HTTP_400_BAD_REQUEST
@@ -263,8 +263,8 @@ class UpdateUserView(APIView):
 		try:
 			username = request.data.get('username')
 
-			prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
-			if username in prohibited_usernames:
+			prohibited_usernames = ["guest", "system", "admin"]
+			if username.lower() in prohibited_usernames:
 				return Response(
 					{'message': 'Username not allowed'},
 					status=status.HTTP_400_BAD_REQUEST
