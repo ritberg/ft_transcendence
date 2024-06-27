@@ -1,5 +1,5 @@
 import { errorMsg, sleep } from "./utils.js";
-import { updateProfile, token, userIsConnected, username_global } from "./users.js";
+import { updateProfile, token, userIsConnected, username_global, getUserId } from "./users.js";
 import { route } from "./router.js";
 import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
 import { closeWebSocket, openWebSocket } from "./userStatus.js";
@@ -16,9 +16,10 @@ async function check2FAStatus() {
         const response = await fetch("https://" + window.location.host + '/auth/check-2fa-status/', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: "include",
         });
         const serverData = await response.json();
         console.log('Server 2FA Status:', serverData);
@@ -41,9 +42,10 @@ async function updateLocalStorage() {
         const response = await fetch("https://" + window.location.host + '/auth/user-info/', {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: "include",
         });
         const userData = await response.json();
         localStorage.setItem('user', JSON.stringify(userData));
@@ -54,24 +56,26 @@ async function updateLocalStorage() {
 }
 
 export async function enable2FA() {
+    await closeWebSocket();
+    await sleep(100);
     try {
         console.log("Tentative d'activation de la 2FA");
-        let token = localStorage.getItem('access_token');
-        const csrfToken = getCSRFToken();
 
         const response = await fetch("https://" + window.location.host + '/auth/enable-2fa/', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
-                'X-CSRFToken': csrfToken
-            }
+                'X-CSRFToken': token
+            },
+            credentials: "include",
         });
 
         if (!response.ok) {
             throw new Error(`Failed to enable 2FA: ${response.status}`);
         }
-
+        let user_id = await getUserId(username_global);
+        await openWebSocket(user_id);
         const data = await response.json();
         console.log('2FA Activation Response:', data);
 
@@ -79,7 +83,7 @@ export async function enable2FA() {
         const img = document.createElement('img');
         const otpSecretSpan = document.getElementById('otp-secret-span');
         const otpSecret = document.getElementById('otp-secret');
-        const verifyOTPForm = document.getElementById('verify-otp-form');
+        const verifyOTPForm = document.getElementById('settings-otp-form');
 
         img.src = data.qr_code;
         img.alt = "2FA QR Code";
@@ -100,19 +104,22 @@ export async function enable2FA() {
 
     } catch (error) {
         console.error('Error enabling 2FA:', error);
-        alert('Error enabling 2FA. Please try again. Details: ' + error.message);
+        errorMsg(error.message);
     }
 }
 
 async function disable2FA() {
+    await closeWebSocket();
+    await sleep(100);
     try {
         const response = await fetch("https://" + window.location.host + '/auth/disable-2fa/', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
-            }
+                'X-CSRFToken': token,
+            },
+            credentials: "include",
         });
 
         if (!response.ok) {
@@ -125,25 +132,30 @@ async function disable2FA() {
         is2FAEnabled = false;
         is2FAVerified = false;
         updateToggle2FAButton();
-        alert('2FA has been disabled successfully.');
+        errorMsg('2FA has been disabled successfully.');
     } catch (error) {
-        console.error('Error disabling 2FA:', error);
-        alert('Error disabling 2FA. Please try again. Details: ' + error.message);
+        errorMsg(error.message);
     }
+    let user_id = await getUserId(username_global);
+    await openWebSocket(user_id);
 }
 
 async function verify2FA(otp) {
+    if (otp.replace(/\s/g,'') == "")
+        return;
     await closeWebSocket();
+    await sleep(100);
     try {
         console.log('Attempting to verify 2FA with OTP:', otp);
         const response = await fetch("https://" + window.location.host + '/auth/verify-otp/', {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json',
-                'X-CSRFToken': getCSRFToken()
+                'X-CSRFToken': token
             },
-            body: JSON.stringify({ otp })
+            body: JSON.stringify({ otp }),
+            credentials: "include",
         });
 
         const data = await response.json();
@@ -153,18 +165,18 @@ async function verify2FA(otp) {
         if (response.ok) {
             is2FAEnabled = false;
             is2FAVerified = true;
-            alert('OTP Verified Successfully. 2FA is now fully enabled.');
+            errorMsg('OTP Verified Successfully. 2FA is now fully enabled.');
             updateToggle2FAButton();
             hideOTPElements();
             await updateLocalStorage();
         } else {
-            throw new Error(data.detail || 'Failed to verify OTP');
+            throw new Error(data.detail || data.message);
         }
     } catch (error) {
-        console.error('Error verifying OTP:', error);
-        console.error('Error details:', error.message);
-        alert(`Error: ${error.message}`);
+        errorMsg(error.message);
     }
+    let user_id = await getUserId(username_global);
+    await openWebSocket(user_id);
 }
 
 function cancel2FASetup(event) {
@@ -201,21 +213,21 @@ function hideOTPElements() {
     document.getElementById('verify-otp-form').style.display = 'none';
 }
 
-export function getCSRFToken() {
-    const name = 'csrftoken';
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
+// export function getCSRFToken() {
+//     const name = 'csrftoken';
+//     let cookieValue = null;
+//     if (document.cookie && document.cookie !== '') {
+//         const cookies = document.cookie.split(';');
+//         for (let i = 0; i < cookies.length; i++) {
+//             const cookie = cookies[i].trim();
+//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
+//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                 break;
+//             }
+//         }
+//     }
+//     return cookieValue;
+// }
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
@@ -298,11 +310,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                         const otp = otpInput.value;
 
-                        if (!otp) {
-                            alert('Please enter an OTP.');
-                            return;
-                        }
-
                         await verify2FA(otp);
                     };
                 }
@@ -320,69 +327,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
                 const otp = otpInput.value;
 
-                if (!otp) {
-                    alert('Please enter an OTP.');
-                    return;
-                }
-
                 await verify2FA(otp);
             };
         }
     }
-
-    // uploadPicture = async function () {
-    //     let file = document.getElementById("avatar-input").files[0];
-
-    //     if (file == null || file.type == "") {
-    //         errorMsg("please select a file");
-    //         return;
-    //     }
-    //     let formData = new FormData();
-
-    //     formData.append("profile_picture", file);
-
-    //     console.log("update clicked");
-    //     console.log("file : ", file);
-    //     for (let [key, value] of formData.entries()) {
-    //         console.log(key, value);
-    //     }
-
-    //     fetch(updateUrl, {
-    //         method: "PUT",
-    //         headers: {
-    //             "X-CSRFToken": token,
-    //         },
-    //         body: formData,
-    //         credentials: "include",
-    //     })
-    //         .then(async (response) => {
-    //             if (!response.ok) {
-    //                 if (response.status == 403)
-    //                     errorMsg("you must be logged in to change picture");
-    //                 else if (response.status == 413) {
-    //                     errorMsg("Image max size is 2mb")
-    //                 }
-    //                 else {
-    //                     const error = await response.json();
-    //                     errorMsg(error.message);
-    //                 }
-    //                 return null;
-    //             }
-    //             return response.json();
-    //         })
-    //         .then((data) => {
-    //             if (data !== null) {
-    //                 console.log("sucess: ", data);
-    //                 console.log("profile picture : ", data.data.profile_picture);
-    //                 let user = data.data;
-    //                 document.getElementById("user-avatar").src = data.data.profile_picture;
-    //                 updateProfile(user, true, token);
-    //             }
-    //         })
-    //         .catch((error) => {
-    //             console.error("Fetch error: ", error.detail);
-    //         });
-    // }
 
     let logoutUrl = "https://" + window.location.host + "/auth/logout/";
 
@@ -428,8 +376,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let updateUrl = "https://" + window.location.host + "/auth/update/";
 
     updateUser = async function () {
-        // await closeWebSocket();
-        // await sleep(100);
+        await closeWebSocket();
+        await sleep(100);
         let formData = new FormData();
         let hasChanges = false;
         let pwdChange = false;
@@ -472,7 +420,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (hasChanges) {
-            fetch(updateUrl, {
+            await fetch(updateUrl, {
                 method: "PUT",
                 headers: {
                     "X-CSRFToken": token,
@@ -484,6 +432,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (!response.ok) {
                         if (response.status == 403)
                             errorMsg("you must be logged in to update your infos");
+                        else if (response.status == 413)
+                            errorMsg("Image max size is 2mb")
                         else {
                             const error = await response.json();
                             errorMsg(error.message);
@@ -501,9 +451,9 @@ document.addEventListener("DOMContentLoaded", function () {
                             document.getElementById("avatar-input").value = null;
                             await updateProfile(user, true, data.csrfToken);
                             console.log("username-global", username_global);
-                            await closeWebSocket();
+                            // await closeWebSocket();
                             console.log("abracadabra", user.id);
-                            await openWebSocket(user.id);
+                            // await openWebSocket(user.id);
                             if (user) {
                                 if (data.data.username) {
                                     console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
@@ -513,7 +463,8 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                         else {
                             document.getElementById("chat-box").innerHTML = '';
-                            updateProfile(null, false, null);
+                            // await closeWebSocket();
+                            await updateProfile(null, false, null);
                             route("/");
                         }
                     }
@@ -523,6 +474,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 // });
         } else {
             errorMsg("There are no changes");
+        }
+        if (pwdChange == false) {
+            console.log("for fuck sake");
+            let user_id = await getUserId(username_global);
+            await openWebSocket(user_id);
         }
     }
 

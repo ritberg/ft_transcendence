@@ -21,6 +21,8 @@
 				<label id="l-new-password">PASSWORD</label>
 			</div>
 		</form>
+		<button id="update-profile">SAVE</button>
+		<button id="user-logout">LOGOUT</button>
 		<select id="language-select-settings">
 			<option value="en">ENGLISH</option>
 			<option value="fr">FRANÇAIS</option>
@@ -34,12 +36,12 @@
 			<button type="button" id="toggle-2fa-button">Enable 2FA</button>
 			<div id="qr-code-container"></div>
 			<p id="otp-secret">Secret key <span id="otp-secret-span"></span></p>
-			<form id="verify-otp-form" style="display: none;">
-				<input type="text" id="otp-input" name="otp" placeholder="Enter OTP">
-				<button type="submit">Verify OTP</button>
-			</form>
+			<div style="display: none;" id="settings-otp-form" class="input-div">
+				<form id="verify-otp-form">
+					<input type="text" id="otp-input" name="otp" placeholder="Enter OTP">
+					<button type="submit">Verify OTP</button>
+				</form>
+			</div>
 		</div>
-		<button id="update-profile">SAVE</button>
-		<button id="user-logout">LOGOUT</button>
 	</div>
 </div>

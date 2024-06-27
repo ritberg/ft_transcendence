@@ -54,7 +54,8 @@ def disable_2fa(request):
 		return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
 	user.is_2fa_verified = False
-	user.otp_secret = None
+	# user.otp_secret = None
+	user.otp_secret = ""
 	user.save()
 
 	return Response({'message': '2FA has been disabled successfully'}, status=status.HTTP_200_OK)
@@ -62,6 +63,7 @@ def disable_2fa(request):
 # authentication views
 @api_view(['POST'])
 def enable_2fa(request):
+	print("fuck this", request.data)
 	user = request.user
 	if not user.is_authenticated:
 		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -149,11 +151,13 @@ class VerifyOTPLoginView(APIView):
 			login(request, user)
 			refresh = RefreshToken.for_user(user)
 			user.is_2fa_verified = True
+			csrf_token = get_token(request)
 			return Response(
 				{
 					'refresh': str(refresh),
 					'access': str(refresh.access_token),
 					'user': UserSerializer(user).data,
+					'csrfToken': csrf_token,
 					'message': 'User logged in successfully',
 				},
 				status=status.HTTP_200_OK
@@ -489,7 +493,7 @@ class GetUserLanguage(APIView):
 		username = request.user.username
 		try:
 			if not username:
-				raise NotFound('A username query parameter is required.')
+				raise NotFound('User not found.')
 			user = User.objects.get(username=username)
 			return Response({'language': user.language}, status=status.HTTP_200_OK)
 		except Exception as e:
@@ -504,7 +508,7 @@ class ChangeUserLanguage(APIView):
 		username = request.user.username
 		try:
 			if not username:
-				raise NotFound('A username query parameter is required.')
+				raise NotFound('User not found.')
 			if not language:
 				raise NotFound('Please select a language')
 			user = User.objects.get(username=username)

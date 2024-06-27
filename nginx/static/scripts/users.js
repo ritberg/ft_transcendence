@@ -1,13 +1,11 @@
 import { sleep, errorMsg } from './utils.js';
 import { route } from './router.js';
-import { invite_accept } from './chat.js';
 import { blockUser, unblockUser, fetchBlockedUsers } from './block.js';
 import { fetchFriends, fetchFriendRequests } from './friends.js';
 import { handleChatLinkClick } from './chat.js';
 import { addFriend } from './friends.js';
 import { loadLanguage, fetchLanguage } from './lang.js';
 import { openWebSocket } from './userStatus.js';
-import { enable2FA, getCSRFToken } from './settings.js';
 
 export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
@@ -237,11 +235,6 @@ document.addEventListener("DOMContentLoaded", function () {
 							}
 							const otp = otpInput.value;
 
-							if (!otp) {
-								alert('Please enter an OTP.');
-								return;
-							}
-
 							await VerifyOTPLogin(otp, otp_id);
 						};
                 	}
@@ -267,7 +260,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 	async function VerifyOTPLogin(otp, user_id) {
-		console.log("aaaaa", user_id);
+		if (otp.replace(/\s/g,'') == "")
+            return;
 		try {
 			console.log('Attempting to verify 2FA with OTP:', otp);
 			const response = await fetch("https://" + window.location.host + '/auth/verify-otp-login/', {
@@ -275,9 +269,10 @@ document.addEventListener("DOMContentLoaded", function () {
 				headers: {
 					'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
 					'Content-Type': 'application/json',
-					'X-CSRFToken': getCSRFToken(),
+					'X-CSRFToken': token,
 				},
 				body: JSON.stringify({ otp, user_id }),
+				credentials: "include",
 			});
 	
 			const data = await response.json();
@@ -288,19 +283,17 @@ document.addEventListener("DOMContentLoaded", function () {
 				console.log("now logging in");
 				let user = data.user;
 				updateProfile(user, true, data.csrfToken);
-				// await openWebSocket(user.id);
+				await openWebSocket(user.id);
 				let language = await fetchLanguage();
 				localStorage.setItem('preferredLanguage', language);
 				loadLanguage(language);
 				document.getElementById('language-select-menu').value = language
 				route('/');
 			} else {
-				throw new Error(data.detail || 'Failed to verify OTP');
+				throw new Error(data.detail || data.message);
 			}
 		} catch (error) {
-			console.error('Error verifying OTP:', error);
-			console.error('Error details:', error.message);
-			alert(`Error: ${error.message}`);
+			errorMsg(error.message);
 		}
 	}
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////

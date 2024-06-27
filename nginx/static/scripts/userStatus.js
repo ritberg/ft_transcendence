@@ -31,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			const userId = data.user_id;
 			const status = data.status;
 
-			console.log("in message:", username_global);
 			const statusElement = document.getElementById(`friend_status_${userId}`);
 			if (statusElement) {
 				if (status == 'offline') {
@@ -60,15 +59,15 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	updateStatus = async function (newStatus) {
-		if (!socket) {
-			console.log("WebSocket is not open. Opening new connection...");
-			let user = JSON.parse(localStorage.getItem('user'));
-			if (!user || !user.id) {
-				return;
-			}
-			const userId = user.id;
-			openWebSocket(userId)
-		}
+		// if (!socket) {
+		// 	console.log("WebSocket is not open. Opening new connection...");
+		// 	let user = JSON.parse(localStorage.getItem('user'));
+		// 	if (!user || !user.id) {
+		// 		return;
+		// 	}
+		// 	const userId = user.id;
+		// 	openWebSocket(userId)
+		// }
 		if (userIsConnected) {
 			if (socket && socket.readyState === WebSocket.OPEN) {
 				socket.send(JSON.stringify({

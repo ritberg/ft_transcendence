@@ -1,6 +1,7 @@
 import { userIsConnected } from "./users.js";
-import { token } from "./users.js";
-import { errorMsg } from "./utils.js";
+import { token, getUserId, username_global } from "./users.js";
+import { errorMsg, sleep } from "./utils.js";
+import { closeWebSocket, openWebSocket } from "./userStatus.js";
 
 export function loadLanguage(lang) {
   fetch(`/static/lang/${lang}.json`)
@@ -196,6 +197,9 @@ export async function changeLanguage(language) {
     return;
   }
 
+  await closeWebSocket();
+  await sleep(100);
+
   return await fetch(changeLanguageUrl, {
     method: "POST",
     headers: {
@@ -213,7 +217,9 @@ export async function changeLanguage(language) {
     }
     return response.json();
   })
-  .then((data) => {
+  .then( async (data) => {
+    let user_id = await getUserId(username_global);
+    await openWebSocket(user_id);
     if (data !== null) {
       return data;
     }
