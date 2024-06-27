@@ -61,15 +61,15 @@ class AI:
 
     def autonomous_player(self, ball_y, paddle_y, paddle_speed):
         if ball_y < paddle_y + self.paddle_height / 2:
-            if paddle_y - paddle_speed > 0:
+            if paddle_y - paddle_speed > 20:
                 paddle_y -= paddle_speed
             else:
-                paddle_y = 0
+                paddle_y = 20
         elif ball_y > paddle_y + self.paddle_height / 2:
-            if paddle_y + paddle_speed + self.paddle_height < self.canvas_height:
+            if paddle_y + paddle_speed + self.paddle_height < self.canvas_height - 20:
                 paddle_y += paddle_speed
             else:
-                paddle_y = self.canvas_height - self.paddle_height
+                paddle_y = self.canvas_height - self.paddle_height - 20
         return paddle_y
 
     async def main(self):
@@ -109,7 +109,6 @@ class AI:
                 else:
                     self.ball_speed_x += 0.5
                 if self.first_bounce == True:
-                  self.ball_speed_x *= -1
                   if self.ball_speed_x < 0:
                     self.ball_speed_x -= 3
                   else:
@@ -128,7 +127,6 @@ class AI:
                 else:
                     self.ball_speed_x += 0.5
                 if self.first_bounce == True:
-                  self.ball_speed_x *= -1
                   if self.ball_speed_x < 0:
                     self.ball_speed_x -= 3
                   else:
@@ -138,6 +136,7 @@ class AI:
         #checks if a player has scored
         if (self.ball_x + self.ball_speed_x < 0 or self.ball_x + self.ball_speed_x + self.ball_size > self.canvas_width):
             #set ball starting values
+            self.first_bounce = True
             self.init_ball_values()
             self.ball_direction()
 

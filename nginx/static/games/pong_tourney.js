@@ -257,7 +257,6 @@ export class tourney {
 				else
 					this.ball.velocityX += 0.5;
 				if (this.first_bounce == true) {
-					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
 						this.ball.velocityX -= 5;
 					else
@@ -275,7 +274,6 @@ export class tourney {
 				else
 					this.ball.velocityX += 0.5;
 				if (this.first_bounce == true) {
-					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
 						this.ball.velocityX -= 5;
 					else

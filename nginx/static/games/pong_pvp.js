@@ -193,7 +193,6 @@ export class pvp {
 				else
 					this.ball.velocityX += 0.5;
 				if (this.first_bounce == true) {
-					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
 						this.ball.velocityX -= 3;
 					else
@@ -211,7 +210,6 @@ export class pvp {
 				else
 					this.ball.velocityX += 0.5;
 				if (this.first_bounce == true) {
-					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
 						this.ball.velocityX -= 3;
 					else
@@ -230,13 +228,13 @@ export class pvp {
 			if (this.player1.score == 5) {
 			    this.reset_board();
 			    this.stop = true;
-				setTimeout(() => { route("/"); }, 2000);
+				setTimeout(() => { if (window.location.pathname === '/pvp/') {route("/");} }, 2000);
 			    return;
 			}
 			if (this.player2.score == 5) {
 			    this.reset_board();
 			    this.stop = true;
-				setTimeout(() => { route("/"); }, 2000);
+				setTimeout(() => { if (window.location.pathname === '/pvp/') {route("/");} }, 2000);
 			    return;
 			}
 			this.first_bounce = true;

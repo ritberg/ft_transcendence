@@ -107,7 +107,7 @@ export class online {
                         };
                         this.sendStats(game_stat);
                     }
-                    setTimeout(() => { route("/"); }, 5000);
+                    setTimeout(() => { if (window.location.pathname === '/online/') {route("/");} }, 2000);
                 }
                 
                 this.p1 = messageData.objects.p1Name;
@@ -226,7 +226,7 @@ export class online {
                 }
                 game.ws.close();
                 game.ws = null;
-                setTimeout(() => { route("/"); }, 2000);
+                setTimeout(() => { if (window.location.pathname === 'pvp') {route("/online/");} }, 2000);
                 this.trigger = false;
             }
             this.context.textAlign = "center";

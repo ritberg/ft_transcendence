@@ -37,7 +37,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
     #balling
     ball_width = 30
     ball_height = 30
-    ball_velocity = 7
+    ball_velocity = 5
 
     #where all the rooms are stored
 
@@ -74,7 +74,6 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
                     "ball_xPos": (self.board_width / 2) - (self.ball_width / 2),
                     "player1Score": 0,
                     "player2Score": 0,
-                    "sound": True,
                 }
 
         #adds players to the room
@@ -255,13 +254,6 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             }
         )
 
-    async def sound(self, event):
-        await self.send_json(
-            {
-                "type": "sound",
-            }
-        )
-
     async def player_num(self, event):
         await self.send_json(
             {
@@ -284,7 +276,5 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
                 self.room_name,
                 {"type": "state_update", "objects": state_update[self.room]},
             )
-            if state_update[self.room]["sound"]:
-                state_update[self.room]["sound"] = False
 
             await asyncio.sleep(1 / 60)

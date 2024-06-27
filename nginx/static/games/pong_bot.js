@@ -190,20 +190,20 @@ export class bot {
 		this.computer.velocityY = this.move * this.player_speed;
 
 		//player 1
-		if (this.player1.yPos + this.player1.velocityY > 0 && this.player1.yPos + this.player1.velocityY + this.player1.height < this.board_height)
+		if (this.player1.yPos + this.player1.velocityY > 20 && this.player1.yPos + this.player1.velocityY + this.player1.height < this.board_height - 20)
 			this.player1.yPos += this.player1.velocityY;
-		else if (!(this.player1.yPos + this.player1.velocityY > 0))
-			this.player1.yPos = 0;
-		else
-			this.player1.yPos = this.board_height - this.player1.height;
+		else if (!(this.player1.yPos + this.player1.velocityY > 20))
+			this.player1.yPos = 20;
+		else if (!(this.player1.yPos + this.player1.velocityY + this.player1.height < this.board_height - 20))
+			this.player1.yPos = this.board_height - this.player1.height -20;
 
 		//player 2
-		if (this.computer.yPos + this.computer.velocityY > 0 && this.computer.yPos + this.computer.velocityY + this.computer.height < this.board_height)
+		if (this.computer.yPos + this.computer.velocityY > 20 && this.computer.yPos + this.computer.velocityY + this.computer.height < this.board_height - 20)
 			this.computer.yPos += this.computer.velocityY;
-		else if (!(this.computer.yPos + this.computer.velocityY > 0))
-			this.computer.yPos = 0;
-		else
-			this.computer.yPos = this.board_height - this.computer.height;
+		else if (!(this.computer.yPos + this.computer.velocityY > 20))
+			this.computer.yPos = 20;
+		else if (!(this.computer.yPos + this.computer.velocityY + this.computer.height < this.board_height - 20))
+			this.computer.yPos = this.board_height - this.computer.height - 20;
 	}
 
 	changeBallVelocity() {
@@ -219,7 +219,6 @@ export class bot {
 				else
 					this.ball.velocityX += 0.5;
 				if (this.first_bounce == true) {
-					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
 						this.ball.velocityX -= 3;
 					else
@@ -237,7 +236,6 @@ export class bot {
 				else
 					this.ball.velocityX += 0.5;
 				if (this.first_bounce == true) {
-					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
 						this.ball.velocityX -= 3;
 					else
@@ -258,7 +256,7 @@ export class bot {
 				game.ws.close();
 				game.ws = null;
 				this.stop = true;
-				setTimeout(() => { route("/"); }, 2000);
+				setTimeout(() => { if (window.location.pathname === '/bot/') {route("/");} }, 2000);
 				return;
 			}
 			if (this.computer.score == 5) {
@@ -266,7 +264,7 @@ export class bot {
 				this.stop = true;
 				game.ws.close();
 				game.ws = null;
-				setTimeout(() => { route("/"); }, 2000);
+				setTimeout(() => { if (window.location.pathname === '/bot/') {route("/");} }, 2000);
 				return;
 			}
 			this.first_bounce = true;
