@@ -55,7 +55,10 @@
 		"update_profile": "更新个人资料",
 		"upload_avatar": "上传头像",
 		"enable_2fa": "启用双重认证",
-		"choose_language": "选择语言："
+		"disable_2fa": "取消双因素认证",
+		"cancel_2fa": "关闭双因素认证",
+		"choose_language": "选择语言：",
+		"otp_verif1": "验证一次性密码"
 	},
 	"game": {
 		"settings_title": "设置",

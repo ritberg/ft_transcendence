@@ -112,10 +112,19 @@ export function loadLanguage(lang) {
         document.getElementById('update-profile').textContent = data.settings.update_profile;
       if (document.getElementById('upload-avatar'))
         document.getElementById('upload-avatar').textContent = data.settings.upload_avatar;
-      if (document.getElementById('enable-2fa'))
-        document.getElementById('enable-2fa').textContent = data.settings.enable_2fa;
+      const toggle2FAButton = document.getElementById('toggle-2fa-button');
+      if (toggle2FAButton) {
+        if (toggle2FAButton.classList.contains('enable2FA'))
+          toggle2FAButton.textContent = data.settings.enable_2fa;
+        else if (toggle2FAButton.classList.contains('disable2FA'))
+          toggle2FAButton.textContent = data.settings.disable_2fa;
+        else if (toggle2FAButton.classList.contains('cancel2FA') && !toggle2FAButton.classList.contains('disable2FA'))
+          toggle2FAButton.textContent = data.settings.cancel_2fa;
+      }
       if (document.getElementById('language-select-label'))
         document.getElementById('language-select-label').textContent = data.settings.choose_language;
+      if (document.getElementById('verif-button1'))
+        document.getElementById('verif-button1').textContent = data.settings.otp_verif1;
 
       // game settings
       if (document.getElementById('settings-title'))
@@ -168,20 +177,20 @@ export async function fetchLanguage() {
     },
     credentials: "include",
   })
-  .then( async (response) => {
-    if (!response.ok) {
+    .then(async (response) => {
+      if (!response.ok) {
         const error = await response.json();
         errorMsg(error.message);
         return null;
-    }
-    return response.json();
-  })
-  .then((data) => {
-    if (data !== null) {
-      console.log(data);
-      return data.language;
-    }
-  })
+      }
+      return response.json();
+    })
+    .then((data) => {
+      if (data !== null) {
+        console.log(data);
+        return data.language;
+      }
+    })
 }
 
 let changeLanguageUrl = "https://" + window.location.host + "/auth/change-language/";
@@ -209,21 +218,21 @@ export async function changeLanguage(language) {
     body: JSON.stringify({ language: language }),
     credentials: "include",
   })
-  .then( async (response) => {
-    if (!response.ok) {
+    .then(async (response) => {
+      if (!response.ok) {
         const error = await response.json();
         errorMsg(error.message);
         return null;
-    }
-    return response.json();
-  })
-  .then( async (data) => {
-    let user_id = await getUserId(username_global);
-    await openWebSocket(user_id);
-    if (data !== null) {
-      return data;
-    }
-    else
-      return null;
-  })
+      }
+      return response.json();
+    })
+    .then(async (data) => {
+      let user_id = await getUserId(username_global);
+      await openWebSocket(user_id);
+      if (data !== null) {
+        return data;
+      }
+      else
+        return null;
+    })
 }

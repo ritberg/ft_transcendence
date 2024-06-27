@@ -55,7 +55,10 @@
 		"update_profile": "SALVARE",
 		"upload_avatar": "Carica avatar",
 		"enable_2fa": "ATTIVARE 2FA",
-		"choose_language": "SCEGLI LA TUA LINGUA:"
+		"disable_2fa": "DISATTIVARE 2FA",
+		"cancel_2fa": "Cancellare 2FA",
+		"choose_language": "SCEGLI LA TUA LINGUA:",
+		"otp_verif1": "Verifica OTP"
 	},
 	"game": {
 		"settings_title": "IMPOSTAZIONI",

@@ -196,14 +196,17 @@ function updateToggle2FAButton() {
         toggle2FAButton.textContent = 'Disable 2FA';
         toggle2FAButton.onclick = disable2FA;
         toggle2FAButton.style.color = 'orange';
+        toggle2FAButton.className = 'disable2FA';
     } else if (is2FAEnabled && !is2FAVerified) {
         toggle2FAButton.textContent = 'Cancel 2FA Setup';
         toggle2FAButton.style.color = 'orange';
         toggle2FAButton.onclick = cancel2FASetup;
+        toggle2FAButton.className = 'cancel2FA';
     } else {
         toggle2FAButton.textContent = 'Enable 2FA';
         toggle2FAButton.onclick = enable2FA;
         toggle2FAButton.style.color = '';
+        toggle2FAButton.className = 'enable2FA';
     }
 }
 

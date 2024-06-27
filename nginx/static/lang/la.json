@@ -55,7 +55,10 @@
 		"update_profile": "SALVARE",
 		"upload_avatar": "IMAGINEM PERSONAE SUBMITTERE",
 		"enable_2fa": "2FA ACTIVARE",
-		"choose_language": "Linguam eligere:"
+		"disable_2fa": "2FA DEACTIVA",
+		"cancel_2fa": "2FA abroga",
+		"choose_language": "Linguam eligere:",
+		"otp_verif1": "Verificare OTP"
 	},
 	"game": {
 		"settings_title": "OCCASUS",

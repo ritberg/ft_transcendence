@@ -55,7 +55,10 @@
 		"update_profile": "SPEICHERN",
 		"upload_avatar": "AVATAR HOCHLADEN",
 		"enable_2fa": "2FA AKTIVIEREN",
-		"choose_language": "Wähle deine Sprache:"
+		"disable_2fa": "2FA DEAKTIVIEREN",
+		"cancel_2fa": "2FA abbrechen",
+		"choose_language": "Wähle deine Sprache:",
+		"otp_verif1": "OTP überprüfen"
 	},
 	"game": {
 		"settings_title": "AUFSTELLEN",

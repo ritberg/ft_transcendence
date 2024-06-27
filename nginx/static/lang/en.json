@@ -54,7 +54,10 @@
 		"new_password": "PASSWORD",
 		"update_profile": "SAVE",
 		"enable_2fa": "ENABLE 2FA",
-		"choose_language": "CHOOSE YOUR LANGUAGE:"
+		"disable_2fa": "DISABLE 2FA",
+		"cancel_2fa": "Cancel 2FA",
+		"choose_language": "CHOOSE YOUR LANGUAGE:",
+		"otp_verif1": "Verify OTP"
 	},
 	"game": {
 		"settings_title": "SETUP",

@@ -55,7 +55,10 @@
 		"update_profile": "ΑΠΟΘΗΚΕΎΣΕΤΕ",
 		"upload_avatar": "ΑΝΈΒΑΣΜΑ ΆΒΑΤΑΡ",
 		"enable_2fa": "ΕΝΕΡΓΟΠΟΊΗΣΗ 2FA",
-		"choose_language": "Επιλέξτε τη γλώσσα σας:"
+		"disable_2fa": "ΑΠΕΝΕΡΓΟΠΟΙΗΣΗ 2FA",
+		"cancel_2fa": "Ακυρώστε το 2FA",
+		"choose_language": "Επιλέξτε τη γλώσσα σας:",
+		"otp_verif1": "Ελέγξτε τον κωδικό OTP"
 	},
 	"game": {
 		"settings_title": "ΡΥΘΜΙΣΕΙΣ",
