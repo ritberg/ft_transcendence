@@ -3,7 +3,7 @@ import { usersClick, getUserId, userIsConnected } from "./users.js";
 import { displaySettings } from "./settings.js";
 import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
-import { change_loop_exec } from "./pong_tourney.js";
+import { change_loop_exec } from "../games/pong_tourney.js";
 import { errorMsg } from "./utils.js";
 import { loadLanguage } from './lang.js';
 import { updateStatus } from "./userStatus.js";

@@ -1,5 +1,5 @@
 import { sleep } from './utils.js';
-import { loop_exec } from './pong_tourney.js';
+import { loop_exec } from '../games/pong_tourney.js';
 
 export let delta = 1.5;
 

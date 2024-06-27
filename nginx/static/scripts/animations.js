@@ -1,5 +1,5 @@
 import { drawBrackets, enterNicknames, createPlayers, tourney_game } from './brackets.js';
-import { change_loop_exec } from './pong_tourney.js';
+import { change_loop_exec } from '../games/pong_tourney.js';
 import { GameMode } from './main.js';
 import { sleep, errorMsg } from './utils.js';
 import { modifyDelta, stars } from './stars.js';

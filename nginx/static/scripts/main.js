@@ -2,10 +2,10 @@ import { errorMsg, sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
 import { username_global, token, userIsConnected, getUserId } from './users.js';
 import { game } from './router.js';
-import { online } from '../online/pong_online.js';
-import { pvp } from './pong_pvp.js';
-import { bot } from '../bot/pong_bot.js';
-import { tourney, change_loop_exec } from './pong_tourney.js';
+import { online } from '../games/pong_online.js';
+import { pvp } from '../games/pong_pvp.js';
+import { bot } from '../games/pong_bot.js';
+import { tourney, change_loop_exec } from '../games/pong_tourney.js';
 import { openWebSocket } from './userStatus.js';
 import { updateStatus } from './userStatus.js';
 

@@ -1,6 +1,6 @@
 import { modifyDelta, stars } from './stars.js';
 import { sleep, randomNumber, tourneyGame, resetTourneyGame, escapeHtml } from './utils.js';
-import { change_loop_exec } from './pong_tourney.js';
+import { change_loop_exec } from '../games/pong_tourney.js';
 import { tournamentMessages } from './animations.js';
 
 export const tourney_game = new tourneyGame();

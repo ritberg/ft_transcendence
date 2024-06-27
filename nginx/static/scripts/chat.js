@@ -2,7 +2,7 @@ import { fetchBlockedUsers } from './block.js';
 import { getUserId, token, userIsConnected, username_global } from './users.js';
 import { errorMsg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
-import { online } from '../online/pong_online.js';
+import { online } from '../games/pong_online.js';
 
 let handleChatLinkClick, fetchInvite, invite_accept, closeChatSocket; 
 document.addEventListener("DOMContentLoaded", function () {

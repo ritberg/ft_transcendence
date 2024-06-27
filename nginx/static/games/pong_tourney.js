@@ -1,9 +1,18 @@
-import { game, route } from '../scripts/router.js'
-import { modifyDelta } from './stars.js';
+import { sleep, writeVerticalText } from '../scripts/utils.js';
+import { stars, modifyDelta, starWarsTourney } from '../scripts/stars.js';
+import { tourney_game, drawBrackets } from '../scripts/brackets.js';
+import { route, game } from '../scripts/router.js';
+import { tournamentMessages } from '../scripts/animations.js';
 
-export class pvp {
-	/********** PONG INIT *************/
+/********** PONG INIT *************/
 
+export var loop_exec = false;
+
+export function change_loop_exec(bool) {
+	loop_exec = bool;
+}
+
+export class tourney {
 	canvas = document.getElementById("game_canvas");
 	context = this.canvas.getContext('2d');
 
@@ -53,7 +62,7 @@ export class pvp {
 		score: 0,
 	}
 
-	stop = false;
+	stop = true;
 
 	constructor() {
 		modifyDelta(1.5);
@@ -70,23 +79,28 @@ export class pvp {
 		this.player2.width = this.player_width;
 		this.player2.height = this.player_height;
 		this.player2.velocityY = this.playerVelocity;
-		// this.player2.score = 0;
+		this.player2.score = 0;
+		this.player2.prediction = -1;
 		this.player1.xPos = 20;
 		this.player1.yPos = this.board_height / 2 - this.player_height / 2;
 		this.player1.width = this.player_width;
 		this.player1.height = this.player_height;
 		this.player1.velocityY = this.playerVelocity;
-		// this.player1.score = 0;
+		this.player1.score = 0;
+		this.player1.prediction = -1;
 		this.ball.width = this.ball_width;
 		this.ball.height = this.ball_height;
 		this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
 		this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
 		this.ball.velocityY = 0;
 		this.ball.velocityX = 0;
+		this.ball.velocityXTmp = 0;
+		this.ball.velocityYTmp = 0;
 	}
 
-	loop()
+	loopTourney()
 	{
+		loop_exec = true;
 		this.canvas.width = this.board_width;
 		this.canvas.height = this.board_height;
 		let ran = Math.floor(Math.random() * 2);
@@ -108,29 +122,75 @@ export class pvp {
 		this.gameLoop();
 	}
 
-	gameLoop() {
-		game.animation_id = window.requestAnimationFrame(this.gameLoop);
-
-		//draw
-		this.draw_board();
-
-		if (this.stop == false) {
+	async gameLoop() {
+		loop_exec = true;
+		if (this.player1.score == tourney_game.max_points || this.player2.score == tourney_game.max_points) {
+			//console.log(tourney_game.index, tourney_game.score[0][0].name);
+			tourney_game.score[tourney_game.index][1] = this.player1.score;
+			tourney_game.score[tourney_game.index + 1][1] = this.player2.score;
+			if (this.player1.score > this.player2.score) {
+				tourney_game.score.push([tourney_game.score[tourney_game.index][0], 172]);
+				tournamentMessages("tournament", `${tourney_game.score[tourney_game.index][0]} won !`);
+			}
+			else {
+				tourney_game.score.push([tourney_game.score[tourney_game.index + 1][0], 172]);
+				tournamentMessages("tournament", `${tourney_game.score[tourney_game.index + 1][0]} won !`);
+			}
+			tourney_game.index += 2;
+			this.player1.score = 0;
+			this.player2.score = 0;
+			this.player1.yPos = this.board_height / 2 - 100;
+			this.player2.yPos = this.player1.yPos;
+			this.context.clearRect(0, 0, this.board_width, this.board_height);
+			loop_exec = false;
+			modifyDelta(1.5);
+			stars(document.getElementById("game_canvas"));
+			await sleep(500);
+			if (window.location.pathname !== "/tourney/") {
+				change_loop_exec(false);
+				modifyDelta(1.5);
+				stars(document.getElementById("main_canvas"));
+				return;
+			}
+			await drawBrackets();
+			if (window.location.pathname !== "/tourney/") {
+				change_loop_exec(false);
+				modifyDelta(1.5);
+				stars(document.getElementById("main_canvas"));
+				return;
+			}
+			//await starWars();
+			let last_player = 0;
+			for (let z = tourney_game.player.length; z > 1; z /= 2)
+				last_player += z;
+			if (tourney_game.index != last_player)
+				await starWarsTourney();
+			else {
+				stars(document.getElementById("main_canvas"));
+				//document.getElementById("main-menu").style.display = "flex";
+				//document.getElementById("main-menu").style.opacity = "0";
+				//await sleep(100);
+				//document.getElementById("main-menu").classList.remove("hidden");
+				//document.getElementById("main-menu").classList.add("shown");
+				//await sleep(200);
+				//document.getElementById("main-menu").style.opacity = "1";
+				if (window.location.pathname == "/tourney/")
+					route("/");
+				return;
+			}
+		}
+		else {
 			//move players
 			this.move_players();
 
 			//this.ball
 			this.changeBallVelocity();
+
+			//draw
+			this.draw_board();
 		}
-		else if (this.player1.score == 5) {
-			this.context.textAlign = "center";
-			this.context.font = "100px Arial";
-			this.context.fillText("PLAYER 1 WON!", this.board_width / 2, this.board_height / 3);
-		}
-		else if (this.player2.score == 5) {
-			this.context.textAlign = "center";
-			this.context.font = "100px Arial";
-			this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
-		}
+		game.animation_id = window.requestAnimationFrame(this.gameLoop);
+
 	}
 
 	fill_middle_lines() {
@@ -157,6 +217,10 @@ export class pvp {
 		//players
 		this.context.fillRect(this.player1.xPos, this.player1.yPos, this.player1.width, this.player1.height);
 		this.context.fillRect(this.player2.xPos, this.player2.yPos, this.player2.width, this.player2.height);
+		this.context.fillStyle = "black";
+		writeVerticalText(this.context, tourney_game.score[tourney_game.index][0], 25, this.player1.yPos + 100, "30px Arial", 0);
+		writeVerticalText(this.context, tourney_game.score[tourney_game.index + 1][0], 975, this.player2.yPos + 100, "30px Arial", 1);
+		this.context.fillStyle = "white";
 
 		//this.ball
 		this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
@@ -186,7 +250,7 @@ export class pvp {
 		}
 		if (this.ball.xPos + this.ball.width >= this.board_width - this.player1.xPos - this.player2.width) {
 			if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.player2.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.player2.yPos + this.player2.height && this.ball.velocityX > 0) {
-				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player2.yPos + this.player2.height / 2)) / 10;
+				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player2.yPos + this.player2.height / 2)) / 15;
 				this.ball.velocityX *= -1;
 				if (this.ball.velocityX < 0)
 					this.ball.velocityX -= 0.5;
@@ -195,16 +259,16 @@ export class pvp {
 				if (this.first_bounce == true) {
 					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
-						this.ball.velocityX -= 3;
+						this.ball.velocityX -= 5;
 					else
-						this.ball.velocityX += 3;
+						this.ball.velocityX += 5;
 					this.first_bounce = false;
 				}
 			}
 		}
 		if (this.ball.xPos <= this.player1.xPos + this.player1.width) {
 			if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.player1.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.player1.yPos + this.player1.height && this.ball.velocityX < 0) {
-				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player1.yPos + this.player1.height / 2)) / 10;
+				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player1.yPos + this.player1.height / 2)) / 15;
 				this.ball.velocityX *= -1;
 				if (this.ball.velocityX < 0)
 					this.ball.velocityX -= 0.5;
@@ -213,9 +277,9 @@ export class pvp {
 				if (this.first_bounce == true) {
 					this.ball.velocityX *= -1;
 					if (this.ball.velocityX < 0)
-						this.ball.velocityX -= 3;
+						this.ball.velocityX -= 5;
 					else
-						this.ball.velocityX += 3;
+						this.ball.velocityX += 5;
 					this.first_bounce = false;
 				}
 			}
@@ -227,18 +291,20 @@ export class pvp {
 			else
 				this.player1.score++;
 
-			if (this.player1.score == 5) {
-			    this.reset_board();
-			    this.stop = true;
-				setTimeout(() => { route("/"); }, 2000);
-			    return;
-			}
-			if (this.player2.score == 5) {
-			    this.reset_board();
-			    this.stop = true;
-				setTimeout(() => { route("/"); }, 2000);
-			    return;
-			}
+			// if (this.player1.score == 5) {
+			//     stop_playing();
+			//     this.context.font = "100px serif";
+			//     this.context.fillText("Player 1 won !", 325, 400);
+			//     this.stop = true;
+			//     return;
+			// }
+			// if (this.player2.score == 5) {
+			//     stop_playing();
+			//     this.context.font = "100px serif";
+			//     this.context.fillText("Player 2 won !", 330, 400);
+			//     this.stop = true;
+			//     return;
+			// }
 			this.first_bounce = true;
 			this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
 			this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
@@ -261,7 +327,6 @@ export class pvp {
 	}
 
 	movePlayer(e) {
-		console.log("1");
 		if (e.key == 'w') {
 			this.player1.velocityY = -this.player_speed;
 		}
