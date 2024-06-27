@@ -1,0 +1,47 @@
+<div id="settings-box">
+	<div id="settings-content">
+		<div id="main_info">
+			<input type="file" id="avatar-input" style="display: none;">
+			<label for="avatar-input">
+				<img id="user-avatar" src="/media/profile_pics/default.jpg" alt="image upload" class="avatar_pic" style="cursor: pointer;">
+			</label>
+			<h1 id="info-username"></h1>
+		</div>
+		<form>
+			<div class="input-div">
+				<input type="text" id="new-username" required="">
+				<label id="l-new-username">USERNAME</label>
+			</div>
+			<div class="input-div">
+				<input type="text" id="new-email" required="">
+				<label id="l-new-email">EMAIL</label>
+			</div>
+			<div class="input-div">
+				<input type="password" id="new-password" required="">
+				<label id="l-new-password">PASSWORD</label>
+			</div>
+		</form>
+		<button id="update-profile">SAVE</button>
+		<button id="user-logout">LOGOUT</button>
+		<select id="language-select-settings">
+			<option value="en">ENGLISH</option>
+			<option value="fr">FRANÇAIS</option>
+			<option value="it">ITALIANO</option>
+			<option value="de">DEUTSCH</option>
+			<option value="el">ΕΛΛΗΝΙΚΆ</option>
+			<option value="zh">中文</option>
+			<option value="la">LATINUM</option>
+		</select>
+		<div id="fa-container">
+			<button type="button" id="toggle-2fa-button">Enable 2FA</button>
+			<div id="qr-code-container"></div>
+			<p id="otp-secret">Secret key <span id="otp-secret-span"></span></p>
+			<div style="display: none;" id="settings-otp-form" class="input-div">
+				<form id="verify-otp-form">
+					<input type="text" id="otp-input" name="otp" placeholder="Enter OTP">
+					<button type="submit" id="verif-button1">Verify OTP</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>

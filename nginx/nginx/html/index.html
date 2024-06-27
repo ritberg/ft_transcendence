@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta name="csrf-token" content="{{ csrf_token }}">
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>(Ping) Pong</title>
+		<link rel="stylesheet" href='/static/styles/styles.css'>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+		<link rel="icon" type="image/x-icon" href='/static/favicon.ico'>
+		<script type="module" src='/static/scripts/lang.js'></script>
+		<script type="module" src='/static/scripts/main.js'></script>
+		<script type="module" src='/static/scripts/router.js'></script>
+		<script type="module" src='/static/scripts/navigation.js'></script>
+		<script type="module" src='/static/scripts/lang.js'></script>
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+	</head>
+	<body>
+		<div id="tabs-icon">
+			<i class="bi bi-list"></i>
+			<h6 id="tabs-title">MENU</h6>
+			<div id="tabs-list-detector">
+			</div>
+			<div id="tabs-list">
+				<button type="button" id="home-button"><div id="home-id">HOME</div><i class="bi bi-house-door"></i></button>
+				<button type="button" id="users-full-list-button"><div id="users-id">USERS</div><i class="bi bi-people"></i></button>
+				<button type="button"id="settings-button"><div id="settings-id">SETTINGS</div><i class="bi bi-gear"></i></button>
+			</div>
+		</div>
+		<div id="chat-box">
+		</div>
+		<div id="b-close-chat"></div>
+			<select id="language-select-menu">
+				<option value="en">ENGLISH</option>
+				<option value="fr">FRANÇAIS</option>
+				<option value="it">ITALIANO</option>
+				<option value="de">DEUTSCH</option>
+				<option value="el">ΕΛΛΗΝΙΚΆ</option>
+				<option value="zh">中文</option>
+				<option value="la">LATINUM</option>
+			</select>
+		<div id="profile_tab">
+			<h6 id="user-name">Guest</h6>
+			<img src="/media/profile_pics/default.jpg" alt="A black, brown, and white dog" class="avatar_pic" id="profile-pic">
+		</div>
+		<div id="error-box"></div>
+		<canvas id="main_canvas" width="1000" height="800"></canvas>
+		<div id="content"></div>
+	</body>
+</html>

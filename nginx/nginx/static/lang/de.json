@@ -1,0 +1,87 @@
+{
+	"info": {
+		"default_username": "Gast"
+	},
+	"signin": {
+		"title": "ANMELDEN",
+		"username": "BENUTZERNAME",
+		"password": "PASSWORT",
+		"ok": "OK",
+		"switch": "Noch kein Konto?",
+		"signup": "Registrieren",
+		"otp_enter": "OTP eingeben",
+		"otp_verif": "OTP überprüfen"
+	},
+	"signup": {
+		"title": "REGISTRIERUNG",
+		"username": "BENUTZERNAME",
+		"email": "EMAIL",
+		"password": "PASSWORT",
+		"password_confirmation": "PASSWORT BESTÄTIGEN",
+		"ok": "OK",
+		"switch": "Bereits ein Konto?",
+		"signin": "Anmelden"
+	},
+	"main": {
+		"title": "PONG",
+		"pvp_mode": "PVP",
+		"cpu_mode": "CPU",
+		"tourney_mode": "TURNIER",
+		"online_mode": "ONLINE"
+	},
+	"online": {
+		"title": "SPIEL BEITRETEN",
+		"room_name": "RAUMNAME",
+		"empty_room": "leer lassen für einen zufälligen Raum",
+		"go": "GO"
+	},
+	"user_info": {
+		"match_history": "SPIELVERLAUF",
+		"stats": "STATISTIKEN",
+		"wins": "Siege: ",
+		"losses": "Niederlagen: ",
+		"win_rate": "Siegesquote: ",
+		"goals_avg": "Durchschnittliche Punkte: ",
+		"goals_scored": "Erzielte Tore: ",
+		"goals_conceded": "Kassierte Tore: ",
+		"total_games": "Gespielte Spiele insgesamt: ",
+		"total_hours": "Gespielte Stunden insgesamt: "
+	},
+	"settings": {
+		"logout": "ABMELDEN",
+		"new_username": "BENUTZERNAMEN",
+		"new_email": "EMAIL",
+		"new_password": "PASSWORT",
+		"update_profile": "SPEICHERN",
+		"upload_avatar": "AVATAR HOCHLADEN",
+		"enable_2fa": "2FA AKTIVIEREN",
+		"disable_2fa": "2FA DEAKTIVIEREN",
+		"cancel_2fa": "2FA abbrechen",
+		"choose_language": "Wähle deine Sprache:",
+		"otp_verif1": "OTP überprüfen"
+	},
+	"game": {
+		"settings_title": "AUFSTELLEN",
+		"players": "SPIELER",
+		"points": "PUNKTE",
+		"ok_button": "OK",
+		"player_names_title": "SPIELERNAMEN"
+	},
+	"users_lists": {
+		"ulist_title": "BENUTZER",
+		"flist_title": "FREUNDES",
+		"requests_title": "OFFENE ANFRAGEN",
+		"not_allowed": "Anmeldung für den Zugang"
+	},
+	"verify_otp": {
+		"enter_otp": "OTP eingeben",
+		"verify_otp": "OTP verifizieren"
+	},
+	"index": {
+		"tabs_title": "MENÜ",
+		"home_button": "STARTSEITE",
+		"users_button": "BENUTZER",
+		"settings_button": "EINSTELLUNGEN",
+		"user_name": "Gast"
+	}
+}

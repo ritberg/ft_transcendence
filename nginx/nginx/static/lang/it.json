@@ -1,0 +1,87 @@
+{
+	"info": {
+		"default_username": "Ospite"
+	},
+	"signin": {
+		"title": "ACCEDI",
+		"username": "NOME",
+		"password": "PASSWORD",
+		"ok": "OK",
+		"switch": "Non hai un account?",
+		"signup": "Registrati",
+		"otp_enter": "Inserisci OTP",
+		"otp_verif": "Verifica OTP"
+	},
+	"signup": {
+		"title": "REGISTRAZIONE",
+		"username": "NOME",
+		"email": "EMAIL",
+		"password": "PASSWORD",
+    	"password_confirmation": "CONFERMA PASSWORD",
+		"ok": "OK",
+		"switch": "Hai già un account?",
+		"signin": "Accedi"
+	},
+	"main": {
+		"title": "PONG",
+		"pvp_mode": "PVP",
+		"cpu_mode": "CPU",
+		"tourney_mode": "TORNEO",
+		"online_mode": "IN LINEA"
+	},
+	"online": {
+		"title": "UNISCITI PARTITA",
+		"room_name": "NOME DELLA SALA",
+		"empty_room": "lascia vuoto per una stanza casuale",
+		"go": "GO"
+	},
+	"user_info": {
+		"match_history": "CRONOLOGIA PARTITE",
+		"stats": "STATISTICHE",
+		"wins": "Vittorie: ",
+		"losses": "Sconfitte: ",
+		"win_rate": "Percentuale di vittorie: ",
+		"goals_avg": "Media punti: ",
+		"goals_scored": "Gol segnati: ",
+		"goals_conceded": "Gol subiti: ",
+		"total_games": "Totale partite giocate: ",
+		"total_hours": "Totale ore giocate: "
+	},
+	"settings": {
+		"logout": "Esci",
+		"new_username": "NOME",
+		"new_email": "EMAIL",
+		"new_password": "PASSWORD",
+		"update_profile": "SALVARE",
+		"upload_avatar": "Carica avatar",
+		"enable_2fa": "ATTIVARE 2FA",
+		"disable_2fa": "DISATTIVARE 2FA",
+		"cancel_2fa": "Cancellare 2FA",
+		"choose_language": "SCEGLI LA TUA LINGUA:",
+		"otp_verif1": "Verifica OTP"
+	},
+	"game": {
+		"settings_title": "IMPOSTAZIONI",
+		"players": "GIOCATORI",
+		"points": "PUNTI",
+		"ok_button": "OK",
+		"player_names_title": "NOMI DEI GIOCATORI"
+	},
+	"users_lists": {
+		"ulist_title": "UTENTI",
+		"flist_title": "AMICI",
+		"requests_title": "RICHIESTE DI AMICIZIA",
+		"not_allowed": "login per accedere"
+	},
+	"verify_otp": {
+		"enter_otp": "Inserisci OTP",
+		"verify_otp": "Verifica OTP"
+	},
+	"index": {
+		"tabs_title": "MENÙ",
+		"home_button": "HOME",
+		"users_button": "UTENTI",
+		"settings_button": "IMPOSTAZIONI",
+		"user_name": "Ospite"
+	}
+}
