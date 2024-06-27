@@ -129,7 +129,7 @@ services:
       - "443:443"
       - "80:80"
     volumes:
-      - nginx:/etc/nginx
+      # - nginx:/etc/nginx
       - media_volume:/home/transcendance/user_auth_system/media
     networks:
       - transcendance
@@ -173,18 +173,7 @@ services:
     restart: on-failure
 
 volumes:
-  nginx:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/nginx/nginx"
   user:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/user/${USER_SERVICE_NAME}"
   db_transcendence:
     driver: local
     driver_opts:
@@ -192,6 +181,11 @@ volumes:
       o: "bind"
       device: "${PWD}/db_transcendence/db_transcendence"
   media_volume:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/db_transcendence/profile_pictures"
 
 networks:
   transcendance:
