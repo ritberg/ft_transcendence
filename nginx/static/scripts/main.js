@@ -25,15 +25,22 @@ export async function GameMode(n) {
         game.game_class.loop();
     }
     else if (n == 1) {
+        game.ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
+        game.game_class = new bot();
         await starWars();
+        modifyDelta(1.5);
         if (window.location.pathname !== '/bot/') {
+            return;
+        }
+        if (game.ws.readyState === WebSocket.CLOSED) {
+            game.ws = null;
             modifyDelta(1.5);
+            document.getElementById("bot-not-ready").style.display = "block";
             return;
         }
         document.getElementById("game_canvas").style.display = "block";
         await updateStatus('in_game');
         game.game_type = 'bot';
-        game.game_class = new bot();
         game.game_class.gameLoop_bot();
     }
     else if (n == 2)

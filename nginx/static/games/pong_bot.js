@@ -58,11 +58,36 @@ export class bot {
 	stop = false;
 
 	constructor() {
+		console.log("hi");
 		modifyDelta(1.5);
 		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
+
+		game.ws.onopen = (event) => {
+			if (game.ws !== null) {
+				game.ws.send(JSON.stringify({
+					"player" : this.player1.yPos,
+					"computer" : this.computer.yPos,
+					"ballX" : this.ball.xPos,
+					"ballY" : this.ball.yPos
+				}));
+			}
+		};
+		game.ws.addEventListener('message', (event) => {
+			if (game.ws !== null) {
+				let messageData = JSON.parse(event.data);
+				this.move = messageData.predict;
+				console.log(this.move);
+				game.ws.send(JSON.stringify({
+					"player" : this.player1.yPos,
+					"computer" : this.computer.yPos,
+					"ballX" : this.ball.xPos,
+					"ballY" : this.ball.yPos
+				}));
+			}
+		});
 	}
 
 	reset_board() {
@@ -87,30 +112,6 @@ export class bot {
 	}
 
 	gameLoop_bot() {
-		game.ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
-		game.ws.onopen = (event) => {
-			if (game.ws !== null) {
-				game.ws.send(JSON.stringify({
-					"player" : this.player1.yPos,
-					"computer" : this.computer.yPos,
-					"ballX" : this.ball.xPos,
-					"ballY" : this.ball.yPos
-				}));
-			}
-		};
-		game.ws.addEventListener('message', (event) => {
-			if (game.ws !== null) {
-				let messageData = JSON.parse(event.data);
-				this.move = messageData.predict;
-				console.log(this.move);
-				game.ws.send(JSON.stringify({
-					"player" : this.player1.yPos,
-					"computer" : this.computer.yPos,
-					"ballX" : this.ball.xPos,
-					"ballY" : this.ball.yPos
-				}));
-			}
-		});
 		this.canvas.width = this.board_width;
 		this.canvas.height = this.board_height;
 		let ran = Math.floor(Math.random() * 2);
@@ -125,8 +126,8 @@ export class bot {
 		this.ball.velocityX = tmp;
 		this.ball.velocityX = 0;
 		this.ball.velocityY = 0;
-		setTimeout(() => { this.ball.velocityY = tmp2; }, 500);
-		setTimeout(() => { this.ball.velocityX = tmp; }, 500);
+		setTimeout(() => { this.ball.velocityY = tmp2; }, 800);
+		setTimeout(() => { this.ball.velocityX = tmp; }, 800);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
 		this.gameLoop();
