@@ -1,6 +1,6 @@
 compose_file = docker-compose.yml
 
-volume_dir = db_transcendence/db_transcendence db_transcendence/profile_pictures
+volume_dir = db_transcendence/db_transcendence db_transcendence/profile_pictures nginx/nginx
 
 service = django
 
