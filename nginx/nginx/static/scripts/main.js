@@ -112,7 +112,7 @@ export async function GameMode(n) {
 
 window.onload = async function () {
     stars(document.getElementById("main_canvas"));
-    var savedLanguage = localStorage.getItem('preferredLanguage');
+    var savedLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
     if (!savedLanguage)
         savedLanguage = 'en';
     document.getElementById('language-select-menu').value = savedLanguage;

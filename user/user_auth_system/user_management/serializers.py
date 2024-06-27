@@ -127,7 +127,7 @@ class FriendRequestSerializer(serializers.ModelSerializer):
 			'profile_picture': obj.to_user.profile_picture.url if obj.to_user.profile_picture else None,
 		}
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+class TransTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 	@classmethod
 	def get_token(cls, user):

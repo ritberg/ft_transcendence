@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import authenticate, login, logout, get_user_model
-from .serializers import UserSerializer, FriendRequestSerializer, MyTokenObtainPairSerializer
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from .serializers import UserSerializer, FriendRequestSerializer, TransTokenObtainPairSerializer
 from django.middleware.csrf import get_token
 from django.shortcuts import render, get_object_or_404
 from .models import FriendRequest
@@ -15,7 +16,7 @@ from rest_framework_simplejwt.views import (
 	TokenObtainPairView,
 	TokenRefreshView,
 )
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from django.conf import settings
 import pyotp
 import qrcode
@@ -27,24 +28,29 @@ import re
 User = get_user_model()
 
 class UserInfoView(APIView):
-    permission_classes = [IsAuthenticated]
+	authentication_classes = [JWTAuthentication]
+	permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        user = request.user
-        serializer = UserSerializer(user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+	def get(self, request):
+		user = request.user
+		serializer = UserSerializer(user)
+		return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def check_2fa_status(request):
-    user = request.user
-    if not user.is_authenticated:
-        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+	user = request.user
+	if not user.is_authenticated:
+		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    return Response({
-        'is_2fa_verified': user.is_2fa_verified
-    }, status=status.HTTP_200_OK)
+	return Response({
+		'is_2fa_verified': user.is_2fa_verified
+	}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def disable_2fa(request):
 	user = request.user
 	if not user.is_authenticated:
@@ -62,6 +68,8 @@ def disable_2fa(request):
 
 # authentication views
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def enable_2fa(request):
 	print("fuck this", request.data)
 	user = request.user
@@ -99,6 +107,8 @@ def enable_2fa(request):
 	}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
 def verify_otp(request):
 	user = request.user
 	otp = request.data.get('otp')
@@ -261,6 +271,7 @@ class LogoutUserView(APIView):
 			)
 
 class UpdateUserView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def put(self, request, *args, **kwargs):
@@ -305,6 +316,7 @@ class UpdateUserView(APIView):
 
 # friend request views
 class SendFriendRequestView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request, *args, **kwargs):
@@ -330,6 +342,7 @@ class SendFriendRequestView(APIView):
 				)
 
 class AcceptFriendRequestView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request, *args, **kwargs):
@@ -348,6 +361,7 @@ class AcceptFriendRequestView(APIView):
 		)
 
 class RejectFriendRequestView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request, *args, **kwargs):
@@ -364,6 +378,7 @@ class RejectFriendRequestView(APIView):
 		)
 
 class ListFriendsRequestsView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request, *args, **kwargs):
@@ -375,6 +390,7 @@ class ListFriendsRequestsView(APIView):
 		)
 
 class ListFriendsView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request, *args, **kwargs):
@@ -386,6 +402,7 @@ class ListFriendsView(APIView):
 		)
 
 class DeleteFriendView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def delete(self, request, *args, **kwargs):
@@ -404,6 +421,7 @@ class DeleteFriendView(APIView):
 
 
 class BlockUserView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 	
 	def post(self, request, *args, **kwargs):
@@ -429,6 +447,7 @@ class BlockUserView(APIView):
 		
 	
 class UnblockUserView(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 	
 	def post(self, request, *args, **kwargs):
@@ -449,6 +468,7 @@ class UnblockUserView(APIView):
 			)
 			
 class ListBlockedUsers(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request, *args, **kwargs):
@@ -458,6 +478,7 @@ class ListBlockedUsers(APIView):
 
 
 class GetUserID(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request):
@@ -471,6 +492,7 @@ class GetUserID(APIView):
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
 class GetUserPicture(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request, username):
@@ -484,9 +506,10 @@ class GetUserPicture(APIView):
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
 class TokenObtainPairView(TokenObtainPairView):
-	serializer_class = MyTokenObtainPairSerializer
+	serializer_class = TransTokenObtainPairSerializer
 
 class GetUserLanguage(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def get(self, request):
@@ -500,6 +523,7 @@ class GetUserLanguage(APIView):
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 	
 class ChangeUserLanguage(APIView):
+	authentication_classes = [JWTAuthentication]
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request, *args, **kwargs):
