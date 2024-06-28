@@ -260,6 +260,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         // Ajout de la vérification de l'état de la 2FA
         await check2FAStatus();
+        is2FAEnabled = false;
         console.log("isf2aEnabled ?", is2FAEnabled);
         console.log("isf2aVerified ?", is2FAVerified);
         updateToggle2FAButton();
@@ -425,8 +426,10 @@ document.addEventListener("DOMContentLoaded", function () {
             hasChanges = true;
         }
 
-        if (!hasChanges)
+        if (!hasChanges) {
+            msg("There are no changes");
             return;
+        }
 
         await closeWebSocket();
         await sleep(100);

@@ -21,8 +21,6 @@ def CreateRoom(request):
         if (state == False):
             return JsonResponse({"error": "invalid characters in your room name"}, status=status.HTTP_400_BAD_REQUEST)
         if (room != ""):
-            if (room.strip() == ""):
-                return JsonResponse({"error": "no whitespaces allowed"}, status=status.HTTP_400_BAD_REQUEST)
             try:
                 get_room = Room.objects.get(room_name=room)
                 if get_room.full == True:

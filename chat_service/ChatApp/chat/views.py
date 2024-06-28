@@ -29,11 +29,11 @@ def chatRoom(request, username):
     other_user = get_object_or_404(CustomUser, username=username)
     if other_user == request.user:
         # Prevent users from chatting with themselves
-        return JsonResponse({"error": "User cannot chat with herself/himself"}, status=status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"error": "User cannot chat with herself/himself"}, status=status.HTTP_403_FORBIDDEN)
     
     # Check if the other user is blocked by the authenticated user
     if request.user.blocked_users.filter(id=other_user.id).exists():
-        return JsonResponse({"error": "User is blocked"}, status=status.HTTP_401_UNAUTHORIZED)
+        return JsonResponse({"error": "User is blocked"}, status=status.HTTP_403_FORBIDDEN)
     
     room_name = f"{min(request.user.id, other_user.id)}_{max(request.user.id, other_user.id)}"
     
@@ -57,7 +57,7 @@ def chatRoom(request, username):
         "other_user": other_user.username,
         "status": status.HTTP_200_OK
     }
-    return JsonResponse(context)
+    return JsonResponse(context, status=status.HTTP_200_OK)
 
 def userList(request):
     if not request.user.is_authenticated:
@@ -65,5 +65,5 @@ def userList(request):
     if request.method == 'POST':
         users = CustomUser.objects.exclude(username=request.user.username)
         user_data = [{'username': user.username} for user in users]
-        return JsonResponse({'users': user_data})
-    return JsonResponse({"error": "Invalid request method"}, status=400)
+        return JsonResponse({'users': user_data}, status=status.HTTP_200_OK)
+    return JsonResponse({"error": "Invalid request method"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
