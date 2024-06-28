@@ -11,6 +11,7 @@ export var username_global = "guest";
 export var token = localStorage.getItem("token") || null;
 export var userIsConnected = JSON.parse(localStorage.getItem("userIsConnected")) || false;
 
+//fetches a user's id
 export const getUserId = async (username) => {
 	let getIdUrl = "https://" + window.location.host + `/auth/get-user-id/?username=${username}`;
 	const response = await fetch(getIdUrl,
@@ -32,40 +33,45 @@ export const getUserId = async (username) => {
 		}
 		return null;
 	}
-	console.log("data : ", data);
 	return data.id;
 };
 
+//updates the profile, usually after a login or update
 export const updateProfile = async (user, isConnected, token) => {
     console.log("updateProfile called with =", user, isConnected, token);
 
     if (user !== null) {
-        console.log("user is not null")
         username_global = user.username;
         localStorage.setItem("user", JSON.stringify(user));
+		//put name on top right
         const userNameElement = document.getElementById("user-name");
         if (userNameElement) userNameElement.textContent = escapeHtml(user.username);
+		//updates pfp on the top right
         const profilePicElement = document.getElementById("profile-pic");
         if (profilePicElement) profilePicElement.src = user.profile_picture;
+		//updates pfp in profile
         const userAvatarElement = document.getElementById("user-avatar");
         if (userAvatarElement) userAvatarElement.src = user.profile_picture;
+		//removes the preview from the input
         const avatarInputElement = document.getElementById("avatar-input");
         if (avatarInputElement) avatarInputElement.value = null;
+		//updates the username in settings
         const infoUsernameElement = document.getElementById("info-username");
         if (infoUsernameElement) infoUsernameElement.textContent = escapeHtml(user.username);
     } else {
+		//deletes user info, after a logout or a password update
         console.log("user is null")
         username_global = "Guest";
         const profilePicElement = document.getElementById("profile-pic");
         if (profilePicElement) profilePicElement.src = "/media/profile_pics/default.jpg";
+		//remove user from localstorage
         localStorage.removeItem("user");
         const userNameElement = document.getElementById("user-name");	
         if (userNameElement) userNameElement.textContent = "Guest";
     }
     localStorage.setItem("userIsConnected", isConnected);
     userIsConnected = isConnected;
-    console.log("userIsConnected : ", localStorage.getItem("userIsConnected"));
-    console.log("print tokennnnn2 ", token);
+	//update CSRFToken
     if (token !== null) {
         updateCSRFToken(token);
     } else {
@@ -73,6 +79,7 @@ export const updateProfile = async (user, isConnected, token) => {
     }
 };
 
+//the function that updates the csrf token, after a login for example
 const updateCSRFToken = (newToken) => {
 	console.log("old token : ", token);
 	token = newToken;
@@ -84,6 +91,7 @@ const updateCSRFToken = (newToken) => {
 let usersClick, signupButton, loginButton;
 document.addEventListener("DOMContentLoaded", function () {
 
+	//at the start of the runtime of the website check if there is a user in localStorage
 	let storedUser = localStorage.getItem("user");
 	if (storedUser) {
 		let user = JSON.parse(storedUser);
@@ -113,17 +121,18 @@ document.addEventListener("DOMContentLoaded", function () {
             msg("Cannot signup while logged in");
             return;
         }
+
+		//takes values from form
         let username = document.getElementById("username").value;
         let email = document.getElementById("email").value;
         let password = document.getElementById("password").value;
         let password_confirm = document.getElementById("password_confirm").value;
 
+		//check to make sure both passwords match
         if (password !== password_confirm) {
             msg("Passwords don't match");
             return;
         }
-
-        console.log({ username, email, password, password_confirm });
 
         await fetch(signupUrl, {
             method: "POST",
@@ -140,7 +149,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     return null;
                 }
                 const error = await response.json();
-                console.log(error);
                 if (error.email) {
                     if (typeof(error.email) == 'string')
                         msg(error.email);
@@ -166,8 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
         .then((data) => {
             if (data !== null) {
                 console.log(data);
-                console.log("token received : ", data.crsfToken);
-                updateCSRFToken(data.crsfToken);
                 route("/signin/");
             }
         })
@@ -194,7 +200,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		let password = document.getElementById("password1").value;
 
 		console.log("Sending signin request...");
-		console.log("username : ", username);
 
 		return await fetch(loginUrl, {
 			method: "POST",
@@ -211,7 +216,6 @@ document.addEventListener("DOMContentLoaded", function () {
 					msg("Error logging in");
 				else {
 					const error = await response.json();
-					console.log(error);
 					let message = error.message.split(": ");
 					if (message.length > 1)
 						msg(message[1]);
@@ -224,8 +228,8 @@ document.addEventListener("DOMContentLoaded", function () {
 		})
 		.then(async (data) => {
 			if (data !== null) {
-				console.log("Cookies after signin response:", document.cookie);
 				console.log("Login successful. Server response data:", data);
+				//if 2FA is not enabled, the user will have to complete an additional step before logging in
 				if (data.require_2fa == true) {
 					document.getElementById("otp-full").style.display = "block";
 					document.getElementById("signin-form").style.display = "none";
@@ -234,7 +238,6 @@ document.addEventListener("DOMContentLoaded", function () {
 					const verifyOTPForm = document.getElementById('login-otp-form');
 					if (verifyOTPForm) {
 						verifyOTPForm.onsubmit = async function (event) {
-							console.log("hi");
 							event.preventDefault();
 							const otpInput = document.querySelector('input[name="otp"]');
 							if (!otpInput) {
@@ -248,15 +251,20 @@ document.addEventListener("DOMContentLoaded", function () {
                 	}
 					return;
 				}
+				//if no 2FA, immediately login
 				let user = data.data;
-				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
+				//updates website with new user
 				await updateProfile(user, true, data.crsfToken);
 				let language = await fetchLanguage();
+				//opens webSocket for status
 				await openWebSocket(user.id);
+				//applies the users's language from his settings
 				localStorage.setItem('preferredLanguage', language);
+				//load the appropriate language
 				loadLanguage(language);
 				document.getElementById('language-select-menu').value = language
+				//redirect to main page
 				route('/');
 				return user;
 			}
@@ -266,8 +274,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			});
 	}
 
-
+	//the additional step which is called if 2FA is enabled
 	async function VerifyOTPLogin(otp, user_id) {
+		//check if otp is empty
 		if (otp.replace(/\s/g,'') == "")
             return;
 		try {
@@ -285,9 +294,9 @@ document.addEventListener("DOMContentLoaded", function () {
 	
 			const data = await response.json();
 			console.log('Verify 2FA Response:', data);
-			console.log('Response status:', response.status);
 	
 			if (response.ok) {
+				//if otp is correct, do the same steps as login
 				console.log("now logging in");
 				let user = data.user;
 				await updateProfile(user, true, data.csrfToken);
@@ -306,9 +315,11 @@ document.addEventListener("DOMContentLoaded", function () {
 	}
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////
 
+	//displays the users/friends
 	usersClick = async function () {
 		let usersUrl = "https://" + window.location.host + "/users_list/";
 
+		//not accessible if not connected
 		if (userIsConnected == false) {
 			const error_msg = document.createElement("h3");
 			error_msg.classList.add("ulist-error");
@@ -339,14 +350,17 @@ document.addEventListener("DOMContentLoaded", function () {
 				if (data == null) {
 					return;
 				}
+				//fetching the friends/friend requests is only done if the user fetch was successful
 				await fetchFriendRequests();
 				await fetchFriends();
 				const usersList = document.getElementById('users_list-container');
 				usersList.innerHTML = '';
 				console.log("data: ", data);
 
+				//creates the display for the users one by one
 				if (data.users.length !== 0) {
 					data.users.forEach((user) => {
+						//displays name
 						const li = document.createElement('li');
 						const user_button = document.createElement('span');
 						user_button.style.flexGrow = "1";
@@ -355,6 +369,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						user_button.id = "user_profile";
 						li.appendChild(user_button);
 
+						//displays add friend button
 						const add_button = document.createElement('button');
 						add_button.classList.add("bi", "bi-person-plus");
 						add_button.addEventListener('click', (e) => {
@@ -362,25 +377,24 @@ document.addEventListener("DOMContentLoaded", function () {
 							addFriend(user.username);
 						});
 						li.appendChild(add_button);
+
+						//displays chat button
 						const chat_button = document.createElement('button');
 						chat_button.classList.add("bi", "bi-chat-left-text");
-
 						chat_button.addEventListener('click', (e) => {
 							e.preventDefault();
-							console.log(e.target);
 							if (!(document.getElementById("chat-box").classList.item("active")))
 								document.getElementById("chat-box").classList.toggle("active");
 							handleChatLinkClick(user.username);
 						});
-
 						li.appendChild(chat_button);
+
+						//displays the block button
 						const block_button = document.createElement('button');
 						block_button.classList.add("bi", "bi-slash-circle");
 						block_button.addEventListener('click', async (e) => {
 							e.preventDefault();
 							let blocked_users = await fetchBlockedUsers();
-							console.log("1", blocked_users);
-							console.log("2", user.username);
 							if (blocked_users.includes(user.username))
 								unblockUser(user.username);
 							else
@@ -394,53 +408,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			.catch(error => {
 				msg("Users can not be retrieved at this time");
 			});
-		// .catch((error) => console.error("Error fetching user data:", error));
-	}
-
-	////////////////////// A SUPPRIMER (DEMANDER A ALESS SI C'EST OK) ////////////////////////////
-
-	async function addGame() {
-		console.log("add game clicked");
-
-		try {
-			const player_1_id = await getUserId("aless");
-			const player_2_id = await getUserId("rita");
-
-			const game = {
-				player_1_id: player_1_id,
-				player_2_id: player_2_id,
-				player_1_score: 10,
-				player_2_score: 5,
-				winner_id: player_1_id,
-				date_played: new Date().toISOString(),
-				duration: 300,
-			};
-
-			console.log("game : ", JSON.stringify(game));
-
-			let setGameUrl = "https://" + window.location.host + "/stat/game-history/";
-
-			const response = await fetch(setGameUrl, {
-				method: "POST",
-				headers: {
-					"X-CSRFToken": token,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(game),
-				credentials: "include",
-			});
-
-			if (!response.ok) {
-				const errorData = await response.json();
-				console.log(response);
-				throw new Error(`Network response was not ok: ${JSON.stringify(errorData)}`);
-			}
-
-			const data = await response.json();
-			console.log(data);
-		} catch (error) {
-			console.error("Fetch error: ", error);
-		}
 	}
 });
 export { usersClick, signupButton, loginButton }

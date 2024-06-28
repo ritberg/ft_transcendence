@@ -4,20 +4,14 @@ import { msg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
 import { online } from '../games/pong_online.js';
 
-let handleChatLinkClick, fetchInvite, invite_accept, closeChatSocket; 
+let handleChatLinkClick, fetchInvite, invite_accept; 
 document.addEventListener("DOMContentLoaded", function () {
     ////////////////////// CHAT ////////////////////////////
 
     var chatSocket = null;
     var chat_room_name;
 
-    closeChatSocket = async function () {
-        if (chatSocket !== null) {
-            chatSocket.close();
-            chatSocket = null;
-        }
-    }
-
+    //handles invites in chat
     fetchInvite = async function (room_name, sender) {
         if (userIsConnected == false) {
 			msg("User must be logged in to play online");
@@ -54,6 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     await sleep(100);
                     document.getElementById("online-box").style.display = "none";
                     document.getElementById("game_canvas").style.display = "block";
+                    //sends invite to other player
                     if (sender == true)
                         chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
                     game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
@@ -66,6 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     ////////////////////// ACCEPT INVITATION TO PLAY PONG ////////////////////////////
 
+    //accept invite
 	invite_accept = async function () {
 		fetchInvite(chat_room_name, false);
 	}
@@ -78,20 +74,21 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	});
 
-    async function chat_profile(username) {
-        console.log(username);
+    //access profile from chat
+    function chat_profile(username) {
         if (username)
             route("/profile/" + username + "/");
     }
 
     document.getElementById('chat-box').addEventListener('click', function(event) {
-        console.log(event.target);
         if (event.target && event.target.classList.contains('msg_username')) {
             let username = event.target.textContent;
             chat_profile(username);
         }
     });
 
+    //handle chat click
+    //opens the chat, displays the messages and adds event listeners
     handleChatLinkClick = async function (username) {
         if ( await getUserId(username) == null) {
             return;
@@ -117,9 +114,6 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((data) => {
                 if (data === null)
                     return;
-                //const chatContainer = document.createElement('div');
-                //chatContainer.classList.add('chat__container');
-                //document.getElementById("chat-container").innerHTML = "";
                 if (data && data.other_user && Array.isArray(data.messages)) {		//// adding messages into the chat container dinamically
                     document.getElementById("chat-box").innerHTML = `
         <div id="msg_container">
@@ -143,17 +137,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.log("++ username : ", data.username);
                 console.log("++ messages : ", data.messages);
 
+                //room_name is the two ids of the chatters. ex: 4_9
                 chat_room_name = data.room_name;
 
-                //const listItemElement = document.getElementById('chat-container');
-                //listItemElement.appendChild(chatContainer);
-
                 const roomName = data.room_name;
+                //closes previous chat socket if still open
                 if (chatSocket !== null) {
                     chatSocket.close();
                 }
                 chatSocket = new WebSocket("wss://" + window.location.host + "/chat/" + roomName + "/");
-                console.log("websocket, ", chatSocket);
                 chatSocket.onopen = function (e) {
                     console.log("The connection was set up successfully!");
                 };
@@ -162,25 +154,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     console.log("The connection was closed successfully!");
                 };
 
+                //focuses on the input to write straight away
                 document.querySelector("#i-msg").focus();
+                //enter listener
                 document.querySelector("#i-msg").onkeyup = function (e) {
                     if (e.keyCode === 13) {
                         document.querySelector("#b-msg").click();
                     }
                 };
 
+                //sends message
                 document.querySelector("#b-msg").onclick = async function (e) {
                     var messageInput = document.querySelector("#i-msg").value;
                     messageInput = escapeHtml(messageInput);
+                    //if empty message, do nothing
                     if (messageInput.replace(/\s/g,'') == "")
                         return;
                     if (userIsConnected !== true) {
                         msg("You must be connected to access chat functions");
                         return;
                     }
+                    //checks if the other chatter is blocked, if not, send message
                     let blocked_users = await fetchBlockedUsers();
-                    console.log("blocking situation ", blocked_users.length);
-                    console.log(data.other_user);
                     if (!(blocked_users.includes(data.other_user))) {
                         chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
                     }
@@ -188,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         msg("This user is blocked");
                 };
 
+                //send invite to other player
                 document.querySelector("#id_invit_button").onclick = async function (e) {
                     if (userIsConnected !== true) {
                         msg("You must be connected to access chat functions");
@@ -202,10 +198,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 };
 
                 chatSocket.onmessage = async function (e) {
+                    //don't receive messages from blocked users
                     let blocked_users = await fetchBlockedUsers();
                     const data = JSON.parse(e.data);
                     let ok = 0;
-                    console.log("blocking situation ", blocked_users.length);
                     for (let i = 0; i < blocked_users.length; i++) {
                         if (blocked_users[i] == data.username)
                             ok = 1;
@@ -215,12 +211,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     const div = document.createElement("div");
                     div.classList.add("msg_text");
-                    //if (data.username === currentUser) {
-                    //	div.classList.add("chat__message--self");
-                    //} else {
-                    //	div.classList.add("chat__message--other");
-                    //}
 
+                    //adds message to chat
                     div.innerHTML = `
             <div class="msg_content">
             <div class="msg_username">${escapeHtml(data.username)}</div>
@@ -238,4 +230,4 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-export { handleChatLinkClick, fetchInvite, invite_accept, closeChatSocket }
+export { handleChatLinkClick, fetchInvite, invite_accept }

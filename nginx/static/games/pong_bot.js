@@ -115,11 +115,6 @@ export class bot {
 	gameLoop_bot() {
 		this.canvas.width = this.board_width;
 		this.canvas.height = this.board_height;
-		// let ran = Math.floor(Math.random() * 2);
-		// if (ran == 0) {
-		// 	tmp *= -1;
-		// }
-		// let tmp = this.ball_velocity;
 		let tmp2 = 0;
 		while (tmp2 == 0)
 			tmp2 = Math.floor(Math.random() * 11) - 5;
@@ -129,16 +124,28 @@ export class bot {
 		setTimeout(() => { this.ball.velocityX = this.last_direction * this.ball_velocity; }, 800);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
+		this.startAnimating(60);
+		// this.gameLoop();
+	}
+
+	fpsInterval;
+	then;
+
+	startAnimating(fps) {
+		this.fpsInterval = 1000 / fps;
+		this.then = performance.now();
 		this.gameLoop();
 	}
 
 	gameLoop() {
-		game.animation_id = window.requestAnimationFrame(this.gameLoop);
-
 		//draw
 		this.draw_board();
 
-		if (this.stop == false) {
+		let now = performance.now();
+    	let elapsed = now - this.then;
+
+		if (elapsed > this.fpsInterval && this.stop == false) {
+        	this.then = now - (elapsed % this.fpsInterval);
 			//move players
 			this.move_players();
 
@@ -155,6 +162,7 @@ export class bot {
 			this.context.font = "100px Arial";
 			this.context.fillText("COMPUTER WON!", this.board_width / 2, this.board_height / 3);
 		}
+		game.animation_id = window.requestAnimationFrame(this.gameLoop);
 	}
 
 	fill_middle_lines() {
@@ -283,8 +291,6 @@ export class bot {
 			this.ball.velocityY = 0;
 			while (this.ball.velocityY == 0)
 				this.ball.velocityY = Math.floor(Math.random() * 11) - 5;
-			// if (ran == 0)
-			// 	this.ball.velocityX *= -1;
 			this.ball.velocityXTmp = this.ball.velocityX * this.last_direction;
 			this.ball.velocityYTmp = this.ball.velocityY;
 			this.ball.velocityX = 0;

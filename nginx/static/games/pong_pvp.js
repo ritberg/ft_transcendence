@@ -57,8 +57,6 @@ export class pvp {
 
 	constructor() {
 		modifyDelta(1.5);
-
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -70,13 +68,11 @@ export class pvp {
 		this.player2.width = this.player_width;
 		this.player2.height = this.player_height;
 		this.player2.velocityY = this.playerVelocity;
-		// this.player2.score = 0;
 		this.player1.xPos = 20;
 		this.player1.yPos = this.board_height / 2 - this.player_height / 2;
 		this.player1.width = this.player_width;
 		this.player1.height = this.player_height;
 		this.player1.velocityY = this.playerVelocity;
-		// this.player1.score = 0;
 		this.ball.width = this.ball_width;
 		this.ball.height = this.ball_height;
 		this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
@@ -105,20 +101,32 @@ export class pvp {
 		setTimeout(() => { this.ball.velocityX = tmp; }, 500);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
+		this.startAnimating(60);
+		// this.gameLoop();
+	}
+
+	fpsInterval;
+	then;
+
+	startAnimating(fps) {
+		this.fpsInterval = 1000 / fps;
+		this.then = performance.now();
 		this.gameLoop();
 	}
 
 	gameLoop() {
-		game.animation_id = window.requestAnimationFrame(this.gameLoop);
-
 		//draw
 		this.draw_board();
 
-		if (this.stop == false) {
+		let now = performance.now();
+    	let elapsed = now - this.then;
+
+		if (elapsed > this.fpsInterval && this.stop == false) {
+        	this.then = now - (elapsed % this.fpsInterval);
 			//move players
 			this.move_players();
 
-			//this.ball
+			//ball calculations
 			this.changeBallVelocity();
 		}
 		else if (this.player1.score == 5) {
@@ -131,6 +139,7 @@ export class pvp {
 			this.context.font = "100px Arial";
 			this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
 		}
+		game.animation_id = window.requestAnimationFrame(this.gameLoop);
 	}
 
 	fill_middle_lines() {

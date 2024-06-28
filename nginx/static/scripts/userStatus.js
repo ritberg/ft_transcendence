@@ -1,4 +1,4 @@
-import { getUserId, userIsConnected, username_global } from "./users.js";
+import { userIsConnected } from "./users.js";
 import { game } from "./router.js";
 
 let socket = null;
@@ -6,7 +6,6 @@ let socket = null;
 let openWebSocket, closeWebSocket, updateStatus;
 document.addEventListener('DOMContentLoaded', () => {
 	openWebSocket = async function (userId) {
-		console.log("id =", userId);
 		if (!userId) {
 			console.error("User ID is required to open WebSocket connection");
 			return;
@@ -15,18 +14,19 @@ document.addEventListener('DOMContentLoaded', () => {
 		socket = new WebSocket(`wss://${window.location.host}/ws/status/?user_id=${userId}`);
 
 		socket.onopen = async function(e) {
-			console.log("WebSocket connection established.");
+			console.log("Status WebSocket connection established.");
 			await updateStatus('online');
 		};
 
 		socket.onclose = function(e) {
-			console.log("WebSocket connection closed.");
+			console.log("Status WebSocket connection closed.");
 			socket = null;
 		};
 
+		//updates the status of the other users
 		socket.onmessage = async function(e) {
 			const data = JSON.parse(e.data);
-			console.log("Message received: ", data);
+			// console.log("Message received: ", data);
 
 			const userId = data.user_id;
 			const status = data.status;
@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		};
 
 		socket.onerror = function(error) {
-			console.log("WebSocket error: ", error);
+			console.log("Status WebSocket error: ", error);
 		};
 	}
 
@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
+	//the function that communicates with the user consumer
 	updateStatus = async function (newStatus) {
 		// if (!socket) {
 		// 	console.log("WebSocket is not open. Opening new connection...");
@@ -79,11 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
-	// Detect when the page gains or loses focus
+	// Detect when the page gains focus
 	window.addEventListener('focus', async () => {
 		if (userIsConnected) {
 			let url = game.game_type;
-			console.log(url);
 			if (url == 'pvp' || url == 'bot' || url == 'tourney' || url == 'online')
 				await updateStatus('in_game');
 			else
@@ -91,9 +91,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
+	//detect when user unfocuses from the game
+	//if the user is in a game, resets keyspressed to avoid bugs
 	window.addEventListener('blur', async () => {
 		if (userIsConnected)
 			await updateStatus('offline');
+		if (game.game_type !== null) {
+			game.game_class.keysPressed.clear();
+		}
 	});
 
 	// Detect when the user leaves the page

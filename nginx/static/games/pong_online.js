@@ -8,6 +8,7 @@ import { msg, writeVerticalText } from '../scripts/utils.js';
 export class online {
     username;
 
+    //stock player names and ids for stats
     p1 = "";
     p2 = "";
     p1Id = "";
@@ -16,6 +17,7 @@ export class online {
 
     board = document.getElementById("game_canvas");
     context = this.board.getContext("2d");
+
     //board
     board_height = 800;
     board_width = 1000;
@@ -55,7 +57,6 @@ export class online {
 
     constructor() {
         modifyDelta(1.5);
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -64,7 +65,6 @@ export class online {
     online_game() {
         game.ws.addEventListener("message", async (event) => {
             let messageData = JSON.parse(event.data);
-            // console.log(messageData);
             if (messageData.type === "stateUpdate") {
                 this.player1.yPos = messageData.objects.player1Pos;
                 this.player2.yPos = messageData.objects.player2Pos;
@@ -80,8 +80,6 @@ export class online {
                     this.start_time = new Date();
                     this.p1Id = messageData.objects.p1Id;
                     this.p2Id = messageData.objects.p2Id;
-                    console.log("this.p1Id: ", this.p1Id);
-                    console.log("this.p2Id: ", this.p2Id);
                 }
                 else if (messageData.objects.num === 1)
                 {
@@ -124,7 +122,6 @@ export class online {
         document.addEventListener("keyup", this.stopPlayer);
         this.draw_board();
         this.gameLoop();
-        // startAnimating(60);
     }
 
     fill_middle_lines() {
@@ -158,6 +155,7 @@ export class online {
         this.context.fillStyle = "white";
         this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
 
+        //controls
         this.context.font = "30px Arial";
         if (this.side == "left") {
             this.context.textAlign = "left";
@@ -172,6 +170,7 @@ export class online {
         }
     }
 
+    //so that we only send stats once
     trigger = true;
 
     async sendStats(game_stat) {
@@ -196,7 +195,6 @@ export class online {
     }
 
     gameLoop() {
-        game.animation_id = window.requestAnimationFrame(this.gameLoop);
         this.draw_board();
         if (this.isalone == true)
         {
@@ -229,7 +227,6 @@ export class online {
                         data_played: new Date().toISOString(),
                         duration: duration,
                     };
-                    console.log("gamehere: ", game_stat);
                     this.sendStats(game_stat);
                 }
                 game.ws.close();
@@ -258,7 +255,6 @@ export class online {
                         data_played: new Date().toISOString(),
                         duration: duration,
                     };
-                    console.log("gamehere: ", game_stat);
                     this.sendStats(game_stat);
                 }
                 game.ws.close();
@@ -270,6 +266,7 @@ export class online {
             this.context.font = "100px Arial";
             this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
         }
+        game.animation_id = window.requestAnimationFrame(this.gameLoop);
     }
 
     lastSent = "none";

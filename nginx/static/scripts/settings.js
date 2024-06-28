@@ -4,14 +4,17 @@ import { route } from "./router.js";
 import { fetchLanguage, loadLanguage } from "./lang.js";
 import { closeWebSocket, openWebSocket } from "./userStatus.js";
 
+//whether the 2FA setup is ongoing
 let is2FAEnabled = false;
+//whether the 2FA in enabled for the account
 let is2FAVerified = false;
 
+//checks if the user already has 2FA enabled and verified
 async function check2FAStatus() {
     try {
         const localUser = JSON.parse(localStorage.getItem('user'));
         console.log('Local Storage 2FA Status:', {
-            verified: localUser?.is_2fa_verified 
+            verified: localUser?.is_2fa_verified
         });
         await fetch("https://" + window.location.host + '/auth/check-2fa-status/', {
             method: 'GET',
@@ -31,6 +34,7 @@ async function check2FAStatus() {
         })
         .then(async (data) => {
             if (data !== null) {
+                //first checks if localUser is null or undefined
                 if (localUser?.is_2fa_verified !== data.is_2fa_verified) {
                     await updateLocalStorage();
                 }
@@ -47,6 +51,7 @@ async function check2FAStatus() {
     }
 }
 
+//updates the user in localStorage
 async function updateLocalStorage() {
     try {
         fetch("https://" + window.location.host + '/auth/user-info/', {
@@ -78,12 +83,12 @@ async function updateLocalStorage() {
     }
 }
 
+//activates 2FA setup
 export async function enable2FA() {
     await closeWebSocket();
+    //ensures the updateStatus has time to send it's message
     await sleep(100);
     try {
-        console.log("Tentative d'activation de la 2FA");
-
         const response = await fetch("https://" + window.location.host + '/auth/enable-2fa/', {
             method: 'POST',
             headers: {
@@ -109,6 +114,7 @@ export async function enable2FA() {
         const verifyOTPForm = document.getElementById('settings-otp-form');
         const verifyOTPSubmit = document.getElementById('verify-otp-form');
 
+        //displays qr code
         img.src = data.qr_code;
         img.alt = "2FA QR Code";
         img.style.maxWidth = "200px";
@@ -116,6 +122,7 @@ export async function enable2FA() {
         qrCodeContainer.innerHTML = '';
         qrCodeContainer.appendChild(img);
 
+        //displays secret
         otpSecretSpan.textContent = data.otp_secret;
 
         qrCodeContainer.style.display = 'block';
@@ -125,6 +132,7 @@ export async function enable2FA() {
 
         is2FAEnabled = true;
         is2FAVerified = false;
+        //updates enable to cancel on the button text
         updateToggle2FAButton();
 
     } catch (error) {
@@ -133,8 +141,10 @@ export async function enable2FA() {
     }
 }
 
+//disables 2FA if it is verified
 async function disable2FA() {
     await closeWebSocket();
+    //ensures the updateStatus has time to send it's message
     await sleep(100);
     try {
         const response = await fetch("https://" + window.location.host + '/auth/disable-2fa/', {
@@ -165,13 +175,15 @@ async function disable2FA() {
     await openWebSocket(user_id);
 }
 
+//verifies the otp code provided is correct
 async function verify2FA(otp) {
+    //don't do anything if empty otp
     if (otp.replace(/\s/g,'') == "")
         return;
     await closeWebSocket();
+    //ensures the updateStatus has time to send it's message
     await sleep(100);
     try {
-        console.log('Attempting to verify 2FA with OTP:', otp);
         const response = await fetch("https://" + window.location.host + '/auth/verify-otp/', {
             method: 'POST',
             headers: {
@@ -185,13 +197,13 @@ async function verify2FA(otp) {
 
         const data = await response.json();
         console.log('Verify 2FA Response:', data);
-        console.log('Response status:', response.status);
 
         if (response.ok) {
             is2FAEnabled = false;
             is2FAVerified = true;
             msg('OTP Verified Successfully. 2FA is now fully enabled.');
             updateToggle2FAButton();
+            //hides secret key/qr code
             hideOTPElements();
             await updateLocalStorage();
         } else {
@@ -204,8 +216,8 @@ async function verify2FA(otp) {
     await openWebSocket(user_id);
 }
 
+//if ongoing 2fa setup is canceled. hides secret key and qr code
 function cancel2FASetup(event) {
-    event.preventDefault();
     console.log('Cancelling 2FA Setup');
     is2FAEnabled = false;
     is2FAVerified = false;
@@ -215,30 +227,30 @@ function cancel2FASetup(event) {
     msg('2FA setup has been cancelled.');
 }
 
+//checks whether to display disable/enable/cancel, depends on is2FAEnabled and is2FAVerified
 function updateToggle2FAButton() {
     const toggle2FAButton = document.getElementById('toggle-2fa-button');
     if (is2FAVerified) {
         toggle2FAButton.textContent = 'Disable 2FA';
-        toggle2FAButton.onclick = disable2FA;
         toggle2FAButton.style.color = 'orange';
         toggle2FAButton.className = 'disable2FA';
     } else if (is2FAEnabled && !is2FAVerified) {
         toggle2FAButton.textContent = 'Cancel 2FA Setup';
         toggle2FAButton.style.color = 'orange';
-        toggle2FAButton.onclick = cancel2FASetup;
         toggle2FAButton.className = 'cancel2FA';
     } else {
         toggle2FAButton.textContent = 'Enable 2FA';
-        toggle2FAButton.onclick = enable2FA;
         toggle2FAButton.style.color = '';
         toggle2FAButton.className = 'enable2FA';
     }
+    //translates the new button text
     var localLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
     if (!localLanguage)
         localLanguage = 'en';
     loadLanguage(localLanguage);
 }
 
+//called after verifying or canceling the setup
 function hideOTPElements() {
     document.getElementById('qr-code-container').style.display = 'none';
     document.getElementById('otp-secret').style.display = 'none';
@@ -246,37 +258,20 @@ function hideOTPElements() {
     document.getElementById('otp-secret-span').style.display = 'none';
 }
 
-// export function getCSRFToken() {
-//     const name = 'csrftoken';
-//     let cookieValue = null;
-//     if (document.cookie && document.cookie !== '') {
-//         const cookies = document.cookie.split(';');
-//         for (let i = 0; i < cookies.length; i++) {
-//             const cookie = cookies[i].trim();
-//             if (cookie.substring(0, name.length + 1) === (name + '=')) {
-//                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-//                 break;
-//             }
-//         }
-//     }
-//     return cookieValue;
-// }
-
 let updateUser, logoutFunc, uploadPicture, displaySettings;
 document.addEventListener("DOMContentLoaded", function () {
     
     ////// UPDATE PROFILE /////
 
+    //displays settings, such as username, profile picture, prefered language and 2fa
     displaySettings = async function () {
         if (userIsConnected == false) {
             document.getElementById("settings-content").textContent = '';
             document.getElementById("settings-content").innerHTML = '<h3 class="ulist-error">login to access</h3>';
+            return;
         }
 
         let user = JSON.parse(localStorage.getItem("user")) || null;
-
-        console.log("userIsConnected in var : ", userIsConnected);
-        console.log("userIsConnected in localStorage : ", localStorage.getItem("userIsConnected"));
 
         if (user === null) {
             console.log("No user found for displayUserInfo");
@@ -289,12 +284,13 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("isf2aVerified ?", is2FAVerified);
         updateToggle2FAButton();
 
+        //if no language in localstorage take the navigator's language
         var localLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
         if (!localLanguage)
             localLanguage = 'en';
         loadLanguage(localLanguage);
 
-        console.log("updateUserInfo called with userInfo =", user);
+        //displays username and profile picture
         if (user) {
             const username = user.username;
             if (username) {
@@ -304,7 +300,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.getElementById("user-avatar").src = user.profile_picture;
             }
         }
-        // Load the saved language preference on settings page load
+        // Load the saved language preference of user on settings page load
         var savedLanguage = 'en';
         if (userIsConnected == true)
             savedLanguage = await fetchLanguage();
@@ -315,14 +311,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('No saved language preference found');
         }
 
-        // document.getElementById('language-select-settings').addEventListener('change', function () {
-        //     console.log("hye mate");
-        //     const selectedLanguage = this.value;
-        //     localStorage.setItem('preferredLanguage', selectedLanguage);
-        //     console.log('Language preference saved:', selectedLanguage);
-        //     loadLanguage(selectedLanguage);
-        // });
-
+        //checks whether to execute disable/enable/cancel, depends on is2FAEnabled and is2FAVerified
         document.getElementById('toggle-2fa-button').onclick = async function (event) {
             event.preventDefault();
             if (is2FAVerified) {
@@ -396,9 +385,13 @@ document.addEventListener("DOMContentLoaded", function () {
             .then( async (data) => {
                 if (data !== null) {
                     console.log("data: ", data);
+                    //close the status websocket if logging out
                     await closeWebSocket();
+                    //removes chat content
                     document.getElementById("chat-box").innerHTML = '';
+                    //sets user to zero in updateProfile
                     updateProfile(null, false, null);
+                    //redirects to main page
                     route("/");
                 }
             })
@@ -413,16 +406,13 @@ document.addEventListener("DOMContentLoaded", function () {
     let updateUrl = "https://" + window.location.host + "/auth/update/";
 
     updateUser = async function () {
+        //changes will be put in a formData and sent to the backend
         let formData = new FormData();
         let hasChanges = false;
         let pwdChange = false;
 
-        console.log("update clicked");
-        console.log("all cookies : ", document.cookie);
-
         let usernameInput = document.getElementById("new-username");
         if (usernameInput.value) {
-            console.log(usernameInput.value);
             formData.append("username", usernameInput.value);
             hasChanges = true;
         }
@@ -437,23 +427,25 @@ document.addEventListener("DOMContentLoaded", function () {
         if (passwordInput.value) {
             formData.append("password", passwordInput.value);
             hasChanges = true;
+            //if the password changes different operations will occur
             pwdChange = true;
         }
 
         let PictureInput = document.getElementById("avatar-input");
         if (PictureInput.value) {
-            console.log(PictureInput.value);
             let file = document.getElementById("avatar-input").files[0];
             formData.append("profile_picture", file);
             hasChanges = true;
         }
 
+        //if no changes don't do anything
         if (!hasChanges) {
             msg("There are no changes");
             return;
         }
 
         await closeWebSocket();
+        //ensures the updateStatus has time to send it's message
         await sleep(100);
 
         await fetch(updateUrl, {
@@ -466,6 +458,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(async (response) => {
             if (!response.ok) {
+                //if image is too big
                 if (response.status == 413)
                     msg("Image max size is 2mb")
                 else {
@@ -481,12 +474,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             console.log("Update success: ", data);
             if (pwdChange === false) {
+                //if password remains unchanged, updates profile
                 let user = data.data;
                 await updateProfile(user, true, data.csrfToken);
                 let user_id = await getUserId(username_global);
                 await openWebSocket(user_id);
             }
             else {
+                //if password is changed, logs out and asks to login again
                 document.getElementById("chat-box").innerHTML = '';
                 await updateProfile(null, false, null);
                 route("/");

@@ -1,6 +1,7 @@
 import { sleep } from './utils.js';
 import { loop_exec } from '../games/pong_tourney.js';
 
+//default star speed
 export let delta = 1.5;
 
 export function stars(stars_effect) {
@@ -9,7 +10,6 @@ export function stars(stars_effect) {
 	const ctx_stars = stars_effect.getContext("2d");
 
 	const InitCanvas = () => {
-		// stars_effect.style.position = "fixed";
 		stars_effect.setAttribute("width", `1000px`);
 		ctx_stars.clearRect(0, 0, stars_array.width, stars_array.height);
 	};
@@ -68,18 +68,16 @@ export function stars(stars_effect) {
 
 	function Update() {
 		if (loop_exec == true) {
-			// requestAnimationFrame(loopTourney);
 			return;
 		}
-		// if (loop_exec == false) {
-			InitCanvas();
-			stars_array.forEach((star) => star.draw());
-		// }
+		InitCanvas();
+		stars_array.forEach((star) => star.draw());
 		requestAnimationFrame(Update);
 	}
 	Update();
 }
 
+//makes the increased speed animation and white transition
 export async function starWars() {
 	for (let i = 0; i < 40; i++) {
 		delta /= 1.05;
@@ -92,9 +90,9 @@ export async function starWars() {
 		await sleep(20);
 	}
 	document.getElementById("main_canvas").style.background = "black";
-	// document.getElementById("main-menu").style.display = "none";
 }
 
+//same as the starWars but for a different canvas and additional pathname checks
 export async function starWarsTourney() {
 	for (let i = 0; i < 40; i++) {
 		delta /= 1.05;
@@ -109,7 +107,6 @@ export async function starWarsTourney() {
 	}
 	if (window.location.pathname == '/tourney/')
 		document.getElementById("game_canvas").style.background = "black";
-	// document.getElementById("main-menu").style.display = "none";
 }
 
 export function modifyDelta(newDelta) {

@@ -1,5 +1,5 @@
 import { token, getUserId } from "./users.js";
-import { msg } from "./utils.js";
+import { msg, escapeHtml } from "./utils.js";
 
 let fetchBlockedUsers, blockUser, unblockUser;
 document.addEventListener("DOMContentLoaded", function () {
@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let unblockUserUrl = "https://" + window.location.host + "/auth/unblock-user/";
     let ListBlockedUsersUrl = "https://" + window.location.host + "/auth/list-blocked-users/";
 
+    //returns a list of blocked users
     fetchBlockedUsers = async function () {
         return await fetch(ListBlockedUsersUrl, {
             method: 'GET',
@@ -28,8 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(async (data) => {
             if (data !== null) {
                 console.log('Blocked users:', data);
-                let blocked_users = data.blocked_users;
-                return blocked_users;
+                return data.blocked_users;;
             }
         })
     }
@@ -37,13 +37,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     ////////////////////// BLOCK A USER (not used yet) ////////////////////////////
 
+    //blocks user
     blockUser = async function (username) {
-
         if (!username) {
             // messageContainer.textContent = "Please enter a username";
             return;
         }
-
         if ( await getUserId(username) == null) {
             return;
         }
@@ -72,9 +71,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     ////////////////////// UNBLOCK A USER (not used yet) ////////////////////////////
 
+    //unblocks user
     unblockUser = async function (username) {
-        // const username = document.getElementById("user-username-to-unblock").value;
-        // const messageContainer = document.getElementById("unblock-user-message");
         if (!username) {
             return;
         }

@@ -1,20 +1,19 @@
 import { modifyDelta, stars } from './stars.js';
-import { sleep, randomNumber, tourneyGame, resetTourneyGame } from './utils.js';
+import { sleep, tourneyGame, resetTourneyGame } from './utils.js';
 import { change_loop_exec } from '../games/pong_tourney.js';
 import { tournamentMessages } from './animations.js';
 
 export const tourney_game = new tourneyGame();
 
 export function createPlayers() {
+	//makes sure the tournament is reset to 0 before starting
 	resetTourneyGame(tourney_game);
+	//adds players with unique ids
 	for (let i = 0; i < document.getElementById("s-players").value; i++) {
-		//var fighter = false;
 		let player_push = document.getElementById(`player_${i + 1}`).value;
 		tourney_game.player.push(player_push);
 	}
 	tourney_game.player.sort(() => Math.random() - 0.5);
-	//tourney_game.player[0].fighter = true;
-	//tourney_game.player[1].fighter = true;
 	for (let i = 0; i < tourney_game.player.length; i++)
 		tourney_game.score.push([tourney_game.player[i], 172]);
 	tourney_game.index = 0;
@@ -27,9 +26,6 @@ export function createPlayers() {
 }
 
 export async function drawBrackets() {
-	//console.log(tourney_game.score);
-	//let tourney_game.max_phases = Math.ceil(players.length / 2);
-	// document.querySelector(".brackets").style.left = "0";
 	document.getElementById("brackets-container").style.opacity = "0";
 	document.getElementById("brackets-container").style.display = "flex";
 	document.getElementById("brackets-container").classList.add("shown");
@@ -37,6 +33,7 @@ export async function drawBrackets() {
 	const boxes = [];
 	let acc = tourney_game.player.length;
 	let cur_pos = 0;
+	//dynamically adds and animates tournament brackets
 	for (let i = 0; i < tourney_game.max_phases; i++) {
 		const newDiv = document.createElement("div");
 		newDiv.classList.add("brackets");
@@ -44,16 +41,11 @@ export async function drawBrackets() {
 		newDiv.style.left = `${i * 225}px`;
 
 		for (let j = 0; j < acc; j++) {
-			//if (i != 0)
-			//	cur_pos = tourney_game.player.length / i + j;
 			const new_box = document.createElement("div");
 			new_box.classList.add("rectangle-div");
 
 			const name_text = document.createElement("span");
 			name_text.classList.add("name");
-			//console.log(cur_pos, tourney_game.index);
-			//if (i > 0 && cur_pos > tourney_game.index * 2)
-			//console.log(tourney_game.index, tourney_game.index * 2);
 			if (i > 0 && tourney_game.score[cur_pos] === undefined) {
 				name_text.innerText = "?";
 				new_box.style.border = "2px dashed white";
@@ -75,6 +67,7 @@ export async function drawBrackets() {
 	let last_player = 0;
 	for (let z = tourney_game.player.length; z > 1; z /= 2)
 		last_player += z;
+	//checks if tournament has ended
 	if (tourney_game.index != last_player) {
 		await sleep(1000);
 		if (window.location.pathname !== "/tourney/") {
@@ -96,11 +89,9 @@ export async function drawBrackets() {
 			stars(document.getElementById("main_canvas"));
 			return;
 		}
+		//tournament ended
 		tournamentMessages("tournament", `the winner of the tournament is ${tourney_game.score[tourney_game.index][0]} !`);
 		boxes[tourney_game.index].classList.add("winner");
-		//const crown = document.createElement("i");
-		//crown.classList.add("bi", "bi-trophy");
-		//document.querySelector("#brackets-container").appendChild(crown);
 		await sleep(1000);
 	}
 	await sleep(1000);
@@ -125,10 +116,8 @@ export async function drawBrackets() {
 	document.getElementById("brackets-container").style.display = "none";
 }
 
-//const isWhitespaceString = str => !str.replace(/\s/g, '').length
-
+//creates page to enter usernames
 export function enterNicknames(n) {
-	//console.log(1);
 	const form = document.createElement("form");
 	form.id = "nicknames_form";
 	for (let i = 0; i < n; i++) {
@@ -148,9 +137,6 @@ export function enterNicknames(n) {
 	}
 	const button = document.createElement("button");
 	button.textContent = "GO";
-	// button.id = "GO_N";
 	form.appendChild(button);
 	document.querySelector("#nickname_setup-box").appendChild(form);
-	//if (isWhitespaceString(document.getElementById("player_1").value))
-	//	console.log(100);
 }

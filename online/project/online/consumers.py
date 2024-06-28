@@ -110,7 +110,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
         #sends the player his ID
         await self.send_json({"type": "playerId", "objects": {"id": self.player_id, "side": room_vars[self.room]["players"][self.player_id]["side"]}})
 
-        #updates the database to determine wether another player can enter or not
+        #updates the database to determine whether another player can enter or not
         async with self.update_lock:
             await self.check_full()
 

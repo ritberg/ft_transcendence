@@ -119,13 +119,22 @@ export class tourney {
 		setTimeout(() => { this.ball.velocityX = tmp; }, 500);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
+		this.startAnimating(60);
+		// this.gameLoop();
+	}
+
+	fpsInterval;
+	then;
+
+	startAnimating(fps) {
+		this.fpsInterval = 1000 / fps;
+		this.then = performance.now();
 		this.gameLoop();
 	}
 
 	async gameLoop() {
 		loop_exec = true;
 		if (this.player1.score == tourney_game.max_points || this.player2.score == tourney_game.max_points) {
-			//console.log(tourney_game.index, tourney_game.score[0][0].name);
 			tourney_game.score[tourney_game.index][1] = this.player1.score;
 			tourney_game.score[tourney_game.index + 1][1] = this.player2.score;
 			if (this.player1.score > this.player2.score) {
@@ -159,7 +168,6 @@ export class tourney {
 				stars(document.getElementById("main_canvas"));
 				return;
 			}
-			//await starWars();
 			let last_player = 0;
 			for (let z = tourney_game.player.length; z > 1; z /= 2)
 				last_player += z;
@@ -167,27 +175,27 @@ export class tourney {
 				await starWarsTourney();
 			else {
 				stars(document.getElementById("main_canvas"));
-				//document.getElementById("main-menu").style.display = "flex";
-				//document.getElementById("main-menu").style.opacity = "0";
-				//await sleep(100);
-				//document.getElementById("main-menu").classList.remove("hidden");
-				//document.getElementById("main-menu").classList.add("shown");
-				//await sleep(200);
-				//document.getElementById("main-menu").style.opacity = "1";
 				if (window.location.pathname == "/tourney/")
 					route("/");
 				return;
 			}
 		}
 		else {
-			//move players
-			this.move_players();
+			let now = performance.now();
+    		let elapsed = now - this.then;
 
-			//this.ball
-			this.changeBallVelocity();
+			if (elapsed > this.fpsInterval) {
+				this.then = now - (elapsed % this.fpsInterval);
+			
+				//move players
+				this.move_players();
 
-			//draw
-			this.draw_board();
+				//this.ball
+				this.changeBallVelocity();
+
+				//draw
+				this.draw_board();
+			}
 		}
 		game.animation_id = window.requestAnimationFrame(this.gameLoop);
 

@@ -7,6 +7,10 @@ import { displayProfile} from './stats.js';
 import { tournamentSettings } from './animations.js';
 import { loadLanguage, changeLanguage } from './lang.js';
 
+//this file contains a great part of the event listeners
+//a more general event listener is needed for dynamically added html
+//since adding an event lister on an event that doesn't exist results in an error
+
 document.addEventListener('DOMContentLoaded', () => {
 	/////////// CONTENT //////////////
 	const contentContainer = document.getElementById("content");
@@ -87,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	contentContainer.addEventListener("change", async function (event) {
 		event.preventDefault();
 		if (event.target && event.target.id === "language-select-settings") {
-			console.log("fdsa");
 			const selectedLanguage = event.target.value;
 			let response = await changeLanguage(selectedLanguage);
 			if (response == null)
@@ -142,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			route('/signin/');
 		document.getElementById("content").classList.remove("hidden");
 		document.getElementById("content").classList.add("shown");
-		console.log("fdsafdsa", userIsConnected);
 	});
 
 	////////// USERS_LIST ///////////
