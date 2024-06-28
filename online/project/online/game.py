@@ -57,21 +57,6 @@ class GameLoop(AsyncWebsocketConsumer):
         self.player2 = self.find_player("right", self.room)
         self.room_var = room_vars[self.room]
 
-        #timer which seems to slow down the start of the game
-        # a = time.time()
-        # c = 0
-        # while 1:
-        #     b = time.time()
-        #     b = 3 - math.floor(b - a)
-        #     if b != c:
-        #         await self.send(
-        #             text_data=rapidjson.dumps({"type": "countdown", "left": b})
-        #         )
-        #     c = b
-        #     if b == 0:
-        #         break
-        #     await asyncio.sleep(0.03)
-
         #initializes ball direction/position
         self.init_ball_values(self.room)
         self.ball_direction()
@@ -149,15 +134,12 @@ class GameLoop(AsyncWebsocketConsumer):
                 else:
                     ball_velocityX += 0.5
                 if self.first_bounce == True:
-                  ball_velocityX *= -1
                   if ball_velocityX < 0:
                     ball_velocityX -= 3
                   else:
                     ball_velocityX += 3
                   self.first_bounce = False
                 
-                state_update[self.room]["sound"] = True
-
         #checks if the ball hit the left paddle
         if (ball_xPos <= 20 + self.paddle_width):
             if (ball_yPos + ball_velocityY + self.ball_height + 2 >= self.player1["yPos"] and ball_yPos + ball_velocityY - 2 <= self.player1["yPos"] + self.player_height and ball_velocityX < 0):
@@ -168,14 +150,11 @@ class GameLoop(AsyncWebsocketConsumer):
                 else:
                     ball_velocityX += 0.5
                 if self.first_bounce == True:
-                  ball_velocityX *= -1
                   if ball_velocityX < 0:
                     ball_velocityX -= 3
                   else:
                     ball_velocityX += 3
                   self.first_bounce = False
-
-                state_update[self.room]["sound"] = True
 
         #checks if a player has scored
         if (ball_xPos + ball_velocityX < 0 or ball_xPos + ball_velocityX + self.ball_width > self.board_width):
@@ -183,6 +162,8 @@ class GameLoop(AsyncWebsocketConsumer):
                 self.player2["score"] += 1
             else:
                 self.player1["score"] += 1
+            
+            self.first_bounce = True
         
             self.room_var["ball_xPos"] = ball_xPos
             self.room_var["ball_yPos"] = ball_yPos
@@ -265,7 +246,6 @@ class GameLoop(AsyncWebsocketConsumer):
         state_update[current_room]["ball_xPos"] = (self.board_width / 2) - (self.ball_width / 2)
         state_update[current_room]["player1Score"] = 0
         state_update[current_room]["player2Score"] = 0
-        state_update[current_room]["sound"] = False
         for player in room_vars[current_room]["players"].values():
             player["yPos"] = self.board_height / 2 - self.player_height / 2
             player["score"] = 0

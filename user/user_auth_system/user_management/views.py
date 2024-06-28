@@ -20,12 +20,19 @@ from django.conf import settings
 import pyotp
 import qrcode
 import base64
+import time
 from io import BytesIO
 import re
 
-# Create your views here.
-
 User = get_user_model()
+
+class UserInfoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def check_2fa_status(request):
@@ -33,114 +40,130 @@ def check_2fa_status(request):
     if not user.is_authenticated:
         return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    return Response({'is_2fa_enabled': user.is_2fa_enabled}, status=status.HTTP_200_OK)
+    return Response({
+        'is_2fa_verified': user.is_2fa_verified
+    }, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def disable_2fa(request):
-    user = request.user
-    if not user.is_authenticated:
-        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+	user = request.user
+	if not user.is_authenticated:
+		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    if not user.is_2fa_enabled:
-        return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+	if not user.is_2fa_verified:
+		return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
-    user.is_2fa_enabled = False
-    user.otp_secret = None
-    user.save()
+	user.is_2fa_verified = False
+	# user.otp_secret = None
+	user.otp_secret = ""
+	user.save()
 
-    return Response({'message': '2FA has been disabled successfully'}, status=status.HTTP_200_OK)
+	return Response({'message': '2FA has been disabled successfully'}, status=status.HTTP_200_OK)
 
 # authentication views
 @api_view(['POST'])
 def enable_2fa(request):
-    user = request.user
-    if not user.is_authenticated:
-        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+	print("fuck this", request.data)
+	user = request.user
+	if not user.is_authenticated:
+		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    user.is_2fa_enabled = False
-    if user.is_2fa_enabled:
-        return Response({'detail': '2FA is already enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # Generate a new secret key
-    secret_key = pyotp.random_base32()
-    user.otp_secret = secret_key
-    user.is_2fa_enabled = True
-    user.save()
+	if user.is_2fa_verified:
+		return Response({'detail': '2FA is already fully enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+	
+	# Generate a new secret key
+	secret_key = pyotp.random_base32()
+	user.otp_secret = secret_key
+	user.is_2fa_verified = False
+	user.save()
 
-    # Generate OTP URI
-    totp = pyotp.TOTP(secret_key)
-    uri = totp.provisioning_uri(name=user.email, issuer_name="2FA")
+	# Generate OTP URI
+	totp = pyotp.TOTP(secret_key)
+	uri = totp.provisioning_uri(name=user.email, issuer_name="2FA")
 
-    # Generate QR code
-    qr = qrcode.QRCode(version=1, box_size=10, border=5)
-    qr.add_data(uri)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-    
-    # Convert image to base64
-    buffered = BytesIO()
-    img.save(buffered, format="PNG")
-    img_str = base64.b64encode(buffered.getvalue()).decode()
+	# Generate QR code
+	qr = qrcode.QRCode(version=1, box_size=10, border=5)
+	qr.add_data(uri)
+	qr.make(fit=True)
+	img = qr.make_image(fill_color="black", back_color="white")
+	
+	# Convert image to base64
+	buffered = BytesIO()
+	img.save(buffered, format="PNG")
+	img_str = base64.b64encode(buffered.getvalue()).decode()
 
-    return Response({
-        'detail': '2FA has been enabled',
-        'otp_secret': secret_key,
-        'qr_code': f"data:image/png;base64,{img_str}"
-    }, status=status.HTTP_200_OK)
+	return Response({
+		'detail': '2FA setup has been initiated',
+		'otp_secret': secret_key,
+		'qr_code': f"data:image/png;base64,{img_str}"
+	}, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def verify_otp(request):
-    user = request.user
-    otp = request.data.get('otp')  # Récupérez l'OTP depuis request.data
+	user = request.user
+	otp = request.data.get('otp')
 
-    if not user.is_authenticated:
-        return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
+	if not user.is_authenticated:
+		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    if not otp:
-        return Response({'detail': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
+	if not otp:
+		return Response({'detail': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    if user.is_2fa_enabled:
-        return Response({'detail': '2FA is already enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+	if user.is_2fa_verified:
+		return Response({'detail': '2FA is already verified for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
-    totp = pyotp.TOTP(user.otp_secret)
-    if totp.verify(otp):
-        user.is_2fa_verified = True
-        user.save()
-        return Response({'detail': 'OTP verified successfully'}, status=status.HTTP_200_OK)
-    else:
-        return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+	if not user.otp_secret:
+		return Response({'detail': '2FA setup has not been initiated for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
+	totp = pyotp.TOTP(user.otp_secret)
+	
+	# Check current time and expected OTP
+	current_time = int(time.time())
+	expected_otp = totp.at(current_time)
+	print(f"Current time: {current_time}")
+	print(f"Expected OTP: {expected_otp}")
+	print(f"Received OTP: {otp}")
+	
+	if totp.verify(otp, valid_window=1):
+		user.is_2fa_verified = True
+		user.save()
+		return Response({'detail': 'OTP verified successfully. 2FA is now fully enabled.'}, status=status.HTTP_200_OK)
+	else:
+		return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 
 class VerifyOTPLoginView(APIView):
-    permission_classes = [AllowAny]
+	permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
-        user_id = request.data.get('user_id')
-        otp = request.data.get('otp')
+	def post(self, request, *args, **kwargs):
+		user_id = request.data.get('user_id')
+		otp = request.data.get('otp')
 
-        try:
-            user = User.objects.get(id=user_id)
-        except User.DoesNotExist:
-            return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+		try:
+			user = User.objects.get(id=user_id)
+		except User.DoesNotExist:
+			return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        if not user.is_2fa_enabled:
-            return Response({'message': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+		# if not user.is_2fa_enabled:
+		# 	return Response({'message': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
 
-        totp = pyotp.TOTP(user.otp_secret)
-        if totp.verify(otp):
-            login(request, user)
-            refresh = RefreshToken.for_user(user)
-            return Response(
-                {
-                    'refresh': str(refresh),
-                    'access': str(refresh.access_token),
-                    'user': UserSerializer(user).data,
-                    'message': 'User logged in successfully',
-                },
-                status=status.HTTP_200_OK
-            )
-        else:
-            return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+		totp = pyotp.TOTP(user.otp_secret)
+		if totp.verify(otp):
+			login(request, user)
+			refresh = RefreshToken.for_user(user)
+			user.is_2fa_verified = True
+			csrf_token = get_token(request)
+			return Response(
+				{
+					'refresh': str(refresh),
+					'access': str(refresh.access_token),
+					'user': UserSerializer(user).data,
+					'csrfToken': csrf_token,
+					'message': 'User logged in successfully',
+				},
+				status=status.HTTP_200_OK
+			)
+		else:
+			return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
 			
 class IndexView(APIView):
 	permission_classes = [AllowAny]
@@ -150,65 +173,35 @@ class IndexView(APIView):
 
 
 class RegisterUserView(APIView):
-    permission_classes = [AllowAny]
+	permission_classes = [AllowAny]
 
-    def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        username= request.data.get('username')
-        
-        if User.objects.filter(email=email).exists():
-            return Response(
-                {'email': 'Email already exists'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+	def post(self, request, *args, **kwargs):
+		email = request.data.get('email')
+		username= request.data.get('username')
 		
-        prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
-        if username in prohibited_usernames:
-            return Response(
-                {'username': 'Username not allowed'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-        serializer = UserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    'data': serializer.data,
-                    'message': 'User registered successfully'
-                },
-                status=status.HTTP_201_CREATED
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# class LoginUserView(APIView):
-# 	permission_classes = [AllowAny]
-
-# 	def post(self, request , *args, **kwargs):
-# 		try:
-# 			user = authenticate(
-# 				request,
-# 				username=request.data['username'],
-# 				password=request.data['password'],
-# 			)
-# 			if user is not None:
-# 				login(request, user)
-# 				csrf_token = get_token(request)
-# 				print("csrf_token : ", csrf_token)
-# 				return Response(
-# 					{
-# 						'data': UserSerializer(user).data,
-# 						'crsfToken': csrf_token,
-# 						'message': 'User logged in successfully',
-# 					},
-# 					status=status.HTTP_200_OK
-# 				)
-# 			raise ValueError('Invalid credentials')
-# 		except Exception as e:
-# 			return Response(
-# 				{'message': f"{type(e).__name__}: {str(e)}"},
-# 				status=status.HTTP_400_BAD_REQUEST
-# 			)
+		if User.objects.filter(email=email).exists():
+			return Response(
+				{'email': 'Email already exists'},
+				status=status.HTTP_400_BAD_REQUEST
+			)
+		
+		prohibited_usernames = ["guest", "system", "admin"]
+		if username.lower() in prohibited_usernames:
+			return Response(
+				{'username': 'Username not allowed'},
+				status=status.HTTP_400_BAD_REQUEST
+			)
+		serializer = UserSerializer(data=request.data)
+		if serializer.is_valid():
+			serializer.save()
+			return Response(
+				{
+					'data': serializer.data,
+					'message': 'User registered successfully'
+				},
+				status=status.HTTP_201_CREATED
+			)
+		return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class LoginUserView(APIView):
 	permission_classes = [AllowAny]
@@ -221,8 +214,8 @@ class LoginUserView(APIView):
 				password=request.data['password'],
 			)
 			if user is not None:
-				if user.is_2fa_enabled:
-                    # Si 2FA est activé, ne pas connecter l'utilisateur immédiatement
+				if user.is_2fa_verified:
+					# Si 2FA est activé, ne pas connecter l'utilisateur immédiatement
 					return Response(
 						{
 							'message': '2FA is enabled. Please provide OTP.',
@@ -232,7 +225,7 @@ class LoginUserView(APIView):
 						status=status.HTTP_200_OK
 					)
 				else:
-                    # Si 2FA n'est pas activé, connecter l'utilisateur normalement
+					# Si 2FA n'est pas activé, connecter l'utilisateur normalement
 					login(request, user)
 					csrf_token = get_token(request)
 					print("csrf_token : ", csrf_token)
@@ -251,47 +244,6 @@ class LoginUserView(APIView):
 				status=status.HTTP_400_BAD_REQUEST
 			)
 
-# class LoginUserView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def post(self, request , *args, **kwargs):
-#         try:
-#             user = authenticate(
-#                 request,
-#                 username=request.data['username'],
-#                 password=request.data['password'],
-#             )
-#             if user is not None:
-#                 if user.is_2fa_enabled:
-#                     # Si 2FA est activé, ne pas connecter l'utilisateur immédiatement
-#                     return Response(
-#                         {
-#                             'message': '2FA is enabled. Please provide OTP.',
-#                             'require_2fa': True,
-#                             'user_id': user.id  # Pour identifier l'utilisateur lors de la vérification OTP
-#                         },
-#                         status=status.HTTP_200_OK
-#                     )
-#                 else:
-#                     # Si 2FA n'est pas activé, connecter l'utilisateur normalement
-#                     login(request, user)
-#                     refresh = RefreshToken.for_user(user)
-#                     return Response(
-#                         {
-#                             'refresh': str(refresh),
-#                             'access': str(refresh.access_token),
-#                             'user': UserSerializer(user).data,
-#                             'message': 'User logged in successfully',
-#                         },
-#                         status=status.HTTP_200_OK
-#                     )
-#             raise ValueError('Invalid credentials')
-#         except Exception as e:
-#             return Response(
-#                 {'message': f"{type(e).__name__}: {str(e)}"},
-#                 status=status.HTTP_400_BAD_REQUEST
-#             )
-
 class LogoutUserView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -309,51 +261,49 @@ class LogoutUserView(APIView):
 			)
 
 class UpdateUserView(APIView):
-    permission_classes = [IsAuthenticated]
+	permission_classes = [IsAuthenticated]
 
-    def put(self, request, *args, **kwargs):
-        try:
-            username = request.data.get('username')
+	def put(self, request, *args, **kwargs):
+		try:
+			username = request.data.get('username')
 
-            prohibited_usernames = ["Guest", "System", "system", "guest", "admin", "Admin"]
-            if username in prohibited_usernames:
-                return Response(
-                    {'message': 'Username not allowed'},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+			prohibited_usernames = ["guest", "system", "admin"]
+			if username:
+				if username.lower() in prohibited_usernames:
+					return Response(
+						{'message': 'Username not allowed'},
+						status=status.HTTP_400_BAD_REQUEST
+					)
 
-            serializer = UserSerializer(request.user, data=request.data, partial=True)
-            if serializer.is_valid():
-                user = serializer.save()
-                send_status_update(user)
-                csrf_token = get_token(request)
-                print("csrf_token : ", csrf_token)
-                return Response(
-                    {
-                        'data': serializer.data,
-                        'csrfToken': csrf_token,
-                        'message': 'User updated successfully'
-                    },
-                    status=status.HTTP_200_OK
-                )
-            raise ValueError(serializer.errors)
-        except Exception as e:
-            error_message = f"{type(e).__name__}: {str(e)}"
-            match = re.search(r"ErrorDetail\(string='(.*?)'", error_message)
-            if match:
-                extracted_string = match.group(1)
-            else:
-                extracted_string = str(e)
+			serializer = UserSerializer(request.user, data=request.data, partial=True)
+			if serializer.is_valid():
+				user = serializer.save()
+				send_status_update(user)
+				csrf_token = get_token(request)
+				print("csrf_token : ", csrf_token)
+				return Response(
+					{
+						'data': serializer.data,
+						'csrfToken': csrf_token,
+						'message': 'User updated successfully'
+					},
+					status=status.HTTP_200_OK
+				)
+			raise ValueError(serializer.errors)
+		except Exception as e:
+			error_message = f"{type(e).__name__}: {str(e)}"
+			match = re.search(r"ErrorDetail\(string='(.*?)'", error_message)
+			if match:
+				extracted_string = match.group(1)
+			else:
+				extracted_string = str(e)
 
-            return Response(
-                {'message': extracted_string},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-
+			return Response(
+				{'message': extracted_string},
+				status=status.HTTP_400_BAD_REQUEST
+			)
 
 # friend request views
-
 class SendFriendRequestView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -451,8 +401,8 @@ class DeleteFriendView(APIView):
 			{'message': 'User is not in your friends list'},
 			status=status.HTTP_400_BAD_REQUEST
 		)
-  
-  
+
+
 class BlockUserView(APIView):
 	permission_classes = [IsAuthenticated]
 	
@@ -543,7 +493,7 @@ class GetUserLanguage(APIView):
 		username = request.user.username
 		try:
 			if not username:
-				raise NotFound('A username query parameter is required.')
+				raise NotFound('User not found.')
 			user = User.objects.get(username=username)
 			return Response({'language': user.language}, status=status.HTTP_200_OK)
 		except Exception as e:
@@ -558,7 +508,7 @@ class ChangeUserLanguage(APIView):
 		username = request.user.username
 		try:
 			if not username:
-				raise NotFound('A username query parameter is required.')
+				raise NotFound('User not found.')
 			if not language:
 				raise NotFound('Please select a language')
 			user = User.objects.get(username=username)
@@ -569,13 +519,13 @@ class ChangeUserLanguage(APIView):
 			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
 def send_status_update(user):
-    channel_layer = get_channel_layer()
-    async_to_sync(channel_layer.group_send)(
-        "users",
-        {
-            "type": "status_update",
-            "user_id": user.id,
-            "username": user.username,
-            "status": user.status,
-        }
-    )
+	channel_layer = get_channel_layer()
+	async_to_sync(channel_layer.group_send)(
+		"users",
+		{
+			"type": "status_update",
+			"user_id": user.id,
+			"username": user.username,
+			"status": user.status,
+		}
+	)

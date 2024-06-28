@@ -2,7 +2,7 @@ services:
   user:
     container_name: user
     build:
-      context: ./user/docker
+      context: ./user
       dockerfile: Dockerfile
       args:
         USER_SERVICE_NAME: ${USER_SERVICE_NAME}
@@ -15,6 +15,7 @@ services:
       - "8003"
     volumes:
       - user:/home/transcendance/${USER_SERVICE_NAME}
+      - media_volume:/home/transcendance/user_auth_system/media
     tty: true
     networks:
       - transcendance
@@ -27,7 +28,7 @@ services:
   stat:
     container_name: stat
     build:
-      context: ./stat/docker
+      context: ./stat
       dockerfile: Dockerfile
       args:
         STAT_SERVICE_NAME: ${STAT_SERVICE_NAME}
@@ -39,7 +40,6 @@ services:
     expose:
       - "8005"
     volumes:
-      - stat:/home/transcendance/${STAT_SERVICE_NAME}
       - user:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
@@ -53,7 +53,7 @@ services:
   chat:
     container_name: chat
     build:
-      context: ./chat_service/docker
+      context: ./chat_service
       dockerfile: Dockerfile
       args:
         CHAT_SERVICE_NAME: ${CHAT_SERVICE_NAME}
@@ -62,7 +62,6 @@ services:
     expose:
       - "8004"
     volumes:
-      - chat:/home/transcendance/${CHAT_SERVICE_NAME}
       - user:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
@@ -83,7 +82,7 @@ services:
       - stat
       - chat
     build:
-      context: ./online/docker
+      context: ./online
       dockerfile: Dockerfile
       args:
         SERVICE_NAME: ${ONLINE_SERVICE_NAME}
@@ -92,7 +91,6 @@ services:
     expose:
       - "8001"
     volumes:
-      - online:/home/transcendance/${ONLINE_SERVICE_NAME}
       - user:/home/transcendance/${USER_SERVICE_NAME}
     tty: true
     networks:
@@ -103,7 +101,7 @@ services:
   bot:
     container_name: bot
     build:
-      context: ./bot/docker
+      context: ./bot
       dockerfile: Dockerfile
       args:
         SERVICE_NAME: ${BOT_SERVICE_NAME}
@@ -111,8 +109,6 @@ services:
       - .env
     expose:
       - "8002"
-    volumes:
-      - bot:/home/transcendance/${BOT_SERVICE_NAME}
     tty: true
     networks:
       - transcendance
@@ -127,13 +123,14 @@ services:
       - user
       - chat
     build:
-      context: ./nginx/docker
+      context: ./nginx
       dockerfile: Dockerfile
     ports:
       - "443:443"
       - "80:80"
     volumes:
       - nginx:/etc/nginx
+      - media_volume:/home/transcendance/user_auth_system/media
     networks:
       - transcendance
     env_file: .env
@@ -142,16 +139,22 @@ services:
 
   db_transcendence:
     container_name: db_transcendence
-    image: postgres:16.2
-    env_file:
-      - .env
+    build:
+      context: ./db_transcendence/docker
+      dockerfile: Dockerfile
+    # image: postgres:16.2
+    # env_file:
+    #   - .env
     environment:
       POSTGRES_DB: ${DB_TRANSCENDENCE_NAME}
       POSTGRES_USER: ${DB_TRANSCENDENCE_USER}
       POSTGRES_PASSWORD: ${DB_TRANSCENDENCE_PASSWORD}
+      # DB_TRANSCENDENCE_NAME: ${DB_TRANSCENDENCE_NAME}
+      # DB_TRANSCENDENCE_USER: ${DB_TRANSCENDENCE_USER}
+      # DB_TRANSCENDENCE_PASSWORD: ${DB_TRANSCENDENCE_PASSWORD}
       PGPORT: ${DB_TRANSCENDENCE_PORT}
     volumes:
-      - db_transcendence:/var/lib/postgresql/data
+      - db_transcendence:/var/lib/postgresql/data/
     expose:
       - "5434"
     tty: true
@@ -176,42 +179,19 @@ volumes:
       type: "none"
       o: "bind"
       device: "${PWD}/nginx/nginx"
-  online:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/online/${ONLINE_SERVICE_NAME}"
-  bot:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/bot/${BOT_SERVICE_NAME}"
   user:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/user/${USER_SERVICE_NAME}"
-  stat:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/stat/${STAT_SERVICE_NAME}"
-  chat:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/chat_service/${CHAT_SERVICE_NAME}"
   db_transcendence:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${PWD}/database"
+      device: "${PWD}/db_transcendence/db_transcendence"
+  media_volume:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${PWD}/db_transcendence/profile_pictures"
 
 networks:
   transcendance:
