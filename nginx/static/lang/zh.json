@@ -57,6 +57,7 @@
 		"enable_2fa": "启用双重认证",
 		"disable_2fa": "取消双因素认证",
 		"cancel_2fa": "关闭双因素认证",
+		"key_secret": "秘钥",
 		"choose_language": "选择语言：",
 		"otp_verif1": "验证一次性密码"
 	},

@@ -125,7 +125,8 @@ export function loadLanguage(lang) {
       }
       if (document.getElementById('language-select-label'))
         document.getElementById('language-select-label').textContent = data.settings.choose_language;
-      console.log("fsdafsad", data.settings.otp_verif1);
+      if (document.getElementById('otp-secret'))
+        document.getElementById('otp-secret').textContent = data.settings.key_secret;
       if (document.getElementById('verif-button1'))
         document.getElementById('verif-button1').textContent = data.settings.otp_verif1;
 

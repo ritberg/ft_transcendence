@@ -60,7 +60,7 @@ export async function GameMode(n) {
     }
     else if (n == 3) {
         if (userIsConnected == false) {
-            msg("user must be logged in to play online");
+            msg("you must be logged in to play online");
             return;
         }
 
