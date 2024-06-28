@@ -1,6 +1,6 @@
 import { fetchBlockedUsers, blockUser, unblockUser } from "./block.js";
 import { token, getUserId } from "./users.js";
-import { msg } from "./utils.js";
+import { msg, escapeHtml } from "./utils.js";
 import { handleChatLinkClick } from "./chat.js";
 
 let displayFriends, displayFriendRequests, fetchFriends, fetchFriendRequests, addFriend, delFriend;
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(data);
             // messageContainer.textContent = data.message;
             if (response.ok) {
-                msg(`Friend request sent to ${username}`);
+                msg(`Friend request sent to ${escapeHtml(username)}`);
                 // document.getElementById("friend-username-to-add").value = "";
             }
             else
@@ -79,7 +79,7 @@ document.addEventListener("DOMContentLoaded", function () {
             // messageContainer.textContent = data.message;
             if (response.ok) {
                 // document.getElementById("friend-username-to-del").value = "";
-                msg(`${username} has been removed from your friends`)
+                msg(`${escapeHtml(username)} has been removed from your friends`)
                 fetchFriends();
             }
             else {
@@ -131,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const user_button = document.createElement('span');
             user_button.style.flexGrow = "1";
             user_button.style.cursor = "pointer";
-            user_button.textContent = request.from_user.username;
+            user_button.textContent = escapeHtml(request.from_user.username);
             requestElement.appendChild(user_button);
             const accept_button = document.createElement('button');
             accept_button.classList.add("bi", "bi-check-circle");
@@ -225,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
             user_button.style.flexGrow = "1";
             user_button.style.cursor = "pointer";
             user_button.id = `friend_profile_${friend_id}`;
-            user_button.textContent = friend.username;
+            user_button.textContent = escapeHtml(friend.username);
             li.appendChild(user_button);
 
             // const add_button = document.createElement('button');

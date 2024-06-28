@@ -1,4 +1,4 @@
-import { msg } from './utils.js';
+import { escapeHtml, msg } from './utils.js';
 import { route } from './router.js';
 import { blockUser, unblockUser, fetchBlockedUsers } from './block.js';
 import { fetchFriends, fetchFriendRequests } from './friends.js';
@@ -44,7 +44,7 @@ export const updateProfile = async (user, isConnected, token) => {
         username_global = user.username;
         localStorage.setItem("user", JSON.stringify(user));
         const userNameElement = document.getElementById("user-name");
-        if (userNameElement) userNameElement.textContent = user.username;
+        if (userNameElement) userNameElement.textContent = escapeHtml(user.username);
         const profilePicElement = document.getElementById("profile-pic");
         if (profilePicElement) profilePicElement.src = user.profile_picture;
         const userAvatarElement = document.getElementById("user-avatar");
@@ -52,7 +52,7 @@ export const updateProfile = async (user, isConnected, token) => {
         const avatarInputElement = document.getElementById("avatar-input");
         if (avatarInputElement) avatarInputElement.value = null;
         const infoUsernameElement = document.getElementById("info-username");
-        if (infoUsernameElement) infoUsernameElement.textContent = user.username;
+        if (infoUsernameElement) infoUsernameElement.textContent = escapeHtml(user.username);
     } else {
         console.log("user is null")
         username_global = "Guest";
@@ -89,7 +89,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		let user = JSON.parse(storedUser);
 		username_global = user.username;
 		document.getElementById("profile-pic").src = user.profile_picture;
-		document.getElementById("user-name").textContent = user.username;
+		document.getElementById("user-name").textContent = escapeHtml(user.username);
 	}
 
 	if (token == null) {
@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function () {
 						const user_button = document.createElement('span');
 						user_button.style.flexGrow = "1";
 						user_button.style.cursor = "pointer";
-						user_button.textContent = user.username;
+						user_button.textContent = escapeHtml(user.username);
 						user_button.id = "user_profile";
 						li.appendChild(user_button);
 

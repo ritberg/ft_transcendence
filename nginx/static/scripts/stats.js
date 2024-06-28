@@ -1,6 +1,6 @@
 import { getUserId, userIsConnected } from "./users.js";
 import { token, username_global } from "./users.js";
-import { msg } from "./utils.js";
+import { escapeHtml, msg } from "./utils.js";
 
 function updateUserStats(stats) {
 	if (stats) {
@@ -24,7 +24,7 @@ function updateMatchHistory(matchHistory, username) {
 		matchHistory.forEach((match) => {
 			const listItem = document.createElement("li");
 			let date_played = new Date(match.date_played).toLocaleDateString('fr-FR');
-			let opponent = (username === match.player_1.username) ? match.player_2.username : match.player_1.username;
+			let opponent = (username === match.player_1.username) ? escapeHtml(match.player_2.username) : escapeHtml(match.player_1.username);
 			const winStatus = "WIN";
 			let status = (username === match.winner.username) ? winStatus : "LOSS";
 			let player_1_score = match.player_1.score;
@@ -54,7 +54,7 @@ export async function displayProfile(username) {
 	if (username) {
 		if (username) {
 			console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
-			document.getElementById("info-username").textContent = `${username}`;
+			document.getElementById("info-username").textContent = `${escapeHtml(username)}`;
 			// document.getElementById("user-name").textContent = `${username}`;
 		}
 		if (profile_pic) {

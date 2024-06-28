@@ -1,4 +1,4 @@
-import { msg, sleep } from "./utils.js";
+import { msg, sleep, escapeHtml } from "./utils.js";
 import { updateProfile, token, userIsConnected, username_global, getUserId } from "./users.js";
 import { route } from "./router.js";
 import { fetchLanguage, loadLanguage } from "./lang.js";
@@ -298,8 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (user) {
             const username = user.username;
             if (username) {
-                console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
-                document.getElementById("info-username").textContent = `${username}`;
+                document.getElementById("info-username").textContent = `${escapeHtml(username)}`;
             }
             if (user.profile_picture) {
                 document.getElementById("user-avatar").src = user.profile_picture;
@@ -398,7 +397,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data !== null) {
                     console.log("data: ", data);
                     await closeWebSocket();
-                    document.getElementById('user-name').style.color = 'white';
                     document.getElementById("chat-box").innerHTML = '';
                     updateProfile(null, false, null);
                     route("/");

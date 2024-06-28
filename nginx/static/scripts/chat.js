@@ -124,11 +124,11 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.getElementById("chat-box").innerHTML = `
         <div id="msg_container">
             ${data.messages.map(message => `
-            <p class="msg_text"><span class="msg_username">${message.fields.username}</span>: ${message.fields.message}</p>
+            <p class="msg_text"><span class="msg_username">${escapeHtml(message.fields.username)}</span>: ${message.fields.message}</p>
             `).join('')}
         </div>
         <div id="input_container">
-            <input type="text" id="i-msg" placeholder="Type a message to @${data.other_user}" />
+            <input type="text" id="i-msg" placeholder="Type a message to @${escapeHtml(data.other_user)}" />
             <button type="submit" id="b-msg" class=" bi bi-arrow-right-circle"></button>
                         <button type="submit" id="id_invit_button" class="bi bi-joystick"></button>
         </div>
@@ -223,7 +223,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     div.innerHTML = `
             <div class="msg_content">
-            <div class="msg_username">${data.username}</div>
+            <div class="msg_username">${escapeHtml(data.username)}</div>
             <div class="msg_text">: ${data.message}</div>
             </div>
         `;

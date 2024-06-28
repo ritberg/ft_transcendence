@@ -1,7 +1,7 @@
 import { drawBrackets, enterNicknames, createPlayers, tourney_game } from './brackets.js';
 import { change_loop_exec } from '../games/pong_tourney.js';
 import { GameMode } from './main.js';
-import { sleep, msg } from './utils.js';
+import { sleep, msg, escapeHtml } from './utils.js';
 import { modifyDelta, stars } from './stars.js';
 import { closeChatSocket } from './chat.js';
 import { loadLanguage } from './lang.js';
@@ -95,8 +95,8 @@ export async function tournamentMessages(sender, message) {
     div.classList.add("msg_text");
     div.innerHTML = `
         <div class="msg_content">
-        <div class="msg_username" style="color: #F1DB52">${sender}</div>
-        <div class="msg_text">: ${message}</div>
+        <div style="color: #F1DB52">${sender}</div>
+        <div class="msg_text">: ${escapeHtml(message)}</div>
         </div>
     `;
     document.querySelector("#msg_container").appendChild(div);

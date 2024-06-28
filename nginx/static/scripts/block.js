@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 msg(data.message);
             }
             else {
-                msg(`${username} has been blocked`);
+                msg(`${escapeHtml(username)} has been blocked`);
             }
         })
     }
@@ -99,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 msg(data.message);
             }
             else {
-                msg(`${username} has been unblocked`);
+                msg(`${escapeHtml(username)} has been unblocked`);
             }
         })
     }
