@@ -162,7 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 msg(data.message);
             }
             else {
-                accept ? msg(`friend request accepted`) : msg(`friend request rejected`);
+                accept ? msg(`Friend request accepted`) : msg(`Friend request rejected`);
                 fetchFriendRequests(); // Reload the list of friend requests
                 fetchFriends(); // Reload the list of friends
             }

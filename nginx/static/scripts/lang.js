@@ -126,7 +126,7 @@ export function loadLanguage(lang) {
       if (document.getElementById('language-select-label'))
         document.getElementById('language-select-label').textContent = data.settings.choose_language;
       if (document.getElementById('otp-secret'))
-        document.getElementById('otp-secret').textContent = data.settings.key_secret;
+        document.getElementById('otp-secret').textContent = data.settings.otp_secret;
       if (document.getElementById('verif-button1'))
         document.getElementById('verif-button1').textContent = data.settings.otp_verif1;
 
@@ -206,7 +206,7 @@ export async function changeLanguage(language) {
   }
 
   if (!language) {
-    msg("no language selected");
+    msg("No language selected");
     return;
   }
 

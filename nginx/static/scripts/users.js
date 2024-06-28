@@ -25,10 +25,10 @@ export const getUserId = async (username) => {
 	);
 	const data = await response.json();
 	if (!response.ok) {
-		if (response.status == 403)
-			msg("you must be logged in to access profiles");
+		if (response.status == 404)
+			msg("You must be logged in to access profiles");
 		else {
-			msg("this user does not exist");
+			msg("This user does not exist");
 		}
 		return null;
 	}
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
         if (userIsConnected == true) {
-            msg("cannot signup while logged in");
+            msg("Cannot signup while logged in");
             return;
         }
         let username = document.getElementById("username").value;
@@ -136,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then( async (response) => {
             if (!response.ok) {
                 if (response.status == 403) {
-                    msg("error logging in");
+                    msg("Error logging in");
                     return null;
                 }
                 const error = await response.json();
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	loginButton = async function (event) {
 		event.preventDefault();
 		if (userIsConnected == true) {
-			msg("cannot login while already logged in");
+			msg("Cannot login while already logged in");
 			return null;
 		}
 
@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		.then(async (response) => {
 			if (!response.ok) {
 				if (response.status == 403)
-					msg("error logging in");
+					msg("Error logging in");
 				else {
 					const error = await response.json();
 					console.log(error);
@@ -217,7 +217,6 @@ document.addEventListener("DOMContentLoaded", function () {
 						msg(message[1]);
 					else
 						msg(error.message);
-					// msg(error.message[1]);
 				}
 				return null;
 			}
@@ -337,6 +336,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			return response.json();
 		})
 			.then(async data => {
+				if (data == null) {
+					return;
+				}
 				await fetchFriendRequests();
 				await fetchFriends();
 				const usersList = document.getElementById('users_list-container');
@@ -345,24 +347,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
 				if (data.users.length !== 0) {
 					data.users.forEach((user) => {
-						const li = document.createElement('li');     		////
-						//li.textContent = user.username;        		//// dinamically creating users list with
-						const user_button = document.createElement('span');	////
+						const li = document.createElement('li');
+						const user_button = document.createElement('span');
 						user_button.style.flexGrow = "1";
 						user_button.style.cursor = "pointer";
 						user_button.textContent = user.username;
 						user_button.id = "user_profile";
 						li.appendChild(user_button);
 
-						const add_button = document.createElement('button');	////
+						const add_button = document.createElement('button');
 						add_button.classList.add("bi", "bi-person-plus");
 						add_button.addEventListener('click', (e) => {
 							e.preventDefault();
 							addFriend(user.username);
 						});
 						li.appendChild(add_button);
-						//// buttons "start chat" 
-						const chat_button = document.createElement('button');	////
+						const chat_button = document.createElement('button');
 						chat_button.classList.add("bi", "bi-chat-left-text");
 
 						chat_button.addEventListener('click', (e) => {
@@ -370,11 +370,11 @@ document.addEventListener("DOMContentLoaded", function () {
 							console.log(e.target);
 							if (!(document.getElementById("chat-box").classList.item("active")))
 								document.getElementById("chat-box").classList.toggle("active");
-							handleChatLinkClick(user.username);				//// opening chat
+							handleChatLinkClick(user.username);
 						});
 
 						li.appendChild(chat_button);
-						const block_button = document.createElement('button');	////
+						const block_button = document.createElement('button');
 						block_button.classList.add("bi", "bi-slash-circle");
 						block_button.addEventListener('click', async (e) => {
 							e.preventDefault();
@@ -392,18 +392,9 @@ document.addEventListener("DOMContentLoaded", function () {
 				}
 			})
 			.catch(error => {
-				const error_msg = document.createElement("h3");
-				error_msg.classList.add("ulist-error");
-				error_msg.id = ("users-not-allowed");
-				error_msg.textContent = "login to access";
-				document.getElementById("ulist-users").appendChild(error_msg);
-				var savedLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
-				if (!savedLanguage)
-					savedLanguage = 'en';
-				document.getElementById('language-select-menu').value = savedLanguage;
-				loadLanguage(savedLanguage);
+				msg("Users can not be retrieved at this time");
 			});
-		//.catch((error) => console.error("Error fetching user data:", error));
+		// .catch((error) => console.error("Error fetching user data:", error));
 	}
 
 	////////////////////// A SUPPRIMER (DEMANDER A ALESS SI C'EST OK) ////////////////////////////

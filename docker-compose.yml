@@ -53,7 +53,7 @@ services:
   chat:
     container_name: chat
     build:
-      context: ./chat_service
+      context: ./chat
       dockerfile: Dockerfile
       args:
         CHAT_SERVICE_NAME: ${CHAT_SERVICE_NAME}

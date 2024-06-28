@@ -13,24 +13,34 @@ async function check2FAStatus() {
         console.log('Local Storage 2FA Status:', {
             verified: localUser?.is_2fa_verified 
         });
-        const response = await fetch("https://" + window.location.host + '/auth/check-2fa-status/', {
+        await fetch("https://" + window.location.host + '/auth/check-2fa-status/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             credentials: "include",
-        });
-        const serverData = await response.json();
-        console.log('Server 2FA Status:', serverData);
-
-        if (localUser?.is_2fa_verified !== serverData.is_2fa_verified) {
-            await updateLocalStorage();
-        }
-
-        is2FAVerified = serverData.is_2fa_verified;
-        
-        return { verified: is2FAVerified };
+        })
+        .then(async (response) => {
+            if (!response.ok) {
+                let error = await response.json();
+                msg(error);
+                return null;
+            }
+            return response.json();
+        })
+        .then(async (data) => {
+            if (data !== null) {
+                if (localUser?.is_2fa_verified !== data.is_2fa_verified) {
+                    await updateLocalStorage();
+                }
+                is2FAVerified = data.is_2fa_verified;
+                
+                return { verified: is2FAVerified };
+            }
+            else
+                return null;
+        })
     } catch (error) {
         console.error('Error checking 2FA status:', error);
         return { enabled: false, verified: false };
@@ -39,17 +49,30 @@ async function check2FAStatus() {
 
 async function updateLocalStorage() {
     try {
-        const response = await fetch("https://" + window.location.host + '/auth/user-info/', {
+        fetch("https://" + window.location.host + '/auth/user-info/', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             credentials: "include",
-        });
-        const userData = await response.json();
-        localStorage.setItem('user', JSON.stringify(userData));
-        console.log('Local Storage Updated:', userData);
+        })
+        .then(async (response) => {
+            if (!response.ok) {
+                let error = await response.json();
+                msg(error);
+                return null;
+            }
+            return response.json();
+        })
+        .then(async (data) => {
+            if (data !== null) {
+                localStorage.setItem('user', JSON.stringify(data));
+                console.log('Local Storage Updated:', data);
+            }
+            else
+                return null;
+        })
     } catch (error) {
         console.error('Error updating local storage:', error);
     }
@@ -444,9 +467,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(async (response) => {
             if (!response.ok) {
-                if (response.status == 403)
-                    msg("you must be logged in to update your infos");
-                else if (response.status == 413)
+                if (response.status == 413)
                     msg("Image max size is 2mb")
                 else {
                     const error = await response.json();
@@ -463,7 +484,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (pwdChange === false) {
                 let user = data.data;
                 await updateProfile(user, true, data.csrfToken);
-                console.log("for fuck sake");
                 let user_id = await getUserId(username_global);
                 await openWebSocket(user_id);
             }

@@ -21,13 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		if (event.target && event.target.id === "b-signin-ok") {
 			await loginButton(event);
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "b-signup-ok") {
 			signupButton(event);
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "pvp-mode") {
 			route("/pvp/");
@@ -61,8 +57,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		else if (event.target && event.target.id === "update-profile") {
 			updateUser();
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "profile") {
 			displayProfile(username_global);

@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchInvite = async function (room_name, sender) {
         if (userIsConnected == false) {
-			msg("user must be logged in to play online");
+			msg("User must be logged in to play online");
 			return;
 		}
 
@@ -108,8 +108,8 @@ document.addEventListener("DOMContentLoaded", function () {
         })
             .then(async (response) => {
                 if (!response.ok) {
-                    // let error = await response.json();
-                    msg("chat: user is blocked");
+                    let error = await response.json();
+                    msg(error.error);
                     return null;
                 }
                 return response.json();
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (messageInput.replace(/\s/g,'') == "")
                         return;
                     if (userIsConnected !== true) {
-                        msg("you must be connected to access chat functions");
+                        msg("You must be connected to access chat functions");
                         return;
                     }
                     let blocked_users = await fetchBlockedUsers();
@@ -190,12 +190,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 document.querySelector("#id_invit_button").onclick = async function (e) {
                     if (userIsConnected !== true) {
-                        msg("you must be connected to access chat functions");
+                        msg("You must be connected to access chat functions");
                         return;
                     }
                     let blocked_users = await fetchBlockedUsers();
                     if (blocked_users.includes(data.other_user)) {
-                        msg("this user is blocked");
+                        msg("This user is blocked");
                         return;
                     }
                     fetchInvite(data.room_name, true);
@@ -231,10 +231,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     document.querySelector("#msg_container").appendChild(div);
                     document.querySelector("#msg_container").scrollTop = document.querySelector("#msg_container").scrollHeight;
                 }
+                document.getElementById("chat-box").classList.add("chat-active");
+                document.getElementById("b-close-chat").classList.add("chat-active");
             })
             .catch(error => console.error('Error fetching chat data:', error));
-        document.getElementById("chat-box").classList.add("chat-active");
-        document.getElementById("b-close-chat").classList.add("chat-active");
     }
 });
 

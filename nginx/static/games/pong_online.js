@@ -180,11 +180,6 @@ export class online {
             }
             return response.json();
         })
-        .then(async (data) => {
-            if (data !== null) {
-                console.log(data);
-            }
-        })
     }
 
     gameLoop() {
