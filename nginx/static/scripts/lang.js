@@ -1,6 +1,6 @@
 import { userIsConnected } from "./users.js";
 import { token, getUserId, username_global } from "./users.js";
-import { errorMsg, sleep } from "./utils.js";
+import { msg, sleep } from "./utils.js";
 import { closeWebSocket, openWebSocket } from "./userStatus.js";
 
 export function loadLanguage(lang) {
@@ -183,7 +183,7 @@ export async function fetchLanguage() {
     .then(async (response) => {
       if (!response.ok) {
         const error = await response.json();
-        errorMsg(error.message);
+        msg(error.message);
         return null;
       }
       return response.json();
@@ -200,12 +200,12 @@ let changeLanguageUrl = "https://" + window.location.host + "/auth/change-langua
 
 export async function changeLanguage(language) {
   if (userIsConnected == false) {
-    errorMsg("You need an account to set a profile language");
+    msg("You need an account to set a profile language");
     return;
   }
 
   if (!language) {
-    errorMsg("no language selected");
+    msg("no language selected");
     return;
   }
 
@@ -224,7 +224,7 @@ export async function changeLanguage(language) {
     .then(async (response) => {
       if (!response.ok) {
         const error = await response.json();
-        errorMsg(error.message);
+        msg(error.message);
         return null;
       }
       return response.json();

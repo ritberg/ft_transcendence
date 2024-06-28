@@ -3,7 +3,7 @@ import { getUserId } from '../scripts/users.js'
 import { token } from '../scripts/users.js';
 import { game } from '../scripts/router.js';
 import { modifyDelta } from '../scripts/stars.js';
-import { errorMsg, writeVerticalText } from '../scripts/utils.js';
+import { msg, writeVerticalText } from '../scripts/utils.js';
 
 export class online {
     username;
@@ -175,7 +175,7 @@ export class online {
         .then( async (response) => {
             if (!response.ok) {
                 const errorData = await response.json();
-                errorMsg(errorData.message);
+                msg(errorData.message);
                 return null;
             }
             return response.json();

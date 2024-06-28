@@ -1,6 +1,6 @@
 import { fetchBlockedUsers } from './block.js';
 import { getUserId, token, userIsConnected, username_global } from './users.js';
-import { errorMsg, escapeHtml, sleep } from './utils.js';
+import { msg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
 import { online } from '../games/pong_online.js';
 
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     fetchInvite = async function (room_name, sender) {
         if (userIsConnected == false) {
-			errorMsg("user must be logged in to play online");
+			msg("user must be logged in to play online");
 			return;
 		}
 
@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(async (response) => {
                 if (!response.ok) {
                     const error = await response.json();
-                    errorMsg(error.error);
+                    msg(error.error);
                     return null;
                 }
                 return response.json();
@@ -109,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(async (response) => {
                 if (!response.ok) {
                     // let error = await response.json();
-                    errorMsg("chat: user is blocked");
+                    msg("chat: user is blocked");
                     return null;
                 }
                 return response.json();
@@ -175,7 +175,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (messageInput.replace(/\s/g,'') == "")
                         return;
                     if (userIsConnected !== true) {
-                        errorMsg("you must be connected to access chat functions");
+                        msg("you must be connected to access chat functions");
                         return;
                     }
                     let blocked_users = await fetchBlockedUsers();
@@ -185,17 +185,17 @@ document.addEventListener("DOMContentLoaded", function () {
                         chatSocket.send(JSON.stringify({ message: messageInput, username: data.username }));
                     }
                     else
-                        errorMsg("This user is blocked");
+                        msg("This user is blocked");
                 };
 
                 document.querySelector("#id_invit_button").onclick = async function (e) {
                     if (userIsConnected !== true) {
-                        errorMsg("you must be connected to access chat functions");
+                        msg("you must be connected to access chat functions");
                         return;
                     }
                     let blocked_users = await fetchBlockedUsers();
                     if (blocked_users.includes(data.other_user)) {
-                        errorMsg("this user is blocked");
+                        msg("this user is blocked");
                         return;
                     }
                     fetchInvite(data.room_name, true);

@@ -1,6 +1,6 @@
 import { GameMode } from './main.js';
 import { route } from './router.js';
-import { sleep, errorMsg } from './utils.js';
+import { sleep, msg } from './utils.js';
 import { signupButton, loginButton, userIsConnected, username_global } from './users.js';
 import { updateUser, logoutFunc } from './settings.js';
 import { displayProfile} from './stats.js';
@@ -83,6 +83,13 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
+	contentContainer.addEventListener("submit", async function (event) {
+		event.preventDefault();
+		if (event.target && event.target.id === "online_form") {
+			document.getElementById("b-online-go").click();
+		}
+	});
+
 	contentContainer.addEventListener("change", async function (event) {
 		event.preventDefault();
 		if (event.target && event.target.id === "language-select-settings") {
@@ -98,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (event.target && event.target.id === "avatar-input") {
 			let file = document.getElementById("avatar-input").files[0];
 			if (file == null || file.type == "") {
-				errorMsg("please select a file");
+				msg("please select a file");
 				return;
 			}
 			const reader = new FileReader();

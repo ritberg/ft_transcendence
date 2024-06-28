@@ -1,4 +1,4 @@
-import { errorMsg } from './utils.js';
+import { msg } from './utils.js';
 import { route } from './router.js';
 import { blockUser, unblockUser, fetchBlockedUsers } from './block.js';
 import { fetchFriends, fetchFriendRequests } from './friends.js';
@@ -26,9 +26,9 @@ export const getUserId = async (username) => {
 	const data = await response.json();
 	if (!response.ok) {
 		if (response.status == 403)
-			errorMsg("you must be logged in to access profiles");
+			msg("you must be logged in to access profiles");
 		else {
-			errorMsg("this user does not exist");
+			msg("this user does not exist");
 		}
 		return null;
 	}
@@ -110,7 +110,7 @@ document.addEventListener("DOMContentLoaded", function () {
         event.preventDefault();
 
         if (userIsConnected == true) {
-            errorMsg("cannot signup while logged in");
+            msg("cannot signup while logged in");
             return;
         }
         let username = document.getElementById("username").value;
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let password_confirm = document.getElementById("password_confirm").value;
 
         if (password !== password_confirm) {
-            errorMsg("Passwords don't match");
+            msg("Passwords don't match");
             return;
         }
 
@@ -136,28 +136,28 @@ document.addEventListener("DOMContentLoaded", function () {
         .then( async (response) => {
             if (!response.ok) {
                 if (response.status == 403) {
-                    errorMsg("error logging in");
+                    msg("error logging in");
                     return null;
                 }
                 const error = await response.json();
                 console.log(error);
                 if (error.email) {
                     if (typeof(error.email) == 'string')
-                        errorMsg(error.email);
+                        msg(error.email);
                     else
-                        errorMsg(error.email[0]);
+                        msg(error.email[0]);
                 }
 				else if (error.username) {
                     if (typeof(error.username) == 'string')
-                        errorMsg(error.username);
+                        msg(error.username);
                     else
-                        errorMsg(error.username[0]);
+                        msg(error.username[0]);
                 }
                 else if (error.password) {
                     if (typeof(error.password) == 'string')
-                        errorMsg(error.password);
+                        msg(error.password);
                     else
-                        errorMsg(error.password[0]);
+                        msg(error.password[0]);
                 }
                 return null;
             }
@@ -186,7 +186,7 @@ document.addEventListener("DOMContentLoaded", function () {
 	loginButton = async function (event) {
 		event.preventDefault();
 		if (userIsConnected == true) {
-			errorMsg("cannot login while already logged in");
+			msg("cannot login while already logged in");
 			return null;
 		}
 
@@ -208,16 +208,16 @@ document.addEventListener("DOMContentLoaded", function () {
 		.then(async (response) => {
 			if (!response.ok) {
 				if (response.status == 403)
-					errorMsg("error logging in");
+					msg("error logging in");
 				else {
 					const error = await response.json();
 					console.log(error);
 					let message = error.message.split(": ");
 					if (message.length > 1)
-						errorMsg(message[1]);
+						msg(message[1]);
 					else
-						errorMsg(error.message);
-					// errorMsg(error.message[1]);
+						msg(error.message);
+					// msg(error.message[1]);
 				}
 				return null;
 			}
@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				throw new Error(data.detail || data.message);
 			}
 		} catch (error) {
-			errorMsg(error.message);
+			msg(error.message);
 		}
 	}
 	////////////////////// USERS LIST + BUTTON "START CHAT" ////////////////////////////

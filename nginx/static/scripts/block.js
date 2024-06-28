@@ -1,5 +1,5 @@
 import { token, getUserId } from "./users.js";
-import { errorMsg } from "./utils.js";
+import { msg } from "./utils.js";
 
 let fetchBlockedUsers, blockUser, unblockUser;
 document.addEventListener("DOMContentLoaded", function () {
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(async (response) => {
         if (!response.ok) {
                 const error = await response.json();
-                errorMsg(error.message);
+                msg(error.message);
                 return null;
             }
             return response.json();
@@ -60,8 +60,11 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then( async (response) => {
             if (!response.ok) {
-                const data = await response.json();    
-                errorMsg(data.message);
+                const data = await response.json();
+                msg(data.message);
+            }
+            else {
+                msg(`${username} has been blocked`);
             }
         })
     }
@@ -93,7 +96,10 @@ document.addEventListener("DOMContentLoaded", function () {
         .then( async (response) => {
             if (!response.ok) {
                 const data = await response.json();    
-                errorMsg(data.message);
+                msg(data.message);
+            }
+            else {
+                msg(`${username} has been unblocked`);
             }
         })
     }

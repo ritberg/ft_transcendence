@@ -1,7 +1,7 @@
 import { drawBrackets, enterNicknames, createPlayers, tourney_game } from './brackets.js';
 import { change_loop_exec } from '../games/pong_tourney.js';
 import { GameMode } from './main.js';
-import { sleep, errorMsg } from './utils.js';
+import { sleep, msg } from './utils.js';
 import { modifyDelta, stars } from './stars.js';
 import { closeChatSocket } from './chat.js';
 import { loadLanguage } from './lang.js';
@@ -136,11 +136,11 @@ export async function tournamentSettings() {
 		for (const element of document.querySelectorAll("[id^='player_']")) {
 			const content = element.value.trim();
 			if (content === '') {
-				errorMsg("Names must contain visible characters");
+				msg("Names must contain visible characters");
 				return;
 			}
 			if (seen.has(content)) {
-				errorMsg("Duplicates are not allowed");
+				msg("Duplicates are not allowed");
 				return;
 			}
 			seen.add(content);

@@ -4,7 +4,7 @@ import { displaySettings } from "./settings.js";
 import { GameMode } from "./main.js";
 import { modifyDelta,stars } from './stars.js';
 import { change_loop_exec } from "../games/pong_tourney.js";
-import { errorMsg } from "./utils.js";
+import { msg } from "./utils.js";
 import { loadLanguage } from './lang.js';
 import { updateStatus } from "./userStatus.js";
 
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	async function routerProfile(location, template) {
 		if (userIsConnected == false) {
-			errorMsg("you must be logged in to access profiles");
+			msg("you must be logged in to access profiles");
 			const html = await fetch("/templates/profile.html").then((response) => response.text());
 			document.getElementById("content").innerHTML = html;
 			return;

@@ -1,6 +1,6 @@
 import { getUserId, userIsConnected } from "./users.js";
 import { token, username_global } from "./users.js";
-import { errorMsg } from "./utils.js";
+import { msg } from "./utils.js";
 
 function updateUserStats(stats) {
 	if (stats) {
@@ -199,7 +199,7 @@ async function getStats(player_id) {
 		.then(async (response) => {
 			if (!response.ok) {
 				const error = await response.json();
-				errorMsg(error.message);
+				msg(error.message);
 				return null;
 			}
 			return response.json();
@@ -229,7 +229,7 @@ async function getMatchHistory(player_id) {
 		.then(async (response) => {
 			if (!response.ok) {
 				const error = await response.json();
-				errorMsg(error.message);
+				msg(error.message);
 				return null;
 			}
 			return response.json();
@@ -259,7 +259,7 @@ async function getProfilePicture(username) {
 		.then(async (response) => {
 			if (!response.ok) {
 				const error = await response.json();
-				errorMsg(error.message);
+				msg(error.message);
 				return null;
 			}
 			return response.json();

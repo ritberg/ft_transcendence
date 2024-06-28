@@ -1,6 +1,6 @@
 import { fetchBlockedUsers, blockUser, unblockUser } from "./block.js";
 import { token, getUserId } from "./users.js";
-import { errorMsg } from "./utils.js";
+import { msg } from "./utils.js";
 import { handleChatLinkClick } from "./chat.js";
 
 let displayFriends, displayFriendRequests, fetchFriends, fetchFriendRequests, addFriend, delFriend;
@@ -36,12 +36,12 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log(data);
             // messageContainer.textContent = data.message;
             if (response.ok) {
-                console.log("ok");
+                msg(`Friend request sent to ${username}`);
                 // document.getElementById("friend-username-to-add").value = "";
             }
             else
             {
-                errorMsg(data.message);
+                msg(data.message);
             }
         } catch (error) {
             console.error("Error sending friend request:", error);
@@ -79,10 +79,11 @@ document.addEventListener("DOMContentLoaded", function () {
             // messageContainer.textContent = data.message;
             if (response.ok) {
                 // document.getElementById("friend-username-to-del").value = "";
+                msg(`${username} has been removed from your friends`)
                 fetchFriends();
             }
             else {
-                errorMsg(data.message);
+                msg(data.message);
             }
         } catch (error) {
             console.error("Error sending friend request:", error);
@@ -114,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data && Array.isArray(data.data)) {
                 displayFriendRequests(data.data);
             } else {
-                errorMsg(data);
+                msg(data);
             }
         } catch (error) {
             console.error("Error fetching friend requests:", error);
@@ -158,9 +159,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             const data = await response.json();
             if (!(response.ok)) {
-                errorMsg(data.message);
+                msg(data.message);
             }
             else {
+                accept ? msg(`friend request accepted`) : msg(`friend request rejected`);
                 fetchFriendRequests(); // Reload the list of friend requests
                 fetchFriends(); // Reload the list of friends
             }
@@ -188,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (data && Array.isArray(data.data)) {
                 displayFriends(data.data);
             } else {
-                errorMsg(data);
+                msg(data);
             }
         } catch (error) {
             console.error("Error fetching friends:", error);

@@ -1,4 +1,4 @@
-import { errorMsg, sleep } from './utils.js';
+import { msg, sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
 import { username_global, token, userIsConnected, getUserId } from './users.js';
 import { game } from './router.js';
@@ -60,7 +60,7 @@ export async function GameMode(n) {
     }
     else if (n == 3) {
         if (userIsConnected == false) {
-            errorMsg("user must be logged in to play online");
+            msg("user must be logged in to play online");
             return;
         }
 
@@ -84,7 +84,7 @@ export async function GameMode(n) {
         .then(async (response) => {
             if (!response.ok) {
                 const error = await response.json();
-                errorMsg(error.error);
+                msg(error.error);
                 return null;
             }
             return response.json();

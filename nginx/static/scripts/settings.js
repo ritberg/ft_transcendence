@@ -1,4 +1,4 @@
-import { errorMsg, sleep } from "./utils.js";
+import { msg, sleep } from "./utils.js";
 import { updateProfile, token, userIsConnected, username_global, getUserId } from "./users.js";
 import { route } from "./router.js";
 import { fetchLanguage, loadLanguage } from "./lang.js";
@@ -106,7 +106,7 @@ export async function enable2FA() {
 
     } catch (error) {
         console.error('Error enabling 2FA:', error);
-        errorMsg(error.message);
+        msg(error.message);
     }
 }
 
@@ -134,9 +134,9 @@ async function disable2FA() {
         is2FAEnabled = false;
         is2FAVerified = false;
         updateToggle2FAButton();
-        errorMsg('2FA has been disabled successfully.');
+        msg('2FA has been disabled successfully.');
     } catch (error) {
-        errorMsg(error.message);
+        msg(error.message);
     }
     let user_id = await getUserId(username_global);
     await openWebSocket(user_id);
@@ -167,7 +167,7 @@ async function verify2FA(otp) {
         if (response.ok) {
             is2FAEnabled = false;
             is2FAVerified = true;
-            errorMsg('OTP Verified Successfully. 2FA is now fully enabled.');
+            msg('OTP Verified Successfully. 2FA is now fully enabled.');
             updateToggle2FAButton();
             hideOTPElements();
             await updateLocalStorage();
@@ -175,7 +175,7 @@ async function verify2FA(otp) {
             throw new Error(data.detail || data.message);
         }
     } catch (error) {
-        errorMsg(error.message);
+        msg(error.message);
     }
     let user_id = await getUserId(username_global);
     await openWebSocket(user_id);
@@ -189,7 +189,7 @@ function cancel2FASetup(event) {
     hideOTPElements();
     updateToggle2FAButton();
     document.getElementById('toggle-2fa-button').style.color = "rgba(255, 255, 255, .8)";
-    errorMsg('2FA setup has been cancelled.');
+    msg('2FA setup has been cancelled.');
 }
 
 function updateToggle2FAButton() {
@@ -360,10 +360,10 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(async (response) => {
                 if (!response.ok) {
                     if (response.status == 403)
-                        errorMsg("you must be logged in to log out");
+                        msg("you must be logged in to log out");
                     else {
                         const error = await response.json();
-                        errorMsg(error.message);
+                        msg(error.message);
                     }
                     return null;
                 }
@@ -442,12 +442,12 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(async (response) => {
             if (!response.ok) {
                 if (response.status == 403)
-                    errorMsg("you must be logged in to update your infos");
+                    msg("you must be logged in to update your infos");
                 else if (response.status == 413)
-                    errorMsg("Image max size is 2mb")
+                    msg("Image max size is 2mb")
                 else {
                     const error = await response.json();
-                    errorMsg(error.message);
+                    msg(error.message);
                 }
                 return null;
             }

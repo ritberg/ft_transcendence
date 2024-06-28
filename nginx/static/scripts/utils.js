@@ -1,4 +1,4 @@
-export async function errorMsg(msg) {
+export async function msg(msg) {
 	if (msg === undefined)
 		return;
 	const error_box = document.getElementById("error-box");
