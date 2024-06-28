@@ -1,7 +1,7 @@
 import { errorMsg, sleep } from "./utils.js";
 import { updateProfile, token, userIsConnected, username_global, getUserId } from "./users.js";
 import { route } from "./router.js";
-import { fetchLanguage } from "./lang.js";
+import { fetchLanguage, loadLanguage } from "./lang.js";
 import { closeWebSocket, openWebSocket } from "./userStatus.js";
 
 let is2FAEnabled = false;
@@ -72,7 +72,7 @@ export async function enable2FA() {
         });
 
         if (!response.ok) {
-            throw new Error(`Failed to enable 2FA: ${response.status}`);
+            throw new Error(`Failed to enable 2FA`);
         }
         let user_id = await getUserId(username_global);
         await openWebSocket(user_id);
@@ -84,6 +84,7 @@ export async function enable2FA() {
         const otpSecretSpan = document.getElementById('otp-secret-span');
         const otpSecret = document.getElementById('otp-secret');
         const verifyOTPForm = document.getElementById('settings-otp-form');
+        const verifyOTPSubmit = document.getElementById('verify-otp-form');
 
         img.src = data.qr_code;
         img.alt = "2FA QR Code";
@@ -97,6 +98,7 @@ export async function enable2FA() {
         qrCodeContainer.style.display = 'block';
         otpSecret.style.display = 'block';
         verifyOTPForm.style.display = 'block';
+        verifyOTPSubmit.style.display = 'block';
 
         is2FAEnabled = true;
         is2FAVerified = false;
@@ -208,6 +210,10 @@ function updateToggle2FAButton() {
         toggle2FAButton.style.color = '';
         toggle2FAButton.className = 'enable2FA';
     }
+    var localLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
+    if (!localLanguage)
+        localLanguage = 'en';
+    loadLanguage(localLanguage);
 }
 
 function hideOTPElements() {
@@ -257,6 +263,11 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("isf2aEnabled ?", is2FAEnabled);
         console.log("isf2aVerified ?", is2FAVerified);
         updateToggle2FAButton();
+
+        var localLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
+        if (!localLanguage)
+            localLanguage = 'en';
+        loadLanguage(localLanguage);
 
         console.log("updateUserInfo called with userInfo =", user);
         if (user) {
@@ -379,8 +390,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let updateUrl = "https://" + window.location.host + "/auth/update/";
 
     updateUser = async function () {
-        await closeWebSocket();
-        await sleep(100);
         let formData = new FormData();
         let hasChanges = false;
         let pwdChange = false;
@@ -410,82 +419,57 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let PictureInput = document.getElementById("avatar-input");
         if (PictureInput.value) {
-            // await uploadPicture();
-            // console.log("kjkjkjkjkjkjkjkjkjkjkjkjkj", hasChanges);
-            // if (hasChanges == false)
-            //     return;
-            // else
-            //     await sleep(100);
             console.log(PictureInput.value);
             let file = document.getElementById("avatar-input").files[0];
             formData.append("profile_picture", file);
             hasChanges = true;
         }
 
-        if (hasChanges) {
-            await fetch(updateUrl, {
-                method: "PUT",
-                headers: {
-                    "X-CSRFToken": token,
-                },
-                body: formData,
-                credentials: "include",
-            })
-                .then(async (response) => {
-                    if (!response.ok) {
-                        if (response.status == 403)
-                            errorMsg("you must be logged in to update your infos");
-                        else if (response.status == 413)
-                            errorMsg("Image max size is 2mb")
-                        else {
-                            const error = await response.json();
-                            errorMsg(error.message);
-                        }
-                        return null;
-                    }
-                    return response.json();
-                })
-                .then(async (data) => {
-                    if (data !== null) {
-                        console.log("Update success: ", data);
-                        if (pwdChange == false) {
-                            let user = data.data;
-                            document.getElementById("user-avatar").src = user.profile_picture;
-                            document.getElementById("avatar-input").value = null;
-                            await updateProfile(user, true, data.csrfToken);
-                            console.log("username-global", username_global);
-                            // await closeWebSocket();
-                            console.log("abracadabra", user.id);
-                            // await openWebSocket(user.id);
-                            if (user) {
-                                if (data.data.username) {
-                                    console.log("PUT USERNAME IN USERINFO DISPLAY: ", data.data.username);
-                                    document.getElementById("info-username").textContent = `${data.data.username}`;
-                                }
-                            }
-                        }
-                        else {
-                            document.getElementById("chat-box").innerHTML = '';
-                            // await closeWebSocket();
-                            await updateProfile(null, false, null);
-                            route("/");
-                        }
-                    }
-                })
-                // .catch((error) => {
-                //     console.error("Fetch error: ", error.message);
-                // });
-        } else {
-            errorMsg("There are no changes");
-        }
-        if (pwdChange == false) {
-            console.log("for fuck sake");
-            let user_id = await getUserId(username_global);
-            await openWebSocket(user_id);
-        }
-    }
+        if (!hasChanges)
+            return;
 
-    // Call displaySettings to initialize the page
-    // displaySettings();
+        await closeWebSocket();
+        await sleep(100);
+
+        await fetch(updateUrl, {
+            method: "PUT",
+            headers: {
+                "X-CSRFToken": token,
+            },
+            body: formData,
+            credentials: "include",
+        })
+        .then(async (response) => {
+            if (!response.ok) {
+                if (response.status == 403)
+                    errorMsg("you must be logged in to update your infos");
+                else if (response.status == 413)
+                    errorMsg("Image max size is 2mb")
+                else {
+                    const error = await response.json();
+                    errorMsg(error.message);
+                }
+                return null;
+            }
+            return response.json();
+        })
+        .then(async (data) => {
+            if (data === null)
+                return;
+            console.log("Update success: ", data);
+            if (pwdChange === false) {
+                let user = data.data;
+                await updateProfile(user, true, data.csrfToken);
+                console.log("for fuck sake");
+                let user_id = await getUserId(username_global);
+                await openWebSocket(user_id);
+            }
+            else {
+                document.getElementById("chat-box").innerHTML = '';
+                await updateProfile(null, false, null);
+                route("/");
+            }
+        })
+    }
 });
 export { updateUser, logoutFunc, uploadPicture, displaySettings }

@@ -37,31 +37,40 @@ export const getUserId = async (username) => {
 };
 
 export const updateProfile = async (user, isConnected, token) => {
-	console.log("updateProfile called with =", user, isConnected, token);
+    console.log("updateProfile called with =", user, isConnected, token);
 
-	if (user !== null) {
-		console.log("user is not null")
-		username_global = user.username;
-		localStorage.setItem("user", JSON.stringify(user));
-		document.getElementById("user-name").textContent = user.username;
-		document.getElementById("profile-pic").src = user.profile_picture;
-	}
-	else {
-		console.log("user is null")
-		username_global = "Guest";
-		document.getElementById("profile-pic").src = "/media/profile_pics/default.jpg"
-		localStorage.removeItem("user");
-		document.getElementById("user-name").textContent = "Guest";
-	}
-	localStorage.setItem("userIsConnected", isConnected);
-	userIsConnected = isConnected;
-	console.log("userIsConnected : ", localStorage.getItem("userIsConnected"));
-	console.log("print tokennnnn2 ", token);
-	if (token !== null) {
-		updateCSRFToken(token);
-	} else {
-		localStorage.removeItem("token");
-	}
+    if (user !== null) {
+        console.log("user is not null")
+        username_global = user.username;
+        localStorage.setItem("user", JSON.stringify(user));
+        const userNameElement = document.getElementById("user-name");
+        if (userNameElement) userNameElement.textContent = user.username;
+        const profilePicElement = document.getElementById("profile-pic");
+        if (profilePicElement) profilePicElement.src = user.profile_picture;
+        const userAvatarElement = document.getElementById("user-avatar");
+        if (userAvatarElement) userAvatarElement.src = user.profile_picture;
+        const avatarInputElement = document.getElementById("avatar-input");
+        if (avatarInputElement) avatarInputElement.value = null;
+        const infoUsernameElement = document.getElementById("info-username");
+        if (infoUsernameElement) infoUsernameElement.textContent = user.username;
+    } else {
+        console.log("user is null")
+        username_global = "Guest";
+        const profilePicElement = document.getElementById("profile-pic");
+        if (profilePicElement) profilePicElement.src = "/media/profile_pics/default.jpg";
+        localStorage.removeItem("user");
+        const userNameElement = document.getElementById("user-name");	
+        if (userNameElement) userNameElement.textContent = "Guest";
+    }
+    localStorage.setItem("userIsConnected", isConnected);
+    userIsConnected = isConnected;
+    console.log("userIsConnected : ", localStorage.getItem("userIsConnected"));
+    console.log("print tokennnnn2 ", token);
+    if (token !== null) {
+        updateCSRFToken(token);
+    } else {
+        localStorage.removeItem("token");
+    }
 };
 
 const updateCSRFToken = (newToken) => {
@@ -243,9 +252,9 @@ document.addEventListener("DOMContentLoaded", function () {
 				let user = data.data;
 				console.log("data : ", user);
 				console.log("token received : ", data.crsfToken);
-				updateProfile(user, true, data.crsfToken);
-				await openWebSocket(user.id);
+				await updateProfile(user, true, data.crsfToken);
 				let language = await fetchLanguage();
+				await openWebSocket(user.id);
 				localStorage.setItem('preferredLanguage', language);
 				loadLanguage(language);
 				document.getElementById('language-select-menu').value = language
@@ -282,9 +291,9 @@ document.addEventListener("DOMContentLoaded", function () {
 			if (response.ok) {
 				console.log("now logging in");
 				let user = data.user;
-				updateProfile(user, true, data.csrfToken);
-				await openWebSocket(user.id);
+				await updateProfile(user, true, data.csrfToken);
 				let language = await fetchLanguage();
+				await openWebSocket(user.id);
 				localStorage.setItem('preferredLanguage', language);
 				loadLanguage(language);
 				document.getElementById('language-select-menu').value = language

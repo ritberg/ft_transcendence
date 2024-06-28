@@ -109,7 +109,7 @@ function createChartGames(stats) {
 					display: true,
 					text: 'Win Rate',
 					font: {
-						size: 36
+						size: 18
 					},
 					color: '#FFFFFF',
 				},

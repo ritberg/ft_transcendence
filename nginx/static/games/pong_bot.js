@@ -23,6 +23,7 @@ export class bot {
 	ball_width = 30;
 	ball_height = 30;
 	ball_velocity = 5;
+	last_direction = -1;
 
 	first_bounce = true;
 
@@ -114,20 +115,18 @@ export class bot {
 	gameLoop_bot() {
 		this.canvas.width = this.board_width;
 		this.canvas.height = this.board_height;
-		let ran = Math.floor(Math.random() * 2);
-		let tmp = this.ball_velocity;
+		// let ran = Math.floor(Math.random() * 2);
+		// if (ran == 0) {
+		// 	tmp *= -1;
+		// }
+		// let tmp = this.ball_velocity;
 		let tmp2 = 0;
 		while (tmp2 == 0)
 			tmp2 = Math.floor(Math.random() * 11) - 5;
-		this.ball.velocityY = tmp2;
-		if (ran == 0) {
-			tmp *= -1;
-		}
-		this.ball.velocityX = tmp;
 		this.ball.velocityX = 0;
 		this.ball.velocityY = 0;
 		setTimeout(() => { this.ball.velocityY = tmp2; }, 800);
-		setTimeout(() => { this.ball.velocityX = tmp; }, 800);
+		setTimeout(() => { this.ball.velocityX = this.last_direction * this.ball_velocity; }, 800);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
 		this.gameLoop();
@@ -208,10 +207,10 @@ export class bot {
 	}
 
 	changeBallVelocity() {
-		if (!(this.ball.yPos + this.ball.velocityY > 0 && this.ball.yPos + this.ball.velocityY + this.ball.height < this.board_height)) {
+		if (this.ball.yPos + this.ball.velocityY < 0 || this.ball.yPos + this.ball.velocityY + this.ball.height > this.board_height) {
 			this.ball.velocityY *= -1;
 		}
-		if (this.ball.xPos + this.ball.width >= this.board_width - this.player1.xPos - this.computer.width) {
+		if (this.ball.xPos + this.ball.width >= this.board_width - 20 - this.computer.width) {
 			if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.computer.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.computer.yPos + this.computer.height && this.ball.velocityX > 0) {
 				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.computer.yPos + this.computer.height / 2)) / 10;
 				this.ball.velocityX *= -1;
@@ -228,7 +227,7 @@ export class bot {
 				}
 			}
 		}
-		if (this.ball.xPos <= this.player1.xPos + this.player1.width) {
+		if (this.ball.xPos <= 20 + this.player1.width) {
 			if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.player1.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.player1.yPos + this.player1.height && this.ball.velocityX < 0) {
 				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player1.yPos + this.player1.height / 2)) / 10;
 				this.ball.velocityX *= -1;
@@ -245,7 +244,7 @@ export class bot {
 				}
 			}
 		}
-		if (!(this.ball.xPos + this.ball.velocityX > 0 && this.ball.xPos + this.ball.velocityX + this.ball.width < this.board_width)) {
+		if (this.ball.xPos + this.ball.velocityX < 0 || this.ball.xPos + this.ball.velocityX + this.ball.width > this.board_width) {
 			this.context.fillStyle = "white";
 			if (!(this.ball.xPos + this.ball.velocityX > 0))
 				this.computer.score++;
@@ -269,6 +268,7 @@ export class bot {
 				return;
 			}
 			this.first_bounce = true;
+			this.last_direction *= -1;
 			this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
 			this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
 			let ran = Math.floor(Math.random() * 2);
@@ -276,9 +276,9 @@ export class bot {
 			this.ball.velocityY = 0;
 			while (this.ball.velocityY == 0)
 				this.ball.velocityY = Math.floor(Math.random() * 11) - 5;
-			if (ran == 0)
-				this.ball.velocityX *= -1;
-			this.ball.velocityXTmp = this.ball.velocityX;
+			// if (ran == 0)
+			// 	this.ball.velocityX *= -1;
+			this.ball.velocityXTmp = this.ball.velocityX * this.last_direction;
 			this.ball.velocityYTmp = this.ball.velocityY;
 			this.ball.velocityX = 0;
 			this.ball.velocityY = 0;

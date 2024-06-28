@@ -23,7 +23,6 @@ while ! nc -z db_transcendence 5434; do
   echo "waiting for postgress to be listening..."
   sleep 1
 done
-sleep 7
 echo "PostgreSQL started"
 pip install -U 'Twisted[tls,http2]'
 python3 manage.py makemigrations

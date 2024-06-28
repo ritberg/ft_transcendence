@@ -40,6 +40,7 @@ class AI:
     ball_speed_x = 5 #random.uniform(4, 5)
     ball_speed_y = 5
     first_bounce = True
+    last_direction = -1
 
     def __init__(self):
         self.previous_data = None
@@ -52,7 +53,7 @@ class AI:
             tf.keras.layers.Dense(16, input_shape=(8,), activation='relu'),
             #tf.keras.layers.Dense(512, activation='relu'),
             #tf.keras.layers.Dense(256, activation='relu'),
-            tf.keras.layers.Dense(3)  # Output layer for 3 possible actions
+            tf.keras.layers.Dense(3, activation='softmax')  # Output layer for 3 possible actions
         ])
         self.model.compile(loss='mean_squared_error', optimizer=tf.keras.optimizers.Adam(learning_rate=0.001))
         # Adam is an optimization algorithm
@@ -77,9 +78,13 @@ class AI:
         #await self.initialize()
 
     def ball_direction(self):
-        r1 = random.randint(0, 1)
-        if r1 == 0:
-            self.ball_speed_x *= -1
+        # r1 = random.randint(0, 1)
+        # if r1 == 0:
+        #     self.ball_speed_x *= -1
+        self.ball_speed_x = 5
+        self.last_direction = self.last_direction * -1
+
+        self.ball_speed_x *= self.last_direction
  
         self.ball_speed_y = 0
         while self.ball_speed_y == 0:

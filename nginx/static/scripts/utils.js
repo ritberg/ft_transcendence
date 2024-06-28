@@ -1,4 +1,6 @@
 export async function errorMsg(msg) {
+	if (msg === undefined)
+		return;
 	const error_box = document.getElementById("error-box");
 	console.log("error: ", msg);
 	error_box.textContent = msg.toUpperCase();
