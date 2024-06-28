@@ -184,6 +184,9 @@ export class bot {
 
 		//this.ball
 		this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
+		this.context.font = "30px Arial";
+        this.context.textAlign = "left";
+        this.context.fillText("w / s", 20, this.board_height - 20);
 	}
 
 	move_players() {

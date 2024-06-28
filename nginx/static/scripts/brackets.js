@@ -1,5 +1,5 @@
 import { modifyDelta, stars } from './stars.js';
-import { sleep, randomNumber, tourneyGame, resetTourneyGame, escapeHtml } from './utils.js';
+import { sleep, randomNumber, tourneyGame, resetTourneyGame } from './utils.js';
 import { change_loop_exec } from '../games/pong_tourney.js';
 import { tournamentMessages } from './animations.js';
 
@@ -10,7 +10,6 @@ export function createPlayers() {
 	for (let i = 0; i < document.getElementById("s-players").value; i++) {
 		//var fighter = false;
 		let player_push = document.getElementById(`player_${i + 1}`).value;
-		player_push = escapeHtml(player_push);
 		tourney_game.player.push(player_push);
 	}
 	tourney_game.player.sort(() => Math.random() - 0.5);

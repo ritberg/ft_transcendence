@@ -157,6 +157,16 @@ export class online {
         //ball
         this.context.fillStyle = "white";
         this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
+
+        this.context.font = "30px Arial";
+        if (this.side == "left") {
+            this.context.textAlign = "left";
+            this.context.fillText("w / s", 20, this.board_height - 20);
+        }
+        else if (this.side == "right") {
+            this.context.textAlign = "right";
+            this.context.fillText("ʌ / v", this.board_width - 20, this.board_height - 20);
+        }
     }
 
     trigger = true;

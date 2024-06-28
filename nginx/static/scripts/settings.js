@@ -243,6 +243,7 @@ function hideOTPElements() {
     document.getElementById('qr-code-container').style.display = 'none';
     document.getElementById('otp-secret').style.display = 'none';
     document.getElementById('verify-otp-form').style.display = 'none';
+    document.getElementById('otp-secret-span').style.display = 'none';
 }
 
 // export function getCSRFToken() {
