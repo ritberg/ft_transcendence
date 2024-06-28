@@ -1,4 +1,4 @@
-import { sleep, errorMsg } from './utils.js';
+import { errorMsg } from './utils.js';
 import { route } from './router.js';
 import { blockUser, unblockUser, fetchBlockedUsers } from './block.js';
 import { fetchFriends, fetchFriendRequests } from './friends.js';
@@ -301,6 +301,19 @@ document.addEventListener("DOMContentLoaded", function () {
 	usersClick = async function () {
 		let usersUrl = "https://" + window.location.host + "/users_list/";
 
+		if (userIsConnected == false) {
+			const error_msg = document.createElement("h3");
+			error_msg.classList.add("ulist-error");
+			error_msg.id = ("users-not-allowed");
+			error_msg.textContent = "login to access";
+			document.getElementById("ulist-users").appendChild(error_msg);
+			var savedLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2); // get the language from local storage or browser
+			if (!savedLanguage)
+				savedLanguage = 'en';
+			document.getElementById('language-select-menu').value = savedLanguage;
+			loadLanguage(savedLanguage);
+			return;
+		}
 		await fetch(usersUrl, {
 			method: "POST",
 			headers: {
@@ -375,7 +388,7 @@ document.addEventListener("DOMContentLoaded", function () {
 				error_msg.id = ("users-not-allowed");
 				error_msg.textContent = "login to access";
 				document.getElementById("ulist-users").appendChild(error_msg);
-				var savedLanguage = localStorage.getItem('preferredLanguage');
+				var savedLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
 				if (!savedLanguage)
 					savedLanguage = 'en';
 				document.getElementById('language-select-menu').value = savedLanguage;

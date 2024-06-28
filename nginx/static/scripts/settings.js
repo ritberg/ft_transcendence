@@ -1,7 +1,7 @@
 import { errorMsg, sleep } from "./utils.js";
 import { updateProfile, token, userIsConnected, username_global, getUserId } from "./users.js";
 import { route } from "./router.js";
-import { loadLanguage, fetchLanguage, changeLanguage } from "./lang.js";
+import { fetchLanguage } from "./lang.js";
 import { closeWebSocket, openWebSocket } from "./userStatus.js";
 
 let is2FAEnabled = false;
