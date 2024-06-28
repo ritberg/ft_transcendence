@@ -161,11 +161,14 @@ export class online {
         this.context.font = "30px Arial";
         if (this.side == "left") {
             this.context.textAlign = "left";
-            this.context.fillText("w / s", 20, this.board_height - 20);
+            this.context.fillText("⤊ w", 20, this.board_height - 60);
+            this.context.fillText("⤋ s", 20, this.board_height - 20);
         }
         else if (this.side == "right") {
             this.context.textAlign = "right";
-            this.context.fillText("ʌ / v", this.board_width - 20, this.board_height - 20);
+            this.context.fillText("⤊", this.board_width - 20, this.board_height - 90);
+            this.context.fillText("Arrows", this.board_width - 20, this.board_height - 60);
+            this.context.fillText("⤋", this.board_width - 20, this.board_height - 20);
         }
     }
 
@@ -271,31 +274,47 @@ export class online {
 
     lastSent = "none";
 
-    movePlayer(e) {
+    keysPressed = new Set();
+
+	movePlayer(e) {
         if (game.ws == null)
             return;
-        if (e.key == 'w' && this.lastSent != "keyW") {
+
+        this.keysPressed.add(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s') && this.lastSent != "keyW") {
             game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
             this.lastSent = "keyW";
-        }
-        if (e.key == 's' && this.lastSent != "keyS") {
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w') && this.lastSent != "keyS") {
             game.ws.send(JSON.stringify({ type: "keyS", username: this.username }));
             this.lastSent = "keyS"
+        } else {
+			if (e.key == 'w' && this.lastSent != "keyW") {
+				game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
+                this.lastSent = "keyW"
+            }
+			else if (e.key == 's' && this.lastSent != "keyS") {
+				game.ws.send(JSON.stringify({ type: "keyS", username: this.username }));
+                this.lastSent = "keyS"
+            }
         }
     }
 
-    //allows the player to stop if key is released
     stopPlayer(e) {
         if (game.ws == null)
             return;
-        if (e.key == 'w' && this.lastSent != "keyStop") {
-            game.ws.send(JSON.stringify({ type: "keyStop", username: this.username }));
 
-            this.lastSent = "keyStop"
-        }
-        if (e.key == 's' && this.lastSent != "keyStop") {
+        this.keysPressed.delete(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s') && this.lastSent != "keyW") {
+            game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
+            this.lastSent = "keyW";
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w') && this.lastSent != "keyS") {
+            game.ws.send(JSON.stringify({ type: "keyS", username: this.username }));
+                this.lastSent = "keyS"
+        } else if (!this.keysPressed.has('s') && !this.keysPressed.has('w') && this.lastSent != "keyStop"){
             game.ws.send(JSON.stringify({ type: "keyStop", username: this.username }));
-            this.lastSent = "keyStop"  
+            this.lastSent = "keyStop"
         }
     }
 }

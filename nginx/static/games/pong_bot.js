@@ -185,8 +185,12 @@ export class bot {
 		//this.ball
 		this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
 		this.context.font = "30px Arial";
+        
+		//keys
+        this.context.font = "30px Arial";
         this.context.textAlign = "left";
-        this.context.fillText("w / s", 20, this.board_height - 20);
+        this.context.fillText("⤊ w", 20, this.board_height - 60);
+        this.context.fillText("⤋ s", 20, this.board_height - 20);
 	}
 
 	move_players() {
@@ -292,21 +296,38 @@ export class bot {
 		this.ball.yPos += this.ball.velocityY;
 	}
 
-	movePlayer(e) {
-		if (e.key == 'w') {
-			this.player1.velocityY = -this.player_speed;
-		}
-		if (e.key == 's') {
-			this.player1.velocityY = this.player_speed;
-		}
-	}
+	keysPressed = new Set();
 
-	stopPlayer(e) {
-		if (e.key == 'w') {
-			this.player1.velocityY = 0;
-		}
-		if (e.key == 's') {
-			this.player1.velocityY = 0;
-		}
-	}
+	movePlayer(e) {
+		if (game.ws == null)
+            return;
+
+        this.keysPressed.add(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+			if (e.key == 'w')
+				this.player1.velocityY = -this.player_speed;
+			else if (e.key == 's')
+				this.player1.velocityY = this.player_speed;
+        }
+    }
+
+    stopPlayer(e) {
+		if (game.ws == null)
+			return;
+
+        this.keysPressed.delete(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+            this.player1.velocityY = 0;
+        }
+    }
 }
