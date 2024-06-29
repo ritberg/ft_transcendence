@@ -63,7 +63,6 @@ def disable_2fa(request):
 # authentication views
 @api_view(['POST'])
 def enable_2fa(request):
-	print("fuck this", request.data)
 	user = request.user
 	if not user.is_authenticated:
 		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
@@ -309,7 +308,6 @@ class SendFriendRequestView(APIView):
 
 	def post(self, request, *args, **kwargs):
 		try:
-			print("request.data : ", request.data)
 			serializer = FriendRequestSerializer(data=request.data, context={'request': request})
 			if serializer.is_valid():
 				friend_request = serializer.save()
@@ -322,7 +320,6 @@ class SendFriendRequestView(APIView):
 				)
 			raise ValueError(serializer.errors)
 		except Exception as e:
-				print(e)
 				error_message = str(e.detail['non_field_errors'][0]) if 'non_field_errors' in e.detail else str(e.detail[0])
 				return Response(
 					{'message': error_message},
@@ -503,7 +500,6 @@ class ChangeUserLanguage(APIView):
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request, *args, **kwargs):
-		print("request data:", request.data)
 		language = request.data.get('language')
 		username = request.user.username
 		try:

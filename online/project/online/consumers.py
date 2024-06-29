@@ -39,8 +39,6 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
     ball_height = 30
     ball_velocity = 5
 
-    #where all the rooms are stored
-
     update_lock = asyncio.Lock()
     async def connect(self):
         self.room = f"{self.scope['url_route']['kwargs']['room_name']}"
@@ -102,7 +100,7 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
                     "moveDown": False,
                 }
         else:
-            print("both sides taken ?")
+            print("both sides taken")
             return
         
         await self.add_user()
@@ -185,8 +183,6 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
             await self.check_full()
             await self.remove_user()
 
-        # self.game.reset_board(self.room)
-
         #tells the other client that the opponent left
         if self.assign_player_side() != 2:
             name1 = ""
@@ -201,12 +197,6 @@ class OnlineConsumer(AsyncJsonWebsocketConsumer):
                 self.room_name,
                 {"type": "player_num", "objects": {"num": 1, "p1Name": name1, "p2Name": name2}},
             )
-            
-            #sends an update to the other player so that the board looks reset on the frontend
-            # await self.channel_layer.group_send(
-            #     self.room_name,
-            #     {"type": "state_update", "objects": {"player1Pos": (self.board_height / 2 - self.player_height / 2), "player2Pos": (self.board_height / 2 - self.player_height / 2), "ball_yPos": ((self.board_height / 2) - (self.ball_height / 2)), "ball_xPos": ((self.board_width / 2) - (self.ball_width / 2)), "player1Score": 0, "player2Score": 0}},
-            # )
 
         #deletes room if empty
         if len(room_vars[self.room]["players"]) == 0:

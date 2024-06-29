@@ -148,16 +148,15 @@ ASGI_APPLICATION = 'project.asgi.application'
 
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
-    }
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+         'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
 }
-
-# LOGIN_REDIRECT_URL = "chat-page"
-# LOGOUT_REDIRECT_URL = "login-user"
 
 STATIC_URL = "static/"
 
-# SECURE_SSL_REDIRECT = True
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_COOKIE_HTTPONLY = True

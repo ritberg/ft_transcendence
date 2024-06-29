@@ -156,10 +156,6 @@ CHANNEL_LAYERS = {
 
 LOGIN_REDIRECT_URL = "room"
 
-# AUTHENTICATION_BACKENDS = [
-#     'django.contrib.auth.backends.ModelBackend',
-# ]
-
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
 SESSION_COOKIE_NAME = 'sessionid'
 SESSION_COOKIE_HTTPONLY = True
@@ -175,10 +171,6 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = ['https://localhost', 'https://' + IP_ADDRESS]
-
-# CHANNELS_ALLOWED_ORIGINS = ["*"]
-
-# LOGIN_URL = 'http://localhost:8000/auth/login/'
 
 # Connexion to CustomUser
 AUTH_USER_MODEL = 'user_management.CustomUser'

@@ -37,9 +37,5 @@ COPY ./tools/init.sh /home/transcendance/init.sh
 # set the final working directory
 WORKDIR /home/transcendance/${STAT_SERVICE_NAME}
 
-# update migrations
-# RUN python3 manage.py makemigrations
-# RUN python3 manage.py migrate
-
 # Command for running the application
 CMD ["/bin/bash", "/home/transcendance/init.sh"]

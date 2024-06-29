@@ -26,9 +26,7 @@ RUN chmod +x /home/transcendance/service_setup.sh
 # RUN bash /home/transcendance/service_setup.sh
 
 # set the final working directory
-# WORKDIR /home/transcendance/${SERVICE_NAME}
+WORKDIR /home/transcendance/${SERVICE_NAME}
 
 # Command for running the application
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8001"]
-# CMD ["daphne", "-b", "0.0.0.0", "-p", "8000", "project.asgi:application"]
 CMD ["bash", "/home/transcendance/service_setup.sh"]

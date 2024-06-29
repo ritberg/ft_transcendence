@@ -7,8 +7,6 @@ from rest_framework import status
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-# Create your views here.
-
 class AddGameHistoryView(APIView):
 	permission_classes = [IsAuthenticated]
 
