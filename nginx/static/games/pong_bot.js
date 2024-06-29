@@ -59,6 +59,7 @@ export class bot {
 	stop = false;
 
 	constructor() {
+		console.log("hi");
 		modifyDelta(1.5);
 		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
@@ -79,7 +80,7 @@ export class bot {
 			if (game.ws !== null) {
 				let messageData = JSON.parse(event.data);
 				this.move = messageData.predict;
-				// console.log(this.move);
+				console.log(this.move);
 				game.ws.send(JSON.stringify({
 					"player" : this.player1.yPos,
 					"computer" : this.computer.yPos,

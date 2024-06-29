@@ -116,13 +116,13 @@ export class pvp {
 
 	gameLoop() {
 		//draw
-		this.draw_board();
 
 		let now = performance.now();
     	let elapsed = now - this.then;
 
 		if (elapsed > this.fpsInterval && this.stop == false) {
         	this.then = now - (elapsed % this.fpsInterval);
+			this.draw_board();
 			//move players
 			this.move_players();
 
@@ -130,11 +130,13 @@ export class pvp {
 			this.changeBallVelocity();
 		}
 		else if (this.player1.score == 5) {
+			this.draw_board();
 			this.context.textAlign = "center";
 			this.context.font = "100px Arial";
 			this.context.fillText("PLAYER 1 WON!", this.board_width / 2, this.board_height / 3);
 		}
 		else if (this.player2.score == 5) {
+			this.draw_board();
 			this.context.textAlign = "center";
 			this.context.font = "100px Arial";
 			this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
@@ -200,82 +202,70 @@ export class pvp {
 	}
 
 	changeBallVelocity() {
-		if (!(this.ball.yPos + this.ball.velocityY > 0 && this.ball.yPos + this.ball.velocityY + this.ball.height < this.board_height)) {
-			this.ball.velocityY *= -1;
-		}
-		if (this.ball.xPos + this.ball.width >= this.board_width - this.player1.xPos - this.player2.width) {
-			if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.player2.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.player2.yPos + this.player2.height && this.ball.velocityX > 0) {
-				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player2.yPos + this.player2.height / 2)) / 10;
-				this.ball.velocityX *= -1;
-				if (this.ball.velocityX < 0)
-					this.ball.velocityX -= 0.5;
-				else
-					this.ball.velocityX += 0.5;
-				if (this.first_bounce == true) {
-					if (this.ball.velocityX < 0)
-						this.ball.velocityX -= 3;
-					else
-						this.ball.velocityX += 3;
-					this.first_bounce = false;
-				}
-			}
-		}
-		if (this.ball.xPos <= this.player1.xPos + this.player1.width) {
-			if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.player1.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.player1.yPos + this.player1.height && this.ball.velocityX < 0) {
-				this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player1.yPos + this.player1.height / 2)) / 10;
-				this.ball.velocityX *= -1;
-				if (this.ball.velocityX < 0)
-					this.ball.velocityX -= 0.5;
-				else
-					this.ball.velocityX += 0.5;
-				if (this.first_bounce == true) {
-					if (this.ball.velocityX < 0)
-						this.ball.velocityX -= 3;
-					else
-						this.ball.velocityX += 3;
-					this.first_bounce = false;
-				}
-			}
-		}
-		if (!(this.ball.xPos + this.ball.velocityX > 0 && this.ball.xPos + this.ball.velocityX + this.ball.width < this.board_width)) {
-			this.context.fillStyle = "white";
-			if (!(this.ball.xPos + this.ball.velocityX > 0))
-				this.player2.score++;
-			else
-				this.player1.score++;
+        if (!(this.ball.yPos + this.ball.velocityY > 0 && this.ball.yPos + this.ball.velocityY + this.ball.height < this.board_height)) {
+            this.ball.velocityY *= -1;
+        }
+        if (this.ball.xPos + this.ball.width >= this.board_width - this.player1.xPos - this.player2.width) {
+            if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.player2.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.player2.yPos + this.player2.height && this.ball.velocityX > 0) {
+                this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player2.yPos + this.player2.height / 2)) / 10;
+                this.ball.velocityX *= -1;
+                this.adjustBallSpeed();
+            }
+        }
+        if (this.ball.xPos <= this.player1.xPos + this.player1.width) {
+            if (this.ball.yPos + this.ball.velocityY + this.ball.height + 2 >= this.player1.yPos && this.ball.yPos + this.ball.velocityY - 2 <= this.player1.yPos + this.player1.height && this.ball.velocityX < 0) {
+                this.ball.velocityY = ((this.ball.yPos + this.ball.height / 2) - (this.player1.yPos + this.player1.height / 2)) / 10;
+                this.ball.velocityX *= -1;
+                this.adjustBallSpeed();
+            }
+        }
+        if (!(this.ball.xPos + this.ball.velocityX > 0 && this.ball.xPos + this.ball.velocityX + this.ball.width < this.board_width)) {
+            this.context.fillStyle = "white";
+            if (!(this.ball.xPos + this.ball.velocityX > 0))
+                this.player2.score++;
+            else
+                this.player1.score++;
 
-			if (this.player1.score == 5) {
-			    this.reset_board();
-			    this.stop = true;
-				setTimeout(() => { if (window.location.pathname === '/pvp/') {route("/");} }, 2000);
-			    return;
-			}
-			if (this.player2.score == 5) {
-			    this.reset_board();
-			    this.stop = true;
-				setTimeout(() => { if (window.location.pathname === '/pvp/') {route("/");} }, 2000);
-			    return;
-			}
-			this.first_bounce = true;
-			this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
-			this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
-			let ran = Math.floor(Math.random() * 2);
-			this.ball.velocityX = this.ball_velocity;
-			this.ball.velocityY = 0;
-			while (this.ball.velocityY == 0)
-				this.ball.velocityY = Math.floor(Math.random() * 11) - 5;
-			if (ran == 0)
-				this.ball.velocityX *= -1;
-			this.ball.velocityXTmp = this.ball.velocityX;
-			this.ball.velocityYTmp = this.ball.velocityY;
-			this.ball.velocityX = 0;
-			this.ball.velocityY = 0;
-			setTimeout(() => { this.ball.velocityY = this.ball.velocityYTmp; }, 500);
-			setTimeout(() => { this.ball.velocityX = this.ball.velocityXTmp; }, 500);
-		}
-		this.ball.xPos += this.ball.velocityX;
-		this.ball.yPos += this.ball.velocityY;
-	}
+            if (this.player1.score == 5 || this.player2.score == 5) {
+                this.reset_board();
+                this.stop = true;
+                setTimeout(() => { if (window.location.pathname === '/pvp/') { route("/"); } }, 2000);
+                return;
+            }
+            this.first_bounce = true;
+            this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
+            this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
+            let ran = Math.floor(Math.random() * 2);
+            this.ball.velocityX = this.ball_velocity;
+            this.ball.velocityY = 0;
+            while (this.ball.velocityY == 0)
+                this.ball.velocityY = Math.floor(Math.random() * 11) - 5;
+            if (ran == 0)
+                this.ball.velocityX *= -1;
+            this.ball.velocityXTmp = this.ball.velocityX;
+            this.ball.velocityYTmp = this.ball.velocityY;
+            this.ball.velocityX = 0;
+            this.ball.velocityY = 0;
+            setTimeout(() => { this.ball.velocityY = this.ball.velocityYTmp; }, 500);
+            setTimeout(() => { this.ball.velocityX = this.ball.velocityXTmp; }, 500);
+        }
+        this.ball.xPos += this.ball.velocityX;
+        this.ball.yPos += this.ball.velocityY;
+    }
+
+    adjustBallSpeed() {
+        if (this.ball.velocityX < 0)
+            this.ball.velocityX -= 0.5;
+        else
+            this.ball.velocityX += 0.5;
+        if (this.first_bounce == true) {
+            if (this.ball.velocityX < 0)
+                this.ball.velocityX -= 3;
+            else
+                this.ball.velocityX += 3;
+            this.first_bounce = false;
+        }
+    }
 
 	keysPressed = new Set();
 

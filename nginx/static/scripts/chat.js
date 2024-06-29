@@ -4,60 +4,62 @@ import { msg, escapeHtml, sleep } from './utils.js';
 import { route, game } from './router.js';
 import { online } from '../games/pong_online.js';
 
-let handleChatLinkClick, fetchInvite, invite_accept; 
+let handleChatLinkClick, fetchInvite, invite_accept;
+
+var chatSocket = null;
+var chat_room_name;
+
+//handles invites in chat
+fetchInvite = async function (room_name, sender) {
+    if (userIsConnected == false) {
+        msg("User must be logged in to play online");
+        return;
+    }
+
+    let player_id = await getUserId(username_global);
+    if (player_id == null) 
+        return;
+
+    await fetch("https://" + window.location.host + "/room/invite", {
+        method: "POST",
+        headers: {
+            "Content-type": "application/json; charset=UTF-8",
+            "X-CSRFToken": token,
+        },
+        body: JSON.stringify({
+            chat_name: room_name,
+            player_id: player_id,
+        }),
+        credentials: "include",
+    })
+        .then(async (response) => {
+            if (!response.ok) {
+                const error = await response.json();
+                msg(error.error);
+                return null;
+            }
+            return response.json();
+        })
+        .then(async (data) => {
+            if (data !== null) {
+                route("/online/");
+                await sleep(100);
+                document.getElementById("online-box").style.display = "none";
+                document.getElementById("game_canvas").style.display = "block";
+                //sends invite to other player
+                if (sender == true)
+                    chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
+                game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
+                game.game_type = 'online';
+                game.game_class = new online();
+                game.game_class.online_game();
+            }
+        })
+}
+
 document.addEventListener("DOMContentLoaded", function () {
     ////////////////////// CHAT ////////////////////////////
 
-    var chatSocket = null;
-    var chat_room_name;
-
-    //handles invites in chat
-    fetchInvite = async function (room_name, sender) {
-        if (userIsConnected == false) {
-			msg("User must be logged in to play online");
-			return;
-		}
-
-		let player_id = await getUserId(username_global);
-		if (player_id == null) 
-			return;
-
-        await fetch("https://" + window.location.host + "/room/invite", {
-            method: "POST",
-            headers: {
-                "Content-type": "application/json; charset=UTF-8",
-                "X-CSRFToken": token,
-            },
-            body: JSON.stringify({
-                chat_name: room_name,
-                player_id: player_id,
-            }),
-            credentials: "include",
-        })
-            .then(async (response) => {
-                if (!response.ok) {
-                    const error = await response.json();
-                    msg(error.error);
-                    return null;
-                }
-                return response.json();
-            })
-            .then(async (data) => {
-                if (data !== null) {
-                    route("/online/");
-                    await sleep(100);
-                    document.getElementById("online-box").style.display = "none";
-                    document.getElementById("game_canvas").style.display = "block";
-                    //sends invite to other player
-                    if (sender == true)
-                        chatSocket.send(JSON.stringify({ message: `Game invitation: <button type=\"submit\" id=\"invite-link\">ACCEPT</button>`, username: username_global }));
-                    game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
-                    game.game_type = 'online';
-                    game.game_class = new online();
-                    game.game_class.online_game();
-                }
-            })
-    }
 
     ////////////////////// ACCEPT INVITATION TO PLAY PONG ////////////////////////////
 

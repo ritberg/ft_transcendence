@@ -259,208 +259,120 @@ function hideOTPElements() {
 }
 
 let updateUser, logoutFunc, uploadPicture, displaySettings;
-document.addEventListener("DOMContentLoaded", function () {
     
-    ////// UPDATE PROFILE /////
+////// UPDATE PROFILE /////
 
-    //displays settings, such as username, profile picture, prefered language and 2fa
-    displaySettings = async function () {
-        if (userIsConnected == false) {
-            document.getElementById("settings-content").textContent = '';
-            document.getElementById("settings-content").innerHTML = '<h3 class="ulist-error">login to access</h3>';
-            return;
-        }
-
-        let user = JSON.parse(localStorage.getItem("user")) || null;
-
-        if (user === null) {
-            console.log("No user found for displayUserInfo");
-            return;
-        }
-        // Ajout de la vérification de l'état de la 2FA
-        await check2FAStatus();
-        is2FAEnabled = false;
-        console.log("isf2aEnabled ?", is2FAEnabled);
-        console.log("isf2aVerified ?", is2FAVerified);
-        updateToggle2FAButton();
-
-        //if no language in localstorage take the navigator's language
-        var localLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
-        if (!localLanguage)
-            localLanguage = 'en';
-        loadLanguage(localLanguage);
-
-        //displays username and profile picture
-        if (user) {
-            const username = user.username;
-            if (username) {
-                document.getElementById("info-username").textContent = `${escapeHtml(username)}`;
-            }
-            if (user.profile_picture) {
-                document.getElementById("user-avatar").src = user.profile_picture;
-            }
-        }
-        // Load the saved language preference of user on settings page load
-        var savedLanguage = 'en';
-        if (userIsConnected == true)
-            savedLanguage = await fetchLanguage();
-        console.log("language in db:", savedLanguage);
-        if (savedLanguage) {
-            document.getElementById('language-select-settings').value = savedLanguage;
-        } else {
-            console.log('No saved language preference found');
-        }
-
-        //checks whether to execute disable/enable/cancel, depends on is2FAEnabled and is2FAVerified
-        document.getElementById('toggle-2fa-button').onclick = async function (event) {
-            event.preventDefault();
-            if (is2FAVerified) {
-                disable2FA();
-                return;
-            }
-            else if (is2FAEnabled && !is2FAVerified) {
-                cancel2FASetup();
-                return;
-            }
-            document.getElementById("qr-code-container").style.display = "block";
-            document.getElementById("otp-secret").style.display = "block";
-            if (!is2FAEnabled) {
-                await enable2FA();
-                const verifyOTPForm = document.getElementById('verify-otp-form');
-                if (verifyOTPForm) {
-                    verifyOTPForm.onsubmit = async function (event) {
-                        event.preventDefault();
-                        const otpInput = document.querySelector('input[name="otp"]');
-                        if (!otpInput) {
-                            console.error('OTP input field not found');
-                            return;
-                        }
-                        const otp = otpInput.value;
-
-                        await verify2FA(otp);
-                    };
-                }
-            }
-        };
-
-        const verifyOTPForm = document.getElementById('verify-otp-form');
-        if (verifyOTPForm) {
-            verifyOTPForm.onsubmit = async function (event) {
-                event.preventDefault();
-                const otpInput = document.querySelector('input[name="otp"]');
-                if (!otpInput) {
-                    console.error('OTP input field not found');
-                    return;
-                }
-                const otp = otpInput.value;
-
-                await verify2FA(otp);
-            };
-        }
+//displays settings, such as username, profile picture, prefered language and 2fa
+displaySettings = async function () {
+    if (userIsConnected == false) {
+        document.getElementById("settings-content").textContent = '';
+        document.getElementById("settings-content").innerHTML = '<h3 class="ulist-error">login to access</h3>';
+        return;
     }
 
-    let logoutUrl = "https://" + window.location.host + "/auth/logout/";
+    let user = JSON.parse(localStorage.getItem("user")) || null;
 
-    logoutFunc = async function () {
-        fetch(logoutUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": token,
-            },
-            credentials: "include",
-        })
-            .then(async (response) => {
-                if (!response.ok) {
-                    if (response.status == 403)
-                        msg("you must be logged in to log out");
-                    else {
-                        const error = await response.json();
-                        msg(error.message);
+    if (user === null) {
+        console.log("No user found for displayUserInfo");
+        return;
+    }
+    // Ajout de la vérification de l'état de la 2FA
+    await check2FAStatus();
+    is2FAEnabled = false;
+    console.log("isf2aEnabled ?", is2FAEnabled);
+    console.log("isf2aVerified ?", is2FAVerified);
+    updateToggle2FAButton();
+
+    //if no language in localstorage take the navigator's language
+    var localLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);
+    if (!localLanguage)
+        localLanguage = 'en';
+    loadLanguage(localLanguage);
+
+    //displays username and profile picture
+    if (user) {
+        const username = user.username;
+        if (username) {
+            document.getElementById("info-username").textContent = `${escapeHtml(username)}`;
+        }
+        if (user.profile_picture) {
+            document.getElementById("user-avatar").src = user.profile_picture;
+        }
+    }
+    // Load the saved language preference of user on settings page load
+    var savedLanguage = 'en';
+    if (userIsConnected == true)
+        savedLanguage = await fetchLanguage();
+    console.log("language in db:", savedLanguage);
+    if (savedLanguage) {
+        document.getElementById('language-select-settings').value = savedLanguage;
+    } else {
+        console.log('No saved language preference found');
+    }
+
+    //checks whether to execute disable/enable/cancel, depends on is2FAEnabled and is2FAVerified
+    document.getElementById('toggle-2fa-button').onclick = async function (event) {
+        event.preventDefault();
+        if (is2FAVerified) {
+            disable2FA();
+            return;
+        }
+        else if (is2FAEnabled && !is2FAVerified) {
+            cancel2FASetup();
+            return;
+        }
+        document.getElementById("qr-code-container").style.display = "block";
+        document.getElementById("otp-secret").style.display = "block";
+        if (!is2FAEnabled) {
+            await enable2FA();
+            const verifyOTPForm = document.getElementById('verify-otp-form');
+            if (verifyOTPForm) {
+                verifyOTPForm.onsubmit = async function (event) {
+                    event.preventDefault();
+                    const otpInput = document.querySelector('input[name="otp"]');
+                    if (!otpInput) {
+                        console.error('OTP input field not found');
+                        return;
                     }
-                    return null;
-                }
-                return response.json();
-            })
-            .then( async (data) => {
-                if (data !== null) {
-                    console.log("data: ", data);
-                    //close the status websocket if logging out
-                    await closeWebSocket();
-                    //removes chat content
-                    document.getElementById("chat-box").innerHTML = '';
-                    //sets user to zero in updateProfile
-                    updateProfile(null, false, null);
-                    //redirects to main page
-                    route("/");
-                }
-            })
-            .catch((error) => {
-                console.error("Fetch error:", error);
-            });
+                    const otp = otpInput.value;
 
-            localStorage.removeItem('user');
-            localStorage.removeItem('access_token');
+                    await verify2FA(otp);
+                };
+            }
+        }
+    };
+
+    const verifyOTPForm = document.getElementById('verify-otp-form');
+    if (verifyOTPForm) {
+        verifyOTPForm.onsubmit = async function (event) {
+            event.preventDefault();
+            const otpInput = document.querySelector('input[name="otp"]');
+            if (!otpInput) {
+                console.error('OTP input field not found');
+                return;
+            }
+            const otp = otpInput.value;
+
+            await verify2FA(otp);
+        };
     }
+}
 
-    let updateUrl = "https://" + window.location.host + "/auth/update/";
+let logoutUrl = "https://" + window.location.host + "/auth/logout/";
 
-    updateUser = async function () {
-        //changes will be put in a formData and sent to the backend
-        let formData = new FormData();
-        let hasChanges = false;
-        let pwdChange = false;
-
-        let usernameInput = document.getElementById("new-username");
-        if (usernameInput.value) {
-            formData.append("username", usernameInput.value);
-            hasChanges = true;
-        }
-
-        let emailInput = document.getElementById("new-email");
-        if (emailInput.value) {
-            formData.append("email", emailInput.value);
-            hasChanges = true;
-        }
-
-        let passwordInput = document.getElementById("new-password");
-        if (passwordInput.value) {
-            formData.append("password", passwordInput.value);
-            hasChanges = true;
-            //if the password changes different operations will occur
-            pwdChange = true;
-        }
-
-        let PictureInput = document.getElementById("avatar-input");
-        if (PictureInput.value) {
-            let file = document.getElementById("avatar-input").files[0];
-            formData.append("profile_picture", file);
-            hasChanges = true;
-        }
-
-        //if no changes don't do anything
-        if (!hasChanges) {
-            msg("There are no changes");
-            return;
-        }
-
-        await closeWebSocket();
-        //ensures the updateStatus has time to send it's message
-        await sleep(100);
-
-        await fetch(updateUrl, {
-            method: "PUT",
-            headers: {
-                "X-CSRFToken": token,
-            },
-            body: formData,
-            credentials: "include",
-        })
+logoutFunc = async function () {
+    fetch(logoutUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": token,
+        },
+        credentials: "include",
+    })
         .then(async (response) => {
             if (!response.ok) {
-                //if image is too big
-                if (response.status == 413)
-                    msg("Image max size is 2mb")
+                if (response.status == 403)
+                    msg("you must be logged in to log out");
                 else {
                     const error = await response.json();
                     msg(error.message);
@@ -469,24 +381,111 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             return response.json();
         })
-        .then(async (data) => {
-            if (data === null)
-                return;
-            console.log("Update success: ", data);
-            if (pwdChange === false) {
-                //if password remains unchanged, updates profile
-                let user = data.data;
-                await updateProfile(user, true, data.csrfToken);
-                let user_id = await getUserId(username_global);
-                await openWebSocket(user_id);
-            }
-            else {
-                //if password is changed, logs out and asks to login again
+        .then( async (data) => {
+            if (data !== null) {
+                console.log("data: ", data);
+                //close the status websocket if logging out
+                await closeWebSocket();
+                //removes chat content
                 document.getElementById("chat-box").innerHTML = '';
-                await updateProfile(null, false, null);
+                //sets user to zero in updateProfile
+                updateProfile(null, false, null);
+                //redirects to main page
                 route("/");
             }
         })
+        .catch((error) => {
+            console.error("Fetch error:", error);
+        });
+
+        localStorage.removeItem('user');
+        localStorage.removeItem('access_token');
+}
+
+let updateUrl = "https://" + window.location.host + "/auth/update/";
+
+updateUser = async function () {
+    //changes will be put in a formData and sent to the backend
+    let formData = new FormData();
+    let hasChanges = false;
+    let pwdChange = false;
+
+    let usernameInput = document.getElementById("new-username");
+    if (usernameInput.value) {
+        formData.append("username", usernameInput.value);
+        hasChanges = true;
     }
-});
+
+    let emailInput = document.getElementById("new-email");
+    if (emailInput.value) {
+        formData.append("email", emailInput.value);
+        hasChanges = true;
+    }
+
+    let passwordInput = document.getElementById("new-password");
+    if (passwordInput.value) {
+        formData.append("password", passwordInput.value);
+        hasChanges = true;
+        //if the password changes different operations will occur
+        pwdChange = true;
+    }
+
+    let PictureInput = document.getElementById("avatar-input");
+    if (PictureInput.value) {
+        let file = document.getElementById("avatar-input").files[0];
+        formData.append("profile_picture", file);
+        hasChanges = true;
+    }
+
+    //if no changes don't do anything
+    if (!hasChanges) {
+        msg("There are no changes");
+        return;
+    }
+
+    await closeWebSocket();
+    //ensures the updateStatus has time to send it's message
+    await sleep(100);
+
+    await fetch(updateUrl, {
+        method: "PUT",
+        headers: {
+            "X-CSRFToken": token,
+        },
+        body: formData,
+        credentials: "include",
+    })
+    .then(async (response) => {
+        if (!response.ok) {
+            //if image is too big
+            if (response.status == 413)
+                msg("Image max size is 2mb")
+            else {
+                const error = await response.json();
+                msg(error.message);
+            }
+            return null;
+        }
+        return response.json();
+    })
+    .then(async (data) => {
+        if (data === null)
+            return;
+        console.log("Update success: ", data);
+        if (pwdChange === false) {
+            //if password remains unchanged, updates profile
+            let user = data.data;
+            await updateProfile(user, true, data.csrfToken);
+            let user_id = await getUserId(username_global);
+            await openWebSocket(user_id);
+        }
+        else {
+            //if password is changed, logs out and asks to login again
+            document.getElementById("chat-box").innerHTML = '';
+            await updateProfile(null, false, null);
+            route("/");
+        }
+    })
+}
+
 export { updateUser, logoutFunc, uploadPicture, displaySettings }
