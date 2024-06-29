@@ -49,11 +49,7 @@ export const getUserId = async (username) => {
 	);
 	const data = await response.json();
 	if (!response.ok) {
-		if (response.status == 404)
-			msg("You must be logged in to access profiles");
-		else {
-			msg("This user does not exist");
-		}
+		msg("this user does not exist");
 		return null;
 	}
 	return data.id;

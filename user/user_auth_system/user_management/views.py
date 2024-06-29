@@ -163,13 +163,6 @@ class VerifyOTPLoginView(APIView):
 			)
 		else:
 			return Response({'message': 'Invalid OTP'}, status=status.HTTP_403_FORBIDDEN)
-			
-class IndexView(APIView):
-	permission_classes = [AllowAny]
-
-	def get(self, request):
-		return render(request, 'index.html')
-
 
 class RegisterUserView(APIView):
 	permission_classes = [AllowAny]

@@ -1,6 +1,6 @@
 from django.urls import path
 from user_management.views import (LoginUserView, LogoutUserView, RegisterUserView,
-								   UpdateUserView, IndexView, SendFriendRequestView,
+								   UpdateUserView, SendFriendRequestView,
 								   AcceptFriendRequestView, RejectFriendRequestView,
 								   ListFriendsRequestsView, ListFriendsView, DeleteFriendView,
                                    BlockUserView, UnblockUserView, ListBlockedUsers, GetUserID,
@@ -10,7 +10,6 @@ from user_management.views import (LoginUserView, LogoutUserView, RegisterUserVi
 from rest_framework_simplejwt.views import TokenRefreshView
 
 urlpatterns = [
-	path('index/', IndexView.as_view(), name='index'),
     path('signin/', LoginUserView.as_view(), name='login'),
     path('logout/', LogoutUserView.as_view(), name='logout'),
     path('register/', RegisterUserView.as_view(), name='register'),
