@@ -66,8 +66,6 @@ export class tourney {
 
 	constructor() {
 		modifyDelta(1.5);
-
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -119,16 +117,6 @@ export class tourney {
 		setTimeout(() => { this.ball.velocityX = tmp; }, 500);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
-		this.startAnimating(60);
-		// this.gameLoop();
-	}
-
-	fpsInterval;
-	then;
-
-	startAnimating(fps) {
-		this.fpsInterval = 1000 / fps;
-		this.then = performance.now();
 		this.gameLoop();
 	}
 
@@ -181,24 +169,16 @@ export class tourney {
 			}
 		}
 		else {
-			let now = performance.now();
-    		let elapsed = now - this.then;
+			//move players
+			this.move_players();
 
-			if (elapsed > this.fpsInterval) {
-				this.then = now - (elapsed % this.fpsInterval);
-			
-				//move players
-				this.move_players();
+			//this.ball
+			this.changeBallVelocity();
 
-				//this.ball
-				this.changeBallVelocity();
-
-				//draw
-				this.draw_board();
-			}
+			//draw
+			this.draw_board();
 		}
 		game.animation_id = window.requestAnimationFrame(this.gameLoop);
-
 	}
 
 	fill_middle_lines() {

@@ -61,7 +61,6 @@ export class bot {
 	constructor() {
 		console.log("hi");
 		modifyDelta(1.5);
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -97,13 +96,11 @@ export class bot {
 		this.computer.width = this.player_width;
 		this.computer.height = this.player_height;
 		this.computer.velocityY = this.playerVelocity;
-		// this.computer.score = 0;
 		this.player1.xPos = 20;
 		this.player1.yPos = this.board_height / 2 - this.player_height / 2;
 		this.player1.width = this.player_width;
 		this.player1.height = this.player_height;
 		this.player1.velocityY = this.playerVelocity;
-		// this.player1.score = 0;
 		this.ball.width = this.ball_width;
 		this.ball.height = this.ball_height;
 		this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
@@ -124,16 +121,6 @@ export class bot {
 		setTimeout(() => { this.ball.velocityX = this.last_direction * this.ball_velocity; }, 800);
 		document.addEventListener("keydown", this.movePlayer);
 		document.addEventListener("keyup", this.stopPlayer);
-		this.startAnimating(60);
-		// this.gameLoop();
-	}
-
-	fpsInterval;
-	then;
-
-	startAnimating(fps) {
-		this.fpsInterval = 1000 / fps;
-		this.then = performance.now();
 		this.gameLoop();
 	}
 
@@ -141,11 +128,7 @@ export class bot {
 		//draw
 		this.draw_board();
 
-		let now = performance.now();
-    	let elapsed = now - this.then;
-
-		if (elapsed > this.fpsInterval && this.stop == false) {
-        	this.then = now - (elapsed % this.fpsInterval);
+		if (this.stop == false) {
 			//move players
 			this.move_players();
 
