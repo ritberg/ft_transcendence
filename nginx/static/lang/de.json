@@ -57,6 +57,7 @@
 		"enable_2fa": "2FA AKTIVIEREN",
 		"disable_2fa": "2FA DEAKTIVIEREN",
 		"cancel_2fa": "2FA abbrechen",
+		"key_secret": "Geheimschlüssel",
 		"choose_language": "Wähle deine Sprache:",
 		"otp_verif1": "OTP überprüfen"
 	},
@@ -69,7 +70,7 @@
 	},
 	"users_lists": {
 		"ulist_title": "BENUTZER",
-		"flist_title": "FREUNDES",
+		"flist_title": "FREUNDE",
 		"requests_title": "OFFENE ANFRAGEN",
 		"not_allowed": "Anmeldung für den Zugang"
 	},

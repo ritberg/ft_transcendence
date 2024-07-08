@@ -57,6 +57,7 @@
 		"enable_2fa": "ΕΝΕΡΓΟΠΟΊΗΣΗ 2FA",
 		"disable_2fa": "ΑΠΕΝΕΡΓΟΠΟΙΗΣΗ 2FA",
 		"cancel_2fa": "Ακυρώστε το 2FA",
+		"key_secret": "Μυστικό κλειδί",
 		"choose_language": "Επιλέξτε τη γλώσσα σας:",
 		"otp_verif1": "Ελέγξτε τον κωδικό OTP"
 	},

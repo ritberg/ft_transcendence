@@ -57,8 +57,6 @@ export class pvp {
 
 	constructor() {
 		modifyDelta(1.5);
-
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -70,13 +68,11 @@ export class pvp {
 		this.player2.width = this.player_width;
 		this.player2.height = this.player_height;
 		this.player2.velocityY = this.playerVelocity;
-		// this.player2.score = 0;
 		this.player1.xPos = 20;
 		this.player1.yPos = this.board_height / 2 - this.player_height / 2;
 		this.player1.width = this.player_width;
 		this.player1.height = this.player_height;
 		this.player1.velocityY = this.playerVelocity;
-		// this.player1.score = 0;
 		this.ball.width = this.ball_width;
 		this.ball.height = this.ball_height;
 		this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
@@ -109,8 +105,6 @@ export class pvp {
 	}
 
 	gameLoop() {
-		game.animation_id = window.requestAnimationFrame(this.gameLoop);
-
 		//draw
 		this.draw_board();
 
@@ -118,7 +112,7 @@ export class pvp {
 			//move players
 			this.move_players();
 
-			//this.ball
+			//ball calculations
 			this.changeBallVelocity();
 		}
 		else if (this.player1.score == 5) {
@@ -131,6 +125,7 @@ export class pvp {
 			this.context.font = "100px Arial";
 			this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
 		}
+		game.animation_id = window.requestAnimationFrame(this.gameLoop);
 	}
 
 	fill_middle_lines() {
@@ -151,6 +146,15 @@ export class pvp {
 		this.context.textAlign = "center";
 		this.context.fillText(this.player1.score.toString(), this.board_width / 3, 100);
 		this.context.fillText(this.player2.score.toString(), this.board_width - this.board_width / 3, 100);
+		//keys
+		this.context.font = "30px Arial";
+		this.context.textAlign = "left";
+		this.context.fillText("⤊ w", 20, this.board_height - 60);
+		this.context.fillText("⤋ s", 20, this.board_height - 20);
+		this.context.textAlign = "right";
+		this.context.fillText("⤊", this.board_width - 20, this.board_height - 100);
+		this.context.fillText("Arrows", this.board_width - 20, this.board_height - 60);
+		this.context.fillText("⤋", this.board_width - 20, this.board_height - 20);
 
 		this.context.fillStyle = "white";
 
@@ -160,6 +164,7 @@ export class pvp {
 
 		//this.ball
 		this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
+
 	}
 
 	move_players() {
@@ -258,26 +263,49 @@ export class pvp {
 		this.ball.yPos += this.ball.velocityY;
 	}
 
-	movePlayer(e) {
-		console.log("1");
-		if (e.key == 'w') {
-			this.player1.velocityY = -this.player_speed;
-		}
-		if (e.key == 's') {
-			this.player1.velocityY = this.player_speed;
-		}
-		if (e.key == 'ArrowUp') {
-			this.player2.velocityY = -this.player_speed;
-		}
-		if (e.key == 'ArrowDown') {
-			this.player2.velocityY = this.player_speed;
-		}
-	}
+	keysPressed = new Set();
 
-	stopPlayer(e) {
-		if (e.key == 'w' || e.key == 's')
-			this.player1.velocityY = 0;
-		else if (e.key == 'ArrowUp' || e.key == 'ArrowDown')
-			this.player2.velocityY = 0
-	}
+	movePlayer(e) {
+        this.keysPressed.add(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+			if (e.key == 'w')
+				this.player1.velocityY = -this.player_speed;
+			else if (e.key == 's')
+				this.player1.velocityY = this.player_speed;
+        }
+		if (this.keysPressed.has('ArrowUp') && !this.keysPressed.has('ArrowDown')) {
+            this.player2.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('ArrowDown') && !this.keysPressed.has('ArrowUp')) {
+            this.player2.velocityY = this.player_speed;
+        } else {
+			if (e.key == 'ArrowUp')
+				this.player2.velocityY = -this.player_speed;
+			else if (e.key == 'ArrowDown')
+				this.player2.velocityY = this.player_speed;
+        }
+    }
+
+    stopPlayer(e) {
+        this.keysPressed.delete(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+            this.player1.velocityY = 0;
+        }
+		if (this.keysPressed.has('ArrowUp') && !this.keysPressed.has('ArrowDown')) {
+            this.player2.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('ArrowDown') && !this.keysPressed.has('ArrowUp')) {
+            this.player2.velocityY = this.player_speed;
+        } else {
+            this.player2.velocityY = 0;
+        }
+    }
 }

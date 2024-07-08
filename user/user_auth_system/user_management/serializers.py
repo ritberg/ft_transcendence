@@ -24,11 +24,19 @@ class UserSerializer(serializers.ModelSerializer):
 		password = validated_data.get('password')
 		profile_picture = validated_data.get('profile_picture', DEFAULT_PROFILE_PICTURE)
 
+		prohibited_usernames = ["guest", "system", "admin"]
+
 		if not username:
 			raise serializers.ValidationError({'username': 'Username is required.'})
+		else:
+			if username.lower() in prohibited_usernames:
+				raise serializers.ValidationError({'username': 'Username not allowed'})
+			elif len(username) > 8:
+				raise serializers.ValidationError({'username': 'Max length is 8'})
 
 		if not email:
 			raise serializers.ValidationError({'email': 'Email is required.'})
+			
 		try:
 			validate_email(email)
 		except DjangoValidationError:
@@ -51,12 +59,19 @@ class UserSerializer(serializers.ModelSerializer):
 		return user
 
 	def update(self, instance, validated_data):
+
+		prohibited_usernames = ["guest", "system", "admin"]
 		username = validated_data.get('username')
 		if username:
 			if User.objects.filter(username=username).exclude(id=instance.id).exists():
 				raise serializers.ValidationError({'username': 'This username is already in use.'})
 			elif username == instance.username:
 				raise serializers.ValidationError({'username': 'This is already your username.'})
+			elif len(username) > 8:
+				raise serializers.ValidationError({'username': 'Max length is 8'})
+			elif username.lower() in prohibited_usernames:
+				raise serializers.ValidationError({'username': 'Username not allowed'})
+
 			instance.username = username
 
 		email = validated_data.get('email')

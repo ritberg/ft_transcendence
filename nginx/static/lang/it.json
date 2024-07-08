@@ -57,6 +57,7 @@
 		"enable_2fa": "ATTIVARE 2FA",
 		"disable_2fa": "DISATTIVARE 2FA",
 		"cancel_2fa": "Cancellare 2FA",
+		"key_secret": "Chiave segreta",
 		"choose_language": "SCEGLI LA TUA LINGUA:",
 		"otp_verif1": "Verifica OTP"
 	},

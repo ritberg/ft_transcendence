@@ -1,15 +1,16 @@
-import { drawBrackets, enterNicknames, createPlayers, tourney_game } from './brackets.js';
+import { drawBrackets, enterNicknames, createPlayers } from './brackets.js';
 import { change_loop_exec } from '../games/pong_tourney.js';
 import { GameMode } from './main.js';
-import { sleep, errorMsg } from './utils.js';
+import { sleep, msg, escapeHtml } from './utils.js';
 import { modifyDelta, stars } from './stars.js';
-import { closeChatSocket } from './chat.js';
 import { loadLanguage } from './lang.js';
 
+//animation for the hamburger icon
 document.getElementById("tabs-icon").addEventListener("hover", function() {
 	document.getElementById("tabs-list").classList.toggle("active");
 });
 
+//enables chat closing
 document.getElementById("b-close-chat").addEventListener("click", function() {
 	document.getElementById("chat-box").classList.toggle("chat-hidden");
 	document.getElementById("b-close-chat").classList.toggle("chat-hidden");
@@ -20,12 +21,15 @@ document.addEventListener('DOMContentLoaded', () => {
     ///////////// EVENT LISTENERS //////////////
 
     contentContainer.addEventListener("input", async function (event) {
+        //tournament player selection animation
         if (event.target && event.target.id === "s-players") {
             document.getElementById("t-players").textContent = document.getElementById("s-players").value;
         }
+        //tournament points selection animation
         if (event.target && event.target.id === "s-points") {
             document.getElementById("t-points").textContent = document.getElementById("s-points").value;
         }
+        //adds animation to the online room selection
         if (event.target && event.target.id === 'i-room_name') {
             const inputElement = document.getElementById('i-room_name');
             const textElement = document.getElementById('t-empty_room');
@@ -45,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    //animation for the tournament settings
     contentContainer.addEventListener("mouseup", async function (event) {
         if (event.target && event.target.id === "s-players") {
             document.getElementById("t-players").style.textShadow = `none`;
@@ -90,19 +95,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }, true);
 });
 
+//adds tournament messages
 export async function tournamentMessages(sender, message) {
     const div = document.createElement("div");
     div.classList.add("msg_text");
     div.innerHTML = `
         <div class="msg_content">
-        <div class="msg_username" style="color: #F1DB52">${sender}</div>
-        <div class="msg_text">: ${message}</div>
+        <div style="color: #F1DB52">${sender}</div>
+        <div class="msg_text">: ${escapeHtml(message)}</div>
         </div>
     `;
     document.querySelector("#msg_container").appendChild(div);
     document.querySelector("#msg_container").scrollTop = document.querySelector("#msg_container").scrollHeight;
 }
 
+//displays tournament settings one by one then starts tournament
 export async function tournamentSettings() {
 	if (window.location.pathname !== "/tourney/") {
 		return;
@@ -136,18 +143,16 @@ export async function tournamentSettings() {
 		for (const element of document.querySelectorAll("[id^='player_']")) {
 			const content = element.value.trim();
 			if (content === '') {
-				errorMsg("Names must contain visible characters");
+				msg("Names must contain visible characters");
 				return;
 			}
 			if (seen.has(content)) {
-				errorMsg("Duplicates are not allowed");
+				msg("Duplicates are not allowed");
 				return;
 			}
 			seen.add(content);
 		}
 		createPlayers();
-		// closeChatSocket();
-		// document.getElementById("chat-box").innerHTML = '';
 		document.getElementById("chat-box").classList.add("chat-active");
 		document.getElementById("b-close-chat").classList.add("chat-active");
 		if (document.getElementById("msg_container") == null)

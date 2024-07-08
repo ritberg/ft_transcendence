@@ -1,5 +1,3 @@
-# import pygame
-# import sys
 import tensorflow as tf
 import numpy as np
 import asyncio
@@ -8,19 +6,12 @@ import random
 import json
 from channels.generic.websocket import AsyncWebsocketConsumer
 
-# to improve all this and to do RL, I should save moments when the ball touches a paddle and mark it as successful.
-# now it's not RL. It's just a prediction
 class AI:
 
     # Set up the canvas
     canvas_width = 1000
     canvas_height = 800
-    # canvas = pygame.display.set_mode((canvas_width, canvas_height))
-    # pygame.display.set_caption('Pong')
 
-    # # Set up colors
-    # BLACK = (0, 0, 0)
-    # WHITE = (255, 255, 255)
     frame_num = 10000  # 5 000 frames, 50 epoches
     epochs = 100
     batch_size = 128
@@ -46,9 +37,7 @@ class AI:
         self.previous_data = None
         self.training_data = [[], [], []]
         self.last_data_object = None
-        # self.flip_table = True  # Assuming this variable controls whether to flip the table or not
 
-        # Define the model (small model with 16 or 4 - to test)
         self.model = tf.keras.Sequential([
             tf.keras.layers.Dense(16, input_shape=(8,), activation='relu'),
             #tf.keras.layers.Dense(512, activation='relu'),
@@ -75,7 +64,6 @@ class AI:
 
     async def main(self):
         init = asyncio.create_task(self.initialize())
-        #await self.initialize()
 
     def ball_direction(self):
         # r1 = random.randint(0, 1)
@@ -103,10 +91,8 @@ class AI:
             self.ball_speed_y *= -1
 
         #checks if the ball hit the right paddle
-        # if (self.ball_x + self.ball_speed_x + self.ball_size >= self.canvas_width - 21): #previous collisions params
-        if (self.ball_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width):  #current collisions params
-            # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height): #previous collisions params
-            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0): #current collisions params
+        if (self.ball_x + self.ball_size >= self.canvas_width - 20 - self.paddle_width): 
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.computer_y and self.ball_y + self.ball_speed_y - 2 <= self.computer_y + self.paddle_height and self.ball_speed_x > 0): 
                 self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.computer_y + self.paddle_height / 2)) / 10
                 self.ball_speed_x *= -1
                 if self.ball_speed_x < 0:
@@ -121,10 +107,8 @@ class AI:
                   self.first_bounce = False
 
         #checks if the ball hit the left paddle
-        # if (self.ball_x + self.ball_speed_x <= 21): #previous collisions params
-        if (self.ball_x <= 20 + self.paddle_width): #current collisions params
-            # if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height): #previous collisions params
-            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0): #current collisions params
+        if (self.ball_x <= 20 + self.paddle_width):
+            if (self.ball_y + self.ball_speed_y + self.ball_size + 2 >= self.player1_y and self.ball_y + self.ball_speed_y - 2 <= self.player1_y + self.paddle_height and self.ball_speed_x < 0):
                 self.ball_speed_y = ((self.ball_y + self.ball_size / 2) - (self.player1_y + self.paddle_height / 2)) / 10
                 self.ball_speed_x *= -1
                 if (self.ball_speed_x < 0):
@@ -151,22 +135,17 @@ class AI:
         # Game loop
     async def initialize(self):
         running = True
-        frame_counter = 0  # Counter to track frames
+        frame_counter = 0 
         prev_second = -1
         self.ball_direction()
         while running:
         
-        # it was necessary to distinguish between 1) save data, 2) train the model, 3) predict movesЯ
+        # it is necessary to distinguish between 1) save data, 2) train the model, 3) predict moves
             current_second = time.localtime().tm_sec
             if frame_counter < self.frame_num:
-                # print(current_second)
                 self.player1_y = self.autonomous_player(self.ball_y, self.player1_y, self.paddle_speed)
                 self.computer_y = self.autonomous_player(self.ball_y, self.computer_y, self.paddle_speed)
-                # if current_second != prev_second: # Save game data each second
-                #     prev_second = current_second
-                # print("computer_y", self.computer_y)
                 self.save_data(self.player1_y, self.computer_y, self.ball_x, self.ball_y)
-                # print("Frame Counter:", frame_counter)
 
             elif frame_counter == self.frame_num:
                 print("starting training")
@@ -191,9 +170,6 @@ class AI:
             self.previous_data = [player_y / self.canvas_height, computer_y / self.canvas_height, ball_x / self.canvas_width, ball_y / self.canvas_height]
             return
 
-        # if self.flip_table:
-        # data_xs = [canvas_height - computer_y, canvas_height - player_y, canvas_width - ball_x, canvas_height - ball_y]
-        # else:
         data_xs = [player_y / self.canvas_height, computer_y / self.canvas_height, ball_x / self.canvas_width, ball_y / self.canvas_height]
 
         self.last_data_object = self.previous_data + data_xs
@@ -220,18 +196,10 @@ class AI:
         
 
     def train(self):
-        # len_data = min(len(self.training_data[0]), len(self.training_data[1]), len(self.training_data[2]))
-        # print("Length of training data for action 0:", len(self.training_data[0]))
-        # print("Length of training data for action 1:", len(self.training_data[1]))
-        # print("Length of training data for action 2:", len(self.training_data[2]))
-        # if len_data == 0:
-        #     print('Nothing to train')
-        #     return
-
         data_xs = []
         data_ys = []
         for i in range(3):
-            data_xs += self.training_data[i]#[:len_data]
+            data_xs += self.training_data[i]
             data_ys += [[1 if i == j else 0 for j in range(3)]] * len(self.training_data[i])
 
         xs = tf.convert_to_tensor(data_xs, dtype=tf.float32)
@@ -263,7 +231,6 @@ class Consumer(AsyncWebsocketConsumer):
             self.ai.save_data(data["player"], data["computer"], data["ballX"], data["ballY"]) # update coordinates after training
         move = self.ai.predict_move()
         print("Return of predict_move():", move)
-        # ai_update(move)
         move32 = int(move)
         await self.send(
             text_data=json.dumps({"type": "predict", "predict": move32})

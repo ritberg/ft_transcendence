@@ -1,3 +1,4 @@
+#shared values between consumer and game
 
 #board
 board_height = 800

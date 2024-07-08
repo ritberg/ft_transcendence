@@ -3,11 +3,12 @@ import { getUserId } from '../scripts/users.js'
 import { token } from '../scripts/users.js';
 import { game } from '../scripts/router.js';
 import { modifyDelta } from '../scripts/stars.js';
-import { errorMsg, writeVerticalText } from '../scripts/utils.js';
+import { msg, writeVerticalText } from '../scripts/utils.js';
 
 export class online {
     username;
 
+    //stock player names and ids for stats
     p1 = "";
     p2 = "";
     p1Id = "";
@@ -16,6 +17,7 @@ export class online {
 
     board = document.getElementById("game_canvas");
     context = this.board.getContext("2d");
+
     //board
     board_height = 800;
     board_width = 1000;
@@ -55,7 +57,6 @@ export class online {
 
     constructor() {
         modifyDelta(1.5);
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -64,7 +65,6 @@ export class online {
     online_game() {
         game.ws.addEventListener("message", async (event) => {
             let messageData = JSON.parse(event.data);
-            // console.log(messageData);
             if (messageData.type === "stateUpdate") {
                 this.player1.yPos = messageData.objects.player1Pos;
                 this.player2.yPos = messageData.objects.player2Pos;
@@ -80,8 +80,6 @@ export class online {
                     this.start_time = new Date();
                     this.p1Id = messageData.objects.p1Id;
                     this.p2Id = messageData.objects.p2Id;
-                    console.log("this.p1Id: ", this.p1Id);
-                    console.log("this.p2Id: ", this.p2Id);
                 }
                 else if (messageData.objects.num === 1)
                 {
@@ -124,7 +122,6 @@ export class online {
         document.addEventListener("keyup", this.stopPlayer);
         this.draw_board();
         this.gameLoop();
-        // startAnimating(60);
     }
 
     fill_middle_lines() {
@@ -143,10 +140,23 @@ export class online {
         //score
         this.context.font = "100px Arial";
         this.context.textAlign = "center";
-        this.context.fillStyle = "white";
         this.context.fillText(this.player1.score.toString(), this.board_width / 3, 100);
         this.context.fillText(this.player2.score.toString(), this.board_width - this.board_width / 3, 100);
+        //controls
+        this.context.font = "30px Arial";
+        if (this.side == "left") {
+            this.context.textAlign = "left";
+            this.context.fillText("⤊ w", 20, this.board_height - 60);
+            this.context.fillText("⤋ s", 20, this.board_height - 20);
+        }
+        else if (this.side == "right") {
+            this.context.textAlign = "right";
+            this.context.fillText("⤊ w", this.board_width - 20, this.board_height - 60);
+            this.context.fillText("⤋ s", this.board_width - 20, this.board_height - 20);
+        }
 
+        this.context.textAlign = "center";
+        this.context.fillStyle = "white";
         //players
         this.context.fillRect(this.player1.xPos, this.player1.yPos, this.player_width, this.player_height);
         this.context.fillRect(this.player2.xPos, this.player2.yPos, this.player_width, this.player_height);
@@ -157,8 +167,10 @@ export class online {
         //ball
         this.context.fillStyle = "white";
         this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
+
     }
 
+    //so that we only send stats once
     trigger = true;
 
     async sendStats(game_stat) {
@@ -175,20 +187,14 @@ export class online {
         .then( async (response) => {
             if (!response.ok) {
                 const errorData = await response.json();
-                errorMsg(errorData.message);
+                msg(errorData.message);
                 return null;
             }
             return response.json();
         })
-        .then(async (data) => {
-            if (data !== null) {
-                console.log(data);
-            }
-        })
     }
 
     gameLoop() {
-        game.animation_id = window.requestAnimationFrame(this.gameLoop);
         this.draw_board();
         if (this.isalone == true)
         {
@@ -221,7 +227,6 @@ export class online {
                         data_played: new Date().toISOString(),
                         duration: duration,
                     };
-                    console.log("gamehere: ", game_stat);
                     this.sendStats(game_stat);
                 }
                 game.ws.close();
@@ -250,7 +255,6 @@ export class online {
                         data_played: new Date().toISOString(),
                         duration: duration,
                     };
-                    console.log("gamehere: ", game_stat);
                     this.sendStats(game_stat);
                 }
                 game.ws.close();
@@ -262,35 +266,52 @@ export class online {
             this.context.font = "100px Arial";
             this.context.fillText("PLAYER 2 WON!", this.board_width / 2, this.board_height / 3);
         }
+        game.animation_id = window.requestAnimationFrame(this.gameLoop);
     }
 
     lastSent = "none";
 
-    movePlayer(e) {
+    keysPressed = new Set();
+
+	movePlayer(e) {
         if (game.ws == null)
             return;
-        if (e.key == 'w' && this.lastSent != "keyW") {
+
+        this.keysPressed.add(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s') && this.lastSent != "keyW") {
             game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
             this.lastSent = "keyW";
-        }
-        if (e.key == 's' && this.lastSent != "keyS") {
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w') && this.lastSent != "keyS") {
             game.ws.send(JSON.stringify({ type: "keyS", username: this.username }));
             this.lastSent = "keyS"
+        } else {
+			if (e.key == 'w' && this.lastSent != "keyW") {
+				game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
+                this.lastSent = "keyW"
+            }
+			else if (e.key == 's' && this.lastSent != "keyS") {
+				game.ws.send(JSON.stringify({ type: "keyS", username: this.username }));
+                this.lastSent = "keyS"
+            }
         }
     }
 
-    //allows the player to stop if key is released
     stopPlayer(e) {
         if (game.ws == null)
             return;
-        if (e.key == 'w' && this.lastSent != "keyStop") {
-            game.ws.send(JSON.stringify({ type: "keyStop", username: this.username }));
 
-            this.lastSent = "keyStop"
-        }
-        if (e.key == 's' && this.lastSent != "keyStop") {
+        this.keysPressed.delete(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s') && this.lastSent != "keyW") {
+            game.ws.send(JSON.stringify({ type: "keyW", username: this.username }));
+            this.lastSent = "keyW";
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w') && this.lastSent != "keyS") {
+            game.ws.send(JSON.stringify({ type: "keyS", username: this.username }));
+                this.lastSent = "keyS"
+        } else if (!this.keysPressed.has('s') && !this.keysPressed.has('w') && this.lastSent != "keyStop"){
             game.ws.send(JSON.stringify({ type: "keyStop", username: this.username }));
-            this.lastSent = "keyStop"  
+            this.lastSent = "keyStop"
         }
     }
 }

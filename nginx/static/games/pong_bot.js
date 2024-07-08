@@ -59,9 +59,7 @@ export class bot {
 	stop = false;
 
 	constructor() {
-		console.log("hi");
 		modifyDelta(1.5);
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -80,7 +78,7 @@ export class bot {
 			if (game.ws !== null) {
 				let messageData = JSON.parse(event.data);
 				this.move = messageData.predict;
-				console.log(this.move);
+				//console.log(this.move);
 				game.ws.send(JSON.stringify({
 					"player" : this.player1.yPos,
 					"computer" : this.computer.yPos,
@@ -97,13 +95,11 @@ export class bot {
 		this.computer.width = this.player_width;
 		this.computer.height = this.player_height;
 		this.computer.velocityY = this.playerVelocity;
-		// this.computer.score = 0;
 		this.player1.xPos = 20;
 		this.player1.yPos = this.board_height / 2 - this.player_height / 2;
 		this.player1.width = this.player_width;
 		this.player1.height = this.player_height;
 		this.player1.velocityY = this.playerVelocity;
-		// this.player1.score = 0;
 		this.ball.width = this.ball_width;
 		this.ball.height = this.ball_height;
 		this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
@@ -115,11 +111,6 @@ export class bot {
 	gameLoop_bot() {
 		this.canvas.width = this.board_width;
 		this.canvas.height = this.board_height;
-		// let ran = Math.floor(Math.random() * 2);
-		// if (ran == 0) {
-		// 	tmp *= -1;
-		// }
-		// let tmp = this.ball_velocity;
 		let tmp2 = 0;
 		while (tmp2 == 0)
 			tmp2 = Math.floor(Math.random() * 11) - 5;
@@ -133,8 +124,6 @@ export class bot {
 	}
 
 	gameLoop() {
-		game.animation_id = window.requestAnimationFrame(this.gameLoop);
-
 		//draw
 		this.draw_board();
 
@@ -155,6 +144,7 @@ export class bot {
 			this.context.font = "100px Arial";
 			this.context.fillText("COMPUTER WON!", this.board_width / 2, this.board_height / 3);
 		}
+		game.animation_id = window.requestAnimationFrame(this.gameLoop);
 	}
 
 	fill_middle_lines() {
@@ -176,6 +166,12 @@ export class bot {
 		this.context.fillText(this.player1.score.toString(), this.board_width / 3, 100);
 		this.context.fillText(this.computer.score.toString(), this.board_width - this.board_width / 3, 100);
 
+		//keys
+		this.context.font = "30px Arial";
+		this.context.textAlign = "left";
+		this.context.fillText("⤊ w", 20, this.board_height - 60);
+		this.context.fillText("⤋ s", 20, this.board_height - 20);
+
 		this.context.fillStyle = "white";
 
 		//players
@@ -184,6 +180,7 @@ export class bot {
 
 		//this.ball
 		this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
+		this.context.font = "30px Arial";
 	}
 
 	move_players() {
@@ -276,8 +273,6 @@ export class bot {
 			this.ball.velocityY = 0;
 			while (this.ball.velocityY == 0)
 				this.ball.velocityY = Math.floor(Math.random() * 11) - 5;
-			// if (ran == 0)
-			// 	this.ball.velocityX *= -1;
 			this.ball.velocityXTmp = this.ball.velocityX * this.last_direction;
 			this.ball.velocityYTmp = this.ball.velocityY;
 			this.ball.velocityX = 0;
@@ -289,21 +284,38 @@ export class bot {
 		this.ball.yPos += this.ball.velocityY;
 	}
 
-	movePlayer(e) {
-		if (e.key == 'w') {
-			this.player1.velocityY = -this.player_speed;
-		}
-		if (e.key == 's') {
-			this.player1.velocityY = this.player_speed;
-		}
-	}
+	keysPressed = new Set();
 
-	stopPlayer(e) {
-		if (e.key == 'w') {
-			this.player1.velocityY = 0;
-		}
-		if (e.key == 's') {
-			this.player1.velocityY = 0;
-		}
-	}
+	movePlayer(e) {
+		if (game.ws == null)
+            return;
+
+        this.keysPressed.add(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+			if (e.key == 'w')
+				this.player1.velocityY = -this.player_speed;
+			else if (e.key == 's')
+				this.player1.velocityY = this.player_speed;
+        }
+    }
+
+    stopPlayer(e) {
+		if (game.ws == null)
+			return;
+
+        this.keysPressed.delete(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+            this.player1.velocityY = 0;
+        }
+    }
 }

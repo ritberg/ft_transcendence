@@ -51,7 +51,7 @@ def disable_2fa(request):
 		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
 	if not user.is_2fa_verified:
-		return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({'detail': '2FA is not enabled for this user'}, status=status.HTTP_403_FORBIDDEN)
 
 	user.is_2fa_verified = False
 	# user.otp_secret = None
@@ -63,13 +63,12 @@ def disable_2fa(request):
 # authentication views
 @api_view(['POST'])
 def enable_2fa(request):
-	print("fuck this", request.data)
 	user = request.user
 	if not user.is_authenticated:
 		return Response({'detail': 'Authentication required'}, status=status.HTTP_401_UNAUTHORIZED)
 
 	if user.is_2fa_verified:
-		return Response({'detail': '2FA is already fully enabled for this user'}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({'detail': '2FA is already fully enabled for this user'}, status=status.HTTP_403_FORBIDDEN)
 	
 	# Generate a new secret key
 	secret_key = pyotp.random_base32()
@@ -110,10 +109,10 @@ def verify_otp(request):
 		return Response({'detail': 'OTP is required'}, status=status.HTTP_400_BAD_REQUEST)
 
 	if user.is_2fa_verified:
-		return Response({'detail': '2FA is already verified for this user'}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({'detail': '2FA is already verified for this user'}, status=status.HTTP_403_FORBIDDEN)
 
 	if not user.otp_secret:
-		return Response({'detail': '2FA setup has not been initiated for this user'}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({'detail': '2FA setup has not been initiated for this user'}, status=status.HTTP_403_FORBIDDEN)
 
 	totp = pyotp.TOTP(user.otp_secret)
 	
@@ -129,7 +128,7 @@ def verify_otp(request):
 		user.save()
 		return Response({'detail': 'OTP verified successfully. 2FA is now fully enabled.'}, status=status.HTTP_200_OK)
 	else:
-		return Response({'detail': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
+		return Response({'detail': 'Invalid OTP'}, status=status.HTTP_403_FORBIDDEN)
 
 class VerifyOTPLoginView(APIView):
 	permission_classes = [AllowAny]
@@ -163,14 +162,7 @@ class VerifyOTPLoginView(APIView):
 				status=status.HTTP_200_OK
 			)
 		else:
-			return Response({'message': 'Invalid OTP'}, status=status.HTTP_400_BAD_REQUEST)
-			
-class IndexView(APIView):
-	permission_classes = [AllowAny]
-
-	def get(self, request):
-		return render(request, 'index.html')
-
+			return Response({'message': 'Invalid OTP'}, status=status.HTTP_403_FORBIDDEN)
 
 class RegisterUserView(APIView):
 	permission_classes = [AllowAny]
@@ -241,7 +233,7 @@ class LoginUserView(APIView):
 		except Exception as e:
 			return Response(
 				{'message': f"{type(e).__name__}: {str(e)}"},
-				status=status.HTTP_400_BAD_REQUEST
+				status=status.HTTP_401_UNAUTHORIZED
 			)
 
 class LogoutUserView(APIView):
@@ -300,7 +292,7 @@ class UpdateUserView(APIView):
 
 			return Response(
 				{'message': extracted_string},
-				status=status.HTTP_400_BAD_REQUEST
+				status=status.HTTP_403_FORBIDDEN
 			)
 
 # friend request views
@@ -309,7 +301,6 @@ class SendFriendRequestView(APIView):
 
 	def post(self, request, *args, **kwargs):
 		try:
-			print("request.data : ", request.data)
 			serializer = FriendRequestSerializer(data=request.data, context={'request': request})
 			if serializer.is_valid():
 				friend_request = serializer.save()
@@ -322,11 +313,10 @@ class SendFriendRequestView(APIView):
 				)
 			raise ValueError(serializer.errors)
 		except Exception as e:
-				print(e)
 				error_message = str(e.detail['non_field_errors'][0]) if 'non_field_errors' in e.detail else str(e.detail[0])
 				return Response(
 					{'message': error_message},
-					status=status.HTTP_400_BAD_REQUEST
+					status=status.HTTP_403_FORBIDDEN
 				)
 
 class AcceptFriendRequestView(APIView):
@@ -344,7 +334,7 @@ class AcceptFriendRequestView(APIView):
 			)
 		return Response(
 			{'message': 'Friend request cannot be accepted by this user'},
-			status=status.HTTP_400_BAD_REQUEST
+			status=status.HTTP_403_FORBIDDEN
 		)
 
 class RejectFriendRequestView(APIView):
@@ -360,7 +350,7 @@ class RejectFriendRequestView(APIView):
 			)
 		return Response(
 			{'message': 'Friend request cannot be rejected by this user'},
-			status=status.HTTP_400_BAD_REQUEST
+			status=status.HTTP_403_FORBIDDEN
 		)
 
 class ListFriendsRequestsView(APIView):
@@ -399,7 +389,7 @@ class DeleteFriendView(APIView):
 			)
 		return Response(
 			{'message': 'User is not in your friends list'},
-			status=status.HTTP_400_BAD_REQUEST
+			status=status.HTTP_404_NOT_FOUND
 		)
 
 
@@ -412,13 +402,13 @@ class BlockUserView(APIView):
 		if user_to_block == request.user:
 			return Response(
 				{'message': 'You cannot block yourself'},
-				status=status.HTTP_400_BAD_REQUEST
+				status=status.HTTP_403_FORBIDDEN
 			)
 		
 		if request.user.blocked_users.filter(id=user_to_block.id).exists():
 			return Response(
 				{'message': 'User is already blocked'},
-				status=status.HTTP_400_BAD_REQUEST
+				status=status.HTTP_403_FORBIDDEN
 			)
 		
 		request.user.blocked_users.add(user_to_block)
@@ -445,7 +435,7 @@ class UnblockUserView(APIView):
 		else:
 			return Response(
 				{'message': f'User {user_to_unblock.username} is not currently blocked'},
-				status=status.HTTP_400_BAD_REQUEST
+				status=status.HTTP_403_FORBIDDEN
 			)
 			
 class ListBlockedUsers(APIView):
@@ -468,7 +458,7 @@ class GetUserID(APIView):
 			user = User.objects.get(username=username)
 			return Response({'id': user.id}, status=status.HTTP_200_OK)
 		except Exception as e:
-			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
 
 class GetUserPicture(APIView):
 	permission_classes = [IsAuthenticated]
@@ -481,7 +471,7 @@ class GetUserPicture(APIView):
 			profile_picture_url = user.profile_picture.url if user.profile_picture else None
 			return Response({'pfp': profile_picture_url}, status=status.HTTP_200_OK)
 		except Exception as e:
-			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
 
 class TokenObtainPairView(TokenObtainPairView):
 	serializer_class = MyTokenObtainPairSerializer
@@ -497,13 +487,12 @@ class GetUserLanguage(APIView):
 			user = User.objects.get(username=username)
 			return Response({'language': user.language}, status=status.HTTP_200_OK)
 		except Exception as e:
-			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
 	
 class ChangeUserLanguage(APIView):
 	permission_classes = [IsAuthenticated]
 
 	def post(self, request, *args, **kwargs):
-		print("request data:", request.data)
 		language = request.data.get('language')
 		username = request.user.username
 		try:
@@ -516,7 +505,7 @@ class ChangeUserLanguage(APIView):
 			user.save()
 			return Response({'message': "The language has been successfully changed."}, status=status.HTTP_200_OK)
 		except Exception as e:
-			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+			return Response({'message': f"{type(e).__name__}: {str(e)}"}, status=status.HTTP_404_NOT_FOUND)
 
 def send_status_update(user):
 	channel_layer = get_channel_layer()

@@ -66,8 +66,6 @@ export class tourney {
 
 	constructor() {
 		modifyDelta(1.5);
-
-		// this.animation_id = null;
 		this.gameLoop = this.gameLoop.bind(this);
 		this.movePlayer = this.movePlayer.bind(this);
 		this.stopPlayer = this.stopPlayer.bind(this);
@@ -125,7 +123,6 @@ export class tourney {
 	async gameLoop() {
 		loop_exec = true;
 		if (this.player1.score == tourney_game.max_points || this.player2.score == tourney_game.max_points) {
-			//console.log(tourney_game.index, tourney_game.score[0][0].name);
 			tourney_game.score[tourney_game.index][1] = this.player1.score;
 			tourney_game.score[tourney_game.index + 1][1] = this.player2.score;
 			if (this.player1.score > this.player2.score) {
@@ -159,7 +156,6 @@ export class tourney {
 				stars(document.getElementById("main_canvas"));
 				return;
 			}
-			//await starWars();
 			let last_player = 0;
 			for (let z = tourney_game.player.length; z > 1; z /= 2)
 				last_player += z;
@@ -167,13 +163,6 @@ export class tourney {
 				await starWarsTourney();
 			else {
 				stars(document.getElementById("main_canvas"));
-				//document.getElementById("main-menu").style.display = "flex";
-				//document.getElementById("main-menu").style.opacity = "0";
-				//await sleep(100);
-				//document.getElementById("main-menu").classList.remove("hidden");
-				//document.getElementById("main-menu").classList.add("shown");
-				//await sleep(200);
-				//document.getElementById("main-menu").style.opacity = "1";
 				if (window.location.pathname == "/tourney/")
 					route("/");
 				return;
@@ -190,7 +179,6 @@ export class tourney {
 			this.draw_board();
 		}
 		game.animation_id = window.requestAnimationFrame(this.gameLoop);
-
 	}
 
 	fill_middle_lines() {
@@ -211,6 +199,15 @@ export class tourney {
 		this.context.textAlign = "center";
 		this.context.fillText(this.player1.score.toString(), this.board_width / 3, 100);
 		this.context.fillText(this.player2.score.toString(), this.board_width - this.board_width / 3, 100);
+		//keys
+		this.context.font = "30px Arial";
+		this.context.textAlign = "left";
+		this.context.fillText("⤊ w", 20, this.board_height - 60);
+		this.context.fillText("⤋ s", 20, this.board_height - 20);
+		this.context.textAlign = "right";
+		this.context.fillText("⤊", this.board_width - 20, this.board_height - 100);
+		this.context.fillText("Arrows", this.board_width - 20, this.board_height - 60);
+		this.context.fillText("⤋", this.board_width - 20, this.board_height - 20);
 
 		this.context.fillStyle = "white";
 
@@ -218,12 +215,14 @@ export class tourney {
 		this.context.fillRect(this.player1.xPos, this.player1.yPos, this.player1.width, this.player1.height);
 		this.context.fillRect(this.player2.xPos, this.player2.yPos, this.player2.width, this.player2.height);
 		this.context.fillStyle = "black";
+		this.context.textAlign = "center";
 		writeVerticalText(this.context, tourney_game.score[tourney_game.index][0], 25, this.player1.yPos + 100, "30px Arial", 0);
 		writeVerticalText(this.context, tourney_game.score[tourney_game.index + 1][0], 975, this.player2.yPos + 100, "30px Arial", 1);
 		this.context.fillStyle = "white";
 
 		//this.ball
 		this.context.fillRect(this.ball.xPos, this.ball.yPos, this.ball.width, this.ball.height);
+
 	}
 
 	move_players() {
@@ -288,21 +287,6 @@ export class tourney {
 				this.player2.score++;
 			else
 				this.player1.score++;
-
-			// if (this.player1.score == 5) {
-			//     stop_playing();
-			//     this.context.font = "100px serif";
-			//     this.context.fillText("Player 1 won !", 325, 400);
-			//     this.stop = true;
-			//     return;
-			// }
-			// if (this.player2.score == 5) {
-			//     stop_playing();
-			//     this.context.font = "100px serif";
-			//     this.context.fillText("Player 2 won !", 330, 400);
-			//     this.stop = true;
-			//     return;
-			// }
 			this.first_bounce = true;
 			this.ball.xPos = (this.board_width / 2) - (this.ball_width / 2);
 			this.ball.yPos = (this.board_height / 2) - (this.ball_height / 2);
@@ -324,25 +308,49 @@ export class tourney {
 		this.ball.yPos += this.ball.velocityY;
 	}
 
-	movePlayer(e) {
-		if (e.key == 'w') {
-			this.player1.velocityY = -this.player_speed;
-		}
-		if (e.key == 's') {
-			this.player1.velocityY = this.player_speed;
-		}
-		if (e.key == 'ArrowUp') {
-			this.player2.velocityY = -this.player_speed;
-		}
-		if (e.key == 'ArrowDown') {
-			this.player2.velocityY = this.player_speed;
-		}
-	}
+	keysPressed = new Set();
 
-	stopPlayer(e) {
-		if (e.key == 'w' || e.key == 's')
-			this.player1.velocityY = 0;
-		else if (e.key == 'ArrowUp' || e.key == 'ArrowDown')
-			this.player2.velocityY = 0
-	}
+	movePlayer(e) {
+        this.keysPressed.add(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+			if (e.key == 'w')
+				this.player1.velocityY = -this.player_speed;
+			else if (e.key == 's')
+				this.player1.velocityY = this.player_speed;
+        }
+		if (this.keysPressed.has('ArrowUp') && !this.keysPressed.has('ArrowDown')) {
+            this.player2.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('ArrowDown') && !this.keysPressed.has('ArrowUp')) {
+            this.player2.velocityY = this.player_speed;
+        } else {
+			if (e.key == 'ArrowUp')
+				this.player2.velocityY = -this.player_speed;
+			else if (e.key == 'ArrowDown')
+				this.player2.velocityY = this.player_speed;
+        }
+    }
+
+    stopPlayer(e) {
+        this.keysPressed.delete(e.key);
+
+        if (this.keysPressed.has('w') && !this.keysPressed.has('s')) {
+            this.player1.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('s') && !this.keysPressed.has('w')) {
+            this.player1.velocityY = this.player_speed;
+        } else {
+            this.player1.velocityY = 0;
+        }
+		if (this.keysPressed.has('ArrowUp') && !this.keysPressed.has('ArrowDown')) {
+            this.player2.velocityY = -this.player_speed;
+        } else if (this.keysPressed.has('ArrowDown') && !this.keysPressed.has('ArrowUp')) {
+            this.player2.velocityY = this.player_speed;
+        } else {
+            this.player2.velocityY = 0;
+        }
+    }
 }

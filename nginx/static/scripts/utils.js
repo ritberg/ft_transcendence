@@ -1,13 +1,15 @@
-export async function errorMsg(msg) {
+//function to display messages on the bottom right
+export async function msg(msg) {
 	if (msg === undefined)
 		return;
 	const error_box = document.getElementById("error-box");
-	console.log("error: ", msg);
 	error_box.textContent = msg.toUpperCase();
 	error_box.classList.toggle("error_active");
 	await sleep(2000);
 	error_box.classList.toggle("error_active");
 }
+
+//zzzzzzzzz
 export function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -19,6 +21,7 @@ export function randomNumber(numberList) {
 	return numberList[randomIntegerIndex];
 }
 
+// to avoid xss injections
 export function escapeHtml(unsafe) {
     return unsafe
          .replace(/&/g, "&amp;")
@@ -28,6 +31,7 @@ export function escapeHtml(unsafe) {
          .replace(/'/g, "&#039;");
 }
 
+//used to display test on paddles in tourney and online modes
 export function writeVerticalText(context, text, x, y, font, rotation) {
 	context.save(); // Save the current state
 	context.translate(x, y); // Move the origin
@@ -40,6 +44,7 @@ export function writeVerticalText(context, text, x, y, font, rotation) {
 	context.restore(); // Restore the original state
 }
 
+//used to keep track of the state of the tourney
 export class tourneyGame {
 	constructor(player, index, scores, max_points, max_phases) {
 		this.player = [];
@@ -50,6 +55,7 @@ export class tourneyGame {
 	}
 }
 
+//to make sure the previous tournament doesn't influence the new one
 export function resetTourneyGame(tourney_game) {
 	tourney_game.player = [];
 	tourney_game.score = [];

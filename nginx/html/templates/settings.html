@@ -9,7 +9,7 @@
 		</div>
 		<form>
 			<div class="input-div">
-				<input type="text" id="new-username" required="">
+				<input type="text" id="new-username" required="" maxlenght="8">
 				<label id="l-new-username">USERNAME</label>
 			</div>
 			<div class="input-div">
@@ -21,8 +21,6 @@
 				<label id="l-new-password">PASSWORD</label>
 			</div>
 		</form>
-		<button id="update-profile">SAVE</button>
-		<button id="user-logout">LOGOUT</button>
 		<select id="language-select-settings">
 			<option value="en">ENGLISH</option>
 			<option value="fr">FRANÇAIS</option>
@@ -32,10 +30,13 @@
 			<option value="zh">中文</option>
 			<option value="la">LATINUM</option>
 		</select>
+		<button id="update-profile">SAVE</button>
+		<button id="user-logout">LOGOUT</button>
 		<div id="fa-container">
 			<button type="button" id="toggle-2fa-button">Enable 2FA</button>
 			<div id="qr-code-container"></div>
-			<p id="otp-secret">Secret key <span id="otp-secret-span"></span></p>
+			<p id="otp-secret">Secret key</p>
+			<span id="otp-secret-span" style="font-size:12px"></span>
 			<div style="display: none;" id="settings-otp-form" class="input-div">
 				<form id="verify-otp-form">
 					<input type="text" id="otp-input" name="otp" placeholder="Enter OTP">

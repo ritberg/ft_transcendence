@@ -1,11 +1,15 @@
 import { GameMode } from './main.js';
 import { route } from './router.js';
-import { sleep, errorMsg } from './utils.js';
+import { sleep, msg } from './utils.js';
 import { signupButton, loginButton, userIsConnected, username_global } from './users.js';
 import { updateUser, logoutFunc } from './settings.js';
 import { displayProfile} from './stats.js';
 import { tournamentSettings } from './animations.js';
 import { loadLanguage, changeLanguage } from './lang.js';
+
+//this file contains a great part of the event listeners
+//a more general event listener is needed for dynamically added html
+//since adding an event lister on an event that doesn't exist results in an error
 
 document.addEventListener('DOMContentLoaded', () => {
 	/////////// CONTENT //////////////
@@ -21,13 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		if (event.target && event.target.id === "b-signin-ok") {
 			await loginButton(event);
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "b-signup-ok") {
 			signupButton(event);
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "pvp-mode") {
 			route("/pvp/");
@@ -61,8 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 		else if (event.target && event.target.id === "update-profile") {
 			updateUser();
-			document.getElementById("content").classList.remove("hidden");
-			document.getElementById("content").classList.add("shown");
 		}
 		else if (event.target && event.target.id === "profile") {
 			displayProfile(username_global);
@@ -83,10 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 
+	contentContainer.addEventListener("submit", async function (event) {
+		event.preventDefault();
+		if (event.target && event.target.id === "online_form") {
+			document.getElementById("b-online-go").click();
+		}
+	});
+
 	contentContainer.addEventListener("change", async function (event) {
 		event.preventDefault();
 		if (event.target && event.target.id === "language-select-settings") {
-			console.log("fdsa");
 			const selectedLanguage = event.target.value;
 			let response = await changeLanguage(selectedLanguage);
 			if (response == null)
@@ -98,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		if (event.target && event.target.id === "avatar-input") {
 			let file = document.getElementById("avatar-input").files[0];
 			if (file == null || file.type == "") {
-				errorMsg("please select a file");
+				msg("please select a file");
 				return;
 			}
 			const reader = new FileReader();
@@ -141,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
 			route('/signin/');
 		document.getElementById("content").classList.remove("hidden");
 		document.getElementById("content").classList.add("shown");
-		console.log("fdsafdsa", userIsConnected);
 	});
 
 	////////// USERS_LIST ///////////

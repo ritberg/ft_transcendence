@@ -1,14 +1,14 @@
 FROM python:3.11-slim
 
 # declaration of service variables environment
-ENV SERVICE_NAME=${SERVICE_NAME}
-ARG SERVICE_NAME
+ENV CHAT_SERVICE_NAME=${CHAT_SERVICE_NAME}
+ARG CHAT_SERVICE_NAME
 
 # declaration of environment variables for python
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
-COPY ./project /home/transcendance/${SERVICE_NAME}
+COPY ./ChatApp /home/transcendance/${CHAT_SERVICE_NAME}
 
 RUN apt-get update && apt-get install -y netcat-openbsd
 
@@ -23,10 +23,9 @@ RUN pip3 install --no-cache-dir -r requirements.txt \
 # copy and execute the initialization script
 COPY ./tools/service_setup.sh /home/transcendance/service_setup.sh
 RUN chmod +x /home/transcendance/service_setup.sh
-# RUN bash /home/transcendance/service_setup.sh
 
 # set the final working directory
-WORKDIR /home/transcendance/${SERVICE_NAME}
+WORKDIR /home/transcendance/${CHAT_SERVICE_NAME}
 
 # Command for running the application
 CMD ["bash", "/home/transcendance/service_setup.sh"]

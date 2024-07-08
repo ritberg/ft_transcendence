@@ -1,4 +1,4 @@
-import { errorMsg, sleep } from './utils.js';
+import { msg, sleep } from './utils.js';
 import { stars, starWars, modifyDelta } from './stars.js';
 import { username_global, token, userIsConnected, getUserId } from './users.js';
 import { game } from './router.js';
@@ -11,9 +11,12 @@ import { updateStatus } from './userStatus.js';
 
 export let ai_activated = false;
 
+//launches games, 0 = pvp / 1 = cpu / 2 = tourney / 3 = online
+//creates new game object
 export async function GameMode(n) {
     if (n == 0) {
         await starWars();
+        //checks if user changed url during the animation
         if (window.location.pathname !== '/pvp/') {
             modifyDelta(1.5);
             return;
@@ -25,13 +28,16 @@ export async function GameMode(n) {
         game.game_class.loop();
     }
     else if (n == 1) {
+        //websocket is declared early to be able to check whether the bot is ready or not
         game.ws = new WebSocket("wss://" + window.location.host + "/ws/bot/");
         game.game_class = new bot();
         await starWars();
+         //checks if user changed url during the animation
         modifyDelta(1.5);
         if (window.location.pathname !== '/bot/') {
             return;
         }
+        //if the websocket is closed, the bot is still training
         if (game.ws.readyState === WebSocket.CLOSED) {
             game.ws = null;
             modifyDelta(1.5);
@@ -46,6 +52,7 @@ export async function GameMode(n) {
     else if (n == 2)
     {
         await starWars();
+         //checks if user changed url during the animation
         if (window.location.pathname !== "/tourney/") {
             change_loop_exec(false);
             modifyDelta(1.5);
@@ -60,7 +67,7 @@ export async function GameMode(n) {
     }
     else if (n == 3) {
         if (userIsConnected == false) {
-            errorMsg("user must be logged in to play online");
+            msg("you must be logged in to play online");
             return;
         }
 
@@ -84,7 +91,7 @@ export async function GameMode(n) {
         .then(async (response) => {
             if (!response.ok) {
                 const error = await response.json();
-                errorMsg(error.error);
+                msg(error.error);
                 return null;
             }
             return response.json();
@@ -94,11 +101,11 @@ export async function GameMode(n) {
                 document.getElementById("online-box").classList.remove("shown");
 		        document.getElementById("online-box").classList.add("hidden");
                 await starWars();
+                 //checks if user changed url during the animation
                 if (window.location.pathname !== '/online/') {
                     modifyDelta(1.5);
                     return;
                 }
-                // document.getElementById("online-box").style.display = "none";
                 document.getElementById("game_canvas").style.display = "block";
                 game.ws = new WebSocket(`wss://${window.location.host}/ws/online/${data.room_name}/${username_global}/${player_id}/`);
                 await updateStatus('in_game');
@@ -110,6 +117,7 @@ export async function GameMode(n) {
     }
 }
 
+//loaded at the start of the runtime of the website, starts the stars animations, opens the status websockets and fetches the language in the localstorage
 window.onload = async function () {
     stars(document.getElementById("main_canvas"));
     var savedLanguage = localStorage.getItem('preferredLanguage') || navigator.language.slice(0, 2);

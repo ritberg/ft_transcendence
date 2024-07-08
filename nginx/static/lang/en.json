@@ -56,6 +56,7 @@
 		"enable_2fa": "ENABLE 2FA",
 		"disable_2fa": "DISABLE 2FA",
 		"cancel_2fa": "Cancel 2FA",
+		"key_secret": "Secret key",
 		"choose_language": "CHOOSE YOUR LANGUAGE:",
 		"otp_verif1": "Verify OTP"
 	},

@@ -7,8 +7,6 @@ from rest_framework import status
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
-# Create your views here.
-
 class AddGameHistoryView(APIView):
 	permission_classes = [IsAuthenticated]
 
@@ -33,7 +31,7 @@ class GameHistoryView(APIView):
 		except Exception as e:
 			return Response(
 				{'message': f"{type(e).__name__}: {str(e)}"},
-				status=status.HTTP_500_INTERNAL_SERVER_ERROR
+				status=status.HTTP_404_NOT_FOUND
 			)
 
 class StatsView(APIView):
@@ -50,5 +48,5 @@ class StatsView(APIView):
 		except Exception as e:
 			return Response(
 				{'message': f"{type(e).__name__}: {str(e)}"},
-				status=status.HTTP_500_INTERNAL_SERVER_ERROR
+				status=status.HTTP_404_NOT_FOUND
 			)

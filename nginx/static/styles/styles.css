@@ -1183,6 +1183,9 @@ body {
 #settings-box #user-logout {
 	color: red;
 }
+#settings-box #verify-otp-form {
+	width: 100%;
+}
 #settings-box button:hover {
 	text-shadow: 0 0 5px white;
 }

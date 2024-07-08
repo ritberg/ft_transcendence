@@ -38,8 +38,6 @@ class GameLoop(AsyncWebsocketConsumer):
 
     first_bounce = True
 
-    #where all the rooms are stored
-
     update_lock = asyncio.Lock()
 
     async def game_loop(self, game_room):
@@ -78,6 +76,7 @@ class GameLoop(AsyncWebsocketConsumer):
                 #calculate ball collisions
                 await self.calculate_ball_changes()
                 
+                #prepare the state_update to send later
                 state_update[self.room]["player1Pos"] = self.player1["yPos"]
                 state_update[self.room]["player2Pos"] = self.player2["yPos"]
                 state_update[self.room]["ball_yPos"] = self.room_var["ball_yPos"]

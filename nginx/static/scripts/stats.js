@@ -1,7 +1,8 @@
-import { getUserId, userIsConnected } from "./users.js";
+import { getUserId } from "./users.js";
 import { token, username_global } from "./users.js";
-import { errorMsg } from "./utils.js";
+import { escapeHtml, msg } from "./utils.js";
 
+//calculates stats and displays them in profiles
 function updateUserStats(stats) {
 	if (stats) {
 		document.getElementById("wins-value").textContent = stats.wins;
@@ -15,6 +16,7 @@ function updateUserStats(stats) {
 	}
 }
 
+//displays the match history
 function updateMatchHistory(matchHistory, username) {
 	if (username == null)
 		username = username_global;
@@ -24,7 +26,7 @@ function updateMatchHistory(matchHistory, username) {
 		matchHistory.forEach((match) => {
 			const listItem = document.createElement("li");
 			let date_played = new Date(match.date_played).toLocaleDateString('fr-FR');
-			let opponent = (username === match.player_1.username) ? match.player_2.username : match.player_1.username;
+			let opponent = (username === match.player_1.username) ? escapeHtml(match.player_2.username) : escapeHtml(match.player_1.username);
 			const winStatus = "WIN";
 			let status = (username === match.winner.username) ? winStatus : "LOSS";
 			let player_1_score = match.player_1.score;
@@ -38,6 +40,8 @@ function updateMatchHistory(matchHistory, username) {
 	}
 }
 
+//called in route when going in /profile/
+//the username argument checks which user to display
 export async function displayProfile(username) {
 
 	if (username === null) {
@@ -46,33 +50,36 @@ export async function displayProfile(username) {
 	}
 	let player_id = await getUserId(username);
 
+	//get user stats and match history
 	let stats = await getStats(player_id);
 	let match_history = await getMatchHistory(player_id);
 
+	//get user profile picture, located in user's media folder
 	let profile_pic = await getProfilePicture(username);
 	
 	if (username) {
 		if (username) {
-			console.log("PUT USERNAME IN USERINFO DISPLAY: ", username);
-			document.getElementById("info-username").textContent = `${username}`;
-			// document.getElementById("user-name").textContent = `${username}`;
+			document.getElementById("info-username").textContent = `${escapeHtml(username)}`;
 		}
 		if (profile_pic) {
 			document.getElementById("display_picture").src = profile_pic;
 		}
+		//if no stats, do nothing
 		if (stats && stats.length != 0) {
-			console.log("PUT STAT IN USERINFO DISPLAY: ", stats);
+			console.log("stats: ", stats);
 			updateUserStats(stats);
 			createChartGames(stats);
 			createGoalsChart(stats);
 		}
+		//if no games played, do nothing
 		if (match_history) {
-			console.log("PUT MATCH HISTORY IN USERINFO DISPLAY: ", match_history);
+			console.log("match history: ", match_history);
 			updateMatchHistory(match_history, username);
 		}
 	}
 }
 
+//displays win rate chart
 function createChartGames(stats) {
 	const canvas = document.getElementById('playerGamesChart');
 	const ctx = canvas.getContext('2d');
@@ -85,7 +92,6 @@ function createChartGames(stats) {
 	new Chart(ctx, {
 		type: 'doughnut',
 		data: {
-			//labels: ['Wins', 'Losses'],
 			datasets: [
 				{
 					label: 'Win Rate',
@@ -97,7 +103,7 @@ function createChartGames(stats) {
 			],
 		},
 		options: {
-			responsive: true,
+			responsive: false,
 			plugins: {
 				legend: {
 					position: 'top',
@@ -109,7 +115,7 @@ function createChartGames(stats) {
 					display: true,
 					text: 'Win Rate',
 					font: {
-						size: 18
+						size: 36
 					},
 					color: '#FFFFFF',
 				},
@@ -127,11 +133,11 @@ function createChartGames(stats) {
 			}
 		},
 	});
-	//Chart.defaults.font.size = 16; // Set global font size
 	canvas.style.width = '50%';
 	canvas.style.height = '100%';
 }
 
+//displays goal repartition charts
 function createGoalsChart(stats) {
 	const canvas = document.getElementById('playerGoalsChart');
 	const ctx = canvas.getContext('2d');
@@ -159,7 +165,7 @@ function createGoalsChart(stats) {
 			],
 		},
 		options: {
-			responsive: true,
+			responsive: false,
 			plugins: {
 				legend: {
 					display: false,
@@ -185,6 +191,7 @@ function createGoalsChart(stats) {
 	canvas.style.height = '100%';
 }
 
+//fetch stats, called in displayProfile
 async function getStats(player_id) {
 	let getStatsUrl = "https://" + window.location.host + "/stat/stats/" + player_id + "/";
 
@@ -199,7 +206,7 @@ async function getStats(player_id) {
 		.then(async (response) => {
 			if (!response.ok) {
 				const error = await response.json();
-				errorMsg(error.message);
+				msg(error.message);
 				return null;
 			}
 			return response.json();
@@ -215,6 +222,7 @@ async function getStats(player_id) {
 		});
 }
 
+//fetches games history, called in displayProfile
 async function getMatchHistory(player_id) {
 	let getMatchHistoryUrl = "https://" + window.location.host + "/stat/game-history/" + player_id + "/";
 
@@ -229,7 +237,7 @@ async function getMatchHistory(player_id) {
 		.then(async (response) => {
 			if (!response.ok) {
 				const error = await response.json();
-				errorMsg(error.message);
+				msg(error.message);
 				return null;
 			}
 			return response.json();
@@ -245,6 +253,7 @@ async function getMatchHistory(player_id) {
 		});
 }
 
+//fetches profile picture, used in displayProfile
 async function getProfilePicture(username) {
 	let getMatchHistoryUrl = "https://" + window.location.host + "/auth/get-user-picture/" + username + "/";
 
@@ -259,14 +268,13 @@ async function getProfilePicture(username) {
 		.then(async (response) => {
 			if (!response.ok) {
 				const error = await response.json();
-				errorMsg(error.message);
+				msg(error.message);
 				return null;
 			}
 			return response.json();
 		})
 		.then((data) => {
 			if (data !== null) {
-				console.log(data)
 				return data.pfp;
 			}
 		})

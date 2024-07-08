@@ -53,7 +53,7 @@ services:
   chat:
     container_name: chat
     build:
-      context: ./chat_service
+      context: ./chat
       dockerfile: Dockerfile
       args:
         CHAT_SERVICE_NAME: ${CHAT_SERVICE_NAME}
@@ -71,7 +71,6 @@ services:
       - user
       - db_transcendence
       - redis
-      - stat
     restart: on-failure
 
   online:
@@ -79,8 +78,7 @@ services:
     depends_on:
       - db_transcendence
       - user
-      - stat
-      - chat
+      - redis
     build:
       context: ./online
       dockerfile: Dockerfile
@@ -100,6 +98,8 @@ services:
 
   bot:
     container_name: bot
+    depends_on:
+      - redis
     build:
       context: ./bot
       dockerfile: Dockerfile
@@ -122,6 +122,7 @@ services:
       - bot
       - user
       - chat
+      - stat
     build:
       context: ./nginx
       dockerfile: Dockerfile
@@ -129,7 +130,6 @@ services:
       - "443:443"
       - "80:80"
     volumes:
-      - nginx:/etc/nginx
       - media_volume:/home/transcendance/user_auth_system/media
     networks:
       - transcendance
@@ -142,16 +142,10 @@ services:
     build:
       context: ./db_transcendence/docker
       dockerfile: Dockerfile
-    # image: postgres:16.2
-    # env_file:
-    #   - .env
     environment:
       POSTGRES_DB: ${DB_TRANSCENDENCE_NAME}
       POSTGRES_USER: ${DB_TRANSCENDENCE_USER}
       POSTGRES_PASSWORD: ${DB_TRANSCENDENCE_PASSWORD}
-      # DB_TRANSCENDENCE_NAME: ${DB_TRANSCENDENCE_NAME}
-      # DB_TRANSCENDENCE_USER: ${DB_TRANSCENDENCE_USER}
-      # DB_TRANSCENDENCE_PASSWORD: ${DB_TRANSCENDENCE_PASSWORD}
       PGPORT: ${DB_TRANSCENDENCE_PORT}
     volumes:
       - db_transcendence:/var/lib/postgresql/data/
@@ -173,12 +167,6 @@ services:
     restart: on-failure
 
 volumes:
-  nginx:
-    driver: local
-    driver_opts:
-      type: "none"
-      o: "bind"
-      device: "${PWD}/nginx/nginx"
   user:
   db_transcendence:
     driver: local
